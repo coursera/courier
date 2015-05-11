@@ -1,0 +1,28 @@
+# Editors
+*~
+
+# OS X
+.DS_Store
+
+# Scala/SBT
+.cache
+.history
+.lib/
+dist/*
+target/
+lib_managed/
+src_managed/
+project/boot/
+project/plugins/project/
+.settings
+.target
+
+# Scala IDE
+.scala_dependencies
+.project
+.classpath
+.worksheet
+
+# IntelliJ IDE
+.idea
+.idea_modules
