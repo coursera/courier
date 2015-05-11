@@ -1,0 +1,6 @@
+{
+  "project_id"              : "courier",
+  "base"                    : "arc:yield, git:merge-base(origin/master), arc:prompt",
+  "conduit_uri"             : "https://phabricator.dkandu.me/",
+  "arc.land.update.default" : "rebase"
+}

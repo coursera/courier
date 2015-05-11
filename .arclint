@@ -1,0 +1,30 @@
+{
+  "linters" : {
+    "scalastyle": {
+      "type"                :   "scalastyle",
+      "include"             :   "(\\.scala$)",
+      "config"              :   "./scalastyle_config.xml"
+    },
+    "json": {
+      "type"                :   "json",
+      "include": [
+        "(^\\.arcconfig$)",
+        "(^\\.arclint$)",
+        "(\\.json$)"
+      ]
+    },
+    "spelling" : {
+      "type"                :   "spelling",
+      "exclude"             :   "(/vendor/)"
+    },
+    "chmod" : {
+      "type"                :   "chmod"
+    },
+    "generated" : {
+      "type"                :   "generated"
+    },
+    "nolint" : {
+      "type"                :   "nolint"
+    }
+  }
+}
