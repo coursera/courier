@@ -25,6 +25,29 @@ requests will be `squashed` into a single commit and committed (not
 merged) to master. Full attribution to the pull request submitter will
 be retained.
 
+Building from Source
+--------------------
+
+Clone the repo and run:
+
+```sh
+sbt compile
+```
+
+To publish to the local ivy cache use:
+
+```sh
+sbt publish-local
+```
+
+To publish to maven local use:
+
+```sh
+sbt publish-m2
+```
+
+Add `+` to cross build to all supported scala versions, e.g. `sbt "+ publish-m2"`.
+
 Development Guidelines
 ----------------------
 
@@ -55,23 +78,6 @@ sbt \
 "set credentials += Credentials(\"/path/to/credentials_file\")" \
 "+publish"
 ```
-
-Publishing locally
-------------------
-
-To publish to the local ivy cache use:
-
-```sh
-publish-local
-```
-
-To publish to maven local use:
-
-```sh
-publish-m2
-```
-
-Add `+` to cross build to all supported scala versions, e.g. `+ publish-m2`.
 
 Licensing
 ---------
