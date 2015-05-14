@@ -1,0 +1,9 @@
+{
+  "name": "FortuneArrayExample",
+  "namespace": "org.coursera.fortune",
+  "type": "record",
+  "fields": {
+    "name": "fortunes",
+    "type": { "type": "map", "values": "Fortune" }
+  }
+}

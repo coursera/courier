@@ -1,0 +1,9 @@
+{
+  "name": "UserId",
+  "namespace": "org.coursera.models.common",
+  "type": "typeref",
+  "ref": "int",
+  "scala": {
+    "class": "org.coursera.common.UserId"
+  }
+}

@@ -28,8 +28,19 @@ object CourierBuild extends Build with OverridablePublishSettings {
     .settings(
       libraryDependencies += ExternalDependencies.Pegasus.data)
 
+  // This is a temporary project. It contains hand written files that exemplify the sturcture of
+  // the Scala classes Courier should generate. Once the generator is stable, this project should
+  // be deleted, with schemas that we can use for testing moved into appropriate test directories.
+  lazy val spec = Project("spec", file("spec"))
+    .settings(packagedArtifacts := Map.empty) // disable publishing for this project
+    .settings(libraryDependencies += ("com.linkedin.pegasus" % "data" % "2.2.5").withSources().withJavadoc())
+    .settings(libraryDependencies += ("com.linkedin.pegasus" % "data-avro-1_6" % "2.2.5").withSources().withJavadoc())
+    .settings(libraryDependencies += ("junit" % "junit" % "4.11" % "test").withSources().withJavadoc())
+    .settings(libraryDependencies += ("org.scalatest" %% "scalatest" % "2.2.3" % "test").withSources().withJavadoc())
+    .settings(libraryDependencies += ("joda-time" % "joda-time" % "2.0").withSources().withJavadoc())
+
   lazy val root = Project(id = "courier", base = file("."))
-    .settings (publish := {}) // disable publish for root aggregate module
+    .settings(packagedArtifacts := Map.empty) // disable publish for root aggregate module
     .aggregate(generator)
     .aggregate(runtime)
 

@@ -1,0 +1,15 @@
+{
+  "type": "record",
+  "name": "MagicEightBall",
+  "namespace": "org.coursera.fortune",
+  "fields": [
+    {
+      "name": "question",
+      "type": "string"
+    },
+    {
+      "name": "answer",
+      "type": "MagicEightBallAnswer"
+    }
+  ]
+}
