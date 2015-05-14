@@ -1,3 +1,4 @@
+import sbt.Keys.libraryDependencies
 import sbt._
 import Keys._
 
@@ -18,7 +19,10 @@ object CourierBuild extends Build with OverridablePublishSettings {
 
   lazy val generator = Project(id = "courier-generator", base = file("generator"))
     .settings(
-      libraryDependencies += ExternalDependencies.Pegasus.data)
+      libraryDependencies += ExternalDependencies.Pegasus.data,
+      libraryDependencies += ExternalDependencies.Pegasus.generator,
+      libraryDependencies += ExternalDependencies.Treehugger.treeHugger,
+      libraryDependencies += ExternalDependencies.ScalaLogging.scalaLoggingSlf4j)
 
   lazy val runtime = Project(id = "courier-runtime", base = file("runtime"))
     .settings(
@@ -35,6 +39,17 @@ object CourierBuild extends Build with OverridablePublishSettings {
     object Pegasus {
       val version = "2.2.5"
       val data = "com.linkedin.pegasus" % "data" % version
+      val generator = "com.linkedin.pegasus" % "generator" % version
+    }
+
+    object Treehugger {
+      val version = "0.4.1"
+      val treeHugger = "com.eed3si9n" %% "treehugger" % version
+    }
+
+    object ScalaLogging {
+      val version = "2.1.2"
+      val scalaLoggingSlf4j = "com.typesafe.scala-logging" %% "scala-logging-slf4j" % version
     }
   }
 
