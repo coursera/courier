@@ -28,8 +28,11 @@ Development Status
 ------------------
 
 Courier is currently in the early development phases. Our current goal is to have the generator
-built and ready for early adoption by end of June. Please see the
-[Discussion Group](https://groups.google.com/d/forum/courier) for additional details.
+built and ready for early adoption by end of June.
+
+For the current design proposal, see: [Courier Design](https://github.com/webedx-spark/courier/wiki/Design)
+
+For development progress, see: [Discussion Group](https://groups.google.com/d/forum/courier)
 
 Getting Started
 ---------------
