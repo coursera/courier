@@ -8,7 +8,7 @@ import Keys._
 object CourierBuild extends Build with OverridablePublishSettings {
 
   // TODO(jbetz): Use sbt-release plugin
-  val courierVersion = "0.0.1"
+  val courierVersion = "0.0.2"
 
   override lazy val settings = super.settings ++ overridePublishSettings ++ Seq(
     organization := "org.coursera.courier",
