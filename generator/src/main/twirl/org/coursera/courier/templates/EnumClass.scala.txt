@@ -1,0 +1,3 @@
+@(enum: org.coursera.courier.generator.twirl.defs.EnumDefinition)
+
+final class @enum.scalaType () {}

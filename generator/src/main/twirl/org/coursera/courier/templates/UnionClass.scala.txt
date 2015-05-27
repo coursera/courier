@@ -1,0 +1,3 @@
+@(union: org.coursera.courier.generator.twirl.defs.UnionDefinition)
+
+final class @union.scalaType () {}

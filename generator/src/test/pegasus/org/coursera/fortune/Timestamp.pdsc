@@ -1,0 +1,7 @@
+{
+  "name": "Timestamp",
+  "namespace": "org.coursera.fortune",
+  "type": "typeref",
+  "ref": "long",
+  "doc": "A unix timestamp."
+}

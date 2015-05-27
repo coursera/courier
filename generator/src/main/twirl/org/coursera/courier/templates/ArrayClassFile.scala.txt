@@ -1,0 +1,5 @@
+@(array: org.coursera.courier.generator.twirl.defs.ArrayDefinition)
+
+package @(array.namespace)
+
+@ArrayClass(array)

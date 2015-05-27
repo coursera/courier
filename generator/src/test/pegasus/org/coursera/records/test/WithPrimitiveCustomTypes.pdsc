@@ -1,0 +1,18 @@
+{
+  "type": "record",
+  "name": "WithPrimitiveCustomTypes",
+  "namespace": "org.coursera.records.test",
+  "fields": [
+    {
+      "name": "intField", "type": {
+        "name": "IntCustomType",
+        "type": "typeref",
+        "ref": "int",
+        "java": {
+          "class": "org.coursera.courier.generator.customtypes.CustomInt",
+          "coercerClass": "org.coursera.courier.generator.customtypes.CustomIntCoercer"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+@(map: org.coursera.courier.generator.twirl.defs.MapDefinition)
+
+final class @map.scalaType () {}

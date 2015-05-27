@@ -17,6 +17,7 @@
 import sbt.Keys.libraryDependencies
 import sbt._
 import Keys._
+import twirl.sbt.TwirlPlugin._
 
 /**
  * SBT project for Courier.
@@ -31,28 +32,34 @@ object CourierBuild extends Build with OverridablePublishSettings {
     scalaVersion in ThisBuild := "2.11.6",
     // TODO(jbetz): If scala 2.9 cross builds with no issues, consider adding it?
     crossScalaVersions := Seq("2.10.5", "2.11.6"),
-    version := courierVersion)
+    version := courierVersion,
+    resolvers += "Local Maven Repository" at "file://"+Path.userHome.absolutePath+"/.m2/repository")
 
   lazy val generator = Project(id = "courier-generator", base = file("generator"))
+    .dependsOn(runtime)
+    .aggregate(runtime)
+    .settings(Twirl.settings: _*)
     .settings(
       libraryDependencies += ExternalDependencies.Pegasus.data,
       libraryDependencies += ExternalDependencies.Pegasus.generator,
-      libraryDependencies += ExternalDependencies.Treehugger.treeHugger,
-      libraryDependencies += ExternalDependencies.ScalaLogging.scalaLoggingSlf4j)
+      libraryDependencies += ExternalDependencies.ScalaLogging.scalaLoggingSlf4j,
+      libraryDependencies += ExternalDependencies.JUnit.junit,
+      libraryDependencies += ExternalDependencies.Scalatest.scalatest)
 
   lazy val runtime = Project(id = "courier-runtime", base = file("runtime"))
     .settings(
       libraryDependencies += ExternalDependencies.Pegasus.data)
 
-  // This is a temporary project. It contains hand written files that exemplify the sturcture of
+  // This is a temporary project. It contains hand written files that exemplify the structure of
   // the Scala classes Courier should generate. Once the generator is stable, this project should
   // be deleted, with schemas that we can use for testing moved into appropriate test directories.
   lazy val spec = Project("spec", file("spec"))
     .settings(packagedArtifacts := Map.empty) // disable publishing for this project
-    .settings(libraryDependencies += ("com.linkedin.pegasus" % "data" % "2.2.5").withSources().withJavadoc())
-    .settings(libraryDependencies += ("com.linkedin.pegasus" % "data-avro-1_6" % "2.2.5").withSources().withJavadoc())
-    .settings(libraryDependencies += ("junit" % "junit" % "4.11" % "test").withSources().withJavadoc())
-    .settings(libraryDependencies += ("org.scalatest" %% "scalatest" % "2.2.3" % "test").withSources().withJavadoc())
+    .settings(
+      libraryDependencies += ExternalDependencies.Pegasus.data,
+      libraryDependencies += ExternalDependencies.Pegasus.dataAvro16,
+      libraryDependencies += ExternalDependencies.JUnit.junit,
+      libraryDependencies += ExternalDependencies.Scalatest.scalatest)
     .settings(libraryDependencies += ("joda-time" % "joda-time" % "2.0").withSources().withJavadoc())
 
   lazy val root = Project(id = "courier", base = file("."))
@@ -64,19 +71,25 @@ object CourierBuild extends Build with OverridablePublishSettings {
 
   object ExternalDependencies {
     object Pegasus {
-      val version = "2.2.5"
+      val version = "2.6.0"
       val data = "com.linkedin.pegasus" % "data" % version
+      val dataAvro16 = "com.linkedin.pegasus" % "data-avro-1_6" % version
       val generator = "com.linkedin.pegasus" % "generator" % version
-    }
-
-    object Treehugger {
-      val version = "0.4.1"
-      val treeHugger = "com.eed3si9n" %% "treehugger" % version
     }
 
     object ScalaLogging {
       val version = "2.1.2"
       val scalaLoggingSlf4j = "com.typesafe.scala-logging" %% "scala-logging-slf4j" % version
+    }
+
+    object JUnit {
+      val version = "4.11"
+      val junit = "junit" % "junit" % "4.11" % "test"
+    }
+
+    object Scalatest {
+      val version = "2.2.3"
+      val scalatest = "org.scalatest" %% "scalatest" % version % "test"
     }
   }
 

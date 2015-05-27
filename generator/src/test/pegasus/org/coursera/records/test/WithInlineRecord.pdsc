@@ -1,0 +1,30 @@
+{
+  "type": "record",
+  "name": "WithInlineRecord",
+  "namespace": "org.coursera.records.test",
+  "fields": [
+    {
+      "name": "inline",
+      "type": {
+        "type": "record",
+        "name": "InlineRecord",
+        "namespace": "org.coursera.records.test",
+        "fields": [
+          { "name": "value", "type": "int" }
+        ]
+      }
+    },
+    {
+      "name": "inlineOptional",
+      "optional": true,
+      "type": {
+        "type": "record",
+        "name": "InlineOptionalRecord",
+        "namespace": "org.coursera.records.test",
+        "fields": [
+          { "name": "value", "type": "string" }
+        ]
+      }
+    }
+  ]
+}

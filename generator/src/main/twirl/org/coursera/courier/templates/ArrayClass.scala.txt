@@ -1,0 +1,3 @@
+@(array: org.coursera.courier.generator.twirl.defs.ArrayDefinition)
+
+final class @array.scalaType () {}

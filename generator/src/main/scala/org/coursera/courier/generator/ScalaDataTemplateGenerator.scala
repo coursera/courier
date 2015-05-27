@@ -20,18 +20,19 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-import com.linkedin.data.schema._
 import com.linkedin.data.schema.generator.AbstractGenerator
-import com.linkedin.pegasus.generator.CodeGenerator
+import com.linkedin.data.schema.resolver.FileDataSchemaLocation
+import com.linkedin.pegasus.generator.DataSchemaParser
+import com.linkedin.pegasus.generator.DefaultGeneratorResult
 import com.linkedin.pegasus.generator.GeneratorResult
-import com.linkedin.pegasus.generator.DataTemplateGenerator
-import com.typesafe.scalalogging.slf4j.StrictLogging
+import com.linkedin.pegasus.generator.JavaCodeGeneratorBase
+import com.linkedin.pegasus.generator.PegasusDataTemplateGenerator
+import com.linkedin.pegasus.generator.TemplateSpecGenerator
+import com.linkedin.util.FileUtil
+import org.coursera.courier.generator.twirl.TwirlDataTemplateGenerator
+import org.coursera.courier.generator.twirl.defs.ScalaTypes
 
 import scala.collection.JavaConverters._
-
-import treehugger.forest._
-import definitions._
-import treehuggerDSL._
 
 /**
  * Generates Scala data bindings classes from .pdsc schemas.
@@ -48,11 +49,11 @@ object ScalaDataTemplateGenerator {
       System.exit(1)
     }
     val generateImported =
-      Option(System.getProperty(DataTemplateGenerator.GENERATOR_GENERATE_IMPORTED))
+      Option(System.getProperty(PegasusDataTemplateGenerator.GENERATOR_GENERATE_IMPORTED))
         .exists(_.toBoolean)
     run(
       System.getProperty(AbstractGenerator.GENERATOR_RESOLVER_PATH),
-      System.getProperty(CodeGenerator.GENERATOR_DEFAULT_PACKAGE),
+      System.getProperty(JavaCodeGeneratorBase.GENERATOR_DEFAULT_PACKAGE),
       generateImported,
       args(0),
       java.util.Arrays.copyOfRange(args, 1, args.length))
@@ -65,63 +66,60 @@ object ScalaDataTemplateGenerator {
       generateImported: java.lang.Boolean,
       targetDirectoryPath: String,
       sources: Array[String]): GeneratorResult = {
-    val config = new DataTemplateGenerator.Config(
-      resolverPath,
-      defaultPackage,
-      Option(generateImported).getOrElse(java.lang.Boolean.FALSE))
-    val targetDirectory  = new File(targetDirectoryPath)
+
+    val schemaParser = new DataSchemaParser(resolverPath)
+    val specGenerator = new TemplateSpecGenerator(schemaParser.getSchemaResolver)
+
+    val targetDirectory = new File(targetDirectoryPath)
     targetDirectory.mkdirs()
     assert(targetDirectory.exists() && targetDirectory.isDirectory,
       s"Unable to create ${targetDirectory.getAbsolutePath}. Directory either does not exist " +
       s"after attempting to create it, or part of the path exists and is not a directory.")
 
-    val generator = new ScalaDataTemplateGenerator(config, targetDirectory)
-    generator.generate(targetDirectoryPath, sources)
-  }
-}
+    val generator = new TwirlDataTemplateGenerator()
 
-class ScalaDataTemplateGenerator(
-    config: DataTemplateGenerator.Config,
-    targetDirectory: File)
-  extends DataTemplateGenerator with StrictLogging with SchemaHandler {
-
-  private[this] val scalaGenerator = new TreehuggerDataTemplateGenerator(this)
-
-  // This logic is essentially the same as found in PegasusDataTemplateGenerator.
-  // It checks for updated .pdsc files and only calls the generator for file that have changed.
-  private[generator] def generate(
-      targetDirectoryPath: String,
-      sources: Array[String]): GeneratorResult = {
-    initializeDefaultPackage()
-    initSchemaResolver()
-    val sourceFiles = parseSources(sources).asScala
-    val targetFiles = super.targetFiles(targetDirectory).asScala
-    val modifiedFiles =
-      if (upToDate(sourceFiles.asJava, targetFiles.asJava)) {
-        logger.info(s"Target files are up-to-date: $targetFiles")
-        List.empty
-      }
-      else {
-        logger.info(s"Generating ${targetFiles.size} files: $targetFiles")
-        validateDefinedClassRegistration()
-        targetFiles
-      }
-    new DataTemplateGenerator.Result(
-      sourceFiles.asJavaCollection,
-      targetFiles.asJavaCollection,
-      modifiedFiles.asJavaCollection)
-  }
-
-  override def handleSchema(schema: DataSchema): Unit = {
-    try {
-      writeCode(scalaGenerator.generate(schema))
-    } catch {
-      case t: Throwable =>
-        logger.error(t.getMessage)
+    // TODO: register scala predefined classes if any
+    // is this sufficient?
+    ScalaTypes.primitiveSchemas.foreach { primitiveSchema =>
+      specGenerator.registerDefinedSchema(primitiveSchema)
     }
+
+    val parseResult = schemaParser.parseSources(sources)
+
+    parseResult.getSchemaAndFiles.asScala.foreach { pair =>
+      val location = new FileDataSchemaLocation(pair.second)
+      specGenerator.generate(pair.first, location)
+    }
+
+    parseResult.getSchemaAndFiles.asScala.foreach { pair =>
+      specGenerator.generate(pair.first)
+    }
+
+    val compilationUnits = specGenerator.getGeneratedSpecs.asScala.flatMap { spec =>
+      generator.generate(spec)
+    }
+
+    // TODO: enable file comparison for efficient generation, this approach writes all files
+    //val targetFiles: List[File] = JavaCodeUtil.targetFiles(targetDirectory, generator.getCodeModel, JavaCodeUtil.classLoaderFromResolverPath(schemaParser.getResolverPath), checker)
+
+    val targetFiles = compilationUnits.map { compilationUnit =>
+      writeCode(targetDirectory, compilationUnit)
+    }
+
+    val modifiedFiles = if (FileUtil.upToDate(parseResult.getSourceFiles, targetFiles.asJavaCollection)) {
+      //logger.info("Target files are up-to-date: " + targetFiles)
+      Seq()
+    } else {
+      //logger.info("Generating " + targetFiles.size + " files: " + targetFiles)
+      //validateDefinedClassRegistration(dataTemplateGenerator.getCodeModel, dataTemplateGenerator.getGeneratedClasses.keySet)
+      //dataTemplateGenerator.getCodeModel.build(new FileCodeWriter(targetDirectory, true))
+      targetFiles
+
+    }
+    new DefaultGeneratorResult(parseResult.getSourceFiles, targetFiles.asJavaCollection, modifiedFiles.asJavaCollection)
   }
 
-  private[this] def writeCode(generated: GeneratedCode): Unit = {
+  private[this] def writeCode(targetDirectory: File, generated: GeneratedCode): File = {
     val compilationUnit = generated.compilationUnit
 
     val namespacePath = compilationUnit.namespace.replace(".", File.separator)
@@ -129,7 +127,7 @@ class ScalaDataTemplateGenerator(
     directory.mkdirs()
     assert(directory.exists() && directory.isDirectory,
       s"Unable to create ${directory.getAbsolutePath}. Directory either does not exist after " +
-      s"attempting to create it, or part of the path exists and is not a directory.")
+        s"attempting to create it, or part of the path exists and is not a directory.")
 
     val file = new File(directory, s"${compilationUnit.name}.scala")
     if (!file.exists()) {
@@ -138,11 +136,10 @@ class ScalaDataTemplateGenerator(
 
     val stream = new PrintWriter(new FileOutputStream(file))
     try {
-      stream.write(treeToString(generated.tree))
+      stream.write(generated.code)
     } finally {
       stream.close()
     }
+    file
   }
-
-  override def getConfig: DataTemplateGenerator.Config = config
 }

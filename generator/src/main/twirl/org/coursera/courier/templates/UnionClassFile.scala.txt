@@ -1,0 +1,5 @@
+@(union: org.coursera.courier.generator.twirl.defs.UnionDefinition)
+
+package @(union.namespace)
+
+@UnionClass(union)

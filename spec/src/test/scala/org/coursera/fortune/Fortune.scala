@@ -16,16 +16,18 @@
 
 package org.coursera.fortune
 
+import javax.annotation.Generated
+
 import com.linkedin.data.DataMap
 import com.linkedin.data.schema.UnionDataSchema
 import com.linkedin.data.template.Custom
 import com.linkedin.data.template.GetMode
 import com.linkedin.data.template.RecordTemplate
 import com.linkedin.data.template.RequiredFieldNotPresentException
+import com.linkedin.data.template.SetMode
 import com.linkedin.data.template.TemplateOutputCastException
 import com.linkedin.data.template.UnionTemplate
 import org.coursera.data.DataTemplates
-import org.coursera.data.DataTemplates.DataConversion
 import org.coursera.data.DataTemplates.DataConversion
 import org.coursera.data.generated
 import org.coursera.models.common.DateTimeCoercer
@@ -37,7 +39,10 @@ import com.linkedin.data.schema.RecordDataSchema
 /**
  * A fortune.
  */
-@generated(source="/org/coursera/fortune/Fortune.pdsc")
+@Generated(
+  value = Array("Fortune"),
+  comments="Courier Data Template. Generated from /org/coursera/fortune/Fortune.pdsc",
+  date = "2015-1-1")
 final class Fortune private (
     private val dataMap: DataMap)
   extends RecordTemplate(dataMap, Fortune.SCHEMA) with Product {
@@ -45,9 +50,14 @@ final class Fortune private (
   /**
    * The fortune telling.
    */
-  lazy val telling: Fortune.Telling = Fortune.Telling(dataMap)
-  lazy val createdAt: DateTime = obtainDirect(
+  def telling: Fortune.Telling = Fortune.Telling(dataMap)
+  def createdAt: DateTime = obtainDirect(
     Fortune.Fields.createdAt, classOf[DateTime], GetMode.STRICT)
+
+  private def setFields(telling: Fortune.Telling, createdAt: DateTime): Unit = {
+    putDirect(Fortune.Fields.createdAt, classOf[DateTime], classOf[String], createdAt, SetMode.DISALLOW_NULL)
+    data.put(Fortune.Fields.telling.getName, telling.data()) // TODO: figure out how to use putWrapped
+  }
 
   override val productArity: Int = 2
 
@@ -69,10 +79,7 @@ final class Fortune private (
   override def toString: String = ScalaRunTime._toString(this)
 
   def copy(telling: Fortune.Telling = this.telling, createdAt: DateTime = this.createdAt): Fortune = {
-    val dataMap = data().copy()
-    Fortune.setFields(dataMap, telling, createdAt)
-    dataMap.setReadOnly()
-    new Fortune(dataMap)
+    Fortune(data().copy(), DataConversion.SetReadOnly)
   }
 }
 
@@ -165,17 +172,14 @@ object Fortune {
     val createdAt = Fortune.SCHEMA.getField("createdAt")
   }
 
-  private def setFields(dataMap: DataMap, telling: Telling, createdAt: DateTime): Unit = {
-    dataMap.put("telling", telling.data())
-    dataMap.put("createdAt",
-      DataTemplateUtil.coerceInput(createdAt, classOf[DateTime], classOf[String]))
-  }
+
 
   def apply(telling: Telling, createdAt: DateTime): Fortune = {
     val dataMap = new DataMap
-    setFields(dataMap, telling, createdAt)
+    val record = new Fortune(dataMap)
+    record.setFields(telling, createdAt)
     dataMap.setReadOnly()
-    new Fortune(dataMap)
+    record
   }
 
   def apply(dataMap: DataMap, conversion: DataConversion): Fortune = {
@@ -191,7 +195,10 @@ object Fortune {
     }
   }
 
-  @generated(source="/org/coursera/fortune/Fortune.pdsc")
+  @Generated(
+    value = Array("Telling"),
+    comments="Courier Data Template. Generated from /org/coursera/fortune/Fortune.pdsc",
+    date = "2015-1-1")
   sealed abstract class Telling protected(
       private val value: DataMap)
     extends UnionTemplate(value, Telling.SCHEMA) with Product {

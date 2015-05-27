@@ -14,8 +14,9 @@
  limitations under the License.
  */
 
-package org.coursera.data
+package org.coursera.courier.data
 
+import com.linkedin.data.DataComplex
 import com.linkedin.data.DataList
 import com.linkedin.data.DataMap
 import com.linkedin.data.schema.DataSchema
@@ -26,6 +27,7 @@ import com.linkedin.data.schema.validation.ValidationOptions
 import com.linkedin.data.schema.validation.ValidationResult
 import com.linkedin.data.template.DataTemplateUtil
 import com.linkedin.data.template.SetMode
+
 import scala.collection.JavaConverters._
 
 class DataValidationException(val validationResult: ValidationResult)
@@ -41,15 +43,8 @@ object DataTemplates {
 
   private[this] val validationOptions = new ValidationOptions(RequiredMode.FIXUP_ABSENT_WITH_DEFAULT)
 
-  def makeImmutable(dataMap: DataMap, schema: DataSchema, conversion: DataConversion): DataMap = {
-    val converted = conversion match {
-      case DataConversion.DeepCopy => dataMap.copy()
-      case DataConversion.SetReadOnly =>
-        dataMap.setReadOnly()
-        dataMap
-    }
-
-    val result = ValidateDataAgainstSchema.validate(converted, schema, validationOptions)
+  private def validate(dataMap: DataComplex, schema: DataSchema) = {
+    val result = ValidateDataAgainstSchema.validate(dataMap, schema, validationOptions)
     if (result.isValid) {
       dataMap
     } else {
@@ -57,19 +52,16 @@ object DataTemplates {
     }
   }
 
-  def makeImmutable(dataList: DataList, schema: DataSchema, conversion: DataConversion): DataList = {
-    val converted = conversion match {
-      case DataConversion.DeepCopy => dataList.copy()
+  def makeImmutable[T <: DataComplex](data: T, schema: DataSchema, conversion: DataConversion): T = {
+    conversion match {
+      case DataConversion.DeepCopy =>
+        val copy = data.copy()
+        validate(copy, schema)
+        copy.asInstanceOf[T]
       case DataConversion.SetReadOnly =>
-        dataList.setReadOnly()
-        dataList
-    }
-
-    val result = ValidateDataAgainstSchema.validate(converted, schema, validationOptions)
-    if (result.isValid) {
-      dataList
-    } else {
-      throw new DataValidationException(result)
+        validate(data, schema)
+        data.setReadOnly()
+        data
     }
   }
 
@@ -81,21 +73,21 @@ object DataTemplates {
   }
 
   def putDirect[T <: AnyRef](
-                              dataMap: DataMap,
-                              field: RecordDataSchema.Field,
-                              valueClass: Class[T],
-                              dataClass: Class[_],
-                              obj: T): Unit = {
+      dataMap: DataMap,
+      field: RecordDataSchema.Field,
+      valueClass: Class[T],
+      dataClass: Class[_],
+      obj: T): Unit = {
     putDirect(dataMap, field, valueClass, dataClass, obj, SetMode.DISALLOW_NULL)
   }
 
   def putDirect[T <: AnyRef](
-                              dataMap: DataMap,
-                              field: RecordDataSchema.Field,
-                              valueClass: Class[T],
-                              dataClass: Class[_],
-                              obj: T,
-                              mode: SetMode): Unit = {
+      dataMap: DataMap,
+      field: RecordDataSchema.Field,
+      valueClass: Class[T],
+      dataClass: Class[_],
+      obj: T,
+      mode: SetMode): Unit = {
     if (checkPutNullValue(field, obj, mode)) {
       dataMap.put(field.getName, DataTemplateUtil.coerceInput(obj, valueClass, dataClass))
     }
