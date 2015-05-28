@@ -14,7 +14,7 @@ final class @record.scalaType private (private val dataMap: DataMap)
   @record.fields.map { field =>
     @field.scalaDoc.map { doc => @doc }
 
-    /* TODO(jbetz): Decide on order of fields and decide how to handle optional fields and defaults. Note that decisions here will impact source backward compatibility! */
+    @* TODO(jbetz): Decide on order of fields and decide how to handle optional fields and defaults. Note that decisions here will impact source backward compatibility! *@
     @field.typ match {
       case primitiveField: PrimitiveDefinition => {
         lazy val @(field.name): @(field.scalaType) = @field.wrapIfOption{obtainDirect(@(record.scalaType).Fields.@(field.name), classOf[@(primitiveField.dataType)], GetMode.STRICT)}
@@ -35,8 +35,9 @@ final class @record.scalaType private (private val dataMap: DataMap)
         lazy val @(field.name): @(mapField.fqn) = ???
       }
       case enumField: EnumDefinition => {
-        /* TODO(jbetz): support enum fields */
-        lazy val @(field.name): @(enumField.fqn) = ???
+        lazy val @(field.name): @(field.fqn) = @field.wrapAndMapIfOption {
+            obtainDirect(@(record.scalaType).Fields.@(field.name), classOf[String], GetMode.STRICT)
+          } { value => @(enumField.enumFullname).fromString(@value) }
       }
       case customField: ClassDefinition => {
         lazy val @(field.name): @(field.fqn) = @field.wrapIfOption{obtainCustomType(@(record.scalaType).Fields.@(field.name), classOf[@(customField.fqn)], GetMode.STRICT)}
@@ -68,7 +69,7 @@ final class @record.scalaType private (private val dataMap: DataMap)
           /* TODO(jbetz): support map fields */
         }
         case enumField: EnumDefinition => {
-          /* TODO(jbetz): support enum fields */
+          @field.applyIfOption(field.name) { value => putDirect(@(record.scalaType).Fields.@(field.name), classOf[String], @(value).toString)}
         }
         case customField: ClassDefinition => {
           @* TODO(jbetz): Figure out how to avoid the unsave .get call in the "field.dataClass.get.dataType" expression. *@

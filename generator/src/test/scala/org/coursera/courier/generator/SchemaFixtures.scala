@@ -102,6 +102,14 @@ trait SchemaFixtures {
     object WithInlineRecord {
       val schema = TestSchema.load("org.coursera.records.test.WithInlineRecord")
     }
+
+    object WithComplexTypes {
+      val schema = TestSchema.load("org.coursera.records.test.WithComplexTypes")
+    }
+
+    object Fruits {
+      val schema = TestSchema.load("org.coursera.enums.Fruits")
+    }
   }
 
   val prettyPrinter = new PrettyPrinterJacksonDataTemplateCodec

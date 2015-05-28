@@ -19,8 +19,10 @@ package org.coursera.courier.generator
 import com.linkedin.data.ByteString
 import org.coursera.courier.data.DataTemplates.DataConversion
 import org.coursera.courier.generator.customtypes.CustomInt
+import org.coursera.enums.Fruits
 import org.coursera.records.test.InlineOptionalRecord
 import org.coursera.records.test.InlineRecord
+import org.coursera.records.test.WithComplexTypes
 import org.coursera.records.test.WithInlineRecord
 import org.coursera.records.test.WithOptionalPrimitiveCustomTypes
 import org.coursera.records.test.WithOptionalPrimitiveTyperefs
@@ -42,7 +44,9 @@ object RecordGeneratorTest extends SchemaFixtures with GeneratorTest {
       Records.WithOptionalPrimitiveTyperefs.schema,
       Records.WithPrimitiveCustomTypes.schema,
       Records.WithOptionalPrimitiveCustomTypes.schema,
-      Records.WithInlineRecord.schema))
+      Records.WithInlineRecord.schema,
+      Records.Fruits.schema,
+      Records.WithComplexTypes.schema))
   }
 }
 
@@ -286,5 +290,26 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures with Asserti
     Seq(original, roundTripped, reconstructed) foreach { records =>
       assert(records.inlineOptional == None)
     }
+  }
+
+  @Test
+  def testWithComplexTypes(): Unit = {
+    val original = WithComplexTypes(Fruits.APPLE, Some(Fruits.BANANA))
+    val roundTripped = WithComplexTypes(
+      readJsonToMap(mapToJson(original.data())), DataConversion.SetReadOnly)
+    val WithComplexTypes(fruit, optionalFruit) = original
+    val reconstructed = WithComplexTypes(fruit, optionalFruit)
+
+    assert(original === roundTripped)
+    assert(original === reconstructed)
+
+    Seq(original, roundTripped, reconstructed) foreach { records =>
+      assert(records.fruits === Fruits.APPLE)
+      assert(records.optionalFruits === Some(Fruits.BANANA))
+    }
+
+    val copy = original.copy(fruits = Fruits.PINEAPPLE, optionalFruits = None)
+    assert(copy.fruits === Fruits.PINEAPPLE)
+    assert(copy.optionalFruits === None)
   }
 }

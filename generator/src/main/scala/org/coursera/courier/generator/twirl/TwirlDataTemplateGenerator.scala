@@ -44,6 +44,9 @@ class TwirlDataTemplateGenerator()
   extends TemplateGenerator
   with StrictLogging {
 
+  /**
+   * Generates Scala files using the Twirl string template engine.
+   */
   def generate(spec: ClassTemplateSpec): Seq[GeneratedCode] = {
     findTopLevelSpecs(List(spec), List(spec)).map { topLevelSpec =>
       val schema = topLevelSpec.getSchema
@@ -82,6 +85,7 @@ class TwirlDataTemplateGenerator()
    * ClassTemplateSpec per top level class is provided. If they restructure the utilities, this
    * method should no longer be needed.
    */
+  // TODO(jbetz): Make sure we don't attempt to generate the same schema multiple times. Because schemas can have circular dependencies, we need to keep a set somewhere? (write a test for this case)
   private def findTopLevelSpecs(specsToSearch: List[ClassTemplateSpec], acc: List[ClassTemplateSpec]): List[ClassTemplateSpec] = {
     val nestedTypes = specsToSearch.flatMap {
       case recordSpec: RecordTemplateSpec =>

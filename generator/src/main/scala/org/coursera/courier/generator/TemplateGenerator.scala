@@ -18,13 +18,27 @@ package org.coursera.courier.generator
 
 import com.linkedin.pegasus.generator.spec.ClassTemplateSpec
 
+/**
+ * Identifies a particular scala file.
+ */
 case class CompilationUnit(name: String, namespace: String)
+
+/**
+ * Code that has been generated.
+ */
+// TODO(jbetz): can we stream straight to disk and avoid holding the generated code in a string?
 case class GeneratedCode(code: String, compilationUnit: CompilationUnit)
 
+/**
+ * A simple pegasus code generator.
+ */
 trait TemplateGenerator {
-  def generate(spec: ClassTemplateSpec): Seq[GeneratedCode]
-}
 
-trait TypeGenerator {
-  def generate(): GeneratedCode
+  /**
+   * Generates code for the given spec.
+   *
+   * Because ClassTemplateSpecs can currently contain nested type declarations that should be
+   * generated into top level class files, a single call to generate can produce multiple files.
+   */
+  def generate(spec: ClassTemplateSpec): Seq[GeneratedCode]
 }

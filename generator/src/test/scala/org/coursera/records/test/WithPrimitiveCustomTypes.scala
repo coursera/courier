@@ -23,7 +23,7 @@ import javax.annotation.Generated
 
 
 
-@Generated(value = Array("WithPrimitiveCustomTypes"), comments="Courier Data Template. Generated from TODO", date = "Wed May 27 17:11:07 PDT 2015")
+@Generated(value = Array("WithPrimitiveCustomTypes"), comments = "Courier Data Template.", date = "Wed May 27 20:52:11 PDT 2015")
 final class WithPrimitiveCustomTypes private (private val dataMap: DataMap)
   extends RecordTemplate(dataMap, WithPrimitiveCustomTypes.SCHEMA) with Product {
   import WithPrimitiveCustomTypes._
@@ -32,7 +32,7 @@ final class WithPrimitiveCustomTypes private (private val dataMap: DataMap)
   
     
 
-    /* TODO(jbetz): Decide on order of fields and decide how to handle optional fields and defaults. Note that decisions here will impact source backward compatibility! */
+    
     
         lazy val intField: org.coursera.courier.generator.customtypes.CustomInt = obtainCustomType(WithPrimitiveCustomTypes.Fields.intField, classOf[org.coursera.courier.generator.customtypes.CustomInt], GetMode.STRICT)
       

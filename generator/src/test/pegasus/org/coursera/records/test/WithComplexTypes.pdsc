@@ -1,0 +1,9 @@
+{
+  "type": "record",
+  "name": "WithComplexTypes",
+  "namespace": "org.coursera.records.test",
+  "fields": [
+    { "name": "fruits", "type": "org.coursera.enums.Fruits" },
+    { "name": "optionalFruits", "type": "org.coursera.enums.Fruits", "optional": true }
+  ]
+}

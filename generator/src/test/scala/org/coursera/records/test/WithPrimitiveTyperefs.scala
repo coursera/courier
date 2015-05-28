@@ -23,7 +23,7 @@ import javax.annotation.Generated
 
 
 
-@Generated(value = Array("WithPrimitiveTyperefs"), comments="Courier Data Template. Generated from TODO", date = "Wed May 27 17:11:07 PDT 2015")
+@Generated(value = Array("WithPrimitiveTyperefs"), comments = "Courier Data Template.", date = "Wed May 27 20:52:11 PDT 2015")
 final class WithPrimitiveTyperefs private (private val dataMap: DataMap)
   extends RecordTemplate(dataMap, WithPrimitiveTyperefs.SCHEMA) with Product {
   import WithPrimitiveTyperefs._
@@ -32,49 +32,49 @@ final class WithPrimitiveTyperefs private (private val dataMap: DataMap)
   
     
 
-    /* TODO(jbetz): Decide on order of fields and decide how to handle optional fields and defaults. Note that decisions here will impact source backward compatibility! */
+    
     
         lazy val intField: Int = obtainDirect(WithPrimitiveTyperefs.Fields.intField, classOf[java.lang.Integer], GetMode.STRICT)
       
   
     
 
-    /* TODO(jbetz): Decide on order of fields and decide how to handle optional fields and defaults. Note that decisions here will impact source backward compatibility! */
+    
     
         lazy val longField: Long = obtainDirect(WithPrimitiveTyperefs.Fields.longField, classOf[java.lang.Long], GetMode.STRICT)
       
   
     
 
-    /* TODO(jbetz): Decide on order of fields and decide how to handle optional fields and defaults. Note that decisions here will impact source backward compatibility! */
+    
     
         lazy val floatField: Float = obtainDirect(WithPrimitiveTyperefs.Fields.floatField, classOf[java.lang.Float], GetMode.STRICT)
       
   
     
 
-    /* TODO(jbetz): Decide on order of fields and decide how to handle optional fields and defaults. Note that decisions here will impact source backward compatibility! */
+    
     
         lazy val doubleField: Double = obtainDirect(WithPrimitiveTyperefs.Fields.doubleField, classOf[java.lang.Double], GetMode.STRICT)
       
   
     
 
-    /* TODO(jbetz): Decide on order of fields and decide how to handle optional fields and defaults. Note that decisions here will impact source backward compatibility! */
+    
     
         lazy val booleanField: Boolean = obtainDirect(WithPrimitiveTyperefs.Fields.booleanField, classOf[java.lang.Boolean], GetMode.STRICT)
       
   
     
 
-    /* TODO(jbetz): Decide on order of fields and decide how to handle optional fields and defaults. Note that decisions here will impact source backward compatibility! */
+    
     
         lazy val stringField: String = obtainDirect(WithPrimitiveTyperefs.Fields.stringField, classOf[java.lang.String], GetMode.STRICT)
       
   
     
 
-    /* TODO(jbetz): Decide on order of fields and decide how to handle optional fields and defaults. Note that decisions here will impact source backward compatibility! */
+    
     
         lazy val bytesField: com.linkedin.data.ByteString = obtainDirect(WithPrimitiveTyperefs.Fields.bytesField, classOf[com.linkedin.data.ByteString], GetMode.STRICT)
       

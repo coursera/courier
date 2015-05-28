@@ -23,7 +23,7 @@ import javax.annotation.Generated
 
 
 
-@Generated(value = Array("InlineOptionalRecord"), comments="Courier Data Template. Generated from TODO", date = "Wed May 27 17:11:07 PDT 2015")
+@Generated(value = Array("InlineOptionalRecord"), comments = "Courier Data Template.", date = "Wed May 27 20:52:11 PDT 2015")
 final class InlineOptionalRecord private (private val dataMap: DataMap)
   extends RecordTemplate(dataMap, InlineOptionalRecord.SCHEMA) with Product {
   import InlineOptionalRecord._
@@ -32,7 +32,7 @@ final class InlineOptionalRecord private (private val dataMap: DataMap)
   
     
 
-    /* TODO(jbetz): Decide on order of fields and decide how to handle optional fields and defaults. Note that decisions here will impact source backward compatibility! */
+    
     
         lazy val value: String = obtainDirect(InlineOptionalRecord.Fields.value, classOf[java.lang.String], GetMode.STRICT)
       

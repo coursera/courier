@@ -23,7 +23,7 @@ import javax.annotation.Generated
 
 
 
-@Generated(value = Array("WithInlineRecord"), comments="Courier Data Template. Generated from TODO", date = "Wed May 27 17:11:07 PDT 2015")
+@Generated(value = Array("WithInlineRecord"), comments = "Courier Data Template.", date = "Wed May 27 20:52:11 PDT 2015")
 final class WithInlineRecord private (private val dataMap: DataMap)
   extends RecordTemplate(dataMap, WithInlineRecord.SCHEMA) with Product {
   import WithInlineRecord._
@@ -32,14 +32,14 @@ final class WithInlineRecord private (private val dataMap: DataMap)
   
     
 
-    /* TODO(jbetz): Decide on order of fields and decide how to handle optional fields and defaults. Note that decisions here will impact source backward compatibility! */
+    
     
         lazy val inline: org.coursera.records.test.InlineRecord = obtainWrapped(WithInlineRecord.Fields.inline, classOf[org.coursera.records.test.InlineRecord], GetMode.STRICT)
       
   
     
 
-    /* TODO(jbetz): Decide on order of fields and decide how to handle optional fields and defaults. Note that decisions here will impact source backward compatibility! */
+    
     
         lazy val inlineOptional: Option[org.coursera.records.test.InlineOptionalRecord] = Option(obtainWrapped(WithInlineRecord.Fields.inlineOptional, classOf[org.coursera.records.test.InlineOptionalRecord], GetMode.STRICT))
       

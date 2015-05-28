@@ -47,14 +47,21 @@ import scala.collection.JavaConverters._
 trait Definition {
 
   /**
-   * The scala type for this pegasus type.
+   * The scala type.
+   *
+   * For complex types, this is the name of the generated data binding class.
+   *
+   * For primitive types, this is the Scala native type, e.g. "Int".
    */
   def scalaType: String
 
   /**
-   * The pegasus "data" type. For primitives, this will be the java boxed
-   * type, e.g. `java.lang.Integer` whereas the scalaType would be `Int`.
-   * For non-primitivies, this is the same as scalaType.
+   * The pegasus "data" type.
+   *
+   * For complex types, this is the same as scalaType.
+   *
+   * For primitives, this will be the java boxed type, e.g. `java.lang.Integer` whereas the
+   * scalaType would be `Int`.
    */
   def dataType: String = scalaType
 
@@ -126,12 +133,14 @@ case class UnionDefinition(spec: UnionTemplateSpec) extends Definition {
 }
 
 case class EnumDefinition(spec: EnumTemplateSpec) extends Definition {
-  override def scalaType = spec.getClassName
+  override def scalaType = spec.getClassName + "." + spec.getClassName
+  def enumName = spec.getClassName
+  def enumFullname = s"${namespace.map(_ + ".").getOrElse("")}$enumName"
   override def namespace = Option(spec.getNamespace)
   override def schema = spec.getSchema
   def scalaDoc = Option(schema.getDoc).flatMap(Scaladoc.stringToScaladoc)
-  def symbolDocs = schema.getSymbolDocs
-  def symbolx = schema.getSymbols
+  def symbolScalaDocs = schema.getSymbolDocs.asScala.mapValues(Scaladoc.stringToScaladoc)
+  def symbols = schema.getSymbols.asScala
 }
 
 case class ArrayDefinition(spec: ArrayTemplateSpec) extends Definition {
@@ -139,6 +148,9 @@ case class ArrayDefinition(spec: ArrayTemplateSpec) extends Definition {
   override def namespace = Option(spec.getNamespace)
   override def schema = spec.getSchema
   def scalaDoc = None
+  def itemClass = spec.getItemClass
+  def itemDataClass = spec.getItemDataClass
+  def customInfo = spec.getCustomInfo
 }
 
 case class MapDefinition(spec: MapTemplateSpec) extends Definition {
@@ -146,6 +158,9 @@ case class MapDefinition(spec: MapTemplateSpec) extends Definition {
   override def namespace = Option(spec.getNamespace)
   override def schema = spec.getSchema
   def scalaDoc = None
+  def customInfo = spec.getCustomInfo
+  def valueClass = spec.getValueClass
+  def valueDataClass = spec.getValueDataClass
 }
 
 /**
@@ -256,6 +271,14 @@ case class RecordField(field: Field) {
     }
   }
 
+  def wrapAndMapIfOption(ref: Txt)(f: Txt => Txt): Txt = {
+    if (isOptional) {
+      Txt(s"Option($ref).map(value => ${f(Txt("value"))})")
+    } else {
+      f(ref)
+    }
+  }
+
   def schemaField = field.getSchemaField
   def name = schemaField.getName
   def doc = Option(schemaField.getDoc)
@@ -271,8 +294,8 @@ object Scaladoc {
       case empty if empty.isEmpty => None
       case nonEmpty =>
         Some(s"""/**
-          | * ${escape(raw).replaceAll("\n", "\n * ")}
-          | */""".stripMargin)
+                | * ${escape(raw).replaceAll("\n", "\n * ")}
+                | */""".stripMargin)
     }
   }
 
@@ -291,6 +314,8 @@ object ScalaEscaping {
 
 object ScalaTypes {
 
+  // Ideally, we could just use classOf[Int] here, but classOf[Int].getName returns "int" and
+  // we need "Int" so that we can use it to generate correct scala source.
   val scalaTypeForPrimitiveType = Map(
     DataSchemaConstants.INTEGER_DATA_SCHEMA -> "Int",
     DataSchemaConstants.LONG_DATA_SCHEMA -> "Long",

@@ -23,7 +23,7 @@ import javax.annotation.Generated
 
 
 
-@Generated(value = Array("WithOptionalPrimitiveTyperefs"), comments="Courier Data Template. Generated from TODO", date = "Wed May 27 17:11:07 PDT 2015")
+@Generated(value = Array("WithOptionalPrimitiveTyperefs"), comments = "Courier Data Template.", date = "Wed May 27 20:52:11 PDT 2015")
 final class WithOptionalPrimitiveTyperefs private (private val dataMap: DataMap)
   extends RecordTemplate(dataMap, WithOptionalPrimitiveTyperefs.SCHEMA) with Product {
   import WithOptionalPrimitiveTyperefs._
@@ -32,49 +32,49 @@ final class WithOptionalPrimitiveTyperefs private (private val dataMap: DataMap)
   
     
 
-    /* TODO(jbetz): Decide on order of fields and decide how to handle optional fields and defaults. Note that decisions here will impact source backward compatibility! */
+    
     
         lazy val intField: Option[Int] = Option(obtainDirect(WithOptionalPrimitiveTyperefs.Fields.intField, classOf[java.lang.Integer], GetMode.STRICT)).map(Int.unbox(_))
       
   
     
 
-    /* TODO(jbetz): Decide on order of fields and decide how to handle optional fields and defaults. Note that decisions here will impact source backward compatibility! */
+    
     
         lazy val longField: Option[Long] = Option(obtainDirect(WithOptionalPrimitiveTyperefs.Fields.longField, classOf[java.lang.Long], GetMode.STRICT)).map(Long.unbox(_))
       
   
     
 
-    /* TODO(jbetz): Decide on order of fields and decide how to handle optional fields and defaults. Note that decisions here will impact source backward compatibility! */
+    
     
         lazy val floatField: Option[Float] = Option(obtainDirect(WithOptionalPrimitiveTyperefs.Fields.floatField, classOf[java.lang.Float], GetMode.STRICT)).map(Float.unbox(_))
       
   
     
 
-    /* TODO(jbetz): Decide on order of fields and decide how to handle optional fields and defaults. Note that decisions here will impact source backward compatibility! */
+    
     
         lazy val doubleField: Option[Double] = Option(obtainDirect(WithOptionalPrimitiveTyperefs.Fields.doubleField, classOf[java.lang.Double], GetMode.STRICT)).map(Double.unbox(_))
       
   
     
 
-    /* TODO(jbetz): Decide on order of fields and decide how to handle optional fields and defaults. Note that decisions here will impact source backward compatibility! */
+    
     
         lazy val booleanField: Option[Boolean] = Option(obtainDirect(WithOptionalPrimitiveTyperefs.Fields.booleanField, classOf[java.lang.Boolean], GetMode.STRICT)).map(Boolean.unbox(_))
       
   
     
 
-    /* TODO(jbetz): Decide on order of fields and decide how to handle optional fields and defaults. Note that decisions here will impact source backward compatibility! */
+    
     
         lazy val stringField: Option[String] = Option(obtainDirect(WithOptionalPrimitiveTyperefs.Fields.stringField, classOf[java.lang.String], GetMode.STRICT))
       
   
     
 
-    /* TODO(jbetz): Decide on order of fields and decide how to handle optional fields and defaults. Note that decisions here will impact source backward compatibility! */
+    
     
         lazy val bytesField: Option[com.linkedin.data.ByteString] = Option(obtainDirect(WithOptionalPrimitiveTyperefs.Fields.bytesField, classOf[com.linkedin.data.ByteString], GetMode.STRICT))
       

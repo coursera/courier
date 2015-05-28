@@ -1,3 +1,33 @@
 @(enum: org.coursera.courier.generator.twirl.defs.EnumDefinition)
+@import java.util.Calendar
+@import com.linkedin.data.schema.SchemaToJsonEncoder
+@import com.linkedin.data.schema.JsonBuilder
+@import org.coursera.courier.generator.twirl.defs._
 
-final class @enum.scalaType () {}
+@@Generated(value = Array("@enum.enumName"), comments = "Courier Data Template.", date = "@(Calendar.getInstance().getTime())")
+object @enum.enumName extends Enumeration {
+  type @enum.enumName = Value
+
+  @enum.symbols.map { symbol =>
+    @enum.symbolScalaDocs.get(symbol).map { doc => @doc }
+    val @symbol = Value("@symbol")
+  }
+
+  /**
+   * Represents an unrecognized enumeration symbol.
+   *
+   * May be present when data writer is using a version of enumeration with symbols not yet
+   * known to the data reader.
+   */
+  val $UNKNOWN = Value("$UNKNOWN")
+
+  /**
+   * Converts a string to an enumeration value. If the string does not match
+   * any of the enumeration values, returns the $UKNOWN enumeration value.
+   */
+  def fromString(s: String): Value = {
+    values.find(_.toString == s).getOrElse($UNKNOWN)
+  }
+
+  private val SCHEMA = DataTemplateUtil.parseSchema(@("\"\"\"" + SchemaToJsonEncoder.schemaToJson(enum.schema, JsonBuilder.Pretty.COMPACT) + "\"\"\"")).asInstanceOf[EnumDataSchema]
+}
