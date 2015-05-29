@@ -18,6 +18,7 @@ package org.coursera.courier.generator.twirl.defs
 
 import com.linkedin.data.ByteString
 import com.linkedin.data.schema.BooleanDataSchema
+import com.linkedin.data.schema.BytesDataSchema
 import com.linkedin.data.schema.DataSchema
 import com.linkedin.data.schema.DataSchemaConstants
 import com.linkedin.data.schema.DoubleDataSchema
@@ -26,6 +27,7 @@ import com.linkedin.data.schema.IntegerDataSchema
 import com.linkedin.data.schema.LongDataSchema
 import com.linkedin.data.schema.PrimitiveDataSchema
 import com.linkedin.data.schema.RecordDataSchema
+import com.linkedin.data.schema.StringDataSchema
 import com.linkedin.pegasus.generator.spec.ArrayTemplateSpec
 import com.linkedin.pegasus.generator.spec.ClassTemplateSpec
 import com.linkedin.pegasus.generator.spec.CustomInfoSpec
@@ -81,6 +83,8 @@ trait Definition {
   def fqn: String = s"${namespace.map(_ + ".").getOrElse("")}$scalaType"
 
   def scalaDoc: Option[String]
+
+  def memberName: String = scalaType + "Member"
 }
 
 /**
@@ -130,6 +134,13 @@ case class UnionDefinition(spec: UnionTemplateSpec) extends Definition {
   override def namespace = Option(spec.getNamespace)
   override def schema = spec.getSchema
   def scalaDoc = None
+  def members = spec.getMembers.asScala.map(UnionMemberDefinition)
+}
+
+case class UnionMemberDefinition(spec: UnionTemplateSpec.Member) {
+  def classDefinition = Definition(spec.getClassTemplateSpec)
+  def dataClass = Definition(spec.getDataClass)
+  def schema = spec.getSchema
 }
 
 case class EnumDefinition(spec: EnumTemplateSpec) extends Definition {
@@ -141,6 +152,7 @@ case class EnumDefinition(spec: EnumTemplateSpec) extends Definition {
   def scalaDoc = Option(schema.getDoc).flatMap(Scaladoc.stringToScaladoc)
   def symbolScalaDocs = schema.getSymbolDocs.asScala.mapValues(Scaladoc.stringToScaladoc)
   def symbols = schema.getSymbols.asScala
+  override def memberName = spec.getClassName + "Member"
 }
 
 case class ArrayDefinition(spec: ArrayTemplateSpec) extends Definition {
@@ -192,6 +204,24 @@ case class PrimitiveDefinition(spec: PrimitiveTemplateSpec) extends Definition w
   override def namespace = Option(spec.getNamespace)
   override def schema = spec.getSchema
   def scalaDoc = None
+  def schemaType = schema match {
+    case _: IntegerDataSchema => "DataSchemaConstants.INTEGER_DATA_SCHEMA"
+    case _: LongDataSchema => "DataSchemaConstants.LONG_DATA_SCHEMA"
+    case _: FloatDataSchema => "DataSchemaConstants.FLOAT_DATA_SCHEMA"
+    case _: DoubleDataSchema => "DataSchemaConstants.DOUBLE_DATA_SCHEMA"
+    case _: BooleanDataSchema => "DataSchemaConstants.BOOLEAN_DATA_SCHEMA"
+    case _: StringDataSchema => "DataSchemaConstants.STRING_DATA_SCHEMA"
+    case _: BytesDataSchema => "DataSchemaConstants.BYTES_DATA_SCHEMA"
+  }
+  def pegasusType = schema match {
+    case _: IntegerDataSchema => "int"
+    case _: LongDataSchema => "long"
+    case _: FloatDataSchema => "float"
+    case _: DoubleDataSchema => "double"
+    case _: BooleanDataSchema => "boolean"
+    case _: StringDataSchema => "string"
+    case _: BytesDataSchema => "bytes"
+  }
 }
 
 case class CustomInfoDefinition(spec: CustomInfoSpec) {
@@ -322,7 +352,7 @@ object ScalaTypes {
     DataSchemaConstants.FLOAT_DATA_SCHEMA -> "Float",
     DataSchemaConstants.DOUBLE_DATA_SCHEMA -> "Double",
     DataSchemaConstants.BOOLEAN_DATA_SCHEMA -> "Boolean",
-    DataSchemaConstants.BYTES_DATA_SCHEMA -> "com.linkedin.data.ByteString",
+    DataSchemaConstants.BYTES_DATA_SCHEMA -> "ByteString",
     DataSchemaConstants.STRING_DATA_SCHEMA -> "String",
     DataSchemaConstants.NULL_DATA_SCHEMA -> "Null")
 

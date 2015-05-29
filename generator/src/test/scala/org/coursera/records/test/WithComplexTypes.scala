@@ -7,14 +7,13 @@ import javax.annotation.Generated
 import com.linkedin.data.DataMap
 import com.linkedin.data.schema.UnionDataSchema
 import com.linkedin.data.template.Custom
-import com.linkedin.data.template.GetMode
-import com.linkedin.data.template.SetMode
 import com.linkedin.data.template.RecordTemplate
 import com.linkedin.data.template.RequiredFieldNotPresentException
 import com.linkedin.data.template.TemplateOutputCastException
 import com.linkedin.data.template.UnionTemplate
 import org.coursera.courier.data.DataTemplates
 import org.coursera.courier.data.DataTemplates.DataConversion
+import org.coursera.courier.data.ScalaRecordTemplate
 import scala.runtime.ScalaRunTime
 import com.linkedin.data.template.DataTemplateUtil
 import com.linkedin.data.schema.RecordDataSchema
@@ -23,9 +22,9 @@ import javax.annotation.Generated
 
 
 
-@Generated(value = Array("WithComplexTypes"), comments = "Courier Data Template.", date = "Wed May 27 20:52:11 PDT 2015")
+@Generated(value = Array("WithComplexTypes"), comments = "Courier Data Template.", date = "Fri May 29 11:12:12 PDT 2015")
 final class WithComplexTypes private (private val dataMap: DataMap)
-  extends RecordTemplate(dataMap, WithComplexTypes.SCHEMA) with Product {
+  extends ScalaRecordTemplate(dataMap, WithComplexTypes.SCHEMA) with Product {
   import WithComplexTypes._
 
   
@@ -35,7 +34,7 @@ final class WithComplexTypes private (private val dataMap: DataMap)
     
     
         lazy val fruits: org.coursera.enums.Fruits.Fruits =  org.coursera.enums.Fruits.fromString(
-            obtainDirect(WithComplexTypes.Fields.fruits, classOf[String], GetMode.STRICT)
+            obtainDirect(WithComplexTypes.Fields.fruits, classOf[String])
           ) 
       
   
@@ -44,7 +43,7 @@ final class WithComplexTypes private (private val dataMap: DataMap)
     
     
         lazy val optionalFruits: Option[org.coursera.enums.Fruits.Fruits] = Option(
-            obtainDirect(WithComplexTypes.Fields.optionalFruits, classOf[String], GetMode.STRICT)
+            obtainDirect(WithComplexTypes.Fields.optionalFruits, classOf[String])
           ).map(value =>  org.coursera.enums.Fruits.fromString(value) )
       
   
@@ -84,13 +83,16 @@ final class WithComplexTypes private (private val dataMap: DataMap)
 
   override def toString: String = ScalaRunTime._toString(this)
 
-  def copy(fruits: org.coursera.enums.Fruits.Fruits = this.fruits, optionalFruits: Option[org.coursera.enums.Fruits.Fruits] = this.optionalFruits): WithComplexTypes = {
-    val dataMap = new DataMap
-    val result = new WithComplexTypes(dataMap)
-    result.setFields(fruits, optionalFruits)
-    dataMap.setReadOnly()
-    result
-  }
+  
+  
+    def copy(fruits: org.coursera.enums.Fruits.Fruits = this.fruits, optionalFruits: Option[org.coursera.enums.Fruits.Fruits] = this.optionalFruits): WithComplexTypes = {
+      val dataMap = new DataMap
+      val result = new WithComplexTypes(dataMap)
+      result.setFields(fruits, optionalFruits)
+      dataMap.setReadOnly()
+      result
+    }
+  
 }
 
 object WithComplexTypes {
@@ -124,14 +126,17 @@ object WithComplexTypes {
     new WithComplexTypes(DataTemplates.makeImmutable(dataMap, SCHEMA, conversion))
   }
 
-  def unapply(record: WithComplexTypes): Option[(org.coursera.enums.Fruits.Fruits, Option[org.coursera.enums.Fruits.Fruits])] = {
-    try {
-      Some((record.fruits, record.optionalFruits))
-    } catch {
-      case cast: TemplateOutputCastException => None
-      case notPresent: RequiredFieldNotPresentException => None
-    }
-  }
+  
+  
+      def unapply(record: WithComplexTypes): Option[(org.coursera.enums.Fruits.Fruits, Option[org.coursera.enums.Fruits.Fruits])] = {
+        try {
+          Some((record.fruits, record.optionalFruits))
+        } catch {
+          case cast: TemplateOutputCastException => None
+          case notPresent: RequiredFieldNotPresentException => None
+        }
+      }
+    
 }
 
 

@@ -19,6 +19,8 @@ package org.coursera.fortune
 import javax.annotation.Generated
 
 import com.linkedin.data.DataMap
+import com.linkedin.data.schema.DataSchemaConstants
+import com.linkedin.data.schema.IntegerDataSchema
 import com.linkedin.data.schema.UnionDataSchema
 import com.linkedin.data.template.Custom
 import com.linkedin.data.template.GetMode
@@ -50,7 +52,7 @@ final class Fortune private (
   /**
    * The fortune telling.
    */
-  def telling: Fortune.Telling = Fortune.Telling(dataMap)
+  def telling: Fortune.Telling = Fortune.Telling(dataMap.getDataMap(Fortune.Fields.telling.getName))
   def createdAt: DateTime = obtainDirect(
     Fortune.Fields.createdAt, classOf[DateTime], GetMode.STRICT)
 
@@ -84,7 +86,7 @@ final class Fortune private (
 }
 
 object Fortune {
-  private val SCHEMA = DataTemplateUtil.parseSchema(
+  val SCHEMA = DataTemplateUtil.parseSchema(
     """
       |{
       |  "type": "record",
@@ -265,8 +267,7 @@ object Fortune {
         |"string"]
       """.stripMargin).asInstanceOf[UnionDataSchema]
 
-    def apply(dataMap: DataMap): Telling = {
-      val union = dataMap.getDataMap(Fortune.Fields.telling.getName)
+    def apply(union: DataMap): Telling = {
       require(
         union.size == 1,
         "Malformed union DataMap, exactly one field must be present and must be a member key")
@@ -274,40 +275,98 @@ object Fortune {
       val unionTag = union.keySet().iterator().next()
       unionTag match {
         case FortuneCookieMember.memberKey =>
-          Fortune.Telling.FortuneCookieMember(
-            FortuneCookie(
-              union.getDataMap(FortuneCookieMember.memberKey),
-              DataConversion.SetReadOnly))
+          Fortune.Telling.FortuneCookieMember(union)
         case MagicEightBallMember.memberKey =>
-          Fortune.Telling.MagicEightBallMember(
-            MagicEightBall(
-              union.getDataMap(MagicEightBallMember.memberKey),
-              DataConversion.SetReadOnly))
+          Fortune.Telling.MagicEightBallMember(union)
         case StringMember.memberKey =>
-          Fortune.Telling.StringMember(union.getString(StringMember.memberKey))
+          Fortune.Telling.StringMember(union)
         case _: Any =>
           Fortune.Telling.$UnknownMember(union)
       }
     }
 
-    case class FortuneCookieMember(fortuneCookie: FortuneCookie)
-      extends Telling(DataTemplates.toUnionMap(fortuneCookie.data(), FortuneCookieMember.memberKey))
+    class FortuneCookieMember(private val dataMap: DataMap)
+      extends Telling(dataMap) with Product1[FortuneCookie] {
+      import FortuneCookieMember._
+
+      lazy val _1, value = obtainWrapped(FortuneCookie.SCHEMA, classOf[FortuneCookie], memberKey)
+
+      private def setFields(value: FortuneCookie): Unit = {
+        selectWrapped(FortuneCookie.SCHEMA, classOf[FortuneCookie], memberKey, value)
+      }
+    }
 
     object FortuneCookieMember {
+      def apply(value: FortuneCookie): FortuneCookieMember = {
+        val dataMap = new DataMap
+        val result = new FortuneCookieMember(dataMap)
+        result.setFields(value)
+        dataMap.setReadOnly()
+        result
+      }
+
+      def apply(dataMap: DataMap): FortuneCookieMember = {
+        dataMap.setReadOnly()
+        new FortuneCookieMember(dataMap)
+      }
+
       private[Telling] val memberKey = "org.coursera.fortune.FortuneCookie"
     }
 
-    case class MagicEightBallMember(magicEightBall: MagicEightBall)
-      extends Telling(DataTemplates.toUnionMap(magicEightBall.data(), MagicEightBallMember.memberKey))
+    class MagicEightBallMember(private val dataMap: DataMap)
+      extends Telling(dataMap) with Product1[MagicEightBall] {
+      import MagicEightBallMember._
+
+      lazy val _1, value = obtainWrapped(MagicEightBall.SCHEMA, classOf[MagicEightBall], memberKey)
+
+      private def setFields(value: MagicEightBall): Unit = {
+        selectWrapped(MagicEightBall.SCHEMA, classOf[MagicEightBall], memberKey, value)
+      }
+    }
 
     object MagicEightBallMember {
+
+      def apply(value: MagicEightBall): MagicEightBallMember = {
+        val dataMap = new DataMap
+        val result = new MagicEightBallMember(dataMap)
+        result.setFields(value)
+        dataMap.setReadOnly()
+        result
+      }
+
+      def apply(dataMap: DataMap): MagicEightBallMember = {
+        dataMap.setReadOnly()
+        new MagicEightBallMember(dataMap)
+      }
+
       private[Telling] val memberKey = "org.coursera.fortune.MagicEightBall"
     }
 
-    case class StringMember(string: String)
-      extends Telling(DataTemplates.toUnionMap(string, StringMember.memberKey))
+    class StringMember(private val dataMap: DataMap)
+      extends Telling(dataMap) with Product1[String] {
+      import StringMember._
+
+      lazy val _1, value = obtainDirect(DataSchemaConstants.STRING_DATA_SCHEMA, classOf[String], memberKey)
+
+      private def setFields(string: String): Unit = {
+        selectDirect(DataSchemaConstants.STRING_DATA_SCHEMA, classOf[String], memberKey, string)
+      }
+    }
 
     object StringMember {
+      def apply(value: String): StringMember = {
+        val dataMap = new DataMap
+        val result = new StringMember(dataMap)
+        result.setFields(value)
+        dataMap.setReadOnly()
+        result
+      }
+
+      def apply(dataMap: DataMap): StringMember = {
+        dataMap.setReadOnly()
+        new StringMember(dataMap)
+      }
+
       private[Telling] val memberKey = "string"
     }
 

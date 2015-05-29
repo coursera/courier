@@ -7,14 +7,13 @@ import javax.annotation.Generated
 import com.linkedin.data.DataMap
 import com.linkedin.data.schema.UnionDataSchema
 import com.linkedin.data.template.Custom
-import com.linkedin.data.template.GetMode
-import com.linkedin.data.template.SetMode
 import com.linkedin.data.template.RecordTemplate
 import com.linkedin.data.template.RequiredFieldNotPresentException
 import com.linkedin.data.template.TemplateOutputCastException
 import com.linkedin.data.template.UnionTemplate
 import org.coursera.courier.data.DataTemplates
 import org.coursera.courier.data.DataTemplates.DataConversion
+import org.coursera.courier.data.ScalaRecordTemplate
 import scala.runtime.ScalaRunTime
 import com.linkedin.data.template.DataTemplateUtil
 import com.linkedin.data.schema.RecordDataSchema
@@ -23,9 +22,9 @@ import javax.annotation.Generated
 
 
 
-@Generated(value = Array("InlineOptionalRecord"), comments = "Courier Data Template.", date = "Wed May 27 20:52:11 PDT 2015")
+@Generated(value = Array("InlineOptionalRecord"), comments = "Courier Data Template.", date = "Fri May 29 11:12:12 PDT 2015")
 final class InlineOptionalRecord private (private val dataMap: DataMap)
-  extends RecordTemplate(dataMap, InlineOptionalRecord.SCHEMA) with Product {
+  extends ScalaRecordTemplate(dataMap, InlineOptionalRecord.SCHEMA) with Product {
   import InlineOptionalRecord._
 
   
@@ -34,7 +33,7 @@ final class InlineOptionalRecord private (private val dataMap: DataMap)
 
     
     
-        lazy val value: String = obtainDirect(InlineOptionalRecord.Fields.value, classOf[java.lang.String], GetMode.STRICT)
+        lazy val value: String = obtainDirect(InlineOptionalRecord.Fields.value, classOf[java.lang.String])
       
   
 
@@ -67,13 +66,16 @@ final class InlineOptionalRecord private (private val dataMap: DataMap)
 
   override def toString: String = ScalaRunTime._toString(this)
 
-  def copy(value: String = this.value): InlineOptionalRecord = {
-    val dataMap = new DataMap
-    val result = new InlineOptionalRecord(dataMap)
-    result.setFields(value)
-    dataMap.setReadOnly()
-    result
-  }
+  
+  
+    def copy(value: String = this.value): InlineOptionalRecord = {
+      val dataMap = new DataMap
+      val result = new InlineOptionalRecord(dataMap)
+      result.setFields(value)
+      dataMap.setReadOnly()
+      result
+    }
+  
 }
 
 object InlineOptionalRecord {
@@ -104,14 +106,17 @@ object InlineOptionalRecord {
     new InlineOptionalRecord(DataTemplates.makeImmutable(dataMap, SCHEMA, conversion))
   }
 
-  def unapply(record: InlineOptionalRecord): Option[(String)] = {
-    try {
-      Some((record.value))
-    } catch {
-      case cast: TemplateOutputCastException => None
-      case notPresent: RequiredFieldNotPresentException => None
-    }
-  }
+  
+  
+      def unapply(record: InlineOptionalRecord): Option[(String)] = {
+        try {
+          Some((record.value))
+        } catch {
+          case cast: TemplateOutputCastException => None
+          case notPresent: RequiredFieldNotPresentException => None
+        }
+      }
+    
 }
 
 

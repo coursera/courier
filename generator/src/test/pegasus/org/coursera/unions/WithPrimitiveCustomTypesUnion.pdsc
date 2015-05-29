@@ -1,0 +1,19 @@
+{
+  "type": "record",
+  "name": "WithPrimitiveCustomTypesUnion",
+  "namespace": "org.coursera.unions",
+  "fields": [
+    { "name": "union", "type": [
+      {
+        "name": "IntCustomType",
+        "type": "typeref",
+        "ref": "int",
+        "java": {
+          "class": "org.coursera.courier.generator.customtypes.CustomInt",
+          "coercerClass": "org.coursera.courier.generator.customtypes.CustomIntCoercer"
+        }
+      }
+    ]
+    }
+  ]
+}

@@ -7,14 +7,13 @@ import javax.annotation.Generated
 import com.linkedin.data.DataMap
 import com.linkedin.data.schema.UnionDataSchema
 import com.linkedin.data.template.Custom
-import com.linkedin.data.template.GetMode
-import com.linkedin.data.template.SetMode
 import com.linkedin.data.template.RecordTemplate
 import com.linkedin.data.template.RequiredFieldNotPresentException
 import com.linkedin.data.template.TemplateOutputCastException
 import com.linkedin.data.template.UnionTemplate
 import org.coursera.courier.data.DataTemplates
 import org.coursera.courier.data.DataTemplates.DataConversion
+import org.coursera.courier.data.ScalaRecordTemplate
 import scala.runtime.ScalaRunTime
 import com.linkedin.data.template.DataTemplateUtil
 import com.linkedin.data.schema.RecordDataSchema
@@ -23,9 +22,9 @@ import javax.annotation.Generated
 
 
 
-@Generated(value = Array("WithPrimitives"), comments = "Courier Data Template.", date = "Wed May 27 20:52:10 PDT 2015")
+@Generated(value = Array("WithPrimitives"), comments = "Courier Data Template.", date = "Fri May 29 11:12:11 PDT 2015")
 final class WithPrimitives private (private val dataMap: DataMap)
-  extends RecordTemplate(dataMap, WithPrimitives.SCHEMA) with Product {
+  extends ScalaRecordTemplate(dataMap, WithPrimitives.SCHEMA) with Product {
   import WithPrimitives._
 
   
@@ -34,49 +33,49 @@ final class WithPrimitives private (private val dataMap: DataMap)
 
     
     
-        lazy val intField: Int = obtainDirect(WithPrimitives.Fields.intField, classOf[java.lang.Integer], GetMode.STRICT)
+        lazy val intField: Int = obtainDirect(WithPrimitives.Fields.intField, classOf[java.lang.Integer])
       
   
     
 
     
     
-        lazy val longField: Long = obtainDirect(WithPrimitives.Fields.longField, classOf[java.lang.Long], GetMode.STRICT)
+        lazy val longField: Long = obtainDirect(WithPrimitives.Fields.longField, classOf[java.lang.Long])
       
   
     
 
     
     
-        lazy val floatField: Float = obtainDirect(WithPrimitives.Fields.floatField, classOf[java.lang.Float], GetMode.STRICT)
+        lazy val floatField: Float = obtainDirect(WithPrimitives.Fields.floatField, classOf[java.lang.Float])
       
   
     
 
     
     
-        lazy val doubleField: Double = obtainDirect(WithPrimitives.Fields.doubleField, classOf[java.lang.Double], GetMode.STRICT)
+        lazy val doubleField: Double = obtainDirect(WithPrimitives.Fields.doubleField, classOf[java.lang.Double])
       
   
     
 
     
     
-        lazy val booleanField: Boolean = obtainDirect(WithPrimitives.Fields.booleanField, classOf[java.lang.Boolean], GetMode.STRICT)
+        lazy val booleanField: Boolean = obtainDirect(WithPrimitives.Fields.booleanField, classOf[java.lang.Boolean])
       
   
     
 
     
     
-        lazy val stringField: String = obtainDirect(WithPrimitives.Fields.stringField, classOf[java.lang.String], GetMode.STRICT)
+        lazy val stringField: String = obtainDirect(WithPrimitives.Fields.stringField, classOf[java.lang.String])
       
   
     
 
     
     
-        lazy val bytesField: com.linkedin.data.ByteString = obtainDirect(WithPrimitives.Fields.bytesField, classOf[com.linkedin.data.ByteString], GetMode.STRICT)
+        lazy val bytesField: com.linkedin.data.ByteString = obtainDirect(WithPrimitives.Fields.bytesField, classOf[com.linkedin.data.ByteString])
       
   
 
@@ -145,13 +144,16 @@ final class WithPrimitives private (private val dataMap: DataMap)
 
   override def toString: String = ScalaRunTime._toString(this)
 
-  def copy(intField: Int = this.intField, longField: Long = this.longField, floatField: Float = this.floatField, doubleField: Double = this.doubleField, booleanField: Boolean = this.booleanField, stringField: String = this.stringField, bytesField: com.linkedin.data.ByteString = this.bytesField): WithPrimitives = {
-    val dataMap = new DataMap
-    val result = new WithPrimitives(dataMap)
-    result.setFields(intField, longField, floatField, doubleField, booleanField, stringField, bytesField)
-    dataMap.setReadOnly()
-    result
-  }
+  
+  
+    def copy(intField: Int = this.intField, longField: Long = this.longField, floatField: Float = this.floatField, doubleField: Double = this.doubleField, booleanField: Boolean = this.booleanField, stringField: String = this.stringField, bytesField: com.linkedin.data.ByteString = this.bytesField): WithPrimitives = {
+      val dataMap = new DataMap
+      val result = new WithPrimitives(dataMap)
+      result.setFields(intField, longField, floatField, doubleField, booleanField, stringField, bytesField)
+      dataMap.setReadOnly()
+      result
+    }
+  
 }
 
 object WithPrimitives {
@@ -200,14 +202,17 @@ object WithPrimitives {
     new WithPrimitives(DataTemplates.makeImmutable(dataMap, SCHEMA, conversion))
   }
 
-  def unapply(record: WithPrimitives): Option[(Int, Long, Float, Double, Boolean, String, com.linkedin.data.ByteString)] = {
-    try {
-      Some((record.intField, record.longField, record.floatField, record.doubleField, record.booleanField, record.stringField, record.bytesField))
-    } catch {
-      case cast: TemplateOutputCastException => None
-      case notPresent: RequiredFieldNotPresentException => None
-    }
-  }
+  
+  
+      def unapply(record: WithPrimitives): Option[(Int, Long, Float, Double, Boolean, String, com.linkedin.data.ByteString)] = {
+        try {
+          Some((record.intField, record.longField, record.floatField, record.doubleField, record.booleanField, record.stringField, record.bytesField))
+        } catch {
+          case cast: TemplateOutputCastException => None
+          case notPresent: RequiredFieldNotPresentException => None
+        }
+      }
+    
 }
 
 

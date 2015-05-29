@@ -107,8 +107,28 @@ trait SchemaFixtures {
       val schema = TestSchema.load("org.coursera.records.test.WithComplexTypes")
     }
 
+    object Empty {
+      val schema = TestSchema.load("org.coursera.records.test.Empty")
+    }
+
     object Fruits {
       val schema = TestSchema.load("org.coursera.enums.Fruits")
+    }
+
+    object WithComplexTypesUnion {
+      val schema = TestSchema.load("org.coursera.unions.WithComplexTypesUnion")
+    }
+
+    object WithPrimitivesUnion {
+      val schema = TestSchema.load("org.coursera.unions.WithPrimitivesUnion")
+    }
+
+    object WithPrimitiveTyperefsUnion {
+      val schema = TestSchema.load("org.coursera.unions.WithPrimitiveTyperefsUnion")
+    }
+
+    object WithPrimitiveCustomTypesUnion {
+      val schema = TestSchema.load("org.coursera.unions.WithPrimitiveCustomTypesUnion")
     }
   }
 

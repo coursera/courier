@@ -7,14 +7,13 @@ import javax.annotation.Generated
 import com.linkedin.data.DataMap
 import com.linkedin.data.schema.UnionDataSchema
 import com.linkedin.data.template.Custom
-import com.linkedin.data.template.GetMode
-import com.linkedin.data.template.SetMode
 import com.linkedin.data.template.RecordTemplate
 import com.linkedin.data.template.RequiredFieldNotPresentException
 import com.linkedin.data.template.TemplateOutputCastException
 import com.linkedin.data.template.UnionTemplate
 import org.coursera.courier.data.DataTemplates
 import org.coursera.courier.data.DataTemplates.DataConversion
+import org.coursera.courier.data.ScalaRecordTemplate
 import scala.runtime.ScalaRunTime
 import com.linkedin.data.template.DataTemplateUtil
 import com.linkedin.data.schema.RecordDataSchema
@@ -23,9 +22,9 @@ import javax.annotation.Generated
 
 
 
-@Generated(value = Array("WithInlineRecord"), comments = "Courier Data Template.", date = "Wed May 27 20:52:11 PDT 2015")
+@Generated(value = Array("WithInlineRecord"), comments = "Courier Data Template.", date = "Fri May 29 11:12:12 PDT 2015")
 final class WithInlineRecord private (private val dataMap: DataMap)
-  extends RecordTemplate(dataMap, WithInlineRecord.SCHEMA) with Product {
+  extends ScalaRecordTemplate(dataMap, WithInlineRecord.SCHEMA) with Product {
   import WithInlineRecord._
 
   
@@ -34,14 +33,14 @@ final class WithInlineRecord private (private val dataMap: DataMap)
 
     
     
-        lazy val inline: org.coursera.records.test.InlineRecord = obtainWrapped(WithInlineRecord.Fields.inline, classOf[org.coursera.records.test.InlineRecord], GetMode.STRICT)
+        lazy val inline: org.coursera.records.test.InlineRecord = obtainWrapped(WithInlineRecord.Fields.inline, classOf[org.coursera.records.test.InlineRecord])
       
   
     
 
     
     
-        lazy val inlineOptional: Option[org.coursera.records.test.InlineOptionalRecord] = Option(obtainWrapped(WithInlineRecord.Fields.inlineOptional, classOf[org.coursera.records.test.InlineOptionalRecord], GetMode.STRICT))
+        lazy val inlineOptional: Option[org.coursera.records.test.InlineOptionalRecord] = Option(obtainWrapped(WithInlineRecord.Fields.inlineOptional, classOf[org.coursera.records.test.InlineOptionalRecord]))
       
   
 
@@ -80,13 +79,16 @@ final class WithInlineRecord private (private val dataMap: DataMap)
 
   override def toString: String = ScalaRunTime._toString(this)
 
-  def copy(inline: org.coursera.records.test.InlineRecord = this.inline, inlineOptional: Option[org.coursera.records.test.InlineOptionalRecord] = this.inlineOptional): WithInlineRecord = {
-    val dataMap = new DataMap
-    val result = new WithInlineRecord(dataMap)
-    result.setFields(inline, inlineOptional)
-    dataMap.setReadOnly()
-    result
-  }
+  
+  
+    def copy(inline: org.coursera.records.test.InlineRecord = this.inline, inlineOptional: Option[org.coursera.records.test.InlineOptionalRecord] = this.inlineOptional): WithInlineRecord = {
+      val dataMap = new DataMap
+      val result = new WithInlineRecord(dataMap)
+      result.setFields(inline, inlineOptional)
+      dataMap.setReadOnly()
+      result
+    }
+  
 }
 
 object WithInlineRecord {
@@ -120,14 +122,17 @@ object WithInlineRecord {
     new WithInlineRecord(DataTemplates.makeImmutable(dataMap, SCHEMA, conversion))
   }
 
-  def unapply(record: WithInlineRecord): Option[(org.coursera.records.test.InlineRecord, Option[org.coursera.records.test.InlineOptionalRecord])] = {
-    try {
-      Some((record.inline, record.inlineOptional))
-    } catch {
-      case cast: TemplateOutputCastException => None
-      case notPresent: RequiredFieldNotPresentException => None
-    }
-  }
+  
+  
+      def unapply(record: WithInlineRecord): Option[(org.coursera.records.test.InlineRecord, Option[org.coursera.records.test.InlineOptionalRecord])] = {
+        try {
+          Some((record.inline, record.inlineOptional))
+        } catch {
+          case cast: TemplateOutputCastException => None
+          case notPresent: RequiredFieldNotPresentException => None
+        }
+      }
+    
 }
 
 

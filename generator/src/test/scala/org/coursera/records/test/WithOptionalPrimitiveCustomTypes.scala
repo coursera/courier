@@ -7,14 +7,13 @@ import javax.annotation.Generated
 import com.linkedin.data.DataMap
 import com.linkedin.data.schema.UnionDataSchema
 import com.linkedin.data.template.Custom
-import com.linkedin.data.template.GetMode
-import com.linkedin.data.template.SetMode
 import com.linkedin.data.template.RecordTemplate
 import com.linkedin.data.template.RequiredFieldNotPresentException
 import com.linkedin.data.template.TemplateOutputCastException
 import com.linkedin.data.template.UnionTemplate
 import org.coursera.courier.data.DataTemplates
 import org.coursera.courier.data.DataTemplates.DataConversion
+import org.coursera.courier.data.ScalaRecordTemplate
 import scala.runtime.ScalaRunTime
 import com.linkedin.data.template.DataTemplateUtil
 import com.linkedin.data.schema.RecordDataSchema
@@ -23,9 +22,9 @@ import javax.annotation.Generated
 
 
 
-@Generated(value = Array("WithOptionalPrimitiveCustomTypes"), comments = "Courier Data Template.", date = "Wed May 27 20:52:11 PDT 2015")
+@Generated(value = Array("WithOptionalPrimitiveCustomTypes"), comments = "Courier Data Template.", date = "Fri May 29 11:12:12 PDT 2015")
 final class WithOptionalPrimitiveCustomTypes private (private val dataMap: DataMap)
-  extends RecordTemplate(dataMap, WithOptionalPrimitiveCustomTypes.SCHEMA) with Product {
+  extends ScalaRecordTemplate(dataMap, WithOptionalPrimitiveCustomTypes.SCHEMA) with Product {
   import WithOptionalPrimitiveCustomTypes._
 
   
@@ -34,7 +33,7 @@ final class WithOptionalPrimitiveCustomTypes private (private val dataMap: DataM
 
     
     
-        lazy val intField: Option[org.coursera.courier.generator.customtypes.CustomInt] = Option(obtainCustomType(WithOptionalPrimitiveCustomTypes.Fields.intField, classOf[org.coursera.courier.generator.customtypes.CustomInt], GetMode.STRICT))
+        lazy val intField: Option[org.coursera.courier.generator.customtypes.CustomInt] = Option(obtainCustomType(WithOptionalPrimitiveCustomTypes.Fields.intField, classOf[org.coursera.courier.generator.customtypes.CustomInt]))
       
   
 
@@ -44,7 +43,7 @@ final class WithOptionalPrimitiveCustomTypes private (private val dataMap: DataM
       
       
           
-          intField.foreach(value =>  putCustomType(WithOptionalPrimitiveCustomTypes.Fields.intField, classOf[org.coursera.courier.generator.customtypes.CustomInt], classOf[java.lang.Integer], value, SetMode.DISALLOW_NULL))
+          intField.foreach(value =>  putCustomType(WithOptionalPrimitiveCustomTypes.Fields.intField, classOf[org.coursera.courier.generator.customtypes.CustomInt], classOf[java.lang.Integer], value))
         
     
   }
@@ -68,13 +67,16 @@ final class WithOptionalPrimitiveCustomTypes private (private val dataMap: DataM
 
   override def toString: String = ScalaRunTime._toString(this)
 
-  def copy(intField: Option[org.coursera.courier.generator.customtypes.CustomInt] = this.intField): WithOptionalPrimitiveCustomTypes = {
-    val dataMap = new DataMap
-    val result = new WithOptionalPrimitiveCustomTypes(dataMap)
-    result.setFields(intField)
-    dataMap.setReadOnly()
-    result
-  }
+  
+  
+    def copy(intField: Option[org.coursera.courier.generator.customtypes.CustomInt] = this.intField): WithOptionalPrimitiveCustomTypes = {
+      val dataMap = new DataMap
+      val result = new WithOptionalPrimitiveCustomTypes(dataMap)
+      result.setFields(intField)
+      dataMap.setReadOnly()
+      result
+    }
+  
 }
 
 object WithOptionalPrimitiveCustomTypes {
@@ -112,14 +114,17 @@ object WithOptionalPrimitiveCustomTypes {
     new WithOptionalPrimitiveCustomTypes(DataTemplates.makeImmutable(dataMap, SCHEMA, conversion))
   }
 
-  def unapply(record: WithOptionalPrimitiveCustomTypes): Option[(Option[org.coursera.courier.generator.customtypes.CustomInt])] = {
-    try {
-      Some((record.intField))
-    } catch {
-      case cast: TemplateOutputCastException => None
-      case notPresent: RequiredFieldNotPresentException => None
-    }
-  }
+  
+  
+      def unapply(record: WithOptionalPrimitiveCustomTypes): Option[(Option[org.coursera.courier.generator.customtypes.CustomInt])] = {
+        try {
+          Some((record.intField))
+        } catch {
+          case cast: TemplateOutputCastException => None
+          case notPresent: RequiredFieldNotPresentException => None
+        }
+      }
+    
 }
 
 

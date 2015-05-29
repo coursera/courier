@@ -79,7 +79,7 @@ final class FortuneCookie private (private val dataMap: DataMap) extends RecordT
 }
 
 object FortuneCookie {
-  private val SCHEMA = DataTemplateUtil.parseSchema(
+  val SCHEMA = DataTemplateUtil.parseSchema(
     """
       |{
       |  "type":"record",

@@ -78,8 +78,7 @@ object ScalaDataTemplateGenerator {
 
     val generator = new TwirlDataTemplateGenerator()
 
-    // TODO: register scala predefined classes if any
-    // is this sufficient?
+    // TODO: register scala predefined classes for arrays and maps (e.g. IntMap) here
     ScalaTypes.primitiveSchemas.foreach { primitiveSchema =>
       specGenerator.registerDefinedSchema(primitiveSchema)
     }

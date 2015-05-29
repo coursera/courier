@@ -1,3 +1,116 @@
 @(union: org.coursera.courier.generator.twirl.defs.UnionDefinition)
+@import java.util.Calendar
+@import com.linkedin.data.schema.SchemaToJsonEncoder
+@import com.linkedin.data.schema.JsonBuilder
+@import org.coursera.courier.generator.twirl.defs._
 
-final class @union.scalaType () {}
+  @@Generated(value = Array("@(union.scalaType)"), comments="Courier Data Template.", date = "@(Calendar.getInstance().getTime())")
+  sealed abstract class @(union.scalaType) protected(private val value: DataMap)
+    extends UnionTemplate(value, @(union.scalaType).SCHEMA) with Product {
+    import @(union.scalaType)._
+
+    // reset UnionTemplate overrides
+    override def canEqual(that: Any): Boolean = that.isInstanceOf[this.type]
+
+    override def equals(that: Any): Boolean = ScalaRunTime._equals(this, that)
+
+    override def toString: String = ScalaRunTime._toString(this)
+
+    override def hashCode: Int = ScalaRunTime._hashCode(this)
+  }
+
+  object @(union.scalaType) {
+    val SCHEMA = DataTemplateUtil.parseSchema(@("\"\"\"" + SchemaToJsonEncoder.schemaToJson(union.schema, JsonBuilder.Pretty.COMPACT) + "\"\"\"")).asInstanceOf[UnionDataSchema]
+
+    @union.members.map { member =>
+      @member.classDefinition match {
+        case primitiveMember: PrimitiveDefinition => {
+          protected val @(member.classDefinition.memberName)Schema = SCHEMA.getType("@(primitiveMember.pegasusType)")
+        }
+        case _: Any => {
+          protected val @(member.classDefinition.memberName)Schema = SCHEMA.getType("@(member.classDefinition.fqn)")
+        }
+      }
+    }
+
+    def apply(union: DataMap): @(union.scalaType) = {
+      require(
+        union.size == 1,
+        "Malformed union DataMap, exactly one field must be present and must be a member key")
+
+      val unionTag = union.keySet().iterator().next()
+      unionTag match {
+        @union.members.map { member =>
+          case @(member.classDefinition.memberName).memberKey =>
+            @(member.classDefinition.memberName)(union)
+        }
+        case _: Any =>
+          @(union.scalaType).$UnknownMember(union)
+      }
+    }
+
+    @union.members.map { member =>
+      class @(member.classDefinition.memberName)(private val dataMap: DataMap)
+        extends @(union.scalaType)(dataMap) with Product1[@(member.classDefinition.fqn)] {
+        import @(member.classDefinition.memberName)._
+
+        lazy val _1, value = @member.classDefinition match {
+          case recordMember: RecordDefinition => {
+            obtainWrapped(@(member.classDefinition.memberName)Schema, classOf[@(member.classDefinition.fqn)], memberKey)
+          }
+          case primitiveMember: PrimitiveDefinition => {
+            obtainDirect(@(member.classDefinition.memberName)Schema, classOf[@(member.classDefinition.fqn)], memberKey)
+          }
+          case customMember: ClassDefinition => {
+            obtainDirect(@(member.classDefinition.memberName)Schema, classOf[@(customMember.fqn)], memberKey)
+          }
+          case enumMember: EnumDefinition => {
+            @(enumMember.enumFullname).fromString(
+              obtainDirect(@(member.classDefinition.memberName)Schema, classOf[String], memberKey))
+          }
+        }
+        /* TODO(jbetz): support map fields */
+        /* TODO(jbetz): support array fields */
+
+        private def setFields(value: @(member.classDefinition.fqn)): Unit = {
+          @member.classDefinition match {
+            case recordMember: RecordDefinition => {
+              selectWrapped(@(member.classDefinition.memberName)Schema, classOf[@(member.classDefinition.fqn)], memberKey, value)
+            }
+            case primitiveMember: PrimitiveDefinition => {
+              selectDirect(@(member.classDefinition.memberName)Schema, classOf[@(primitiveMember.dataType)], memberKey, @primitiveMember.maybeBox{value})
+            }
+            case customMember: ClassDefinition => {
+              selectDirect(@(member.classDefinition.memberName)Schema, classOf[@(customMember.fqn)], classOf[@(member.dataClass.dataType)], memberKey, value)
+            }
+            case enumMember: EnumDefinition => {
+              selectDirect(@(member.classDefinition.memberName)Schema, classOf[String], memberKey, value.toString)
+            }
+          }
+          /* TODO(jbetz): support map fields */
+          /* TODO(jbetz): support array fields */
+        }
+      }
+
+      object @(member.classDefinition.memberName) {
+        def apply(value: @(member.classDefinition.fqn)): @(member.classDefinition.memberName) = {
+          val dataMap = new DataMap
+          val result = new @(member.classDefinition.memberName)(dataMap)
+          result.setFields(value)
+          dataMap.setReadOnly()
+          result
+        }
+
+        def apply(dataMap: DataMap): @(member.classDefinition.memberName) = {
+          dataMap.setReadOnly()
+          new @(member.classDefinition.memberName)(dataMap)
+        }
+
+        private[@(union.scalaType)] val memberKey = "@(member.schema.getUnionMemberKey)"
+      }
+    }
+
+    case class $UnknownMember private[@(union.scalaType)](
+        private[@(union.scalaType)] val dataMap: DataMap)
+      extends @(union.scalaType)(dataMap)
+  }

@@ -7,7 +7,7 @@
 @record.scalaDoc.map { doc => @doc }
 @@Generated(value = Array("@record.scalaType"), comments = "Courier Data Template.", date = "@(Calendar.getInstance().getTime())")
 final class @record.scalaType private (private val dataMap: DataMap)
-  extends RecordTemplate(dataMap, @(record.scalaType).SCHEMA) with Product {
+  extends ScalaRecordTemplate(dataMap, @(record.scalaType).SCHEMA) with Product {
   import @(record.scalaType)._
 
   @* Provide read access to all fields. *@
@@ -17,14 +17,13 @@ final class @record.scalaType private (private val dataMap: DataMap)
     @* TODO(jbetz): Decide on order of fields and decide how to handle optional fields and defaults. Note that decisions here will impact source backward compatibility! *@
     @field.typ match {
       case primitiveField: PrimitiveDefinition => {
-        lazy val @(field.name): @(field.scalaType) = @field.wrapIfOption{obtainDirect(@(record.scalaType).Fields.@(field.name), classOf[@(primitiveField.dataType)], GetMode.STRICT)}
+        lazy val @(field.name): @(field.scalaType) = @field.wrapIfOption{obtainDirect(@(record.scalaType).Fields.@(field.name), classOf[@(primitiveField.dataType)])}
       }
       case recordField: RecordDefinition => {
-        lazy val @(field.name): @(field.fqn) = @field.wrapIfOption{obtainWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(recordField.fqn)], GetMode.STRICT)}
+        lazy val @(field.name): @(field.fqn) = @field.wrapIfOption{obtainWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(recordField.fqn)])}
       }
       case unionField: UnionDefinition => {
-        /* TODO(jbetz): support union fields */
-        lazy val @(field.name): @(unionField.fqn) = ???
+        lazy val @(field.name): @(unionField.fqn) = @field.wrapIfOption{@(unionField.fqn)(dataMap.getDataMap(@(record.scalaType).Fields.@(field.name).getName))}
       }
       case arrayField: ArrayDefinition => {
         /* TODO(jbetz): support array fields */
@@ -36,11 +35,11 @@ final class @record.scalaType private (private val dataMap: DataMap)
       }
       case enumField: EnumDefinition => {
         lazy val @(field.name): @(field.fqn) = @field.wrapAndMapIfOption {
-            obtainDirect(@(record.scalaType).Fields.@(field.name), classOf[String], GetMode.STRICT)
+            obtainDirect(@(record.scalaType).Fields.@(field.name), classOf[String])
           } { value => @(enumField.enumFullname).fromString(@value) }
       }
       case customField: ClassDefinition => {
-        lazy val @(field.name): @(field.fqn) = @field.wrapIfOption{obtainCustomType(@(record.scalaType).Fields.@(field.name), classOf[@(customField.fqn)], GetMode.STRICT)}
+        lazy val @(field.name): @(field.fqn) = @field.wrapIfOption{obtainCustomType(@(record.scalaType).Fields.@(field.name), classOf[@(customField.fqn)])}
       }
       case _: Any => {
         lazy val @(field.name): @(field.typ.scalaType) = ???
@@ -60,7 +59,7 @@ final class @record.scalaType private (private val dataMap: DataMap)
           @field.applyIfOption(field.name) { value => putWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(recordField.fqn)], @value)}
         }
         case unionField: UnionDefinition => {
-          /* TODO(jbetz): support union fields */
+          @field.applyIfOption(field.name) { value => dataMap.put(@(record.scalaType).Fields.@(field.name).getName, @(value).data())}
         }
         case arrayField: ArrayDefinition => {
           /* TODO(jbetz): support array fields */
@@ -72,8 +71,8 @@ final class @record.scalaType private (private val dataMap: DataMap)
           @field.applyIfOption(field.name) { value => putDirect(@(record.scalaType).Fields.@(field.name), classOf[String], @(value).toString)}
         }
         case customField: ClassDefinition => {
-          @* TODO(jbetz): Figure out how to avoid the unsave .get call in the "field.dataClass.get.dataType" expression. *@
-          @field.applyIfOption(field.name) { value => putCustomType(@(record.scalaType).Fields.@(field.name), classOf[@(customField.fqn)], classOf[@(field.dataClass.get.dataType)], @customField.maybeBox{@value}, SetMode.DISALLOW_NULL)}
+          @* TODO(jbetz): Figure out how to avoid the unsafe .get call in the "field.dataClass.get.dataType" expression. *@
+          @field.applyIfOption(field.name) { value => putCustomType(@(record.scalaType).Fields.@(field.name), classOf[@(customField.fqn)], classOf[@(field.dataClass.get.dataType)], @customField.maybeBox{@value})}
         }
         case _: Any => { ??? }
       }
@@ -99,17 +98,20 @@ final class @record.scalaType private (private val dataMap: DataMap)
 
   override def toString: String = ScalaRunTime._toString(this)
 
-  def copy(@(record.copyFieldParamDefs)): @(record.scalaType) = {
-    val dataMap = new DataMap
-    val result = new @(record.scalaType)(dataMap)
-    result.setFields(@(record.fieldsAsParams))
-    dataMap.setReadOnly()
-    result
+  @* TODO: override copy() (the one without any args) *@
+  @if(record.fields.nonEmpty) {
+    def copy(@(record.copyFieldParamDefs)): @(record.scalaType) = {
+      val dataMap = new DataMap
+      val result = new @(record.scalaType)(dataMap)
+      result.setFields(@(record.fieldsAsParams))
+      dataMap.setReadOnly()
+      result
+    }
   }
 }
 
 object @(record.scalaType) {
-  private val SCHEMA = DataTemplateUtil.parseSchema(@("\"\"\"" + SchemaToJsonEncoder.schemaToJson(record.schema, JsonBuilder.Pretty.COMPACT) + "\"\"\"")).asInstanceOf[RecordDataSchema]
+  val SCHEMA = DataTemplateUtil.parseSchema(@("\"\"\"" + SchemaToJsonEncoder.schemaToJson(record.schema, JsonBuilder.Pretty.COMPACT) + "\"\"\"")).asInstanceOf[RecordDataSchema]
 
   @* Register custom types and coercers. *@
   @record.fields.filter(_.customInfo.isDefined).map { field =>
@@ -152,12 +154,20 @@ object @(record.scalaType) {
     new @(record.scalaType)(DataTemplates.makeImmutable(dataMap, SCHEMA, conversion))
   }
 
-  def unapply(record: @(record.scalaType)): Option[(@(record.fieldsAsTypeParams))] = {
-    try {
-      Some((@(record.prefixedFieldParams("record."))))
-    } catch {
-      case cast: TemplateOutputCastException => None
-      case notPresent: RequiredFieldNotPresentException => None
+  @* TODO(jbetz): The arity-1 case here "works" but is not clean. For arity-1 we should return Option[Arg1Type], and we return Option[(Arg1Type)] which just happens to be correct, but the added parenthesis create a compiler warning. *@
+  @record.fields.size match {
+    case 0 => {
+      def unapply(record: @(record.scalaType)): Boolean = true
+    }
+    case _ => {
+      def unapply(record: @(record.scalaType)): Option[(@(record.fieldsAsTypeParams))] = {
+        try {
+          Some((@(record.prefixedFieldParams("record."))))
+        } catch {
+          case cast: TemplateOutputCastException => None
+          case notPresent: RequiredFieldNotPresentException => None
+        }
+      }
     }
   }
 }

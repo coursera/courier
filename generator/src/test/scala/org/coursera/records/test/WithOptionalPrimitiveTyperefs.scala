@@ -7,14 +7,13 @@ import javax.annotation.Generated
 import com.linkedin.data.DataMap
 import com.linkedin.data.schema.UnionDataSchema
 import com.linkedin.data.template.Custom
-import com.linkedin.data.template.GetMode
-import com.linkedin.data.template.SetMode
 import com.linkedin.data.template.RecordTemplate
 import com.linkedin.data.template.RequiredFieldNotPresentException
 import com.linkedin.data.template.TemplateOutputCastException
 import com.linkedin.data.template.UnionTemplate
 import org.coursera.courier.data.DataTemplates
 import org.coursera.courier.data.DataTemplates.DataConversion
+import org.coursera.courier.data.ScalaRecordTemplate
 import scala.runtime.ScalaRunTime
 import com.linkedin.data.template.DataTemplateUtil
 import com.linkedin.data.schema.RecordDataSchema
@@ -23,9 +22,9 @@ import javax.annotation.Generated
 
 
 
-@Generated(value = Array("WithOptionalPrimitiveTyperefs"), comments = "Courier Data Template.", date = "Wed May 27 20:52:11 PDT 2015")
+@Generated(value = Array("WithOptionalPrimitiveTyperefs"), comments = "Courier Data Template.", date = "Fri May 29 11:12:12 PDT 2015")
 final class WithOptionalPrimitiveTyperefs private (private val dataMap: DataMap)
-  extends RecordTemplate(dataMap, WithOptionalPrimitiveTyperefs.SCHEMA) with Product {
+  extends ScalaRecordTemplate(dataMap, WithOptionalPrimitiveTyperefs.SCHEMA) with Product {
   import WithOptionalPrimitiveTyperefs._
 
   
@@ -34,49 +33,49 @@ final class WithOptionalPrimitiveTyperefs private (private val dataMap: DataMap)
 
     
     
-        lazy val intField: Option[Int] = Option(obtainDirect(WithOptionalPrimitiveTyperefs.Fields.intField, classOf[java.lang.Integer], GetMode.STRICT)).map(Int.unbox(_))
+        lazy val intField: Option[Int] = Option(obtainDirect(WithOptionalPrimitiveTyperefs.Fields.intField, classOf[java.lang.Integer])).map(Int.unbox(_))
       
   
     
 
     
     
-        lazy val longField: Option[Long] = Option(obtainDirect(WithOptionalPrimitiveTyperefs.Fields.longField, classOf[java.lang.Long], GetMode.STRICT)).map(Long.unbox(_))
+        lazy val longField: Option[Long] = Option(obtainDirect(WithOptionalPrimitiveTyperefs.Fields.longField, classOf[java.lang.Long])).map(Long.unbox(_))
       
   
     
 
     
     
-        lazy val floatField: Option[Float] = Option(obtainDirect(WithOptionalPrimitiveTyperefs.Fields.floatField, classOf[java.lang.Float], GetMode.STRICT)).map(Float.unbox(_))
+        lazy val floatField: Option[Float] = Option(obtainDirect(WithOptionalPrimitiveTyperefs.Fields.floatField, classOf[java.lang.Float])).map(Float.unbox(_))
       
   
     
 
     
     
-        lazy val doubleField: Option[Double] = Option(obtainDirect(WithOptionalPrimitiveTyperefs.Fields.doubleField, classOf[java.lang.Double], GetMode.STRICT)).map(Double.unbox(_))
+        lazy val doubleField: Option[Double] = Option(obtainDirect(WithOptionalPrimitiveTyperefs.Fields.doubleField, classOf[java.lang.Double])).map(Double.unbox(_))
       
   
     
 
     
     
-        lazy val booleanField: Option[Boolean] = Option(obtainDirect(WithOptionalPrimitiveTyperefs.Fields.booleanField, classOf[java.lang.Boolean], GetMode.STRICT)).map(Boolean.unbox(_))
+        lazy val booleanField: Option[Boolean] = Option(obtainDirect(WithOptionalPrimitiveTyperefs.Fields.booleanField, classOf[java.lang.Boolean])).map(Boolean.unbox(_))
       
   
     
 
     
     
-        lazy val stringField: Option[String] = Option(obtainDirect(WithOptionalPrimitiveTyperefs.Fields.stringField, classOf[java.lang.String], GetMode.STRICT))
+        lazy val stringField: Option[String] = Option(obtainDirect(WithOptionalPrimitiveTyperefs.Fields.stringField, classOf[java.lang.String]))
       
   
     
 
     
     
-        lazy val bytesField: Option[com.linkedin.data.ByteString] = Option(obtainDirect(WithOptionalPrimitiveTyperefs.Fields.bytesField, classOf[com.linkedin.data.ByteString], GetMode.STRICT))
+        lazy val bytesField: Option[com.linkedin.data.ByteString] = Option(obtainDirect(WithOptionalPrimitiveTyperefs.Fields.bytesField, classOf[com.linkedin.data.ByteString]))
       
   
 
@@ -145,13 +144,16 @@ final class WithOptionalPrimitiveTyperefs private (private val dataMap: DataMap)
 
   override def toString: String = ScalaRunTime._toString(this)
 
-  def copy(intField: Option[Int] = this.intField, longField: Option[Long] = this.longField, floatField: Option[Float] = this.floatField, doubleField: Option[Double] = this.doubleField, booleanField: Option[Boolean] = this.booleanField, stringField: Option[String] = this.stringField, bytesField: Option[com.linkedin.data.ByteString] = this.bytesField): WithOptionalPrimitiveTyperefs = {
-    val dataMap = new DataMap
-    val result = new WithOptionalPrimitiveTyperefs(dataMap)
-    result.setFields(intField, longField, floatField, doubleField, booleanField, stringField, bytesField)
-    dataMap.setReadOnly()
-    result
-  }
+  
+  
+    def copy(intField: Option[Int] = this.intField, longField: Option[Long] = this.longField, floatField: Option[Float] = this.floatField, doubleField: Option[Double] = this.doubleField, booleanField: Option[Boolean] = this.booleanField, stringField: Option[String] = this.stringField, bytesField: Option[com.linkedin.data.ByteString] = this.bytesField): WithOptionalPrimitiveTyperefs = {
+      val dataMap = new DataMap
+      val result = new WithOptionalPrimitiveTyperefs(dataMap)
+      result.setFields(intField, longField, floatField, doubleField, booleanField, stringField, bytesField)
+      dataMap.setReadOnly()
+      result
+    }
+  
 }
 
 object WithOptionalPrimitiveTyperefs {
@@ -200,14 +202,17 @@ object WithOptionalPrimitiveTyperefs {
     new WithOptionalPrimitiveTyperefs(DataTemplates.makeImmutable(dataMap, SCHEMA, conversion))
   }
 
-  def unapply(record: WithOptionalPrimitiveTyperefs): Option[(Option[Int], Option[Long], Option[Float], Option[Double], Option[Boolean], Option[String], Option[com.linkedin.data.ByteString])] = {
-    try {
-      Some((record.intField, record.longField, record.floatField, record.doubleField, record.booleanField, record.stringField, record.bytesField))
-    } catch {
-      case cast: TemplateOutputCastException => None
-      case notPresent: RequiredFieldNotPresentException => None
-    }
-  }
+  
+  
+      def unapply(record: WithOptionalPrimitiveTyperefs): Option[(Option[Int], Option[Long], Option[Float], Option[Double], Option[Boolean], Option[String], Option[com.linkedin.data.ByteString])] = {
+        try {
+          Some((record.intField, record.longField, record.floatField, record.doubleField, record.booleanField, record.stringField, record.bytesField))
+        } catch {
+          case cast: TemplateOutputCastException => None
+          case notPresent: RequiredFieldNotPresentException => None
+        }
+      }
+    
 }
 
 

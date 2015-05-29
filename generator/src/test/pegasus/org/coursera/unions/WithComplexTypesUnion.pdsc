@@ -1,0 +1,12 @@
+{
+  "type": "record",
+  "name": "WithComplexTypesUnion",
+  "namespace": "org.coursera.unions",
+  "fields": [
+    { "name": "union", "type": [
+      "org.coursera.records.test.Empty",
+      "org.coursera.enums.Fruits"
+    ]
+    }
+  ]
+}
