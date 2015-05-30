@@ -24,7 +24,7 @@ import com.linkedin.data.ByteString
 
 
 
-@Generated(value = Array("WithPrimitiveTyperefsUnion"), comments = "Courier Data Template.", date = "Fri May 29 19:37:17 PDT 2015")
+@Generated(value = Array("WithPrimitiveTyperefsUnion"), comments = "Courier Data Template.", date = "Sat May 30 19:28:05 PDT 2015")
 final class WithPrimitiveTyperefsUnion private (private val dataMap: DataMap)
   extends ScalaRecordTemplate(dataMap, WithPrimitiveTyperefsUnion.SCHEMA) with Product {
   import WithPrimitiveTyperefsUnion._
@@ -91,7 +91,7 @@ object WithPrimitiveTyperefsUnion {
     
          
 
-  @Generated(value = Array("Union"), comments="Courier Data Template.", date = "Fri May 29 19:37:17 PDT 2015")
+  @Generated(value = Array("Union"), comments="Courier Data Template.", date = "Sat May 30 19:28:05 PDT 2015")
   sealed abstract class Union protected(private val value: DataMap)
     extends UnionTemplate(value, Union.SCHEMA) with Product {
     import Union._
@@ -141,6 +141,7 @@ object WithPrimitiveTyperefsUnion {
           
         /* TODO(jbetz): support map fields */
         /* TODO(jbetz): support array fields */
+        /* TODO(jbetz): support union fields */
 
         private def setFields(value: Int): Unit = {
           
@@ -148,7 +149,7 @@ object WithPrimitiveTyperefsUnion {
             
           /* TODO(jbetz): support map fields */
           /* TODO(jbetz): support array fields */
-          /* TODO(jbetz): support enum fields */
+          /* TODO(jbetz): support union fields */
         }
       }
 

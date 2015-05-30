@@ -14,6 +14,6 @@
  limitations under the License.
  */
 
-package org.coursera.courier.generator
+package org.coursera.courier.generator.customtypes
 
 class CustomTime(val timeString: String)

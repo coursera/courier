@@ -24,7 +24,7 @@ import com.linkedin.data.ByteString
 
 
 
-@Generated(value = Array("WithComplexTypesUnion"), comments = "Courier Data Template.", date = "Fri May 29 19:37:17 PDT 2015")
+@Generated(value = Array("WithComplexTypesUnion"), comments = "Courier Data Template.", date = "Sat May 30 19:28:05 PDT 2015")
 final class WithComplexTypesUnion private (private val dataMap: DataMap)
   extends ScalaRecordTemplate(dataMap, WithComplexTypesUnion.SCHEMA) with Product {
   import WithComplexTypesUnion._
@@ -91,7 +91,7 @@ object WithComplexTypesUnion {
     
          
 
-  @Generated(value = Array("Union"), comments="Courier Data Template.", date = "Fri May 29 19:37:17 PDT 2015")
+  @Generated(value = Array("Union"), comments="Courier Data Template.", date = "Sat May 30 19:28:05 PDT 2015")
   sealed abstract class Union protected(private val value: DataMap)
     extends UnionTemplate(value, Union.SCHEMA) with Product {
     import Union._
@@ -148,6 +148,7 @@ object WithComplexTypesUnion {
           
         /* TODO(jbetz): support map fields */
         /* TODO(jbetz): support array fields */
+        /* TODO(jbetz): support union fields */
 
         private def setFields(value: org.coursera.records.test.Empty): Unit = {
           
@@ -155,7 +156,7 @@ object WithComplexTypesUnion {
             
           /* TODO(jbetz): support map fields */
           /* TODO(jbetz): support array fields */
-          /* TODO(jbetz): support enum fields */
+          /* TODO(jbetz): support union fields */
         }
       }
 
@@ -186,6 +187,7 @@ object WithComplexTypesUnion {
           
         /* TODO(jbetz): support map fields */
         /* TODO(jbetz): support array fields */
+        /* TODO(jbetz): support union fields */
 
         private def setFields(value: org.coursera.enums.Fruits.Fruits): Unit = {
           
@@ -193,7 +195,7 @@ object WithComplexTypesUnion {
             
           /* TODO(jbetz): support map fields */
           /* TODO(jbetz): support array fields */
-          /* TODO(jbetz): support enum fields */
+          /* TODO(jbetz): support union fields */
         }
       }
 

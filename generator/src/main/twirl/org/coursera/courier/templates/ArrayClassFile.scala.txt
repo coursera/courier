@@ -18,5 +18,6 @@ import scala.collection.GenTraversable
 import scala.collection.JavaConverters._
 import scala.collection.generic.CanBuildFrom
 import scala.collection.mutable
+import com.linkedin.data.template.Custom
 
 @ArrayClass(array)

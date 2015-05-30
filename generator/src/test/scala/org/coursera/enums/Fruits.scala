@@ -8,7 +8,7 @@ import com.linkedin.data.template.DataTemplateUtil
 
 
 
-@Generated(value = Array("Fruits"), comments = "Courier Data Template.", date = "Sat May 30 14:26:52 PDT 2015")
+@Generated(value = Array("Fruits"), comments = "Courier Data Template.", date = "Sat May 30 19:52:42 PDT 2015")
 object Fruits extends Enumeration {
   type Fruits = Value
 

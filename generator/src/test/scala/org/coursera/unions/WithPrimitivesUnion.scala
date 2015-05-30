@@ -24,7 +24,7 @@ import com.linkedin.data.ByteString
 
 
 
-@Generated(value = Array("WithPrimitivesUnion"), comments = "Courier Data Template.", date = "Fri May 29 19:37:17 PDT 2015")
+@Generated(value = Array("WithPrimitivesUnion"), comments = "Courier Data Template.", date = "Sat May 30 19:28:05 PDT 2015")
 final class WithPrimitivesUnion private (private val dataMap: DataMap)
   extends ScalaRecordTemplate(dataMap, WithPrimitivesUnion.SCHEMA) with Product {
   import WithPrimitivesUnion._
@@ -91,7 +91,7 @@ object WithPrimitivesUnion {
     
          
 
-  @Generated(value = Array("Union"), comments="Courier Data Template.", date = "Fri May 29 19:37:17 PDT 2015")
+  @Generated(value = Array("Union"), comments="Courier Data Template.", date = "Sat May 30 19:28:05 PDT 2015")
   sealed abstract class Union protected(private val value: DataMap)
     extends UnionTemplate(value, Union.SCHEMA) with Product {
     import Union._
@@ -183,6 +183,7 @@ object WithPrimitivesUnion {
           
         /* TODO(jbetz): support map fields */
         /* TODO(jbetz): support array fields */
+        /* TODO(jbetz): support union fields */
 
         private def setFields(value: Int): Unit = {
           
@@ -190,7 +191,7 @@ object WithPrimitivesUnion {
             
           /* TODO(jbetz): support map fields */
           /* TODO(jbetz): support array fields */
-          /* TODO(jbetz): support enum fields */
+          /* TODO(jbetz): support union fields */
         }
       }
 
@@ -220,6 +221,7 @@ object WithPrimitivesUnion {
           
         /* TODO(jbetz): support map fields */
         /* TODO(jbetz): support array fields */
+        /* TODO(jbetz): support union fields */
 
         private def setFields(value: Long): Unit = {
           
@@ -227,7 +229,7 @@ object WithPrimitivesUnion {
             
           /* TODO(jbetz): support map fields */
           /* TODO(jbetz): support array fields */
-          /* TODO(jbetz): support enum fields */
+          /* TODO(jbetz): support union fields */
         }
       }
 
@@ -257,6 +259,7 @@ object WithPrimitivesUnion {
           
         /* TODO(jbetz): support map fields */
         /* TODO(jbetz): support array fields */
+        /* TODO(jbetz): support union fields */
 
         private def setFields(value: Float): Unit = {
           
@@ -264,7 +267,7 @@ object WithPrimitivesUnion {
             
           /* TODO(jbetz): support map fields */
           /* TODO(jbetz): support array fields */
-          /* TODO(jbetz): support enum fields */
+          /* TODO(jbetz): support union fields */
         }
       }
 
@@ -294,6 +297,7 @@ object WithPrimitivesUnion {
           
         /* TODO(jbetz): support map fields */
         /* TODO(jbetz): support array fields */
+        /* TODO(jbetz): support union fields */
 
         private def setFields(value: Double): Unit = {
           
@@ -301,7 +305,7 @@ object WithPrimitivesUnion {
             
           /* TODO(jbetz): support map fields */
           /* TODO(jbetz): support array fields */
-          /* TODO(jbetz): support enum fields */
+          /* TODO(jbetz): support union fields */
         }
       }
 
@@ -331,6 +335,7 @@ object WithPrimitivesUnion {
           
         /* TODO(jbetz): support map fields */
         /* TODO(jbetz): support array fields */
+        /* TODO(jbetz): support union fields */
 
         private def setFields(value: Boolean): Unit = {
           
@@ -338,7 +343,7 @@ object WithPrimitivesUnion {
             
           /* TODO(jbetz): support map fields */
           /* TODO(jbetz): support array fields */
-          /* TODO(jbetz): support enum fields */
+          /* TODO(jbetz): support union fields */
         }
       }
 
@@ -368,6 +373,7 @@ object WithPrimitivesUnion {
           
         /* TODO(jbetz): support map fields */
         /* TODO(jbetz): support array fields */
+        /* TODO(jbetz): support union fields */
 
         private def setFields(value: String): Unit = {
           
@@ -375,7 +381,7 @@ object WithPrimitivesUnion {
             
           /* TODO(jbetz): support map fields */
           /* TODO(jbetz): support array fields */
-          /* TODO(jbetz): support enum fields */
+          /* TODO(jbetz): support union fields */
         }
       }
 
@@ -405,6 +411,7 @@ object WithPrimitivesUnion {
           
         /* TODO(jbetz): support map fields */
         /* TODO(jbetz): support array fields */
+        /* TODO(jbetz): support union fields */
 
         private def setFields(value: ByteString): Unit = {
           
@@ -412,7 +419,7 @@ object WithPrimitivesUnion {
             
           /* TODO(jbetz): support map fields */
           /* TODO(jbetz): support array fields */
-          /* TODO(jbetz): support enum fields */
+          /* TODO(jbetz): support union fields */
         }
       }
 

@@ -16,19 +16,18 @@
 
 package org.coursera.courier.generator
 
-import com.linkedin.data.ByteString
 import org.coursera.arrays.WithCustomTypesArray
 import org.coursera.arrays.WithPrimitivesArray
 import org.coursera.arrays.WithRecordArray
 import org.coursera.courier.data.BooleanArray
 import org.coursera.courier.data.BytesArray
+import org.coursera.courier.data.DataTemplates.DataConversion
 import org.coursera.courier.data.DoubleArray
 import org.coursera.courier.data.FloatArray
 import org.coursera.courier.data.IntArray
 import org.coursera.courier.data.LongArray
 import org.coursera.courier.data.StringArray
 import org.coursera.courier.generator.customtypes.CustomInt
-import org.coursera.courier.generator.customtypes.CustomIntCoercer
 import org.coursera.customtypes.CustomIntArray
 import org.coursera.enums.Fruits
 import org.coursera.enums.FruitsArray
@@ -43,10 +42,10 @@ object ArrayGeneratorTest extends SchemaFixtures with GeneratorTest {
   @BeforeClass
   def setup(): Unit = {
     generateTestSchemas(Seq(
-      Records.Empty.schema,
-      Records.WithRecordArray.schema,
-      Records.WithPrimitivesArray.schema,
-      Records.WithCustomTypesArray.schema))
+      Records.Empty,
+      Arrays.WithRecordArray,
+      Arrays.WithPrimitivesArray,
+      Arrays.WithCustomTypesArray))
   }
 }
 
@@ -57,8 +56,15 @@ class ArrayGeneratorTest extends GeneratorTest with SchemaFixtures with Assertio
     val original = WithRecordArray(
       EmptyArray(Empty(), Empty(), Empty()),
       FruitsArray(Fruits.APPLE, Fruits.BANANA, Fruits.ORANGE))
-    //println(original)
-    //println(mapToJson(original))
+    assert(mapToJson(original) ===
+      """{
+         |  "empties" : [ { }, { }, { } ],
+         |  "fruits" : [ "APPLE", "BANANA", "ORANGE" ]
+         |}""".stripMargin)
+
+    val roundTripped = WithRecordArray(roundTrip(original.data()), DataConversion.SetReadOnly)
+
+    assert(original === roundTripped)
   }
 
   @Test
@@ -71,13 +77,28 @@ class ArrayGeneratorTest extends GeneratorTest with SchemaFixtures with Assertio
       BooleanArray(false, true),
       StringArray("a", "b", "c"),
       BytesArray(bytes1, bytes2))
-    //println(mapToJson(original))
+    val roundTripped = WithPrimitivesArray(roundTrip(original.data()), DataConversion.SetReadOnly)
+    assert(mapToJson(original) ===
+      s"""{
+    |  "bytes" : [ "${'\\'}u0000${'\\'}u0001${'\\'}u0002", "${'\\'}u0003${'\\'}u0004${'\\'}u0005" ],
+    |  "longs" : [ 10, 20, 30 ],
+    |  "strings" : [ "a", "b", "c" ],
+    |  "doubles" : [ 11.1, 22.2, 33.3 ],
+    |  "booleans" : [ false, true ],
+    |  "floats" : [ 1.1, 2.2, 3.3 ],
+    |  "ints" : [ 1, 2, 3 ]
+    |}""".stripMargin)
+    assert(original === roundTripped)
   }
 
   @Test
   def testWithCustomTypesArray(): Unit = {
-    CustomIntCoercer.registerCoercer() // TODO: fix
     val original = WithCustomTypesArray(CustomIntArray(CustomInt(1), CustomInt(2), CustomInt(3)))
-    println(mapToJson(original))
+    val roundTripped = WithCustomTypesArray(roundTrip(original.data()), DataConversion.SetReadOnly)
+    assert(mapToJson(original) ===
+      """{
+        |  "ints" : [ 1, 2, 3 ]
+        |}""".stripMargin)
+    assert(original === roundTripped)
   }
 }

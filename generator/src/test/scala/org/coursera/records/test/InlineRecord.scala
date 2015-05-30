@@ -18,11 +18,13 @@ import scala.runtime.ScalaRunTime
 import com.linkedin.data.template.DataTemplateUtil
 import com.linkedin.data.schema.RecordDataSchema
 import javax.annotation.Generated
+import com.linkedin.data.schema.DataSchemaConstants
+import com.linkedin.data.ByteString
 
 
 
 
-@Generated(value = Array("InlineRecord"), comments = "Courier Data Template.", date = "Fri May 29 11:12:12 PDT 2015")
+@Generated(value = Array("InlineRecord"), comments = "Courier Data Template.", date = "Sat May 30 19:52:42 PDT 2015")
 final class InlineRecord private (private val dataMap: DataMap)
   extends ScalaRecordTemplate(dataMap, InlineRecord.SCHEMA) with Product {
   import InlineRecord._
@@ -79,7 +81,7 @@ final class InlineRecord private (private val dataMap: DataMap)
 }
 
 object InlineRecord {
-  private val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"record","name":"InlineRecord","namespace":"org.coursera.records.test","fields":[{"name":"value","type":"int"}]}""").asInstanceOf[RecordDataSchema]
+  val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"record","name":"InlineRecord","namespace":"org.coursera.records.test","fields":[{"name":"value","type":"int"}]}""").asInstanceOf[RecordDataSchema]
 
   
   

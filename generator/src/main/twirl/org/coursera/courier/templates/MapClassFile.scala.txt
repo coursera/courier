@@ -16,5 +16,6 @@ import scala.collection.generic.CanBuildFrom
 import scala.collection.immutable
 import scala.collection.mutable
 import scala.collection.JavaConverters._
+import com.linkedin.data.template.Custom
 
 @MapClass(map)

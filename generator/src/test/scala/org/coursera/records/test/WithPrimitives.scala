@@ -18,11 +18,13 @@ import scala.runtime.ScalaRunTime
 import com.linkedin.data.template.DataTemplateUtil
 import com.linkedin.data.schema.RecordDataSchema
 import javax.annotation.Generated
+import com.linkedin.data.schema.DataSchemaConstants
+import com.linkedin.data.ByteString
 
 
 
 
-@Generated(value = Array("WithPrimitives"), comments = "Courier Data Template.", date = "Fri May 29 11:12:11 PDT 2015")
+@Generated(value = Array("WithPrimitives"), comments = "Courier Data Template.", date = "Sat May 30 19:52:42 PDT 2015")
 final class WithPrimitives private (private val dataMap: DataMap)
   extends ScalaRecordTemplate(dataMap, WithPrimitives.SCHEMA) with Product {
   import WithPrimitives._
@@ -75,12 +77,12 @@ final class WithPrimitives private (private val dataMap: DataMap)
 
     
     
-        lazy val bytesField: com.linkedin.data.ByteString = obtainDirect(WithPrimitives.Fields.bytesField, classOf[com.linkedin.data.ByteString])
+        lazy val bytesField: ByteString = obtainDirect(WithPrimitives.Fields.bytesField, classOf[com.linkedin.data.ByteString])
       
   
 
   
-  private def setFields(intField: Int, longField: Long, floatField: Float, doubleField: Double, booleanField: Boolean, stringField: String, bytesField: com.linkedin.data.ByteString): Unit = {
+  private def setFields(intField: Int, longField: Long, floatField: Float, doubleField: Double, booleanField: Boolean, stringField: String, bytesField: ByteString): Unit = {
     
       
       
@@ -146,7 +148,7 @@ final class WithPrimitives private (private val dataMap: DataMap)
 
   
   
-    def copy(intField: Int = this.intField, longField: Long = this.longField, floatField: Float = this.floatField, doubleField: Double = this.doubleField, booleanField: Boolean = this.booleanField, stringField: String = this.stringField, bytesField: com.linkedin.data.ByteString = this.bytesField): WithPrimitives = {
+    def copy(intField: Int = this.intField, longField: Long = this.longField, floatField: Float = this.floatField, doubleField: Double = this.doubleField, booleanField: Boolean = this.booleanField, stringField: String = this.stringField, bytesField: ByteString = this.bytesField): WithPrimitives = {
       val dataMap = new DataMap
       val result = new WithPrimitives(dataMap)
       result.setFields(intField, longField, floatField, doubleField, booleanField, stringField, bytesField)
@@ -157,7 +159,7 @@ final class WithPrimitives private (private val dataMap: DataMap)
 }
 
 object WithPrimitives {
-  private val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"record","name":"WithPrimitives","namespace":"org.coursera.records.test","fields":[{"name":"intField","type":"int"},{"name":"longField","type":"long"},{"name":"floatField","type":"float"},{"name":"doubleField","type":"double"},{"name":"booleanField","type":"boolean"},{"name":"stringField","type":"string"},{"name":"bytesField","type":"bytes"}]}""").asInstanceOf[RecordDataSchema]
+  val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"record","name":"WithPrimitives","namespace":"org.coursera.records.test","fields":[{"name":"intField","type":"int"},{"name":"longField","type":"long"},{"name":"floatField","type":"float"},{"name":"doubleField","type":"double"},{"name":"booleanField","type":"boolean"},{"name":"stringField","type":"string"},{"name":"bytesField","type":"bytes"}]}""").asInstanceOf[RecordDataSchema]
 
   
   
@@ -190,7 +192,7 @@ object WithPrimitives {
     val bytesField = WithPrimitives.SCHEMA.getField("bytesField")
   }
 
-  def apply(intField: Int, longField: Long, floatField: Float, doubleField: Double, booleanField: Boolean, stringField: String, bytesField: com.linkedin.data.ByteString): WithPrimitives = {
+  def apply(intField: Int, longField: Long, floatField: Float, doubleField: Double, booleanField: Boolean, stringField: String, bytesField: ByteString): WithPrimitives = {
     val dataMap = new DataMap
     val result = new WithPrimitives(dataMap)
     result.setFields(intField, longField, floatField, doubleField, booleanField, stringField, bytesField)
@@ -204,7 +206,7 @@ object WithPrimitives {
 
   
   
-      def unapply(record: WithPrimitives): Option[(Int, Long, Float, Double, Boolean, String, com.linkedin.data.ByteString)] = {
+      def unapply(record: WithPrimitives): Option[(Int, Long, Float, Double, Boolean, String, ByteString)] = {
         try {
           Some((record.intField, record.longField, record.floatField, record.doubleField, record.booleanField, record.stringField, record.bytesField))
         } catch {

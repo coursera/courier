@@ -24,7 +24,7 @@ import com.linkedin.data.ByteString
 
 
 
-@Generated(value = Array("WithPrimitiveCustomTypesUnion"), comments = "Courier Data Template.", date = "Fri May 29 19:37:17 PDT 2015")
+@Generated(value = Array("WithPrimitiveCustomTypesUnion"), comments = "Courier Data Template.", date = "Sat May 30 19:28:05 PDT 2015")
 final class WithPrimitiveCustomTypesUnion private (private val dataMap: DataMap)
   extends ScalaRecordTemplate(dataMap, WithPrimitiveCustomTypesUnion.SCHEMA) with Product {
   import WithPrimitiveCustomTypesUnion._
@@ -91,7 +91,7 @@ object WithPrimitiveCustomTypesUnion {
     
          
 
-  @Generated(value = Array("Union"), comments="Courier Data Template.", date = "Fri May 29 19:37:17 PDT 2015")
+  @Generated(value = Array("Union"), comments="Courier Data Template.", date = "Sat May 30 19:28:05 PDT 2015")
   sealed abstract class Union protected(private val value: DataMap)
     extends UnionTemplate(value, Union.SCHEMA) with Product {
     import Union._
@@ -141,6 +141,7 @@ object WithPrimitiveCustomTypesUnion {
           
         /* TODO(jbetz): support map fields */
         /* TODO(jbetz): support array fields */
+        /* TODO(jbetz): support union fields */
 
         private def setFields(value: org.coursera.courier.generator.customtypes.CustomInt): Unit = {
           
@@ -148,7 +149,7 @@ object WithPrimitiveCustomTypesUnion {
             
           /* TODO(jbetz): support map fields */
           /* TODO(jbetz): support array fields */
-          /* TODO(jbetz): support enum fields */
+          /* TODO(jbetz): support union fields */
         }
       }
 

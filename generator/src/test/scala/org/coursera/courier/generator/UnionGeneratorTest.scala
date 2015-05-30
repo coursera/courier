@@ -16,18 +16,14 @@
 
 package org.coursera.courier.generator
 
-import com.linkedin.data.ByteString
 import org.coursera.courier.data.DataTemplates.DataConversion
 import org.coursera.courier.generator.customtypes.CustomInt
 import org.coursera.courier.generator.customtypes.CustomIntCoercer
 import org.coursera.enums.Fruits
 import org.coursera.records.test.Empty
 import org.coursera.unions.WithComplexTypesUnion
-import org.coursera.unions.WithComplexTypesUnion
-import org.coursera.unions.WithComplexTypesUnion
 import org.coursera.unions.WithPrimitiveCustomTypesUnion
 import org.coursera.unions.WithPrimitivesUnion
-import org.coursera.unions.WithRecordUnion
 import org.junit.BeforeClass
 import org.junit.Test
 import org.scalatest.junit.AssertionsForJUnit
@@ -37,11 +33,11 @@ object UnionGeneratorTest extends SchemaFixtures with GeneratorTest {
   @BeforeClass
   def setup(): Unit = {
     generateTestSchemas(Seq(
-      Records.Empty.schema,
-      Records.WithComplexTypesUnion.schema,
-      Records.WithPrimitivesUnion.schema,
-      Records.WithPrimitiveTyperefsUnion.schema,
-      Records.WithPrimitiveCustomTypesUnion.schema))
+      Records.Empty,
+      Unions.WithComplexTypesUnion,
+      Unions.WithPrimitivesUnion,
+      Unions.WithPrimitiveTyperefsUnion,
+      Unions.WithPrimitiveCustomTypesUnion))
   }
 }
 
@@ -49,15 +45,16 @@ class UnionGeneratorTest extends GeneratorTest with SchemaFixtures with Assertio
 
   @Test
   def testWithComplexTypesUnion(): Unit = {
+    val recordMember = WithComplexTypesUnion.Union.EmptyMember(Empty())
+    val enumMember = WithComplexTypesUnion.Union.FruitsMember(Fruits.APPLE)
     val memberLiterals = Seq(
-      WithComplexTypesUnion.Union.EmptyMember(Empty()),
-      WithComplexTypesUnion.Union.FruitsMember(Fruits.APPLE))
+      recordMember,
+      enumMember)
 
     memberLiterals.foreach { memberLiteral =>
-      val original = WithComplexTypesUnion(WithComplexTypesUnion.Union.EmptyMember(Empty()))
-      //mapToJson(original.data()) === ""
+      val original = WithComplexTypesUnion(memberLiteral)
       val roundTripped = WithComplexTypesUnion(
-        readJsonToMap(mapToJson(original.data())), DataConversion.SetReadOnly)
+        roundTrip(original.data()), DataConversion.SetReadOnly)
 
       val WithComplexTypesUnion(unionMember) = original
       val reconstructed = WithComplexTypesUnion(unionMember)
@@ -66,26 +63,44 @@ class UnionGeneratorTest extends GeneratorTest with SchemaFixtures with Assertio
       assert(original === reconstructed)
     }
 
-    // TODO: test values
+    assert(mapToJson(WithComplexTypesUnion(recordMember).data()) ===
+      """{
+        |  "union" : {
+        |    "org.coursera.records.test.Empty" : { }
+        |  }
+        |}""".stripMargin)
+
+    assert(mapToJson(WithComplexTypesUnion(enumMember).data()) ===
+      """{
+        |  "union" : {
+        |    "org.coursera.enums.Fruits" : "APPLE"
+        |  }
+        |}""".stripMargin)
   }
 
   @Test
   def testWithPrimitivesUnion(): Unit = {
+    val intMember = WithPrimitivesUnion.Union.IntMember(1)
+    val longMember = WithPrimitivesUnion.Union.LongMember(2L)
+    val floatMember = WithPrimitivesUnion.Union.FloatMember(3.0f)
+    val doubleMember = WithPrimitivesUnion.Union.DoubleMember(4.0d)
+    val stringMember = WithPrimitivesUnion.Union.StringMember("str")
+    val booleanMember = WithPrimitivesUnion.Union.BooleanMember(true)
+    val bytesMember = WithPrimitivesUnion.Union.ByteStringMember(bytes1)
     val memberLiterals = Seq(
-      WithPrimitivesUnion.Union.IntMember(1),
-      WithPrimitivesUnion.Union.LongMember(2),
-      WithPrimitivesUnion.Union.FloatMember(3),
-      WithPrimitivesUnion.Union.DoubleMember(4),
-      WithPrimitivesUnion.Union.StringMember("str"),
-      WithPrimitivesUnion.Union.BooleanMember(true),
-      WithPrimitivesUnion.Union.ByteStringMember(ByteString.copy(Array[Byte](0x1,0x2,0x3))))
+      intMember,
+      longMember,
+      floatMember,
+      doubleMember,
+      stringMember,
+      booleanMember,
+      bytesMember)
+
 
     memberLiterals.foreach { memberLiteral =>
-
       val original = WithPrimitivesUnion(memberLiteral)
-      //mapToJson(original.data()) === ""
       val roundTripped = WithPrimitivesUnion(
-        readJsonToMap(mapToJson(original.data())), DataConversion.SetReadOnly)
+        roundTrip(original.data()), DataConversion.SetReadOnly)
 
       val WithPrimitivesUnion(unionMember) = original
       val reconstructed = WithPrimitivesUnion(unionMember)
@@ -93,12 +108,61 @@ class UnionGeneratorTest extends GeneratorTest with SchemaFixtures with Assertio
       assert(original === roundTripped)
       assert(original === reconstructed)
     }
+
+    assert(mapToJson(WithPrimitivesUnion(intMember).data()) ===
+      """{
+        |  "union" : {
+        |    "int" : 1
+        |  }
+        |}""".stripMargin)
+
+    assert(mapToJson(WithPrimitivesUnion(longMember).data()) ===
+      """{
+        |  "union" : {
+        |    "long" : 2
+        |  }
+        |}""".stripMargin)
+
+    assert(mapToJson(WithPrimitivesUnion(floatMember).data()) ===
+      """{
+        |  "union" : {
+        |    "float" : 3.0
+        |  }
+        |}""".stripMargin)
+
+    assert(mapToJson(WithPrimitivesUnion(doubleMember).data()) ===
+      """{
+        |  "union" : {
+        |    "double" : 4.0
+        |  }
+        |}""".stripMargin)
+
+    assert(mapToJson(WithPrimitivesUnion(booleanMember).data()) ===
+      """{
+        |  "union" : {
+        |    "boolean" : true
+        |  }
+        |}""".stripMargin)
+
+    assert(mapToJson(WithPrimitivesUnion(stringMember).data()) ===
+      """{
+        |  "union" : {
+        |    "string" : "str"
+        |  }
+        |}""".stripMargin)
+    assert(mapToJson(WithPrimitivesUnion(bytesMember).data()) ===
+      s"""{
+        |  "union" : {
+        |    "bytes" : "${'\\'}u0000${'\\'}u0001${'\\'}u0002"
+        |  }
+        |}""".stripMargin)
+
   }
 
   @Test
   def testWithPrimitiveCustomTypesUnion(): Unit = {
 
-    // TODO(jbetz): Register coercers in Union as needed
+    // TODO(jbetz): Register coercers correctly for unions
     CustomIntCoercer.registerCoercer()
 
     val original = WithPrimitiveCustomTypesUnion(
@@ -106,7 +170,7 @@ class UnionGeneratorTest extends GeneratorTest with SchemaFixtures with Assertio
           CustomInt(1)))
 
     val roundTripped = WithPrimitiveCustomTypesUnion(
-      readJsonToMap(mapToJson(original.data())), DataConversion.SetReadOnly)
+      roundTrip(original.data()), DataConversion.SetReadOnly)
 
     val WithPrimitiveCustomTypesUnion(unionMember) = original
     val reconstructed = WithPrimitiveCustomTypesUnion(unionMember)
@@ -118,5 +182,12 @@ class UnionGeneratorTest extends GeneratorTest with SchemaFixtures with Assertio
       val c = wrapper.union.asInstanceOf[WithPrimitiveCustomTypesUnion.Union.CustomIntMember].value
       assert(c === CustomInt(1))
     }
+
+    assert(mapToJson(original.data()) ===
+      """{
+        |  "union" : {
+        |    "int" : 1
+        |  }
+        |}""".stripMargin)
   }
 }

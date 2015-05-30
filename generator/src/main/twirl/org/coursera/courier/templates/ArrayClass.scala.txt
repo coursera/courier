@@ -50,6 +50,14 @@ final class @(array.scalaType)(private val dataList: DataList)
 object @(array.scalaType) {
   val SCHEMA = DataTemplateUtil.parseSchema(@("\"\"\"" + SchemaToJsonEncoder.schemaToJson(array.schema, JsonBuilder.Pretty.COMPACT) + "\"\"\"")).asInstanceOf[ArrayDataSchema]
 
+  @* Register custom types and coercers. *@
+  @array.customInfo.map { customInfo =>
+    Custom.initializeCustomClass(classOf[@(customInfo.customClass.fqn)])
+    @customInfo.coercerClass.map { coercer =>
+      @(coercer.fqn).registerCoercer()
+    }
+  }
+
   val empty = @(array.scalaType)()
 
   def apply(elems: @(array.itemClass.fqn)*): @(array.scalaType) = {

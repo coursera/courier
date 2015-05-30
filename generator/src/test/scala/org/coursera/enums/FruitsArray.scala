@@ -18,10 +18,11 @@ import scala.collection.GenTraversable
 import scala.collection.JavaConverters._
 import scala.collection.generic.CanBuildFrom
 import scala.collection.mutable
+import com.linkedin.data.template.Custom
 
 
 
-@Generated(value = Array("FruitsArray"), comments="Courier Data Template.", date = "Sat May 30 14:21:22 PDT 2015")
+@Generated(value = Array("FruitsArray"), comments="Courier Data Template.", date = "Sat May 30 17:14:08 PDT 2015")
 final class FruitsArray(private val dataList: DataList)
   extends IndexedSeq[org.coursera.enums.Fruits.Fruits]
   with Product
@@ -53,6 +54,9 @@ final class FruitsArray(private val dataList: DataList)
 
 object FruitsArray {
   val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"array","items":{"type":"enum","name":"Fruits","namespace":"org.coursera.enums","symbols":["APPLE","BANANA","ORANGE","PINEAPPLE"],"symbolDocs":{"APPLE":"An Apple."}}}""").asInstanceOf[ArrayDataSchema]
+
+  
+  
 
   val empty = FruitsArray()
 

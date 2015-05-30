@@ -16,10 +16,11 @@ import scala.collection.generic.CanBuildFrom
 import scala.collection.immutable
 import scala.collection.mutable
 import scala.collection.JavaConverters._
+import com.linkedin.data.template.Custom
 
 
 
-@Generated(value = Array("CustomIntMap"), comments="Courier Data Template.", date = "Sat May 30 14:26:52 PDT 2015")
+@Generated(value = Array("CustomIntMap"), comments="Courier Data Template.", date = "Sat May 30 17:21:40 PDT 2015")
 final class CustomIntMap(private val dataMap: DataMap)
   extends immutable.Iterable[(String, org.coursera.courier.generator.customtypes.CustomInt)]
   with Map[String, org.coursera.courier.generator.customtypes.CustomInt]
@@ -82,6 +83,14 @@ final class CustomIntMap(private val dataMap: DataMap)
 
 object CustomIntMap {
   val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"map","values":{"type":"typeref","name":"CustomInt","namespace":"org.coursera.customtypes","ref":"int","java":{"coercerClass":"org.coursera.courier.generator.customtypes.CustomIntCoercer","class":"org.coursera.courier.generator.customtypes.CustomInt"}}}""").asInstanceOf[MapDataSchema]
+
+  
+  
+    Custom.initializeCustomClass(classOf[org.coursera.courier.generator.customtypes.CustomInt])
+    
+      org.coursera.courier.generator.customtypes.CustomIntCoercer.registerCoercer()
+    
+  
 
   val empty = CustomIntMap()
 

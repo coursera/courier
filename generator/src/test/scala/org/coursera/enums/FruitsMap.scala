@@ -16,10 +16,11 @@ import scala.collection.generic.CanBuildFrom
 import scala.collection.immutable
 import scala.collection.mutable
 import scala.collection.JavaConverters._
+import com.linkedin.data.template.Custom
 
 
 
-@Generated(value = Array("FruitsMap"), comments="Courier Data Template.", date = "Sat May 30 14:26:52 PDT 2015")
+@Generated(value = Array("FruitsMap"), comments="Courier Data Template.", date = "Sat May 30 17:21:40 PDT 2015")
 final class FruitsMap(private val dataMap: DataMap)
   extends immutable.Iterable[(String, org.coursera.enums.Fruits.Fruits)]
   with Map[String, org.coursera.enums.Fruits.Fruits]
@@ -82,6 +83,9 @@ final class FruitsMap(private val dataMap: DataMap)
 
 object FruitsMap {
   val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"map","values":{"type":"enum","name":"Fruits","namespace":"org.coursera.enums","symbols":["APPLE","BANANA","ORANGE","PINEAPPLE"],"symbolDocs":{"APPLE":"An Apple."}}}""").asInstanceOf[MapDataSchema]
+
+  
+  
 
   val empty = FruitsMap()
 

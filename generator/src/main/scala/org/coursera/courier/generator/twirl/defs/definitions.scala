@@ -123,8 +123,8 @@ object Definition {
       case enum: EnumTemplateSpec => EnumDefinition(enum)
       case array: ArrayTemplateSpec => ArrayDefinition(array)
       case map: MapTemplateSpec => MapDefinition(map)
-      case typeref: TyperefTemplateSpec => ???
-      case fixed: FixedTemplateSpec => ???
+      case typeref: TyperefTemplateSpec => ??? // TODO
+      case fixed: FixedTemplateSpec => ??? // TODO
       case primitive: PrimitiveTemplateSpec => PrimitiveDefinition(primitive)
       case rawClass: ClassTemplateSpec => ClassDefinition(rawClass)
       case _ =>
@@ -183,6 +183,7 @@ case class ArrayDefinition(
     itemClass: Definition,
     itemDataClass: Option[Definition],
     customInfo: Option[CustomInfoDefinition]) extends Definition
+
 object ArrayDefinition {
   def apply(spec: ArrayTemplateSpec): ArrayDefinition = {
     ArrayDefinition(
@@ -195,7 +196,11 @@ object ArrayDefinition {
       Option(spec.getCustomInfo).map(CustomInfoDefinition))
   }
 
-  def forPrimitive(scalaType: String, namespace: String, primitiveDef: PrimitiveDefinition, schema: ArrayDataSchema): ArrayDefinition = {
+  def forPrimitive(
+      scalaType: String,
+      namespace: String,
+      primitiveDef: PrimitiveDefinition,
+      schema: ArrayDataSchema): ArrayDefinition = {
     ArrayDefinition(
       scalaType,
       Some(namespace),
@@ -229,7 +234,11 @@ object MapDefinition {
       Option(spec.getValueDataClass).map(Definition(_)),
       Option(spec.getCustomInfo).map(CustomInfoDefinition))
   }
-  def forPrimitive(scalaType: String, namespace: String, primitiveDef: PrimitiveDefinition, schema: MapDataSchema): MapDefinition = {
+  def forPrimitive(
+      scalaType: String,
+      namespace: String,
+      primitiveDef: PrimitiveDefinition,
+      schema: MapDataSchema): MapDefinition = {
     MapDefinition(
       scalaType,
       Some(namespace),

@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-package org.coursera.courier.generator
+package org.coursera.courier.generator.customtypes
 
 import com.linkedin.data.template.Custom
 import com.linkedin.data.template.DirectCoercer

@@ -18,13 +18,13 @@ package org.coursera.courier.generator
 
 import org.coursera.courier.data.BooleanMap
 import org.coursera.courier.data.BytesMap
+import org.coursera.courier.data.DataTemplates.DataConversion
 import org.coursera.courier.data.DoubleMap
 import org.coursera.courier.data.FloatMap
 import org.coursera.courier.data.IntMap
 import org.coursera.courier.data.LongMap
 import org.coursera.courier.data.StringMap
 import org.coursera.courier.generator.customtypes.CustomInt
-import org.coursera.courier.generator.customtypes.CustomIntCoercer
 import org.coursera.customtypes.CustomIntMap
 import org.coursera.enums.Fruits
 import org.coursera.enums.FruitsMap
@@ -42,10 +42,10 @@ object MapGeneratorTest extends SchemaFixtures with GeneratorTest {
   @BeforeClass
   def setup(): Unit = {
     generateTestSchemas(Seq(
-      Records.Empty.schema,
-      Records.WithComplexTypesMap.schema,
-      Records.WithPrimitivesMap.schema,
-      Records.WithCustomTypesMap.schema))
+      Records.Empty,
+      Maps.WithComplexTypesMap,
+      Maps.WithPrimitivesMap,
+      Maps.WithCustomTypesMap))
   }
 }
 
@@ -56,7 +56,22 @@ class MapGeneratorTest extends GeneratorTest with SchemaFixtures with Assertions
     val original = WithComplexTypesMap(
       EmptyMap("a" -> Empty(), "b" -> Empty(), "c" -> Empty()),
       FruitsMap("a" -> Fruits.APPLE, "b" -> Fruits.BANANA, "c" -> Fruits.ORANGE))
-    //println(mapToJson(original))
+    val roundTripped = WithComplexTypesMap(roundTrip(original.data()), DataConversion.SetReadOnly)
+    assert(original === roundTripped)
+
+    assert(mapToJson(original) ===
+    """{
+      |  "empties" : {
+      |    "b" : { },
+      |    "c" : { },
+      |    "a" : { }
+      |  },
+      |  "fruits" : {
+      |    "b" : "BANANA",
+      |    "c" : "ORANGE",
+      |    "a" : "APPLE"
+      |  }
+      |}""".stripMargin)
   }
 
   @Test
@@ -69,14 +84,61 @@ class MapGeneratorTest extends GeneratorTest with SchemaFixtures with Assertions
       BooleanMap("a" -> true, "b" -> false, "c" -> true),
       StringMap("a" -> "string1", "b" -> "string2", "c" -> "string3"),
       BytesMap("a" -> bytes1, "b" -> bytes2, "c" -> bytes3))
-    //println(mapToJson(original))
+    val roundTripped = WithPrimitivesMap(roundTrip(original.data()), DataConversion.SetReadOnly)
+    assert(mapToJson(original) ===
+      s"""{
+        |  "bytes" : {
+        |    "b" : "${'\\'}u0003${'\\'}u0004${'\\'}u0005",
+        |    "c" : "${'\\'}u0006${'\\'}u0007${'\\'}b",
+        |    "a" : "${'\\'}u0000${'\\'}u0001${'\\'}u0002"
+        |  },
+        |  "longs" : {
+        |    "b" : 20,
+        |    "c" : 30,
+        |    "a" : 10
+        |  },
+        |  "strings" : {
+        |    "b" : "string2",
+        |    "c" : "string3",
+        |    "a" : "string1"
+        |  },
+        |  "doubles" : {
+        |    "b" : 22.2,
+        |    "c" : 33.3,
+        |    "a" : 11.1
+        |  },
+        |  "booleans" : {
+        |    "b" : false,
+        |    "c" : true,
+        |    "a" : true
+        |  },
+        |  "floats" : {
+        |    "b" : 2.2,
+        |    "c" : 3.3,
+        |    "a" : 1.1
+        |  },
+        |  "ints" : {
+        |    "b" : 2,
+        |    "c" : 3,
+        |    "a" : 1
+        |  }
+        |}""".stripMargin)
+    assert(original === roundTripped)
   }
 
   @Test
   def testWithCustomTypesMap(): Unit = {
-    CustomIntCoercer.registerCoercer() // TODO: fix
     val original = WithCustomTypesMap(
       CustomIntMap("a" -> CustomInt(1), "b" -> CustomInt(2), "c" -> CustomInt(3)))
-    println(mapToJson(original))
+    val roundTripped = WithCustomTypesMap(roundTrip(original.data()), DataConversion.SetReadOnly)
+    assert(mapToJson(original) ===
+      """{
+        |  "ints" : {
+        |    "b" : 2,
+        |    "c" : 3,
+        |    "a" : 1
+        |  }
+        |}""".stripMargin)
+    assert(original === roundTripped)
   }
 }

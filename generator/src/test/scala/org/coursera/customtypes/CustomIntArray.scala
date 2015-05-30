@@ -18,10 +18,11 @@ import scala.collection.GenTraversable
 import scala.collection.JavaConverters._
 import scala.collection.generic.CanBuildFrom
 import scala.collection.mutable
+import com.linkedin.data.template.Custom
 
 
 
-@Generated(value = Array("CustomIntArray"), comments="Courier Data Template.", date = "Sat May 30 14:21:22 PDT 2015")
+@Generated(value = Array("CustomIntArray"), comments="Courier Data Template.", date = "Sat May 30 17:14:08 PDT 2015")
 final class CustomIntArray(private val dataList: DataList)
   extends IndexedSeq[org.coursera.courier.generator.customtypes.CustomInt]
   with Product
@@ -53,6 +54,14 @@ final class CustomIntArray(private val dataList: DataList)
 
 object CustomIntArray {
   val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"array","items":{"type":"typeref","name":"CustomInt","namespace":"org.coursera.customtypes","ref":"int","java":{"coercerClass":"org.coursera.courier.generator.customtypes.CustomIntCoercer","class":"org.coursera.courier.generator.customtypes.CustomInt"}}}""").asInstanceOf[ArrayDataSchema]
+
+  
+  
+    Custom.initializeCustomClass(classOf[org.coursera.courier.generator.customtypes.CustomInt])
+    
+      org.coursera.courier.generator.customtypes.CustomIntCoercer.registerCoercer()
+    
+  
 
   val empty = CustomIntArray()
 

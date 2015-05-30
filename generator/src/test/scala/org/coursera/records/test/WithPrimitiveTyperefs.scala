@@ -18,11 +18,13 @@ import scala.runtime.ScalaRunTime
 import com.linkedin.data.template.DataTemplateUtil
 import com.linkedin.data.schema.RecordDataSchema
 import javax.annotation.Generated
+import com.linkedin.data.schema.DataSchemaConstants
+import com.linkedin.data.ByteString
 
 
 
 
-@Generated(value = Array("WithPrimitiveTyperefs"), comments = "Courier Data Template.", date = "Fri May 29 11:12:12 PDT 2015")
+@Generated(value = Array("WithPrimitiveTyperefs"), comments = "Courier Data Template.", date = "Sat May 30 19:52:42 PDT 2015")
 final class WithPrimitiveTyperefs private (private val dataMap: DataMap)
   extends ScalaRecordTemplate(dataMap, WithPrimitiveTyperefs.SCHEMA) with Product {
   import WithPrimitiveTyperefs._
@@ -75,12 +77,12 @@ final class WithPrimitiveTyperefs private (private val dataMap: DataMap)
 
     
     
-        lazy val bytesField: com.linkedin.data.ByteString = obtainDirect(WithPrimitiveTyperefs.Fields.bytesField, classOf[com.linkedin.data.ByteString])
+        lazy val bytesField: ByteString = obtainDirect(WithPrimitiveTyperefs.Fields.bytesField, classOf[com.linkedin.data.ByteString])
       
   
 
   
-  private def setFields(intField: Int, longField: Long, floatField: Float, doubleField: Double, booleanField: Boolean, stringField: String, bytesField: com.linkedin.data.ByteString): Unit = {
+  private def setFields(intField: Int, longField: Long, floatField: Float, doubleField: Double, booleanField: Boolean, stringField: String, bytesField: ByteString): Unit = {
     
       
       
@@ -146,7 +148,7 @@ final class WithPrimitiveTyperefs private (private val dataMap: DataMap)
 
   
   
-    def copy(intField: Int = this.intField, longField: Long = this.longField, floatField: Float = this.floatField, doubleField: Double = this.doubleField, booleanField: Boolean = this.booleanField, stringField: String = this.stringField, bytesField: com.linkedin.data.ByteString = this.bytesField): WithPrimitiveTyperefs = {
+    def copy(intField: Int = this.intField, longField: Long = this.longField, floatField: Float = this.floatField, doubleField: Double = this.doubleField, booleanField: Boolean = this.booleanField, stringField: String = this.stringField, bytesField: ByteString = this.bytesField): WithPrimitiveTyperefs = {
       val dataMap = new DataMap
       val result = new WithPrimitiveTyperefs(dataMap)
       result.setFields(intField, longField, floatField, doubleField, booleanField, stringField, bytesField)
@@ -157,7 +159,7 @@ final class WithPrimitiveTyperefs private (private val dataMap: DataMap)
 }
 
 object WithPrimitiveTyperefs {
-  private val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"record","name":"WithPrimitiveTyperefs","namespace":"org.coursera.records.test","fields":[{"name":"intField","type":{"type":"typeref","name":"IntTyperef","ref":"int"}},{"name":"longField","type":{"type":"typeref","name":"LongTyperef","ref":"long"}},{"name":"floatField","type":{"type":"typeref","name":"FloatTyperef","ref":"float"}},{"name":"doubleField","type":{"type":"typeref","name":"DoubleTyperef","ref":"double"}},{"name":"booleanField","type":{"type":"typeref","name":"BooleanTyperef","ref":"boolean"}},{"name":"stringField","type":{"type":"typeref","name":"StringTyperef","ref":"string"}},{"name":"bytesField","type":{"type":"typeref","name":"BytesTyperef","ref":"bytes"}}]}""").asInstanceOf[RecordDataSchema]
+  val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"record","name":"WithPrimitiveTyperefs","namespace":"org.coursera.records.test","fields":[{"name":"intField","type":{"type":"typeref","name":"IntTyperef","ref":"int"}},{"name":"longField","type":{"type":"typeref","name":"LongTyperef","ref":"long"}},{"name":"floatField","type":{"type":"typeref","name":"FloatTyperef","ref":"float"}},{"name":"doubleField","type":{"type":"typeref","name":"DoubleTyperef","ref":"double"}},{"name":"booleanField","type":{"type":"typeref","name":"BooleanTyperef","ref":"boolean"}},{"name":"stringField","type":{"type":"typeref","name":"StringTyperef","ref":"string"}},{"name":"bytesField","type":{"type":"typeref","name":"BytesTyperef","ref":"bytes"}}]}""").asInstanceOf[RecordDataSchema]
 
   
   
@@ -190,7 +192,7 @@ object WithPrimitiveTyperefs {
     val bytesField = WithPrimitiveTyperefs.SCHEMA.getField("bytesField")
   }
 
-  def apply(intField: Int, longField: Long, floatField: Float, doubleField: Double, booleanField: Boolean, stringField: String, bytesField: com.linkedin.data.ByteString): WithPrimitiveTyperefs = {
+  def apply(intField: Int, longField: Long, floatField: Float, doubleField: Double, booleanField: Boolean, stringField: String, bytesField: ByteString): WithPrimitiveTyperefs = {
     val dataMap = new DataMap
     val result = new WithPrimitiveTyperefs(dataMap)
     result.setFields(intField, longField, floatField, doubleField, booleanField, stringField, bytesField)
@@ -204,7 +206,7 @@ object WithPrimitiveTyperefs {
 
   
   
-      def unapply(record: WithPrimitiveTyperefs): Option[(Int, Long, Float, Double, Boolean, String, com.linkedin.data.ByteString)] = {
+      def unapply(record: WithPrimitiveTyperefs): Option[(Int, Long, Float, Double, Boolean, String, ByteString)] = {
         try {
           Some((record.intField, record.longField, record.floatField, record.doubleField, record.booleanField, record.stringField, record.bytesField))
         } catch {

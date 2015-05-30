@@ -37,7 +37,9 @@ trait GeneratorTest {
 
       val baseDir = sys.props("project.dir") + "/src/test/scala"
       generated.foreach { generatedCode =>
-        val relativePath = new File(baseDir, generatedCode.compilationUnit.namespace.replace('.', File.separatorChar))
+        val relativePath = new File(
+          baseDir,
+          generatedCode.compilationUnit.namespace.replace('.', File.separatorChar))
         val filename = generatedCode.compilationUnit.name
         relativePath.mkdirs()
         val file = new File(relativePath, filename + ".scala")

@@ -16,10 +16,11 @@ import scala.collection.generic.CanBuildFrom
 import scala.collection.immutable
 import scala.collection.mutable
 import scala.collection.JavaConverters._
+import com.linkedin.data.template.Custom
 
 
 
-@Generated(value = Array("EmptyMap"), comments="Courier Data Template.", date = "Sat May 30 14:26:52 PDT 2015")
+@Generated(value = Array("EmptyMap"), comments="Courier Data Template.", date = "Sat May 30 17:21:40 PDT 2015")
 final class EmptyMap(private val dataMap: DataMap)
   extends immutable.Iterable[(String, org.coursera.records.test.Empty)]
   with Map[String, org.coursera.records.test.Empty]
@@ -82,6 +83,9 @@ final class EmptyMap(private val dataMap: DataMap)
 
 object EmptyMap {
   val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"map","values":{"type":"record","name":"Empty","namespace":"org.coursera.records.test","fields":[]}}""").asInstanceOf[MapDataSchema]
+
+  
+  
 
   val empty = EmptyMap()
 

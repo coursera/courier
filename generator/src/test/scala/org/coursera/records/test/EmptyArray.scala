@@ -18,10 +18,11 @@ import scala.collection.GenTraversable
 import scala.collection.JavaConverters._
 import scala.collection.generic.CanBuildFrom
 import scala.collection.mutable
+import com.linkedin.data.template.Custom
 
 
 
-@Generated(value = Array("EmptyArray"), comments="Courier Data Template.", date = "Sat May 30 14:21:22 PDT 2015")
+@Generated(value = Array("EmptyArray"), comments="Courier Data Template.", date = "Sat May 30 17:14:08 PDT 2015")
 final class EmptyArray(private val dataList: DataList)
   extends IndexedSeq[org.coursera.records.test.Empty]
   with Product
@@ -53,6 +54,9 @@ final class EmptyArray(private val dataList: DataList)
 
 object EmptyArray {
   val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"array","items":{"type":"record","name":"Empty","namespace":"org.coursera.records.test","fields":[]}}""").asInstanceOf[ArrayDataSchema]
+
+  
+  
 
   val empty = EmptyArray()
 

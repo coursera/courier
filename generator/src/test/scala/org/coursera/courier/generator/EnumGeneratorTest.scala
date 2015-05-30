@@ -26,7 +26,7 @@ object EnumGeneratorTest extends SchemaFixtures with GeneratorTest {
   @BeforeClass
   def setup(): Unit = {
     generateTestSchemas(Seq(
-      Records.Fruits.schema))
+      Enums.Fruits))
   }
 }
 

@@ -80,6 +80,14 @@ final class @(map.scalaType)(private val dataMap: DataMap)
 object @(map.scalaType) {
   val SCHEMA = DataTemplateUtil.parseSchema(@("\"\"\"" + SchemaToJsonEncoder.schemaToJson(map.schema, JsonBuilder.Pretty.COMPACT) + "\"\"\"")).asInstanceOf[MapDataSchema]
 
+  @* Register custom types and coercers. *@
+  @map.customInfo.map { customInfo =>
+    Custom.initializeCustomClass(classOf[@(customInfo.customClass.fqn)])
+    @customInfo.coercerClass.map { coercer =>
+      @(coercer.fqn).registerCoercer()
+    }
+  }
+
   val empty = @(map.scalaType)()
 
   def apply(elems: (String, @(map.valueClass.fqn))*): @(map.scalaType) = {
