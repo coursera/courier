@@ -2,4 +2,18 @@
 
 package @(map.namespace)
 
+import javax.annotation.Generated
+
+import com.linkedin.data.DataMap
+import com.linkedin.data.schema.MapDataSchema
+import com.linkedin.data.schema.DataSchema
+import com.linkedin.data.template.DataTemplate
+import com.linkedin.data.template.DataTemplateUtil
+import org.coursera.courier.data.DataTemplates
+import org.coursera.courier.data.DataTemplates.DataConversion
+import scala.collection.generic.CanBuildFrom
+import scala.collection.immutable
+import scala.collection.mutable
+import scala.collection.JavaConverters._
+
 @MapClass(map)

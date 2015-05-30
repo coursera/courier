@@ -130,6 +130,18 @@ trait SchemaFixtures {
     object WithPrimitiveCustomTypesUnion {
       val schema = TestSchema.load("org.coursera.unions.WithPrimitiveCustomTypesUnion")
     }
+
+    object WithRecordArray {
+      val schema = TestSchema.load("org.coursera.arrays.WithRecordArray")
+    }
+
+    object WithPrimitivesArray {
+      val schema = TestSchema.load("org.coursera.arrays.WithPrimitivesArray")
+    }
+
+    object WithComplexTypesMap {
+      val schema = TestSchema.load("org.coursera.maps.WithComplexTypesMap")
+    }
   }
 
   val prettyPrinter = new PrettyPrinterJacksonDataTemplateCodec

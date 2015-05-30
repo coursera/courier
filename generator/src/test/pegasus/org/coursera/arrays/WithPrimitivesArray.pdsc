@@ -1,0 +1,11 @@
+{
+  "type": "record",
+  "name": "WithPrimitivesArray",
+  "namespace": "org.coursera.arrays",
+  "fields": [
+    {
+      "name": "ints",
+      "type": { "type": "array", "items": "int"}
+    }
+  ]
+}

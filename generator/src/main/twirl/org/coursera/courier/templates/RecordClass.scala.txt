@@ -26,8 +26,7 @@ final class @record.scalaType private (private val dataMap: DataMap)
         lazy val @(field.name): @(unionField.fqn) = @field.wrapIfOption{@(unionField.fqn)(dataMap.getDataMap(@(record.scalaType).Fields.@(field.name).getName))}
       }
       case arrayField: ArrayDefinition => {
-        /* TODO(jbetz): support array fields */
-        lazy val @(field.name): @(arrayField.fqn) = ???
+        lazy val @(field.name): @(field.fqn) = @field.wrapIfOption{obtainWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(arrayField.fqn)])}
       }
       case mapField: MapDefinition => {
         /* TODO(jbetz): support map fields */
@@ -62,7 +61,7 @@ final class @record.scalaType private (private val dataMap: DataMap)
           @field.applyIfOption(field.name) { value => dataMap.put(@(record.scalaType).Fields.@(field.name).getName, @(value).data())}
         }
         case arrayField: ArrayDefinition => {
-          /* TODO(jbetz): support array fields */
+          @field.applyIfOption(field.name) { value => putWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(arrayField.fqn)], @value)}
         }
         case mapField: MapDefinition => {
           /* TODO(jbetz): support map fields */

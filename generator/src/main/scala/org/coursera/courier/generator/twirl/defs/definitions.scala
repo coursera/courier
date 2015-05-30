@@ -160,9 +160,9 @@ case class ArrayDefinition(spec: ArrayTemplateSpec) extends Definition {
   override def namespace = Option(spec.getNamespace)
   override def schema = spec.getSchema
   def scalaDoc = None
-  def itemClass = spec.getItemClass
-  def itemDataClass = spec.getItemDataClass
-  def customInfo = spec.getCustomInfo
+  def itemClass = Definition(spec.getItemClass)
+  def itemDataClass = Definition(spec.getItemDataClass)
+  def customInfo = CustomInfoDefinition(spec.getCustomInfo)
 }
 
 case class MapDefinition(spec: MapTemplateSpec) extends Definition {
@@ -170,9 +170,9 @@ case class MapDefinition(spec: MapTemplateSpec) extends Definition {
   override def namespace = Option(spec.getNamespace)
   override def schema = spec.getSchema
   def scalaDoc = None
-  def customInfo = spec.getCustomInfo
-  def valueClass = spec.getValueClass
-  def valueDataClass = spec.getValueDataClass
+  def customInfo = CustomInfoDefinition(spec.getCustomInfo)
+  def valueClass = Definition(spec.getValueClass)
+  def valueDataClass = Definition(spec.getValueDataClass)
 }
 
 /**
