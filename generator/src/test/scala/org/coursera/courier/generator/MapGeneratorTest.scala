@@ -16,6 +16,17 @@
 
 package org.coursera.courier.generator
 
+import org.coursera.courier.data.BooleanMap
+import org.coursera.courier.data.BytesMap
+import org.coursera.courier.data.DoubleMap
+import org.coursera.courier.data.FloatMap
+import org.coursera.courier.data.IntMap
+import org.coursera.courier.data.LongMap
+import org.coursera.courier.data.StringMap
+import org.coursera.enums.Fruits
+import org.coursera.enums.FruitsMap
+import org.coursera.maps.WithComplexTypesMap
+import org.coursera.maps.WithPrimitivesMap
 import org.coursera.records.test.Empty
 import org.coursera.records.test.EmptyMap
 import org.junit.BeforeClass
@@ -28,7 +39,8 @@ object MapGeneratorTest extends SchemaFixtures with GeneratorTest {
   def setup(): Unit = {
     generateTestSchemas(Seq(
       Records.Empty.schema,
-      Records.WithComplexTypesMap.schema))
+      Records.WithComplexTypesMap.schema,
+      Records.WithPrimitivesMap.schema))
   }
 }
 
@@ -36,7 +48,22 @@ class MapGeneratorTest extends GeneratorTest with SchemaFixtures with Assertions
 
   @Test
   def testWithComplexTypesMap(): Unit = {
-    val original = EmptyMap("a" -> Empty(), "b" -> Empty(), "c" -> Empty())
+    val original = WithComplexTypesMap(
+      EmptyMap("a" -> Empty(), "b" -> Empty(), "c" -> Empty()),
+      FruitsMap("a" -> Fruits.APPLE, "b" -> Fruits.BANANA, "c" -> Fruits.ORANGE))
+    println(mapToJson(original))
+  }
+
+  @Test
+  def testWithPrimitivesMap(): Unit = {
+    val original = WithPrimitivesMap(
+      IntMap("a" -> 1, "b" -> 2, "c" -> 3),
+      LongMap("a" -> 10, "b" -> 20, "c" -> 30),
+      FloatMap("a" -> 1.1f, "b" -> 2.2f, "c" -> 3.3f),
+      DoubleMap("a" -> 11.1d, "b" -> 22.2d, "c" -> 33.3d),
+      BooleanMap("a" -> true, "b" -> false, "c" -> true),
+      StringMap("a" -> "string1", "b" -> "string2", "c" -> "string3"),
+      BytesMap("a" -> bytes1, "b" -> bytes2, "c" -> bytes3))
     println(mapToJson(original))
   }
 }

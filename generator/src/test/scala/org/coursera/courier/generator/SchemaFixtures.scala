@@ -18,6 +18,7 @@ package org.coursera.courier.generator
 
 import java.io.File
 
+import com.linkedin.data.ByteString
 import com.linkedin.data.DataList
 import com.linkedin.data.DataMap
 import com.linkedin.data.schema.BooleanDataSchema
@@ -73,6 +74,10 @@ trait SchemaFixtures {
     val string = new StringDataSchema
     val bytes = new BytesDataSchema
   }
+
+  val bytes1 = ByteString.copy(Array[Byte](0x0, 0x1, 0x2))
+  val bytes2 = ByteString.copy(Array[Byte](0x3, 0x4, 0x5))
+  val bytes3 = ByteString.copy(Array[Byte](0x6, 0x7, 0x8))
 
   object Records {
     object WithPrimitives {
@@ -141,6 +146,10 @@ trait SchemaFixtures {
 
     object WithComplexTypesMap {
       val schema = TestSchema.load("org.coursera.maps.WithComplexTypesMap")
+    }
+
+    object WithPrimitivesMap {
+      val schema = TestSchema.load("org.coursera.maps.WithPrimitivesMap")
     }
   }
 

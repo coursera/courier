@@ -6,9 +6,9 @@
 
 @@Generated(value = Array("@(array.scalaType)"), comments="Courier Data Template.", date = "@(Calendar.getInstance().getTime())")
 final class @(array.scalaType)(private val dataList: DataList)
-  extends IndexedSeq[@(array.itemClass.dataType)]
+  extends IndexedSeq[@(array.itemClass.scalaType)]
   with Product
-  with GenTraversable[@(array.itemClass.dataType)]
+  with GenTraversable[@(array.itemClass.scalaType)]
   with DataTemplate[DataList] {
 
   override def length: Int = dataList.size()
@@ -16,10 +16,25 @@ final class @(array.scalaType)(private val dataList: DataList)
   @* TODO(jbetz): Decide on caching policy for data template types. We should not be creating a
    new instance here on each lookup. *@
   private[this] def lookup(idx: Int) = {
-    @(array.itemClass.dataType)(dataList.get(idx).asInstanceOf[DataMap], DataTemplates.DataConversion.SetReadOnly)
+    @array.itemClass match {
+      case recordItem: RecordDefinition => {
+        @(array.itemClass.scalaType)(dataList.get(idx).asInstanceOf[DataMap], DataTemplates.DataConversion.SetReadOnly)
+      }
+      case primitiveItem: PrimitiveDefinition => {
+        dataList.get(idx).asInstanceOf[@(primitiveItem.dataType)]
+      }
+      case enumItem: EnumDefinition => {
+        @(enumItem.enumName).fromString(dataList.get(idx).asInstanceOf[String])
+      }
+      case _: Any => { ??? }
+    }
+    @* TODO: add array items *@
+    @* TODO: add map items *@
+    @* TODO: add union items *@
+    @* TODO: add custom type items *@
   }
 
-  override def apply(idx: Int): @(array.itemClass.dataType) = lookup(idx)
+  override def apply(idx: Int): @(array.itemClass.scalaType) = lookup(idx)
 
   override def productElement(n: Int): Any = dataList.get(n)
   override def productArity: Int = dataList.size()
@@ -35,12 +50,12 @@ object @(array.scalaType) {
 
   val empty = @(array.scalaType)()
 
-  def apply(elems: @(array.itemClass.dataType)*): @(array.scalaType) = {
-    new @(array.scalaType)(new DataList(elems.map(_.data()).toList.asJava))
+  def apply(elems: @(array.itemClass.scalaType)*): @(array.scalaType) = {
+    new @(array.scalaType)(new DataList(elems.map(coerceOutput).toList.asJava))
   }
 
-  def apply(collection: Traversable[@(array.itemClass.dataType)]): @(array.scalaType) = {
-    new @(array.scalaType)(new DataList(collection.map(_.data()).toList.asJava))
+  def apply(collection: Traversable[@(array.itemClass.scalaType)]): @(array.scalaType) = {
+    new @(array.scalaType)(new DataList(collection.map(coerceOutput).toList.asJava))
   }
 
   def apply(dataList: DataList, conversion: DataConversion) : @(array.scalaType) = {
@@ -49,18 +64,18 @@ object @(array.scalaType) {
 
   def newBuilder = new DataBuilder()
 
-  implicit val canBuildFrom = new CanBuildFrom[@(array.scalaType), @(array.itemClass.dataType), @(array.scalaType)] {
+  implicit val canBuildFrom = new CanBuildFrom[@(array.scalaType), @(array.itemClass.scalaType), @(array.scalaType)] {
     def apply(from: @(array.scalaType)) = new DataBuilder(from)
     def apply() = newBuilder
   }
 
-  class DataBuilder(initial: @(array.scalaType)) extends mutable.Builder[@(array.itemClass.dataType), @(array.scalaType)] {
+  class DataBuilder(initial: @(array.scalaType)) extends mutable.Builder[@(array.itemClass.scalaType), @(array.scalaType)] {
     def this() = this(new @(array.scalaType)(new DataList()))
 
-    val elems = new DataList(initial.dataList)
+    val elems = new DataList(initial.data())
 
-    def +=(x: @(array.itemClass.dataType)): this.type = {
-      elems.add(x.data())
+    def +=(x: @(array.itemClass.scalaType)): this.type = {
+      elems.add(coerceOutput(x))
       this
     }
 
@@ -72,6 +87,25 @@ object @(array.scalaType) {
       elems.setReadOnly()
       new @(array.scalaType)(elems)
     }
+  }
+
+  private def coerceOutput(value: @(array.itemClass.scalaType)): AnyRef = {
+    @array.itemClass match {
+      case recordItem: RecordDefinition => {
+        value.data()
+      }
+      case primitiveItem: PrimitiveDefinition => {
+        @primitiveItem.maybeBox{value}
+      }
+      case enumItem: EnumDefinition => {
+        value.toString
+      }
+      case _: Any => { ??? }
+    }
+    @* TODO: add array items *@
+    @* TODO: add map items *@
+    @* TODO: add union items *@
+    @* TODO: add custom type items *@
   }
 }
 

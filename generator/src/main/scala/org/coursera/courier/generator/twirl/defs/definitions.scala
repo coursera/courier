@@ -17,6 +17,7 @@
 package org.coursera.courier.generator.twirl.defs
 
 import com.linkedin.data.ByteString
+import com.linkedin.data.schema.ArrayDataSchema
 import com.linkedin.data.schema.BooleanDataSchema
 import com.linkedin.data.schema.BytesDataSchema
 import com.linkedin.data.schema.DataSchema
@@ -25,9 +26,24 @@ import com.linkedin.data.schema.DoubleDataSchema
 import com.linkedin.data.schema.FloatDataSchema
 import com.linkedin.data.schema.IntegerDataSchema
 import com.linkedin.data.schema.LongDataSchema
+import com.linkedin.data.schema.MapDataSchema
 import com.linkedin.data.schema.PrimitiveDataSchema
 import com.linkedin.data.schema.RecordDataSchema
 import com.linkedin.data.schema.StringDataSchema
+import com.linkedin.data.template.BooleanArray
+import com.linkedin.data.template.BooleanMap
+import com.linkedin.data.template.BytesArray
+import com.linkedin.data.template.BytesMap
+import com.linkedin.data.template.DoubleArray
+import com.linkedin.data.template.DoubleMap
+import com.linkedin.data.template.FloatArray
+import com.linkedin.data.template.FloatMap
+import com.linkedin.data.template.IntegerArray
+import com.linkedin.data.template.IntegerMap
+import com.linkedin.data.template.LongArray
+import com.linkedin.data.template.LongMap
+import com.linkedin.data.template.StringArray
+import com.linkedin.data.template.StringMap
 import com.linkedin.pegasus.generator.spec.ArrayTemplateSpec
 import com.linkedin.pegasus.generator.spec.ClassTemplateSpec
 import com.linkedin.pegasus.generator.spec.CustomInfoSpec
@@ -39,6 +55,7 @@ import com.linkedin.pegasus.generator.spec.RecordTemplateSpec
 import com.linkedin.pegasus.generator.spec.RecordTemplateSpec.Field
 import com.linkedin.pegasus.generator.spec.TyperefTemplateSpec
 import com.linkedin.pegasus.generator.spec.UnionTemplateSpec
+import org.coursera.courier.generator.twirl.defs.MapDefinition
 import twirl.api.Txt
 
 import scala.collection.JavaConverters._
@@ -97,7 +114,10 @@ trait Definition {
  */
 object Definition {
   def apply(spec: ClassTemplateSpec): Definition = {
+    assert(spec != null)
     spec match {
+      case predef if ScalaTypes.predef.contains(predef.getSchema) =>
+        ScalaTypes.predef(predef.getSchema)
       case record: RecordTemplateSpec => RecordDefinition(record)
       case union: UnionTemplateSpec => UnionDefinition(union)
       case enum: EnumTemplateSpec => EnumDefinition(enum)
@@ -155,24 +175,70 @@ case class EnumDefinition(spec: EnumTemplateSpec) extends Definition {
   override def memberName = spec.getClassName + "Member"
 }
 
-case class ArrayDefinition(spec: ArrayTemplateSpec) extends Definition {
-  override def scalaType = spec.getClassName
-  override def namespace = Option(spec.getNamespace)
-  override def schema = spec.getSchema
-  def scalaDoc = None
-  def itemClass = Definition(spec.getItemClass)
-  def itemDataClass = Definition(spec.getItemDataClass)
-  def customInfo = CustomInfoDefinition(spec.getCustomInfo)
+case class ArrayDefinition(
+    scalaType: String,
+    namespace: Option[String],
+    schema: ArrayDataSchema,
+    scalaDoc: Option[String],
+    itemClass: Definition,
+    itemDataClass: Option[Definition],
+    customInfo: Option[CustomInfoDefinition]) extends Definition
+object ArrayDefinition {
+  def apply(spec: ArrayTemplateSpec): ArrayDefinition = {
+    ArrayDefinition(
+      spec.getClassName,
+      Option(spec.getNamespace),
+      spec.getSchema,
+      None,
+      Definition(spec.getItemClass),
+      Option(spec.getItemDataClass).map(Definition(_)),
+      Option(spec.getCustomInfo).map(CustomInfoDefinition))
+  }
+
+  def forPrimitive(scalaType: String, namespace: String, primitiveDef: PrimitiveDefinition, schema: ArrayDataSchema): ArrayDefinition = {
+    ArrayDefinition(
+      scalaType,
+      Some(namespace),
+      schema,
+      None,
+      primitiveDef,
+      Some(primitiveDef),
+      None)
+  }
 }
 
-case class MapDefinition(spec: MapTemplateSpec) extends Definition {
-  override def scalaType = spec.getClassName
-  override def namespace = Option(spec.getNamespace)
-  override def schema = spec.getSchema
-  def scalaDoc = None
-  def customInfo = CustomInfoDefinition(spec.getCustomInfo)
-  def valueClass = Definition(spec.getValueClass)
-  def valueDataClass = Definition(spec.getValueDataClass)
+case class MapDefinition(
+    scalaType: String,
+    namespace: Option[String],
+    schema: MapDataSchema,
+    scalaDoc: Option[String],
+    valueClass: Definition,
+    valueDataClass: Option[Definition],
+    customInfo: Option[CustomInfoDefinition]) extends Definition {
+
+}
+
+object MapDefinition {
+  def apply(spec: MapTemplateSpec): MapDefinition = {
+    MapDefinition(
+      spec.getClassName,
+      Option(spec.getNamespace),
+      spec.getSchema,
+      None,
+      Definition(spec.getValueClass),
+      Option(spec.getValueDataClass).map(Definition(_)),
+      Option(spec.getCustomInfo).map(CustomInfoDefinition))
+  }
+  def forPrimitive(scalaType: String, namespace: String, primitiveDef: PrimitiveDefinition, schema: MapDataSchema): MapDefinition = {
+    MapDefinition(
+      scalaType,
+      Some(namespace),
+      schema,
+      None,
+      primitiveDef,
+      None,
+      None)
+  }
 }
 
 /**
@@ -375,6 +441,67 @@ object ScalaTypes {
            _: BooleanDataSchema => true
       case _: Any => false
       case null => false
+    }
+  }
+
+
+  val dataNamespace = "org.coursera.courier.data"
+  val intArraySchema = new IntegerArray().schema()
+  val predef = Map[DataSchema, Definition](
+    arrayPredef("IntArray", DataSchema.Type.INT),
+    arrayPredef("LongArray", DataSchema.Type.LONG),
+    arrayPredef("FloatArray", DataSchema.Type.FLOAT),
+    arrayPredef("DoubleArray", DataSchema.Type.DOUBLE),
+    arrayPredef("BooleanArray", DataSchema.Type.BOOLEAN),
+    arrayPredef("StringArray", DataSchema.Type.STRING),
+    arrayPredef("BytesArray", DataSchema.Type.BYTES),
+
+    mapPredef("IntMap", DataSchema.Type.INT),
+    mapPredef("LongMap", DataSchema.Type.LONG),
+    mapPredef("FloatMap", DataSchema.Type.FLOAT),
+    mapPredef("DoubleMap", DataSchema.Type.DOUBLE),
+    mapPredef("BooleanMap", DataSchema.Type.BOOLEAN),
+    mapPredef("StringMap", DataSchema.Type.STRING),
+    mapPredef("BytesMap", DataSchema.Type.BYTES)
+  )
+
+  def arrayPredef(className: String, dataType: DataSchema.Type): (ArrayDataSchema, ArrayDefinition) = {
+    val definition = PrimitiveDefinition(PrimitiveTemplateSpec.getInstance(dataType))
+    val arraySchema = getArraySchema(dataType)
+
+    arraySchema -> ArrayDefinition.forPrimitive(className, dataNamespace, definition, arraySchema)
+  }
+
+  def mapPredef(className: String, dataType: DataSchema.Type): (MapDataSchema, MapDefinition) = {
+    val definition = PrimitiveDefinition(PrimitiveTemplateSpec.getInstance(dataType))
+    val mapSchema = getMapSchema(dataType)
+
+    mapSchema -> MapDefinition.forPrimitive(className, dataNamespace, definition, mapSchema)
+  }
+
+  def getArraySchema(dataType: DataSchema.Type): ArrayDataSchema = {
+    import DataSchema.Type._
+    dataType match {
+      case INT => new IntegerArray().schema()
+      case LONG => new LongArray().schema()
+      case FLOAT => new FloatArray().schema()
+      case DOUBLE => new DoubleArray().schema()
+      case BOOLEAN => new BooleanArray().schema()
+      case STRING => new StringArray().schema()
+      case BYTES => new BytesArray().schema()
+    }
+  }
+
+  def getMapSchema(dataType: DataSchema.Type): MapDataSchema = {
+    import DataSchema.Type._
+    dataType match {
+      case INT => new IntegerMap().schema()
+      case LONG => new LongMap().schema()
+      case FLOAT => new FloatMap().schema()
+      case DOUBLE => new DoubleMap().schema()
+      case BOOLEAN => new BooleanMap().schema()
+      case STRING => new StringMap().schema()
+      case BYTES => new BytesMap().schema()
     }
   }
 }

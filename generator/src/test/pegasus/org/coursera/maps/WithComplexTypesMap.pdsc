@@ -3,9 +3,7 @@
   "name": "WithComplexTypesMap",
   "namespace": "org.coursera.maps",
   "fields": [
-    {
-      "name": "empties",
-      "type": { "type": "map", "values": "org.coursera.records.test.Empty"}
-    }
+    { "name": "empties", "type": { "type": "map", "values": "org.coursera.records.test.Empty"} },
+    { "name": "fruits", "type": { "type": "map", "values": "org.coursera.enums.Fruits"} }
   ]
 }

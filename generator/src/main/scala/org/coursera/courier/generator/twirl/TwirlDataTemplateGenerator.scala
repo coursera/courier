@@ -16,6 +16,8 @@
 
 package org.coursera.courier.generator.twirl
 
+import com.linkedin.data.schema.DataSchema
+import com.linkedin.data.schema.DataSchemaConstants
 import com.linkedin.pegasus.generator.spec.ArrayTemplateSpec
 import com.linkedin.pegasus.generator.spec.ClassTemplateSpec
 import com.linkedin.pegasus.generator.spec.EnumTemplateSpec
@@ -25,6 +27,7 @@ import com.linkedin.pegasus.generator.spec.RecordTemplateSpec
 import com.linkedin.pegasus.generator.spec.TyperefTemplateSpec
 import com.linkedin.pegasus.generator.spec.UnionTemplateSpec
 import com.typesafe.scalalogging.slf4j.StrictLogging
+import org.coursera.courier.data.IntArray
 import org.coursera.courier.generator.CompilationUnit
 import org.coursera.courier.generator.GeneratedCode
 import org.coursera.courier.generator.TemplateGenerator
@@ -32,6 +35,7 @@ import org.coursera.courier.generator.twirl.defs.ArrayDefinition
 import org.coursera.courier.generator.twirl.defs.EnumDefinition
 import org.coursera.courier.generator.twirl.defs.MapDefinition
 import org.coursera.courier.generator.twirl.defs.RecordDefinition
+import org.coursera.courier.generator.twirl.defs.ScalaTypes
 import org.coursera.courier.generator.twirl.defs.UnionDefinition
 import org.coursera.courier.templates.txt.ArrayClassFile
 import org.coursera.courier.templates.txt.EnumClassFile
@@ -48,24 +52,39 @@ class TwirlDataTemplateGenerator()
    * Generates Scala files using the Twirl string template engine.
    */
   def generate(spec: ClassTemplateSpec): Seq[GeneratedCode] = {
-    findTopLevelSpecs(List(spec), List(spec)).map { topLevelSpec =>
+    findTopLevelSpecs(List(spec), List(spec)).flatMap { topLevelSpec =>
       val schema = topLevelSpec.getSchema
       topLevelSpec match {
+        case predef if ScalaTypes.predef.contains(predef.getSchema) =>
+
+          // We only generate schemas for pre defined types when building courier-runtime.
+          ScalaTypes.predef(predef.getSchema) match { // TODO: clean up, we should generate these automatically, but only for courier-runtime
+            case array: ArrayDefinition =>
+              //val code = ArrayClassFile(array).body
+              //Seq(GeneratedCode(code, CompilationUnit(array.scalaType, array.namespace.get)))
+              Seq()
+            case map: MapDefinition =>
+              //val code = MapClassFile(map).body
+              //Seq(GeneratedCode(code, CompilationUnit(map.scalaType, map.namespace.get)))
+              Seq()
+            case _: Any =>
+              Seq()
+          }
         case record: RecordTemplateSpec =>
           val code = RecordClassFile(RecordDefinition(record)).body
-          GeneratedCode(code, CompilationUnit(record.getClassName, record.getNamespace))
+          Seq(GeneratedCode(code, CompilationUnit(record.getClassName, record.getNamespace)))
         case union: UnionTemplateSpec =>
           val code = UnionClassFile(UnionDefinition(union)).body
-          GeneratedCode(code, CompilationUnit(union.getClassName, union.getNamespace))
+          Seq(GeneratedCode(code, CompilationUnit(union.getClassName, union.getNamespace)))
         case enum: EnumTemplateSpec =>
           val code = EnumClassFile(EnumDefinition(enum)).body
-          GeneratedCode(code, CompilationUnit(enum.getClassName, enum.getNamespace))
+          Seq(GeneratedCode(code, CompilationUnit(enum.getClassName, enum.getNamespace)))
         case array: ArrayTemplateSpec =>
           val code = ArrayClassFile(ArrayDefinition(array)).body
-          GeneratedCode(code, CompilationUnit(array.getClassName, array.getNamespace))
+          Seq(GeneratedCode(code, CompilationUnit(array.getClassName, array.getNamespace)))
         case map: MapTemplateSpec =>
           val code = MapClassFile(MapDefinition(map)).body
-          GeneratedCode(code, CompilationUnit(map.getClassName, map.getNamespace))
+          Seq(GeneratedCode(code, CompilationUnit(map.getClassName, map.getNamespace)))
         case typeref: TyperefTemplateSpec => ??? // TODO(jbetz): Should this method ever be called for a typeref?
         case fixed: FixedTemplateSpec => ??? // TODO(jbetz): Add generator support
         case _ =>

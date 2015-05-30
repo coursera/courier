@@ -8,7 +8,7 @@ import com.linkedin.data.template.DataTemplateUtil
 
 
 
-@Generated(value = Array("Fruits"), comments = "Courier Data Template.", date = "Fri May 29 11:12:12 PDT 2015")
+@Generated(value = Array("Fruits"), comments = "Courier Data Template.", date = "Sat May 30 13:31:01 PDT 2015")
 object Fruits extends Enumeration {
   type Fruits = Value
 
@@ -44,6 +44,6 @@ object Fruits extends Enumeration {
     values.find(_.toString == s).getOrElse($UNKNOWN)
   }
 
-  private val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"enum","name":"Fruits","namespace":"org.coursera.enums","symbols":["APPLE","BANANA","ORANGE","PINEAPPLE"],"symbolDocs":{"APPLE":"An Apple."}}""").asInstanceOf[EnumDataSchema]
+  val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"enum","name":"Fruits","namespace":"org.coursera.enums","symbols":["APPLE","BANANA","ORANGE","PINEAPPLE"],"symbolDocs":{"APPLE":"An Apple."}}""").asInstanceOf[EnumDataSchema]
 }
 

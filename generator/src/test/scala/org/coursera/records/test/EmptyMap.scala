@@ -4,6 +4,7 @@ package org.coursera.records.test
 
 import javax.annotation.Generated
 
+import com.linkedin.data.ByteString
 import com.linkedin.data.DataMap
 import com.linkedin.data.schema.MapDataSchema
 import com.linkedin.data.schema.DataSchema
@@ -18,17 +19,21 @@ import scala.collection.JavaConverters._
 
 
 
-@Generated(value = Array("EmptyMap"), comments="Courier Data Template.", date = "Sat May 30 10:07:51 PDT 2015")
+@Generated(value = Array("EmptyMap"), comments="Courier Data Template.", date = "Sat May 30 13:29:24 PDT 2015")
 final class EmptyMap(private val dataMap: DataMap)
   extends immutable.Iterable[(String, Empty)]
   with Map[String, Empty]
   with immutable.MapLike[String, Empty, immutable.Map[String, Empty]]
   with DataTemplate[DataMap] {
+  import EmptyMap._
 
   // TODO(jbetz): Decide on caching policy for data template types. We should not be creating a
   // new instance here on each lookup.
-  private[this] def lookup(key: String) = {
-    Option(dataMap.getDataMap(key)).map(dataMap => Empty(dataMap, DataConversion.SetReadOnly))
+  private[this] def lookup(key: String): Option[Empty] = {
+    
+        Option(dataMap.getDataMap(key)).map(dataMap => Empty(dataMap, DataConversion.SetReadOnly))
+      
+
   }
 
   override def get(key: String): Option[Empty] = lookup(key)
@@ -47,7 +52,7 @@ final class EmptyMap(private val dataMap: DataMap)
     value match {
       case v: Empty =>
         val copy = dataMap.copy()
-        copy.put(key, v.data())
+        copy.put(key, coerceOutput(v))
         copy.setReadOnly()
         new EmptyMap(copy)
       case _: Any =>
@@ -83,7 +88,7 @@ object EmptyMap {
   }
 
   def apply(map: Map[String, Empty]): EmptyMap = {
-    new EmptyMap(new DataMap(map.mapValues(_.data()).asJava))
+    new EmptyMap(new DataMap(map.mapValues(coerceOutput).asJava))
   }
 
   def apply(dataMap: DataMap, conversion: DataConversion): EmptyMap = {
@@ -100,11 +105,11 @@ object EmptyMap {
   class DataBuilder(initial: EmptyMap) extends mutable.Builder[(String, Empty), EmptyMap] {
     def this() = this(new EmptyMap(new DataMap()))
 
-    val entries = new DataMap(initial.dataMap)
+    val entries = new DataMap(initial.data())
 
     def +=(kv: (String, Empty)): this.type = {
       val (key, value) = kv
-      entries.put(key, value.data())
+      entries.put(key, coerceOutput(value))
       this
     }
 
@@ -116,6 +121,12 @@ object EmptyMap {
       entries.setReadOnly()
       new EmptyMap(entries)
     }
+  }
+
+  private def coerceOutput(value: Empty): AnyRef = {
+    
+        value.data()
+      
   }
 }
 

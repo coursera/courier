@@ -16,8 +16,18 @@
 
 package org.coursera.courier.generator
 
+import com.linkedin.data.ByteString
 import org.coursera.arrays.WithPrimitivesArray
 import org.coursera.arrays.WithRecordArray
+import org.coursera.courier.data.BooleanArray
+import org.coursera.courier.data.BytesArray
+import org.coursera.courier.data.DoubleArray
+import org.coursera.courier.data.FloatArray
+import org.coursera.courier.data.IntArray
+import org.coursera.courier.data.LongArray
+import org.coursera.courier.data.StringArray
+import org.coursera.enums.Fruits
+import org.coursera.enums.FruitsArray
 import org.coursera.records.test.Empty
 import org.coursera.records.test.EmptyArray
 import org.junit.BeforeClass
@@ -39,13 +49,23 @@ class ArrayGeneratorTest extends GeneratorTest with SchemaFixtures with Assertio
 
   @Test
   def testWithRecordArray(): Unit = {
-    val original = WithRecordArray(EmptyArray(Empty(), Empty(), Empty()))
+    val original = WithRecordArray(
+      EmptyArray(Empty(), Empty(), Empty()),
+      FruitsArray(Fruits.APPLE, Fruits.BANANA, Fruits.ORANGE))
     println(original)
     println(mapToJson(original))
   }
 
   @Test
   def testWithPrimitivesArray(): Unit = {
-    //WithPrimitivesArray()
+    val original = WithPrimitivesArray(
+      IntArray(1, 2, 3),
+      LongArray(10L, 20L, 30L),
+      FloatArray(1.1f, 2.2f, 3.3f),
+      DoubleArray(11.1d, 22.2d, 33.3d),
+      BooleanArray(false, true),
+      StringArray("a", "b", "c"),
+      BytesArray(bytes1, bytes2))
+    println(mapToJson(original))
   }
 }

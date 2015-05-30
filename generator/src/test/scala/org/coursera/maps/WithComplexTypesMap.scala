@@ -24,7 +24,7 @@ import com.linkedin.data.ByteString
 
 
 
-@Generated(value = Array("WithComplexTypesMap"), comments = "Courier Data Template.", date = "Sat May 30 10:07:51 PDT 2015")
+@Generated(value = Array("WithComplexTypesMap"), comments = "Courier Data Template.", date = "Sat May 30 13:29:24 PDT 2015")
 final class WithComplexTypesMap private (private val dataMap: DataMap)
   extends ScalaRecordTemplate(dataMap, WithComplexTypesMap.SCHEMA) with Product {
   import WithComplexTypesMap._
@@ -35,27 +35,39 @@ final class WithComplexTypesMap private (private val dataMap: DataMap)
 
     
     
-        /* TODO(jbetz): support map fields */
-        lazy val empties: org.coursera.records.test.EmptyMap = ???
+        lazy val empties: org.coursera.records.test.EmptyMap = obtainWrapped(WithComplexTypesMap.Fields.empties, classOf[org.coursera.records.test.EmptyMap])
+      
+  
+    
+
+    
+    
+        lazy val fruits: org.coursera.enums.FruitsMap = obtainWrapped(WithComplexTypesMap.Fields.fruits, classOf[org.coursera.enums.FruitsMap])
       
   
 
   
-  private def setFields(empties: org.coursera.records.test.EmptyMap): Unit = {
+  private def setFields(empties: org.coursera.records.test.EmptyMap, fruits: org.coursera.enums.FruitsMap): Unit = {
     
       
       
-          /* TODO(jbetz): support map fields */
+           putWrapped(WithComplexTypesMap.Fields.empties, classOf[org.coursera.records.test.EmptyMap], empties)
+        
+    
+      
+      
+           putWrapped(WithComplexTypesMap.Fields.fruits, classOf[org.coursera.enums.FruitsMap], fruits)
         
     
   }
 
-  override val productArity: Int = 1
+  override val productArity: Int = 2
 
   override def productElement(n: Int): Any =
     n match {
       
       case 0 => empties
+      case 1 => fruits
       case _ => throw new IndexOutOfBoundsException(n.toString)
     }
 
@@ -71,10 +83,10 @@ final class WithComplexTypesMap private (private val dataMap: DataMap)
 
   
   
-    def copy(empties: org.coursera.records.test.EmptyMap = this.empties): WithComplexTypesMap = {
+    def copy(empties: org.coursera.records.test.EmptyMap = this.empties, fruits: org.coursera.enums.FruitsMap = this.fruits): WithComplexTypesMap = {
       val dataMap = new DataMap
       val result = new WithComplexTypesMap(dataMap)
-      result.setFields(empties)
+      result.setFields(empties, fruits)
       dataMap.setReadOnly()
       result
     }
@@ -82,12 +94,14 @@ final class WithComplexTypesMap private (private val dataMap: DataMap)
 }
 
 object WithComplexTypesMap {
-  val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"record","name":"WithComplexTypesMap","namespace":"org.coursera.maps","fields":[{"name":"empties","type":{"type":"map","values":{"type":"record","name":"Empty","namespace":"org.coursera.records.test","fields":[]}}}]}""").asInstanceOf[RecordDataSchema]
+  val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"record","name":"WithComplexTypesMap","namespace":"org.coursera.maps","fields":[{"name":"empties","type":{"type":"map","values":{"type":"record","name":"Empty","namespace":"org.coursera.records.test","fields":[]}}},{"name":"fruits","type":{"type":"map","values":{"type":"enum","name":"Fruits","namespace":"org.coursera.enums","symbols":["APPLE","BANANA","ORANGE","PINEAPPLE"],"symbolDocs":{"APPLE":"An Apple."}}}}]}""").asInstanceOf[RecordDataSchema]
 
   
   
 
   
+  
+    
   
     
   
@@ -95,12 +109,13 @@ object WithComplexTypesMap {
   private object Fields {
     
     val empties = WithComplexTypesMap.SCHEMA.getField("empties")
+    val fruits = WithComplexTypesMap.SCHEMA.getField("fruits")
   }
 
-  def apply(empties: org.coursera.records.test.EmptyMap): WithComplexTypesMap = {
+  def apply(empties: org.coursera.records.test.EmptyMap, fruits: org.coursera.enums.FruitsMap): WithComplexTypesMap = {
     val dataMap = new DataMap
     val result = new WithComplexTypesMap(dataMap)
-    result.setFields(empties)
+    result.setFields(empties, fruits)
     dataMap.setReadOnly()
     result
   }
@@ -111,9 +126,9 @@ object WithComplexTypesMap {
 
   
   
-      def unapply(record: WithComplexTypesMap): Option[(org.coursera.records.test.EmptyMap)] = {
+      def unapply(record: WithComplexTypesMap): Option[(org.coursera.records.test.EmptyMap, org.coursera.enums.FruitsMap)] = {
         try {
-          Some((record.empties))
+          Some((record.empties, record.fruits))
         } catch {
           case cast: TemplateOutputCastException => None
           case notPresent: RequiredFieldNotPresentException => None

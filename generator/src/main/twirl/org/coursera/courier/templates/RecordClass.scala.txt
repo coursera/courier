@@ -29,8 +29,7 @@ final class @record.scalaType private (private val dataMap: DataMap)
         lazy val @(field.name): @(field.fqn) = @field.wrapIfOption{obtainWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(arrayField.fqn)])}
       }
       case mapField: MapDefinition => {
-        /* TODO(jbetz): support map fields */
-        lazy val @(field.name): @(mapField.fqn) = ???
+        lazy val @(field.name): @(mapField.fqn) = @field.wrapIfOption{obtainWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(mapField.fqn)])}
       }
       case enumField: EnumDefinition => {
         lazy val @(field.name): @(field.fqn) = @field.wrapAndMapIfOption {
@@ -64,7 +63,7 @@ final class @record.scalaType private (private val dataMap: DataMap)
           @field.applyIfOption(field.name) { value => putWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(arrayField.fqn)], @value)}
         }
         case mapField: MapDefinition => {
-          /* TODO(jbetz): support map fields */
+          @field.applyIfOption(field.name) { value => putWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(mapField.fqn)], @value)}
         }
         case enumField: EnumDefinition => {
           @field.applyIfOption(field.name) { value => putDirect(@(record.scalaType).Fields.@(field.name), classOf[String], @(value).toString)}

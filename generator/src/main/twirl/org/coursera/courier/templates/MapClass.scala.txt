@@ -10,11 +10,27 @@ final class @(map.scalaType)(private val dataMap: DataMap)
   with Map[String, @(map.valueClass.scalaType)]
   with immutable.MapLike[String, @(map.valueClass.scalaType), immutable.Map[String, @(map.valueClass.scalaType)]]
   with DataTemplate[DataMap] {
+  import @(map.scalaType)._
 
   // TODO(jbetz): Decide on caching policy for data template types. We should not be creating a
   // new instance here on each lookup.
-  private[this] def lookup(key: String) = {
-    Option(dataMap.getDataMap(key)).map(dataMap => @(map.valueClass.scalaType)(dataMap, DataConversion.SetReadOnly))
+  private[this] def lookup(key: String): Option[@(map.valueClass.scalaType)] = {
+    @map.valueClass match {
+      case recordItem: RecordDefinition => {
+        Option(dataMap.getDataMap(key)).map(dataMap => @(map.valueClass.scalaType)(dataMap, DataConversion.SetReadOnly))
+      }
+      case primitiveItem: PrimitiveDefinition => {
+        Option(dataMap.get(key).asInstanceOf[@(primitiveItem.dataType)])
+      }
+      case enumItem: EnumDefinition => {
+        Option(dataMap.get(key).asInstanceOf[String]).map(@(enumItem.enumName).fromString)
+      }
+      case _: Any => { ??? }
+    }
+    @* TODO: add array values *@
+    @* TODO: add map values *@
+    @* TODO: add union values *@
+    @* TODO: add custom type values *@
   }
 
   override def get(key: String): Option[@(map.valueClass.scalaType)] = lookup(key)
@@ -33,7 +49,7 @@ final class @(map.scalaType)(private val dataMap: DataMap)
     value match {
       case v: @(map.valueClass.scalaType) =>
         val copy = dataMap.copy()
-        copy.put(key, v.data())
+        copy.put(key, coerceOutput(v))
         copy.setReadOnly()
         new @(map.scalaType)(copy)
       case _: Any =>
@@ -69,7 +85,7 @@ object @(map.scalaType) {
   }
 
   def apply(map: Map[String, @(map.valueClass.scalaType)]): @(map.scalaType) = {
-    new @(map.scalaType)(new DataMap(map.mapValues(_.data()).asJava))
+    new @(map.scalaType)(new DataMap(map.mapValues(coerceOutput).asJava))
   }
 
   def apply(dataMap: DataMap, conversion: DataConversion): @(map.scalaType) = {
@@ -86,11 +102,11 @@ object @(map.scalaType) {
   class DataBuilder(initial: @(map.scalaType)) extends mutable.Builder[(String, @(map.valueClass.scalaType)), @(map.scalaType)] {
     def this() = this(new @(map.scalaType)(new DataMap()))
 
-    val entries = new DataMap(initial.dataMap)
+    val entries = new DataMap(initial.data())
 
     def +=(kv: (String, @(map.valueClass.scalaType))): this.type = {
       val (key, value) = kv
-      entries.put(key, value.data())
+      entries.put(key, coerceOutput(value))
       this
     }
 
@@ -102,5 +118,24 @@ object @(map.scalaType) {
       entries.setReadOnly()
       new @(map.scalaType)(entries)
     }
+  }
+
+  private def coerceOutput(value: @(map.valueClass.scalaType)): AnyRef = {
+    @map.valueClass match {
+      case recordItem: RecordDefinition => {
+        value.data()
+      }
+      case primitiveItem: PrimitiveDefinition => {
+        @primitiveItem.maybeBox{value}
+      }
+      case enumItem: EnumDefinition => {
+        value.toString
+      }
+      case _: Any => { ??? }
+    }
+    @* TODO: add array values *@
+    @* TODO: add map values *@
+    @* TODO: add union values *@
+    @* TODO: add custom type values *@
   }
 }

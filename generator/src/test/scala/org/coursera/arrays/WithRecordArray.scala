@@ -24,7 +24,7 @@ import com.linkedin.data.ByteString
 
 
 
-@Generated(value = Array("WithRecordArray"), comments = "Courier Data Template.", date = "Fri May 29 21:44:23 PDT 2015")
+@Generated(value = Array("WithRecordArray"), comments = "Courier Data Template.", date = "Sat May 30 13:31:01 PDT 2015")
 final class WithRecordArray private (private val dataMap: DataMap)
   extends ScalaRecordTemplate(dataMap, WithRecordArray.SCHEMA) with Product {
   import WithRecordArray._
@@ -38,23 +38,36 @@ final class WithRecordArray private (private val dataMap: DataMap)
         lazy val empties: org.coursera.records.test.EmptyArray = obtainWrapped(WithRecordArray.Fields.empties, classOf[org.coursera.records.test.EmptyArray])
       
   
+    
+
+    
+    
+        lazy val fruits: org.coursera.enums.FruitsArray = obtainWrapped(WithRecordArray.Fields.fruits, classOf[org.coursera.enums.FruitsArray])
+      
+  
 
   
-  private def setFields(empties: org.coursera.records.test.EmptyArray): Unit = {
+  private def setFields(empties: org.coursera.records.test.EmptyArray, fruits: org.coursera.enums.FruitsArray): Unit = {
     
       
       
            putWrapped(WithRecordArray.Fields.empties, classOf[org.coursera.records.test.EmptyArray], empties)
         
     
+      
+      
+           putWrapped(WithRecordArray.Fields.fruits, classOf[org.coursera.enums.FruitsArray], fruits)
+        
+    
   }
 
-  override val productArity: Int = 1
+  override val productArity: Int = 2
 
   override def productElement(n: Int): Any =
     n match {
       
       case 0 => empties
+      case 1 => fruits
       case _ => throw new IndexOutOfBoundsException(n.toString)
     }
 
@@ -70,10 +83,10 @@ final class WithRecordArray private (private val dataMap: DataMap)
 
   
   
-    def copy(empties: org.coursera.records.test.EmptyArray = this.empties): WithRecordArray = {
+    def copy(empties: org.coursera.records.test.EmptyArray = this.empties, fruits: org.coursera.enums.FruitsArray = this.fruits): WithRecordArray = {
       val dataMap = new DataMap
       val result = new WithRecordArray(dataMap)
-      result.setFields(empties)
+      result.setFields(empties, fruits)
       dataMap.setReadOnly()
       result
     }
@@ -81,12 +94,14 @@ final class WithRecordArray private (private val dataMap: DataMap)
 }
 
 object WithRecordArray {
-  val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"record","name":"WithRecordArray","namespace":"org.coursera.arrays","fields":[{"name":"empties","type":{"type":"array","items":{"type":"record","name":"Empty","namespace":"org.coursera.records.test","fields":[]}}}]}""").asInstanceOf[RecordDataSchema]
+  val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"record","name":"WithRecordArray","namespace":"org.coursera.arrays","fields":[{"name":"empties","type":{"type":"array","items":{"type":"record","name":"Empty","namespace":"org.coursera.records.test","fields":[]}}},{"name":"fruits","type":{"type":"array","items":{"type":"enum","name":"Fruits","namespace":"org.coursera.enums","symbols":["APPLE","BANANA","ORANGE","PINEAPPLE"],"symbolDocs":{"APPLE":"An Apple."}}}}]}""").asInstanceOf[RecordDataSchema]
 
   
   
 
   
+  
+    
   
     
   
@@ -94,12 +109,13 @@ object WithRecordArray {
   private object Fields {
     
     val empties = WithRecordArray.SCHEMA.getField("empties")
+    val fruits = WithRecordArray.SCHEMA.getField("fruits")
   }
 
-  def apply(empties: org.coursera.records.test.EmptyArray): WithRecordArray = {
+  def apply(empties: org.coursera.records.test.EmptyArray, fruits: org.coursera.enums.FruitsArray): WithRecordArray = {
     val dataMap = new DataMap
     val result = new WithRecordArray(dataMap)
-    result.setFields(empties)
+    result.setFields(empties, fruits)
     dataMap.setReadOnly()
     result
   }
@@ -110,9 +126,9 @@ object WithRecordArray {
 
   
   
-      def unapply(record: WithRecordArray): Option[(org.coursera.records.test.EmptyArray)] = {
+      def unapply(record: WithRecordArray): Option[(org.coursera.records.test.EmptyArray, org.coursera.enums.FruitsArray)] = {
         try {
-          Some((record.empties))
+          Some((record.empties, record.fruits))
         } catch {
           case cast: TemplateOutputCastException => None
           case notPresent: RequiredFieldNotPresentException => None
