@@ -1,0 +1,8 @@
+{
+  "type": "record",
+  "name": "WithCustomTypesArray",
+  "namespace": "org.coursera.arrays",
+  "fields": [
+    { "name": "ints", "type": { "type": "array", "items": "org.coursera.customtypes.CustomInt"} }
+  ]
+}

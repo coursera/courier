@@ -19,38 +19,40 @@ import scala.collection.JavaConverters._
 
 
 
-@Generated(value = Array("FruitsMap"), comments="Courier Data Template.", date = "Sat May 30 13:29:24 PDT 2015")
+@Generated(value = Array("FruitsMap"), comments="Courier Data Template.", date = "Sat May 30 14:26:52 PDT 2015")
 final class FruitsMap(private val dataMap: DataMap)
-  extends immutable.Iterable[(String, Fruits.Fruits)]
-  with Map[String, Fruits.Fruits]
-  with immutable.MapLike[String, Fruits.Fruits, immutable.Map[String, Fruits.Fruits]]
+  extends immutable.Iterable[(String, org.coursera.enums.Fruits.Fruits)]
+  with Map[String, org.coursera.enums.Fruits.Fruits]
+  with immutable.MapLike[String, org.coursera.enums.Fruits.Fruits, immutable.Map[String, org.coursera.enums.Fruits.Fruits]]
   with DataTemplate[DataMap] {
   import FruitsMap._
 
   // TODO(jbetz): Decide on caching policy for data template types. We should not be creating a
   // new instance here on each lookup.
-  private[this] def lookup(key: String): Option[Fruits.Fruits] = {
+  private[this] def lookup(key: String): Option[org.coursera.enums.Fruits.Fruits] = {
     
         Option(dataMap.get(key).asInstanceOf[String]).map(Fruits.fromString)
       
-
+    
+    
+    
   }
 
-  override def get(key: String): Option[Fruits.Fruits] = lookup(key)
+  override def get(key: String): Option[org.coursera.enums.Fruits.Fruits] = lookup(key)
 
-  override def iterator: Iterator[(String, Fruits.Fruits)] = new Iterator[(String, Fruits.Fruits)] {
+  override def iterator: Iterator[(String, org.coursera.enums.Fruits.Fruits)] = new Iterator[(String, org.coursera.enums.Fruits.Fruits)] {
     val underlying = dataMap.keySet().iterator()
     override def hasNext: Boolean = underlying.hasNext
-    override def next(): (String, Fruits.Fruits) = {
+    override def next(): (String, org.coursera.enums.Fruits.Fruits) = {
       val key = underlying.next()
       key -> lookup(key).get
     }
   }
 
-  override def +[F >: Fruits.Fruits](kv: (String, F)): Map[String, F] = {
+  override def +[F >: org.coursera.enums.Fruits.Fruits](kv: (String, F)): Map[String, F] = {
     val (key, value) = kv
     value match {
-      case v: Fruits.Fruits =>
+      case v: org.coursera.enums.Fruits.Fruits =>
         val copy = dataMap.copy()
         copy.put(key, coerceOutput(v))
         copy.setReadOnly()
@@ -83,11 +85,11 @@ object FruitsMap {
 
   val empty = FruitsMap()
 
-  def apply(elems: (String, Fruits.Fruits)*): FruitsMap = {
+  def apply(elems: (String, org.coursera.enums.Fruits.Fruits)*): FruitsMap = {
     FruitsMap(elems.toMap)
   }
 
-  def apply(map: Map[String, Fruits.Fruits]): FruitsMap = {
+  def apply(map: Map[String, org.coursera.enums.Fruits.Fruits]): FruitsMap = {
     new FruitsMap(new DataMap(map.mapValues(coerceOutput).asJava))
   }
 
@@ -97,17 +99,17 @@ object FruitsMap {
 
   def newBuilder = new DataBuilder()
 
-  implicit val canBuildFrom = new CanBuildFrom[FruitsMap, (String, Fruits.Fruits), FruitsMap] {
+  implicit val canBuildFrom = new CanBuildFrom[FruitsMap, (String, org.coursera.enums.Fruits.Fruits), FruitsMap] {
     def apply(from: FruitsMap) = new DataBuilder(from)
     def apply() = newBuilder
   }
 
-  class DataBuilder(initial: FruitsMap) extends mutable.Builder[(String, Fruits.Fruits), FruitsMap] {
+  class DataBuilder(initial: FruitsMap) extends mutable.Builder[(String, org.coursera.enums.Fruits.Fruits), FruitsMap] {
     def this() = this(new FruitsMap(new DataMap()))
 
     val entries = new DataMap(initial.data())
 
-    def +=(kv: (String, Fruits.Fruits)): this.type = {
+    def +=(kv: (String, org.coursera.enums.Fruits.Fruits)): this.type = {
       val (key, value) = kv
       entries.put(key, coerceOutput(value))
       this
@@ -123,10 +125,13 @@ object FruitsMap {
     }
   }
 
-  private def coerceOutput(value: Fruits.Fruits): AnyRef = {
+  private def coerceOutput(value: org.coursera.enums.Fruits.Fruits): AnyRef = {
     
         value.toString
       
+    
+    
+    
   }
 }
 

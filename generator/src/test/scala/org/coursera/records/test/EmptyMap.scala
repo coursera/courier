@@ -19,38 +19,40 @@ import scala.collection.JavaConverters._
 
 
 
-@Generated(value = Array("EmptyMap"), comments="Courier Data Template.", date = "Sat May 30 13:29:24 PDT 2015")
+@Generated(value = Array("EmptyMap"), comments="Courier Data Template.", date = "Sat May 30 14:26:52 PDT 2015")
 final class EmptyMap(private val dataMap: DataMap)
-  extends immutable.Iterable[(String, Empty)]
-  with Map[String, Empty]
-  with immutable.MapLike[String, Empty, immutable.Map[String, Empty]]
+  extends immutable.Iterable[(String, org.coursera.records.test.Empty)]
+  with Map[String, org.coursera.records.test.Empty]
+  with immutable.MapLike[String, org.coursera.records.test.Empty, immutable.Map[String, org.coursera.records.test.Empty]]
   with DataTemplate[DataMap] {
   import EmptyMap._
 
   // TODO(jbetz): Decide on caching policy for data template types. We should not be creating a
   // new instance here on each lookup.
-  private[this] def lookup(key: String): Option[Empty] = {
+  private[this] def lookup(key: String): Option[org.coursera.records.test.Empty] = {
     
-        Option(dataMap.getDataMap(key)).map(dataMap => Empty(dataMap, DataConversion.SetReadOnly))
+        Option(dataMap.getDataMap(key)).map(dataMap => org.coursera.records.test.Empty(dataMap, DataConversion.SetReadOnly))
       
-
+    
+    
+    
   }
 
-  override def get(key: String): Option[Empty] = lookup(key)
+  override def get(key: String): Option[org.coursera.records.test.Empty] = lookup(key)
 
-  override def iterator: Iterator[(String, Empty)] = new Iterator[(String, Empty)] {
+  override def iterator: Iterator[(String, org.coursera.records.test.Empty)] = new Iterator[(String, org.coursera.records.test.Empty)] {
     val underlying = dataMap.keySet().iterator()
     override def hasNext: Boolean = underlying.hasNext
-    override def next(): (String, Empty) = {
+    override def next(): (String, org.coursera.records.test.Empty) = {
       val key = underlying.next()
       key -> lookup(key).get
     }
   }
 
-  override def +[F >: Empty](kv: (String, F)): Map[String, F] = {
+  override def +[F >: org.coursera.records.test.Empty](kv: (String, F)): Map[String, F] = {
     val (key, value) = kv
     value match {
-      case v: Empty =>
+      case v: org.coursera.records.test.Empty =>
         val copy = dataMap.copy()
         copy.put(key, coerceOutput(v))
         copy.setReadOnly()
@@ -83,11 +85,11 @@ object EmptyMap {
 
   val empty = EmptyMap()
 
-  def apply(elems: (String, Empty)*): EmptyMap = {
+  def apply(elems: (String, org.coursera.records.test.Empty)*): EmptyMap = {
     EmptyMap(elems.toMap)
   }
 
-  def apply(map: Map[String, Empty]): EmptyMap = {
+  def apply(map: Map[String, org.coursera.records.test.Empty]): EmptyMap = {
     new EmptyMap(new DataMap(map.mapValues(coerceOutput).asJava))
   }
 
@@ -97,17 +99,17 @@ object EmptyMap {
 
   def newBuilder = new DataBuilder()
 
-  implicit val canBuildFrom = new CanBuildFrom[EmptyMap, (String, Empty), EmptyMap] {
+  implicit val canBuildFrom = new CanBuildFrom[EmptyMap, (String, org.coursera.records.test.Empty), EmptyMap] {
     def apply(from: EmptyMap) = new DataBuilder(from)
     def apply() = newBuilder
   }
 
-  class DataBuilder(initial: EmptyMap) extends mutable.Builder[(String, Empty), EmptyMap] {
+  class DataBuilder(initial: EmptyMap) extends mutable.Builder[(String, org.coursera.records.test.Empty), EmptyMap] {
     def this() = this(new EmptyMap(new DataMap()))
 
     val entries = new DataMap(initial.data())
 
-    def +=(kv: (String, Empty)): this.type = {
+    def +=(kv: (String, org.coursera.records.test.Empty)): this.type = {
       val (key, value) = kv
       entries.put(key, coerceOutput(value))
       this
@@ -123,10 +125,13 @@ object EmptyMap {
     }
   }
 
-  private def coerceOutput(value: Empty): AnyRef = {
+  private def coerceOutput(value: org.coursera.records.test.Empty): AnyRef = {
     
         value.data()
       
+    
+    
+    
   }
 }
 

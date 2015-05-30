@@ -144,12 +144,24 @@ trait SchemaFixtures {
       val schema = TestSchema.load("org.coursera.arrays.WithPrimitivesArray")
     }
 
+    object WithCustomTypesArray {
+      val schema = TestSchema.load("org.coursera.arrays.WithCustomTypesArray")
+    }
+
     object WithComplexTypesMap {
       val schema = TestSchema.load("org.coursera.maps.WithComplexTypesMap")
     }
 
     object WithPrimitivesMap {
       val schema = TestSchema.load("org.coursera.maps.WithPrimitivesMap")
+    }
+
+    object WithCustomTypesMap {
+      val schema = TestSchema.load("org.coursera.maps.WithCustomTypesMap")
+    }
+
+    object CustomInt {
+      val schema = TestSchema.load("org.coursera.customtypes.CustomInt")
     }
   }
 

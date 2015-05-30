@@ -17,6 +17,7 @@
 package org.coursera.courier.generator
 
 import com.linkedin.data.ByteString
+import org.coursera.arrays.WithCustomTypesArray
 import org.coursera.arrays.WithPrimitivesArray
 import org.coursera.arrays.WithRecordArray
 import org.coursera.courier.data.BooleanArray
@@ -26,6 +27,9 @@ import org.coursera.courier.data.FloatArray
 import org.coursera.courier.data.IntArray
 import org.coursera.courier.data.LongArray
 import org.coursera.courier.data.StringArray
+import org.coursera.courier.generator.customtypes.CustomInt
+import org.coursera.courier.generator.customtypes.CustomIntCoercer
+import org.coursera.customtypes.CustomIntArray
 import org.coursera.enums.Fruits
 import org.coursera.enums.FruitsArray
 import org.coursera.records.test.Empty
@@ -41,7 +45,8 @@ object ArrayGeneratorTest extends SchemaFixtures with GeneratorTest {
     generateTestSchemas(Seq(
       Records.Empty.schema,
       Records.WithRecordArray.schema,
-      Records.WithPrimitivesArray.schema))
+      Records.WithPrimitivesArray.schema,
+      Records.WithCustomTypesArray.schema))
   }
 }
 
@@ -52,8 +57,8 @@ class ArrayGeneratorTest extends GeneratorTest with SchemaFixtures with Assertio
     val original = WithRecordArray(
       EmptyArray(Empty(), Empty(), Empty()),
       FruitsArray(Fruits.APPLE, Fruits.BANANA, Fruits.ORANGE))
-    println(original)
-    println(mapToJson(original))
+    //println(original)
+    //println(mapToJson(original))
   }
 
   @Test
@@ -66,6 +71,13 @@ class ArrayGeneratorTest extends GeneratorTest with SchemaFixtures with Assertio
       BooleanArray(false, true),
       StringArray("a", "b", "c"),
       BytesArray(bytes1, bytes2))
+    //println(mapToJson(original))
+  }
+
+  @Test
+  def testWithCustomTypesArray(): Unit = {
+    CustomIntCoercer.registerCoercer() // TODO: fix
+    val original = WithCustomTypesArray(CustomIntArray(CustomInt(1), CustomInt(2), CustomInt(3)))
     println(mapToJson(original))
   }
 }

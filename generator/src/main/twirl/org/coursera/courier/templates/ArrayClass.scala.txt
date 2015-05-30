@@ -6,9 +6,9 @@
 
 @@Generated(value = Array("@(array.scalaType)"), comments="Courier Data Template.", date = "@(Calendar.getInstance().getTime())")
 final class @(array.scalaType)(private val dataList: DataList)
-  extends IndexedSeq[@(array.itemClass.scalaType)]
+  extends IndexedSeq[@(array.itemClass.fqn)]
   with Product
-  with GenTraversable[@(array.itemClass.scalaType)]
+  with GenTraversable[@(array.itemClass.fqn)]
   with DataTemplate[DataList] {
 
   override def length: Int = dataList.size()
@@ -18,7 +18,7 @@ final class @(array.scalaType)(private val dataList: DataList)
   private[this] def lookup(idx: Int) = {
     @array.itemClass match {
       case recordItem: RecordDefinition => {
-        @(array.itemClass.scalaType)(dataList.get(idx).asInstanceOf[DataMap], DataTemplates.DataConversion.SetReadOnly)
+        @(array.itemClass.fqn)(dataList.get(idx).asInstanceOf[DataMap], DataTemplates.DataConversion.SetReadOnly)
       }
       case primitiveItem: PrimitiveDefinition => {
         dataList.get(idx).asInstanceOf[@(primitiveItem.dataType)]
@@ -26,15 +26,17 @@ final class @(array.scalaType)(private val dataList: DataList)
       case enumItem: EnumDefinition => {
         @(enumItem.enumName).fromString(dataList.get(idx).asInstanceOf[String])
       }
+      case customItem: ClassDefinition => {
+        DataTemplateUtil.coerceOutput(dataList.get(idx), classOf[@(array.itemClass.fqn)])
+      }
       case _: Any => { ??? }
     }
     @* TODO: add array items *@
     @* TODO: add map items *@
     @* TODO: add union items *@
-    @* TODO: add custom type items *@
   }
 
-  override def apply(idx: Int): @(array.itemClass.scalaType) = lookup(idx)
+  override def apply(idx: Int): @(array.itemClass.fqn) = lookup(idx)
 
   override def productElement(n: Int): Any = dataList.get(n)
   override def productArity: Int = dataList.size()
@@ -50,31 +52,31 @@ object @(array.scalaType) {
 
   val empty = @(array.scalaType)()
 
-  def apply(elems: @(array.itemClass.scalaType)*): @(array.scalaType) = {
+  def apply(elems: @(array.itemClass.fqn)*): @(array.scalaType) = {
     new @(array.scalaType)(new DataList(elems.map(coerceOutput).toList.asJava))
   }
 
-  def apply(collection: Traversable[@(array.itemClass.scalaType)]): @(array.scalaType) = {
+  def apply(collection: Traversable[@(array.itemClass.fqn)]): @(array.scalaType) = {
     new @(array.scalaType)(new DataList(collection.map(coerceOutput).toList.asJava))
   }
 
-  def apply(dataList: DataList, conversion: DataConversion) : @(array.scalaType) = {
+  def apply(dataList: DataList, conversion: DataConversion): @(array.scalaType) = {
     new @(array.scalaType)(DataTemplates.makeImmutable(dataList, SCHEMA, conversion))
   }
 
   def newBuilder = new DataBuilder()
 
-  implicit val canBuildFrom = new CanBuildFrom[@(array.scalaType), @(array.itemClass.scalaType), @(array.scalaType)] {
+  implicit val canBuildFrom = new CanBuildFrom[@(array.scalaType), @(array.itemClass.fqn), @(array.scalaType)] {
     def apply(from: @(array.scalaType)) = new DataBuilder(from)
     def apply() = newBuilder
   }
 
-  class DataBuilder(initial: @(array.scalaType)) extends mutable.Builder[@(array.itemClass.scalaType), @(array.scalaType)] {
+  class DataBuilder(initial: @(array.scalaType)) extends mutable.Builder[@(array.itemClass.fqn), @(array.scalaType)] {
     def this() = this(new @(array.scalaType)(new DataList()))
 
     val elems = new DataList(initial.data())
 
-    def +=(x: @(array.itemClass.scalaType)): this.type = {
+    def +=(x: @(array.itemClass.fqn)): this.type = {
       elems.add(coerceOutput(x))
       this
     }
@@ -89,7 +91,7 @@ object @(array.scalaType) {
     }
   }
 
-  private def coerceOutput(value: @(array.itemClass.scalaType)): AnyRef = {
+  private def coerceOutput(value: @(array.itemClass.fqn)): AnyRef = {
     @array.itemClass match {
       case recordItem: RecordDefinition => {
         value.data()
@@ -100,12 +102,14 @@ object @(array.scalaType) {
       case enumItem: EnumDefinition => {
         value.toString
       }
+      case customItem: ClassDefinition => {
+        DataTemplateUtil.coerceInput(value, classOf[@(array.itemClass.fqn)], classOf[@(array.itemDataClass.get.fqn)])
+      }
       case _: Any => { ??? }
     }
     @* TODO: add array items *@
     @* TODO: add map items *@
     @* TODO: add union items *@
-    @* TODO: add custom type items *@
   }
 }
 

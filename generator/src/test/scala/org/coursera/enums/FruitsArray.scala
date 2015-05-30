@@ -21,11 +21,11 @@ import scala.collection.mutable
 
 
 
-@Generated(value = Array("FruitsArray"), comments="Courier Data Template.", date = "Sat May 30 13:31:01 PDT 2015")
+@Generated(value = Array("FruitsArray"), comments="Courier Data Template.", date = "Sat May 30 14:21:22 PDT 2015")
 final class FruitsArray(private val dataList: DataList)
-  extends IndexedSeq[Fruits.Fruits]
+  extends IndexedSeq[org.coursera.enums.Fruits.Fruits]
   with Product
-  with GenTraversable[Fruits.Fruits]
+  with GenTraversable[org.coursera.enums.Fruits.Fruits]
   with DataTemplate[DataList] {
 
   override def length: Int = dataList.size()
@@ -35,9 +35,12 @@ final class FruitsArray(private val dataList: DataList)
     
         Fruits.fromString(dataList.get(idx).asInstanceOf[String])
       
+    
+    
+    
   }
 
-  override def apply(idx: Int): Fruits.Fruits = lookup(idx)
+  override def apply(idx: Int): org.coursera.enums.Fruits.Fruits = lookup(idx)
 
   override def productElement(n: Int): Any = dataList.get(n)
   override def productArity: Int = dataList.size()
@@ -53,31 +56,31 @@ object FruitsArray {
 
   val empty = FruitsArray()
 
-  def apply(elems: Fruits.Fruits*): FruitsArray = {
+  def apply(elems: org.coursera.enums.Fruits.Fruits*): FruitsArray = {
     new FruitsArray(new DataList(elems.map(coerceOutput).toList.asJava))
   }
 
-  def apply(collection: Traversable[Fruits.Fruits]): FruitsArray = {
+  def apply(collection: Traversable[org.coursera.enums.Fruits.Fruits]): FruitsArray = {
     new FruitsArray(new DataList(collection.map(coerceOutput).toList.asJava))
   }
 
-  def apply(dataList: DataList, conversion: DataConversion) : FruitsArray = {
+  def apply(dataList: DataList, conversion: DataConversion): FruitsArray = {
     new FruitsArray(DataTemplates.makeImmutable(dataList, SCHEMA, conversion))
   }
 
   def newBuilder = new DataBuilder()
 
-  implicit val canBuildFrom = new CanBuildFrom[FruitsArray, Fruits.Fruits, FruitsArray] {
+  implicit val canBuildFrom = new CanBuildFrom[FruitsArray, org.coursera.enums.Fruits.Fruits, FruitsArray] {
     def apply(from: FruitsArray) = new DataBuilder(from)
     def apply() = newBuilder
   }
 
-  class DataBuilder(initial: FruitsArray) extends mutable.Builder[Fruits.Fruits, FruitsArray] {
+  class DataBuilder(initial: FruitsArray) extends mutable.Builder[org.coursera.enums.Fruits.Fruits, FruitsArray] {
     def this() = this(new FruitsArray(new DataList()))
 
     val elems = new DataList(initial.data())
 
-    def +=(x: Fruits.Fruits): this.type = {
+    def +=(x: org.coursera.enums.Fruits.Fruits): this.type = {
       elems.add(coerceOutput(x))
       this
     }
@@ -92,10 +95,13 @@ object FruitsArray {
     }
   }
 
-  private def coerceOutput(value: Fruits.Fruits): AnyRef = {
+  private def coerceOutput(value: org.coursera.enums.Fruits.Fruits): AnyRef = {
     
         value.toString
       
+    
+    
+    
   }
 }
 

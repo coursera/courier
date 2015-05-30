@@ -6,18 +6,18 @@
 
 @@Generated(value = Array("@(map.scalaType)"), comments="Courier Data Template.", date = "@(Calendar.getInstance().getTime())")
 final class @(map.scalaType)(private val dataMap: DataMap)
-  extends immutable.Iterable[(String, @(map.valueClass.scalaType))]
-  with Map[String, @(map.valueClass.scalaType)]
-  with immutable.MapLike[String, @(map.valueClass.scalaType), immutable.Map[String, @(map.valueClass.scalaType)]]
+  extends immutable.Iterable[(String, @(map.valueClass.fqn))]
+  with Map[String, @(map.valueClass.fqn)]
+  with immutable.MapLike[String, @(map.valueClass.fqn), immutable.Map[String, @(map.valueClass.fqn)]]
   with DataTemplate[DataMap] {
   import @(map.scalaType)._
 
   // TODO(jbetz): Decide on caching policy for data template types. We should not be creating a
   // new instance here on each lookup.
-  private[this] def lookup(key: String): Option[@(map.valueClass.scalaType)] = {
+  private[this] def lookup(key: String): Option[@(map.valueClass.fqn)] = {
     @map.valueClass match {
       case recordItem: RecordDefinition => {
-        Option(dataMap.getDataMap(key)).map(dataMap => @(map.valueClass.scalaType)(dataMap, DataConversion.SetReadOnly))
+        Option(dataMap.getDataMap(key)).map(dataMap => @(map.valueClass.fqn)(dataMap, DataConversion.SetReadOnly))
       }
       case primitiveItem: PrimitiveDefinition => {
         Option(dataMap.get(key).asInstanceOf[@(primitiveItem.dataType)])
@@ -25,29 +25,31 @@ final class @(map.scalaType)(private val dataMap: DataMap)
       case enumItem: EnumDefinition => {
         Option(dataMap.get(key).asInstanceOf[String]).map(@(enumItem.enumName).fromString)
       }
+      case customItem: ClassDefinition => {
+        Option(dataMap.get(key)).map(value => DataTemplateUtil.coerceOutput(value, classOf[@(map.valueClass.fqn)]))
+      }
       case _: Any => { ??? }
     }
     @* TODO: add array values *@
     @* TODO: add map values *@
     @* TODO: add union values *@
-    @* TODO: add custom type values *@
   }
 
-  override def get(key: String): Option[@(map.valueClass.scalaType)] = lookup(key)
+  override def get(key: String): Option[@(map.valueClass.fqn)] = lookup(key)
 
-  override def iterator: Iterator[(String, @(map.valueClass.scalaType))] = new Iterator[(String, @(map.valueClass.scalaType))] {
+  override def iterator: Iterator[(String, @(map.valueClass.fqn))] = new Iterator[(String, @(map.valueClass.fqn))] {
     val underlying = dataMap.keySet().iterator()
     override def hasNext: Boolean = underlying.hasNext
-    override def next(): (String, @(map.valueClass.scalaType)) = {
+    override def next(): (String, @(map.valueClass.fqn)) = {
       val key = underlying.next()
       key -> lookup(key).get
     }
   }
 
-  override def +[F >: @(map.valueClass.scalaType)](kv: (String, F)): Map[String, F] = {
+  override def +[F >: @(map.valueClass.fqn)](kv: (String, F)): Map[String, F] = {
     val (key, value) = kv
     value match {
-      case v: @(map.valueClass.scalaType) =>
+      case v: @(map.valueClass.fqn) =>
         val copy = dataMap.copy()
         copy.put(key, coerceOutput(v))
         copy.setReadOnly()
@@ -80,11 +82,11 @@ object @(map.scalaType) {
 
   val empty = @(map.scalaType)()
 
-  def apply(elems: (String, @(map.valueClass.scalaType))*): @(map.scalaType) = {
+  def apply(elems: (String, @(map.valueClass.fqn))*): @(map.scalaType) = {
     @(map.scalaType)(elems.toMap)
   }
 
-  def apply(map: Map[String, @(map.valueClass.scalaType)]): @(map.scalaType) = {
+  def apply(map: Map[String, @(map.valueClass.fqn)]): @(map.scalaType) = {
     new @(map.scalaType)(new DataMap(map.mapValues(coerceOutput).asJava))
   }
 
@@ -94,17 +96,17 @@ object @(map.scalaType) {
 
   def newBuilder = new DataBuilder()
 
-  implicit val canBuildFrom = new CanBuildFrom[@(map.scalaType), (String, @(map.valueClass.scalaType)), @(map.scalaType)] {
+  implicit val canBuildFrom = new CanBuildFrom[@(map.scalaType), (String, @(map.valueClass.fqn)), @(map.scalaType)] {
     def apply(from: @(map.scalaType)) = new DataBuilder(from)
     def apply() = newBuilder
   }
 
-  class DataBuilder(initial: @(map.scalaType)) extends mutable.Builder[(String, @(map.valueClass.scalaType)), @(map.scalaType)] {
+  class DataBuilder(initial: @(map.scalaType)) extends mutable.Builder[(String, @(map.valueClass.fqn)), @(map.scalaType)] {
     def this() = this(new @(map.scalaType)(new DataMap()))
 
     val entries = new DataMap(initial.data())
 
-    def +=(kv: (String, @(map.valueClass.scalaType))): this.type = {
+    def +=(kv: (String, @(map.valueClass.fqn))): this.type = {
       val (key, value) = kv
       entries.put(key, coerceOutput(value))
       this
@@ -120,7 +122,7 @@ object @(map.scalaType) {
     }
   }
 
-  private def coerceOutput(value: @(map.valueClass.scalaType)): AnyRef = {
+  private def coerceOutput(value: @(map.valueClass.fqn)): AnyRef = {
     @map.valueClass match {
       case recordItem: RecordDefinition => {
         value.data()
@@ -131,11 +133,13 @@ object @(map.scalaType) {
       case enumItem: EnumDefinition => {
         value.toString
       }
+      case customItem: ClassDefinition => {
+        DataTemplateUtil.coerceInput(value, classOf[@(map.valueClass.fqn)], classOf[@(map.valueDataClass.get.fqn)])
+      }
       case _: Any => { ??? }
     }
     @* TODO: add array values *@
     @* TODO: add map values *@
     @* TODO: add union values *@
-    @* TODO: add custom type values *@
   }
 }

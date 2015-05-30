@@ -71,6 +71,7 @@
         }
         /* TODO(jbetz): support map fields */
         /* TODO(jbetz): support array fields */
+        /* TODO(jbetz): support union fields */
 
         private def setFields(value: @(member.classDefinition.fqn)): Unit = {
           @member.classDefinition match {
@@ -89,6 +90,7 @@
           }
           /* TODO(jbetz): support map fields */
           /* TODO(jbetz): support array fields */
+          /* TODO(jbetz): support union fields */
         }
       }
 
