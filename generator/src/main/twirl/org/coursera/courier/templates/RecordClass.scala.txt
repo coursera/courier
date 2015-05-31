@@ -39,9 +39,7 @@ final class @record.scalaType private (private val dataMap: DataMap)
       case customField: ClassDefinition => {
         lazy val @(field.name): @(field.scalaTypeFullname) = @field.wrapIfOption{obtainCustomType(@(record.scalaType).Fields.@(field.name), classOf[@(customField.scalaTypeFullname)])}
       }
-      case _: Any => {
-        lazy val @(field.name): @(field.typ.scalaType) = ???
-      }
+      case _: Any => { }
     }
   }
 
@@ -72,7 +70,7 @@ final class @record.scalaType private (private val dataMap: DataMap)
           @* TODO(jbetz): Figure out how to avoid the unsafe .get call in the "field.dataClass.get.dataType" expression. *@
           @field.applyIfOption(field.name) { value => putCustomType(@(record.scalaType).Fields.@(field.name), classOf[@(customField.scalaTypeFullname)], classOf[@(field.dataClass.get.dataType)], @customField.maybeBox{@value})}
         }
-        case _: Any => { ??? }
+        case _: Any => { }
       }
     }
   }
@@ -96,7 +94,10 @@ final class @record.scalaType private (private val dataMap: DataMap)
 
   override def toString: String = ScalaRunTime._toString(this)
 
-  @* TODO: override copy() (the one without any args) *@
+  override def copy(): @(record.scalaType) = {
+    new @(record.scalaType)(dataMap)
+  }
+
   @if(record.fields.nonEmpty) {
     def copy(@(record.copyFieldParamDefs)): @(record.scalaType) = {
       val dataMap = new DataMap
@@ -131,7 +132,7 @@ object @(record.scalaType) {
           case _: Any => { ??? }
         }
       }
-      case _ => {}
+      case _ => { }
     }
   }
 

@@ -68,10 +68,11 @@
             @(enumMember.enumFullname).fromString(
               obtainDirect(@(member.classDefinition.memberName)Schema, classOf[String], memberKey))
           }
+          case _: Any => { }
         }
-        /* TODO(jbetz): support map fields */
-        /* TODO(jbetz): support array fields */
-        /* TODO(jbetz): support union fields */
+        @* TODO(jbetz): support map fields *@
+        @* TODO(jbetz): support array fields *@
+        @* TODO(jbetz): support union fields *@
 
         private def setFields(value: @(member.classDefinition.scalaTypeFullname)): Unit = {
           @member.classDefinition match {
@@ -87,10 +88,11 @@
             case enumMember: EnumDefinition => {
               selectDirect(@(member.classDefinition.memberName)Schema, classOf[String], memberKey, value.toString)
             }
+            case _: Any => { }
           }
-          /* TODO(jbetz): support map fields */
-          /* TODO(jbetz): support array fields */
-          /* TODO(jbetz): support union fields */
+          @* TODO(jbetz): support map fields *@
+          @* TODO(jbetz): support array fields *@
+          @* TODO(jbetz): support union fields *@
         }
       }
 

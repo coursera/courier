@@ -29,7 +29,7 @@ final class @(array.scalaType)(private val dataList: DataList)
       case customItem: ClassDefinition => {
         DataTemplateUtil.coerceOutput(dataList.get(idx), classOf[@(array.itemClass.scalaTypeFullname)])
       }
-      case _: Any => { ??? }
+      case _: Any => { }
     }
     @* TODO: add array items *@
     @* TODO: add map items *@
@@ -113,7 +113,7 @@ object @(array.scalaType) {
       case customItem: ClassDefinition => {
         DataTemplateUtil.coerceInput(value, classOf[@(array.itemClass.scalaTypeFullname)], classOf[@(array.itemDataClass.get.scalaTypeFullname)])
       }
-      case _: Any => { ??? }
+      case _: Any => { }
     }
     @* TODO: add array items *@
     @* TODO: add map items *@

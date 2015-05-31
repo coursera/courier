@@ -28,7 +28,7 @@ final class @(map.scalaType)(private val dataMap: DataMap)
       case customItem: ClassDefinition => {
         Option(dataMap.get(key)).map(value => DataTemplateUtil.coerceOutput(value, classOf[@(map.valueClass.scalaTypeFullname)]))
       }
-      case _: Any => { ??? }
+      case _: Any => { }
     }
     @* TODO: add array values *@
     @* TODO: add map values *@
@@ -144,7 +144,7 @@ object @(map.scalaType) {
       case customItem: ClassDefinition => {
         DataTemplateUtil.coerceInput(value, classOf[@(map.valueClass.scalaTypeFullname)], classOf[@(map.valueDataClass.get.scalaTypeFullname)])
       }
-      case _: Any => { ??? }
+      case _: Any => { }
     }
     @* TODO: add array values *@
     @* TODO: add map values *@
