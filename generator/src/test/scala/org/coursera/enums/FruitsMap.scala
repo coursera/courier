@@ -20,7 +20,7 @@ import com.linkedin.data.template.Custom
 
 
 
-@Generated(value = Array("FruitsMap"), comments="Courier Data Template.", date = "Sat May 30 17:21:40 PDT 2015")
+@Generated(value = Array("FruitsMap"), comments="Courier Data Template.", date = "Sun May 31 11:22:32 PDT 2015")
 final class FruitsMap(private val dataMap: DataMap)
   extends immutable.Iterable[(String, org.coursera.enums.Fruits.Fruits)]
   with Map[String, org.coursera.enums.Fruits.Fruits]

@@ -22,6 +22,7 @@ import org.coursera.courier.generator.customtypes.CustomIntCoercer
 import org.coursera.enums.Fruits
 import org.coursera.records.test.Empty
 import org.coursera.unions.WithComplexTypesUnion
+import org.coursera.unions.WithEmptyUnion
 import org.coursera.unions.WithPrimitiveCustomTypesUnion
 import org.coursera.unions.WithPrimitivesUnion
 import org.junit.BeforeClass
@@ -37,7 +38,8 @@ object UnionGeneratorTest extends SchemaFixtures with GeneratorTest {
       Unions.WithComplexTypesUnion,
       Unions.WithPrimitivesUnion,
       Unions.WithPrimitiveTyperefsUnion,
-      Unions.WithPrimitiveCustomTypesUnion))
+      Unions.WithPrimitiveCustomTypesUnion,
+      Unions.WithEmptyUnion))
   }
 }
 
@@ -189,5 +191,20 @@ class UnionGeneratorTest extends GeneratorTest with SchemaFixtures with Assertio
         |    "int" : 1
         |  }
         |}""".stripMargin)
+  }
+
+  @Test
+  def testWithEmptyUnion(): Unit = {
+    // TODO: default pegasus validation prevents adding cases to unions
+
+    /*val unknownJson = """{
+      |  "union" : {
+      |    "unknown": { }
+      |  }
+      |}
+    """.stripMargin
+
+    val withUnknown = WithEmptyUnion(readJsonToMap(unknownJson), DataConversion.SetReadOnly)
+    assert(withUnknown.union === WithEmptyUnion.Union.$UnknownMember)*/
   }
 }

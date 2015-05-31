@@ -1,6 +1,6 @@
 
 
-package org.coursera.records.test
+package org.coursera.escaping
 
 import javax.annotation.Generated
 
@@ -24,10 +24,10 @@ import com.linkedin.data.ByteString
 
 
 
-@Generated(value = Array("Empty"), comments = "Courier Data Template.", date = "Sun May 31 11:22:32 PDT 2015")
-final class Empty private (private val dataMap: DataMap)
-  extends ScalaRecordTemplate(dataMap, Empty.SCHEMA) with Product {
-  import Empty._
+@Generated(value = Array("`class`"), comments = "Courier Data Template.", date = "Sat May 30 22:16:44 PDT 2015")
+final class `class` private (private val dataMap: DataMap)
+  extends ScalaRecordTemplate(dataMap, `class`.SCHEMA) with Product {
+  import `class`._
 
   
   
@@ -45,9 +45,9 @@ final class Empty private (private val dataMap: DataMap)
       case _ => throw new IndexOutOfBoundsException(n.toString)
     }
 
-  override val productPrefix: String = "Empty"
+  override val productPrefix: String = "`class`"
 
-  override def canEqual(that: Any): Boolean = that.isInstanceOf[Empty]
+  override def canEqual(that: Any): Boolean = that.isInstanceOf[`class`]
 
   override def hashCode: Int = ScalaRunTime._hashCode(this)
 
@@ -59,8 +59,8 @@ final class Empty private (private val dataMap: DataMap)
   
 }
 
-object Empty {
-  val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"record","name":"Empty","namespace":"org.coursera.records.test","fields":[]}""").asInstanceOf[RecordDataSchema]
+object `class` {
+  val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"record","name":"class","namespace":"org.coursera.escaping","fields":[]}""").asInstanceOf[RecordDataSchema]
 
   
   
@@ -72,21 +72,21 @@ object Empty {
     
   }
 
-  def apply(): Empty = {
+  def apply(): `class` = {
     val dataMap = new DataMap
-    val result = new Empty(dataMap)
+    val result = new `class`(dataMap)
     result.setFields()
     dataMap.setReadOnly()
     result
   }
 
-  def apply(dataMap: DataMap, conversion: DataConversion): Empty = {
-    new Empty(DataTemplates.makeImmutable(dataMap, SCHEMA, conversion))
+  def apply(dataMap: DataMap, conversion: DataConversion): `class` = {
+    new `class`(DataTemplates.makeImmutable(dataMap, SCHEMA, conversion))
   }
 
   
   
-      def unapply(record: Empty): Boolean = true
+      def unapply(record: `class`): Boolean = true
     
 }
 

@@ -24,7 +24,7 @@ import com.linkedin.data.ByteString
 
 
 
-@Generated(value = Array("WithOptionalPrimitives"), comments = "Courier Data Template.", date = "Sat May 30 19:52:42 PDT 2015")
+@Generated(value = Array("WithOptionalPrimitives"), comments = "Courier Data Template.", date = "Sat May 30 22:38:24 PDT 2015")
 final class WithOptionalPrimitives private (private val dataMap: DataMap)
   extends ScalaRecordTemplate(dataMap, WithOptionalPrimitives.SCHEMA) with Product {
   import WithOptionalPrimitives._

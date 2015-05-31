@@ -22,7 +22,7 @@ import com.linkedin.data.template.Custom
 
 
 
-@Generated(value = Array("EmptyArray"), comments="Courier Data Template.", date = "Sat May 30 17:14:08 PDT 2015")
+@Generated(value = Array("EmptyArray"), comments="Courier Data Template.", date = "Sun May 31 11:20:37 PDT 2015")
 final class EmptyArray(private val dataList: DataList)
   extends IndexedSeq[org.coursera.records.test.Empty]
   with Product

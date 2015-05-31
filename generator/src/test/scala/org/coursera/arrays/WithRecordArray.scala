@@ -24,7 +24,7 @@ import com.linkedin.data.ByteString
 
 
 
-@Generated(value = Array("WithRecordArray"), comments = "Courier Data Template.", date = "Sat May 30 17:14:08 PDT 2015")
+@Generated(value = Array("WithRecordArray"), comments = "Courier Data Template.", date = "Sat May 30 22:17:04 PDT 2015")
 final class WithRecordArray private (private val dataMap: DataMap)
   extends ScalaRecordTemplate(dataMap, WithRecordArray.SCHEMA) with Product {
   import WithRecordArray._

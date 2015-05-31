@@ -23,6 +23,7 @@ import com.linkedin.data.schema.BytesDataSchema
 import com.linkedin.data.schema.DataSchema
 import com.linkedin.data.schema.DataSchemaConstants
 import com.linkedin.data.schema.DoubleDataSchema
+import com.linkedin.data.schema.EnumDataSchema
 import com.linkedin.data.schema.FloatDataSchema
 import com.linkedin.data.schema.IntegerDataSchema
 import com.linkedin.data.schema.LongDataSchema
@@ -30,6 +31,7 @@ import com.linkedin.data.schema.MapDataSchema
 import com.linkedin.data.schema.PrimitiveDataSchema
 import com.linkedin.data.schema.RecordDataSchema
 import com.linkedin.data.schema.StringDataSchema
+import com.linkedin.data.schema.UnionDataSchema
 import com.linkedin.data.template.BooleanArray
 import com.linkedin.data.template.BooleanMap
 import com.linkedin.data.template.BytesArray
@@ -55,54 +57,9 @@ import com.linkedin.pegasus.generator.spec.RecordTemplateSpec
 import com.linkedin.pegasus.generator.spec.RecordTemplateSpec.Field
 import com.linkedin.pegasus.generator.spec.TyperefTemplateSpec
 import com.linkedin.pegasus.generator.spec.UnionTemplateSpec
-import org.coursera.courier.generator.twirl.defs.MapDefinition
 import twirl.api.Txt
 
 import scala.collection.JavaConverters._
-
-/**
- * Common properties shared by all pegasus data binding generator utility types.
- */
-trait Definition {
-
-  /**
-   * The scala type.
-   *
-   * For complex types, this is the name of the generated data binding class.
-   *
-   * For primitive types, this is the Scala native type, e.g. "Int".
-   */
-  def scalaType: String
-
-  /**
-   * The pegasus "data" type.
-   *
-   * For complex types, this is the same as scalaType.
-   *
-   * For primitives, this will be the java boxed type, e.g. `java.lang.Integer` whereas the
-   * scalaType would be `Int`.
-   */
-  def dataType: String = scalaType
-
-  /**
-   * The namespace of the type, if any.
-   */
-  def namespace: Option[String]
-
-  /**
-   * The schema of the type.
-   */
-  def schema: DataSchema
-
-  /**
-   * The fully qualified name of the type.
-   */
-  def fqn: String = s"${namespace.map(_ + ".").getOrElse("")}$scalaType"
-
-  def scalaDoc: Option[String]
-
-  def memberName: String = scalaType + "Member"
-}
 
 /**
  * Pegasus provides `ClassTemplateSpec`s to "flatten" the data schemas provided to a
@@ -111,7 +68,63 @@ trait Definition {
  * These Definitions classes wrap `ClassTemplateSpec`s so that we can use idiomatic scala types
  * in our templates.  They also add language specific escaping and convenience functions
  * specifically for generating data bindings for Scala.
+ *
+ * This trait is for all Scala classes that wrap ClassTemplateSpec and it's sub-classes, it
+ * represents the common properties shared by all pegasus data binding generator utility types.
  */
+trait Definition {
+
+  /**
+   * The scala type without namespace.
+   *
+   * For complex types, this is the name of the generated data binding class.
+   *
+   * For primitive types, this is the Scala native type, e.g. "Int".
+   */
+  def scalaType: String
+
+
+  /**
+   * The namespace of the scala type, if any.
+   *
+   * Only present for complex types.
+   */
+  def namespace: Option[String]
+
+  /**
+   * The fully qualified name of the scala type.
+   */
+  def scalaTypeFullname: String = s"${namespace.map(_ + ".").getOrElse("")}$scalaType"
+
+  /**
+   * The pegasus "data" type.
+   *
+   * This if sometimes the same as scalaType. It will be different for custom type and for
+   * primitive types.
+   *
+   * For custom types, it will be the referenced type.
+   *
+   * For primitives, this will be the java boxed type, e.g. `java.lang.Integer` whereas the
+   * scalaType would be `Int`.
+   */
+  def dataType: String = scalaType
+
+  /**
+   * The schema of the type.
+   */
+  def schema: DataSchema
+
+  /**
+   * Includes the opening and closing scaladoc comment tags.
+   */
+  def scalaDoc: Option[String]
+
+  /**
+   * The name that should be given to any Union member wrappers of this type.
+   */
+  def memberName: String = scalaType + "Member"
+}
+
 object Definition {
   def apply(spec: ClassTemplateSpec): Definition = {
     assert(spec != null)
@@ -134,45 +147,118 @@ object Definition {
 }
 
 case class RecordDefinition(spec: RecordTemplateSpec) extends Definition {
-  override def scalaType: String = spec.getClassName
+  override def scalaType: String = ScalaEscaping.escape(spec.getClassName)
   override def namespace: Option[String] = Option(spec.getNamespace)
   override def schema: RecordDataSchema = spec.getSchema
   def fields: Seq[RecordField] = spec.getFields.asScala.map(RecordField).toSeq
 
   // parameter list rendering utilities
-  def fieldParamDefs = fields.map(field => s"${field.name}: ${field.fqn}").mkString(", ")
-  def copyFieldParamDefs = fields.map(field => s"${field.name}: ${field.fqn} = this.${field.name}").mkString(", ")
-  def fieldsAsParams = fields.map(_.name).mkString(", ")
-  def fieldsAsTypeParams = fields.map(_.fqn).mkString(", ")
-  def prefixedFieldParams(prefix: String) = fields.map(field => s"$prefix${field.name}").mkString(", ")
+  def fieldParamDefs: String = {
+    fields.map { field =>
+      s"${field.name}: ${field.scalaTypeFullname}"
+    }.mkString(", ")
+  }
 
-  def scalaDoc = Option(schema.getDoc).flatMap(Scaladoc.stringToScaladoc)
+  def copyFieldParamDefs: String = {
+    fields.map { field =>
+      s"${field.name}: ${field.scalaTypeFullname} = this.${field.name}"
+    }.mkString(", ")
+  }
+
+  def fieldsAsParams: String = {
+    fields.map(_.name).mkString(", ")
+  }
+
+  def fieldsAsTypeParams: String = {
+    fields.map(_.scalaTypeFullname).mkString(", ")
+  }
+
+  def prefixedFieldParams(prefix: String): String = {
+    fields.map(field => s"$prefix${field.name}").mkString(", ")
+  }
+
+  def scalaDoc: Option[String] = Option(schema.getDoc).flatMap(Scaladoc.stringToScaladoc)
 }
 
 case class UnionDefinition(spec: UnionTemplateSpec) extends Definition {
-  override def scalaType = spec.getClassName
-  override def namespace = Option(spec.getNamespace)
-  override def schema = spec.getSchema
-  def scalaDoc = None
-  def members = spec.getMembers.asScala.map(UnionMemberDefinition)
+  /**
+   * A inferred name fo the Union.
+   *
+   * Note that all unions are defined anonymously, so pegasus makes a best effort to give
+   * them a reasonable name.
+   *
+   * E.g. A union defined as the type of a field of a record will be named after that field.
+   */
+  override def scalaType: String = ScalaEscaping.escape(spec.getClassName)
+  override def namespace: Option[String] = Option(spec.getNamespace)
+  override def schema: UnionDataSchema = spec.getSchema
+  def scalaDoc: Option[String] = None
+
+  /**
+   * The union member types.
+   */
+  def members: Seq[UnionMemberDefinition] = spec.getMembers.asScala.map(UnionMemberDefinition)
 }
 
 case class UnionMemberDefinition(spec: UnionTemplateSpec.Member) {
-  def classDefinition = Definition(spec.getClassTemplateSpec)
-  def dataClass = Definition(spec.getDataClass)
-  def schema = spec.getSchema
+
+  /**
+   * The member type definition, may be any pegasus type
+   * (record, primitive, enum, union, ...).
+   */
+  def classDefinition: Definition = Definition(spec.getClassTemplateSpec)
+
+  /**
+   * The pegasus data type of the member.
+   *
+   * For the select and obtain methods in UnionTemplate (be it direct, wrapped or customType),
+   * this is the type that UnionTemplate expects for the "dataClass".
+   */
+  def dataClass: Definition = Definition(spec.getDataClass)
+  def schema: DataSchema = spec.getSchema
 }
 
 case class EnumDefinition(spec: EnumTemplateSpec) extends Definition {
-  override def scalaType = spec.getClassName + "." + spec.getClassName
-  def enumName = spec.getClassName
-  def enumFullname = s"${namespace.map(_ + ".").getOrElse("")}$enumName"
-  override def namespace = Option(spec.getNamespace)
-  override def schema = spec.getSchema
-  def scalaDoc = Option(schema.getDoc).flatMap(Scaladoc.stringToScaladoc)
+
+  /**
+   * The enumeration's type.
+   *
+   * It's important to note that the type for the Enumerations we generate is
+   * different than the enumeration object's name.
+   *
+   * A enumeration type is `SomeEnum.SomeEnum`, where the first `SomeEnum` is the name of the
+   * enumeration scala object, and the second `SomeEnum` is a member type defined inside the
+   * object for the actual type of the enumeration.
+   */
+  override def scalaType: String = s"$enumName.$enumName"
+
+  /**
+   * Because the scalaType is not the same as the enumeration object name, we have separate fields
+   * for the enumeration object name.
+   */
+  def enumName: String = ScalaEscaping.escape(spec.getClassName)
+  def enumFullname: String = s"${namespace.map(_ + ".").getOrElse("")}$enumName"
+  override def namespace: Option[String] = Option(spec.getNamespace)
+
+  override def schema: EnumDataSchema = spec.getSchema
+
+  /**
+   * The scaladoc for the entire enumeration.
+   */
+  def scalaDoc: Option[String] = Option(schema.getDoc).flatMap(Scaladoc.stringToScaladoc)
+
+  /**
+   * For enumerations, each symbol may have it's own documentation, this is provided as map
+   * from symbol name to documentation string.
+   */
   def symbolScalaDocs = schema.getSymbolDocs.asScala.mapValues(Scaladoc.stringToScaladoc)
-  def symbols = schema.getSymbols.asScala
-  override def memberName = spec.getClassName + "Member"
+
+  /**
+   * Enumeration symbol strings, not including $UNKNOWN.
+   */
+  def symbols: Seq[String] = schema.getSymbols.asScala.map(ScalaEscaping.escape)
+
+  override def memberName: String = enumName + "Member"
 }
 
 case class ArrayDefinition(
@@ -187,28 +273,31 @@ case class ArrayDefinition(
 object ArrayDefinition {
   def apply(spec: ArrayTemplateSpec): ArrayDefinition = {
     ArrayDefinition(
-      spec.getClassName,
-      Option(spec.getNamespace),
-      spec.getSchema,
-      None,
-      Definition(spec.getItemClass),
-      Option(spec.getItemDataClass).map(Definition(_)),
-      Option(spec.getCustomInfo).map(CustomInfoDefinition))
+      scalaType = ScalaEscaping.escape(spec.getClassName),
+      namespace = Option(spec.getNamespace),
+      schema = spec.getSchema,
+      scalaDoc = None,
+      itemClass = Definition(spec.getItemClass),
+      itemDataClass = Option(spec.getItemDataClass).map(Definition(_)),
+      customInfo = Option(spec.getCustomInfo).map(CustomInfoDefinition))
   }
 
+  /**
+   * For use when creating ArrayDefinitions for pre-defined arrays such as IntArray.
+   */
   def forPrimitive(
       scalaType: String,
       namespace: String,
       primitiveDef: PrimitiveDefinition,
       schema: ArrayDataSchema): ArrayDefinition = {
     ArrayDefinition(
-      scalaType,
-      Some(namespace),
-      schema,
-      None,
-      primitiveDef,
-      Some(primitiveDef),
-      None)
+      scalaType = ScalaEscaping.escape(scalaType),
+      namespace = Some(namespace),
+      schema = schema,
+      scalaDoc = None,
+      itemClass = primitiveDef,
+      itemDataClass = Some(primitiveDef),
+      customInfo = None)
   }
 }
 
@@ -226,27 +315,31 @@ case class MapDefinition(
 object MapDefinition {
   def apply(spec: MapTemplateSpec): MapDefinition = {
     MapDefinition(
-      spec.getClassName,
-      Option(spec.getNamespace),
-      spec.getSchema,
-      None,
-      Definition(spec.getValueClass),
-      Option(spec.getValueDataClass).map(Definition(_)),
-      Option(spec.getCustomInfo).map(CustomInfoDefinition))
+      scalaType = ScalaEscaping.escape(spec.getClassName),
+      namespace = Option(spec.getNamespace),
+      schema = spec.getSchema,
+      scalaDoc = None,
+      valueClass = Definition(spec.getValueClass),
+      valueDataClass = Option(spec.getValueDataClass).map(Definition(_)),
+      customInfo = Option(spec.getCustomInfo).map(CustomInfoDefinition))
   }
+
+  /**
+   * For use when creating MapDefinition for pre-defined maps such as IntMap.
+   */
   def forPrimitive(
       scalaType: String,
       namespace: String,
       primitiveDef: PrimitiveDefinition,
       schema: MapDataSchema): MapDefinition = {
     MapDefinition(
-      scalaType,
-      Some(namespace),
-      schema,
-      None,
-      primitiveDef,
-      None,
-      None)
+      scalaType = ScalaEscaping.escape(scalaType),
+      namespace = Some(namespace),
+      schema = schema,
+      scalaDoc = None,
+      valueClass = primitiveDef,
+      valueDataClass = None,
+      customInfo = None)
   }
 }
 
@@ -274,29 +367,26 @@ trait MaybeBoxable extends Definition {
 }
 
 case class PrimitiveDefinition(spec: PrimitiveTemplateSpec) extends Definition with MaybeBoxable {
-  override def scalaType = ScalaTypes.scalaTypeForPrimitiveType(spec.getSchema)
-  override def dataType = ScalaTypes.dataMapTypeForPrimitiveType(spec.getSchema).getName
-  override def namespace = Option(spec.getNamespace)
-  override def schema = spec.getSchema
-  def scalaDoc = None
-  def schemaType = schema match {
-    case _: IntegerDataSchema => "DataSchemaConstants.INTEGER_DATA_SCHEMA"
-    case _: LongDataSchema => "DataSchemaConstants.LONG_DATA_SCHEMA"
-    case _: FloatDataSchema => "DataSchemaConstants.FLOAT_DATA_SCHEMA"
-    case _: DoubleDataSchema => "DataSchemaConstants.DOUBLE_DATA_SCHEMA"
-    case _: BooleanDataSchema => "DataSchemaConstants.BOOLEAN_DATA_SCHEMA"
-    case _: StringDataSchema => "DataSchemaConstants.STRING_DATA_SCHEMA"
-    case _: BytesDataSchema => "DataSchemaConstants.BYTES_DATA_SCHEMA"
-  }
-  def pegasusType = schema match {
-    case _: IntegerDataSchema => "int"
-    case _: LongDataSchema => "long"
-    case _: FloatDataSchema => "float"
-    case _: DoubleDataSchema => "double"
-    case _: BooleanDataSchema => "boolean"
-    case _: StringDataSchema => "string"
-    case _: BytesDataSchema => "bytes"
-  }
+
+  /**
+   * The scala type used to represent the primitive. E.g. `Int`.
+   */
+  override def scalaType: String = ScalaTypes.scalaTypeForPrimitiveType(spec.getSchema)
+
+  /**
+   * The java class used by pegasus for the primitive. E.g. `java.lang.Integer`.
+   *
+   * Pegasus always uses java boxed primitive classes.
+   */
+  override def dataType: String = ScalaTypes.dataMapTypeForPrimitiveType(spec.getSchema).getName
+  override def namespace: Option[String] = Option(spec.getNamespace)
+  override def schema: PrimitiveDataSchema = spec.getSchema
+  override def scalaDoc: Option[String] = None
+
+  /**
+   * The pegasus name of the primitive type.  E.g. `int`.
+   */
+  def pegasusType = ScalaTypes.lookupPegasusTypeString(schema)
 }
 
 case class CustomInfoDefinition(spec: CustomInfoSpec) {
@@ -306,6 +396,19 @@ case class CustomInfoDefinition(spec: CustomInfoSpec) {
   def sourceSchema = spec.getSourceSchema
 }
 
+/**
+ * A "raw" class definition.
+ *
+ * Purely a reference to a type. The type should already exist and should not be generated.
+ *
+ * May refer to a primitive type.
+ *
+ * Main Uses:
+ *   A custom class
+ *   A coercer for a custom class
+ *   ???
+ *
+ */
 case class ClassDefinition(spec: ClassTemplateSpec) extends Definition with MaybeBoxable {
   override def scalaType = Option(schema).collect {
     case p: PrimitiveDataSchema => ScalaTypes.scalaTypeForPrimitiveType(p)
@@ -320,11 +423,38 @@ case class ClassDefinition(spec: ClassTemplateSpec) extends Definition with Mayb
   def scalaDoc = None
 }
 
+/**
+ * The field of a record, may be either a field directly defined in the record or an "include"
+ * field.
+ */
 case class RecordField(field: Field) {
-  def customInfo: Option[CustomInfoDefinition] = Option(field.getCustomInfo).map(CustomInfoDefinition)
+  /**
+   * Present only if the type of a field is a custom type.
+   */
+  def customInfo: Option[CustomInfoDefinition] = {
+    Option(field.getCustomInfo).map(CustomInfoDefinition)
+  }
+
+  /**
+   * The type definition of the field, may be any pegasus type
+   * (record, primitive, enum, union, ...).
+   */
+  def typ: Definition = Definition(field.getType)
+
+  /**
+   * The pegasus data type of the field.
+   *
+   * For the put and obtain methods in RecordTemplate (be it direct, wrapped or customType),
+   * this is the type that RecordTemplate expects for the "dataClass".
+   */
   def dataClass: Option[Definition] = Option(field.getDataClass).map(Definition(_))
 
-  def typ: Definition = Definition(field.getType)
+  /**
+   * If the field type is enclosed in another type, the enclosing class.
+   *
+   * When generating classes, if the enclosing type is the current type being generated, then the
+   * type of this field should be generated as a subclass.
+   */
   def enclosingClass: Option[Definition] = Option(field.getType.getEnclosingClass).map(Definition(_))
 
   /**
@@ -341,10 +471,10 @@ case class RecordField(field: Field) {
    * Fields are aware of optionality, so the fully qualified name of a field type can be wrapped
    * with Option[] if it is an optional field.
    */
-  def fqn = if (isOptional) {
-    s"Option[${typ.fqn}]"
+  def scalaTypeFullname = if (isOptional) {
+    s"Option[${typ.scalaTypeFullname}]"
   } else {
-    typ.fqn
+    typ.scalaTypeFullname
   }
 
   /**
@@ -365,7 +495,7 @@ case class RecordField(field: Field) {
   }
 
   /**
-   * If the ref is optional, apply the expression in a foreach body to the ref, else apply it
+   * If this field is optional, apply the expression in a foreach body to the ref, else apply it
    * directly to the ref.
    */
   def applyIfOption(ref: String)(f: String => Txt): Txt = {
@@ -376,6 +506,10 @@ case class RecordField(field: Field) {
     }
   }
 
+  /**
+   * If this field is optional, wrap the provided ref expression with Option(ref) and then map
+   * the option with the provided `f` function.
+   */
   def wrapAndMapIfOption(ref: Txt)(f: Txt => Txt): Txt = {
     if (isOptional) {
       Txt(s"Option($ref).map(value => ${f(Txt("value"))})")
@@ -385,16 +519,24 @@ case class RecordField(field: Field) {
   }
 
   def schemaField = field.getSchemaField
-  def name = schemaField.getName
-  def doc = Option(schemaField.getDoc)
+
+  /**
+   * Escaped name for use in scala source.
+   */
+  def name = ScalaEscaping.escape(schemaField.getName)
+
+  /**
+   * Unescaped name.
+   */
+  def pegasusName = schemaField.getName
+
   def isOptional = schemaField.getOptional
   def default = schemaField.getDefault
-  def scalaDoc = doc.flatMap(Scaladoc.stringToScaladoc)
+  def scalaDoc = Option(schemaField.getDoc).flatMap(Scaladoc.stringToScaladoc)
 }
 
 object Scaladoc {
   def stringToScaladoc(raw: String): Option[String] = {
-    // TODO(jbetz): Add proper escaping of comment chars and scaladoc chars (markdown and html?)
     raw.trim match {
       case empty if empty.isEmpty => None
       case nonEmpty =>
@@ -405,15 +547,30 @@ object Scaladoc {
   }
 
   def escape(raw: String): String = {
-    raw // TODO: escape scaladoc reserved chars, incl. html tags, as well as "/** */"
+    // TODO(jbetz): Add proper escaping of comment chars and scaladoc chars (markdown and html?)
+    raw
   }
 }
 
 object ScalaEscaping {
+  // Avro's naming rules (https://avro.apache.org/docs/1.7.7/spec.html#Names) are fairly strict, and
+  // we only need to escape valid avro names, which makes this fairly straight-forward.
+  //
+  // This keyword list is based on:
+  // http://stackoverflow.com/questions/22037430/programatically-checking-whether-a-string-is-a-reserved-word-in-scala
+  val keywords = Set(
+    "abstract", "true", "val", "do", "throw", "package", "macro", "object", "false",
+    "this", "if", "then", "var", "trait", ".", "catch", "with", "def", "else", "class", "type",
+    "lazy", "null", "override", "protected", "private", "sealed", "finally", "new",
+    "implicit", "extends", "final", "for", "return", "case", "import", "forSome", "super",
+    "while", "yield", "try", "match")
+
   def escape(symbol: String): String = {
-    // TODO: escape all language keywords
-    // TODO: check for illegal symbols (symbols that start with numbers, etc..) and either escape or throw ILA
-    symbol
+    if (keywords.contains(symbol)) {
+      s"`$symbol`"
+    } else {
+      symbol
+    }
   }
 }
 
@@ -441,6 +598,17 @@ object ScalaTypes {
     DataSchemaConstants.STRING_DATA_SCHEMA -> classOf[String]
     /* Java has no type for null */)
 
+  def lookupPegasusTypeString(dataSchema: DataSchema) = dataSchema match {
+    case _: IntegerDataSchema => "int"
+    case _: LongDataSchema => "long"
+    case _: FloatDataSchema => "float"
+    case _: DoubleDataSchema => "double"
+    case _: BooleanDataSchema => "boolean"
+    case _: StringDataSchema => "string"
+    case _: BytesDataSchema => "bytes"
+    case _ => throw new IllegalArgumentException(s"Unsupported DataSchema: ${dataSchema.getClass}")
+  }
+
   val primitiveSchemas = scalaTypeForPrimitiveType.keys
 
   def isScalaValueType(schema: DataSchema): Boolean = {
@@ -452,7 +620,6 @@ object ScalaTypes {
       case null => false
     }
   }
-
 
   val dataNamespace = "org.coursera.courier.data"
   val intArraySchema = new IntegerArray().schema()
@@ -498,6 +665,7 @@ object ScalaTypes {
       case BOOLEAN => new BooleanArray().schema()
       case STRING => new StringArray().schema()
       case BYTES => new BytesArray().schema()
+      case _ => throw new IllegalArgumentException(s"Unsupported DataSchema.Type: $dataType")
     }
   }
 
@@ -511,6 +679,7 @@ object ScalaTypes {
       case BOOLEAN => new BooleanMap().schema()
       case STRING => new StringMap().schema()
       case BYTES => new BytesMap().schema()
+      case _ => throw new IllegalArgumentException(s"Unsupported DataSchema.Type: $dataType")
     }
   }
 }

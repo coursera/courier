@@ -33,7 +33,7 @@ trait GeneratorTest {
 
     testSchemas.map { testSchema =>
       val specGenerator = new TemplateSpecGenerator(testSchema.resolver)
-      val generated = scalaGenerator.generate(specGenerator.generate(testSchema.schema))
+      val generated = scalaGenerator.generate(specGenerator.generate(testSchema.schema, testSchema.location))
 
       val baseDir = sys.props("project.dir") + "/src/test/scala"
       generated.foreach { generatedCode =>

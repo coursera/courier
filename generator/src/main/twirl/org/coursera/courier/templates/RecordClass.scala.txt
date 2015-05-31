@@ -20,24 +20,24 @@ final class @record.scalaType private (private val dataMap: DataMap)
         lazy val @(field.name): @(field.scalaType) = @field.wrapIfOption{obtainDirect(@(record.scalaType).Fields.@(field.name), classOf[@(primitiveField.dataType)])}
       }
       case recordField: RecordDefinition => {
-        lazy val @(field.name): @(field.fqn) = @field.wrapIfOption{obtainWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(recordField.fqn)])}
+        lazy val @(field.name): @(field.scalaTypeFullname) = @field.wrapIfOption{obtainWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(recordField.scalaTypeFullname)])}
       }
       case unionField: UnionDefinition => {
-        lazy val @(field.name): @(unionField.fqn) = @field.wrapIfOption{@(unionField.fqn)(dataMap.getDataMap(@(record.scalaType).Fields.@(field.name).getName))}
+        lazy val @(field.name): @(unionField.scalaTypeFullname) = @field.wrapIfOption{@(unionField.scalaTypeFullname)(dataMap.getDataMap(@(record.scalaType).Fields.@(field.name).getName))}
       }
       case arrayField: ArrayDefinition => {
-        lazy val @(field.name): @(field.fqn) = @field.wrapIfOption{obtainWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(arrayField.fqn)])}
+        lazy val @(field.name): @(field.scalaTypeFullname) = @field.wrapIfOption{obtainWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(arrayField.scalaTypeFullname)])}
       }
       case mapField: MapDefinition => {
-        lazy val @(field.name): @(mapField.fqn) = @field.wrapIfOption{obtainWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(mapField.fqn)])}
+        lazy val @(field.name): @(mapField.scalaTypeFullname) = @field.wrapIfOption{obtainWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(mapField.scalaTypeFullname)])}
       }
       case enumField: EnumDefinition => {
-        lazy val @(field.name): @(field.fqn) = @field.wrapAndMapIfOption {
+        lazy val @(field.name): @(field.scalaTypeFullname) = @field.wrapAndMapIfOption {
             obtainDirect(@(record.scalaType).Fields.@(field.name), classOf[String])
           } { value => @(enumField.enumFullname).fromString(@value) }
       }
       case customField: ClassDefinition => {
-        lazy val @(field.name): @(field.fqn) = @field.wrapIfOption{obtainCustomType(@(record.scalaType).Fields.@(field.name), classOf[@(customField.fqn)])}
+        lazy val @(field.name): @(field.scalaTypeFullname) = @field.wrapIfOption{obtainCustomType(@(record.scalaType).Fields.@(field.name), classOf[@(customField.scalaTypeFullname)])}
       }
       case _: Any => {
         lazy val @(field.name): @(field.typ.scalaType) = ???
@@ -54,23 +54,23 @@ final class @record.scalaType private (private val dataMap: DataMap)
           @field.applyIfOption(field.name) { value => putDirect(@(record.scalaType).Fields.@(field.name), classOf[@(primitiveField.dataType)], @primitiveField.maybeBox{@value})}
         }
         case recordField: RecordDefinition => {
-          @field.applyIfOption(field.name) { value => putWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(recordField.fqn)], @value)}
+          @field.applyIfOption(field.name) { value => putWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(recordField.scalaTypeFullname)], @value)}
         }
         case unionField: UnionDefinition => {
           @field.applyIfOption(field.name) { value => dataMap.put(@(record.scalaType).Fields.@(field.name).getName, @(value).data())}
         }
         case arrayField: ArrayDefinition => {
-          @field.applyIfOption(field.name) { value => putWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(arrayField.fqn)], @value)}
+          @field.applyIfOption(field.name) { value => putWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(arrayField.scalaTypeFullname)], @value)}
         }
         case mapField: MapDefinition => {
-          @field.applyIfOption(field.name) { value => putWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(mapField.fqn)], @value)}
+          @field.applyIfOption(field.name) { value => putWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(mapField.scalaTypeFullname)], @value)}
         }
         case enumField: EnumDefinition => {
           @field.applyIfOption(field.name) { value => putDirect(@(record.scalaType).Fields.@(field.name), classOf[String], @(value).toString)}
         }
         case customField: ClassDefinition => {
           @* TODO(jbetz): Figure out how to avoid the unsafe .get call in the "field.dataClass.get.dataType" expression. *@
-          @field.applyIfOption(field.name) { value => putCustomType(@(record.scalaType).Fields.@(field.name), classOf[@(customField.fqn)], classOf[@(field.dataClass.get.dataType)], @customField.maybeBox{@value})}
+          @field.applyIfOption(field.name) { value => putCustomType(@(record.scalaType).Fields.@(field.name), classOf[@(customField.scalaTypeFullname)], classOf[@(field.dataClass.get.dataType)], @customField.maybeBox{@value})}
         }
         case _: Any => { ??? }
       }
@@ -114,9 +114,9 @@ object @(record.scalaType) {
   @* Register custom types and coercers. *@
   @record.fields.filter(_.customInfo.isDefined).map { field =>
     @defining(field.customInfo.get) { customInfo =>
-      Custom.initializeCustomClass(classOf[@(customInfo.customClass.fqn)])
+      Custom.initializeCustomClass(classOf[@(customInfo.customClass.scalaTypeFullname)])
       @customInfo.coercerClass.map { coercer =>
-        @(coercer.fqn).registerCoercer()
+        @(coercer.scalaTypeFullname).registerCoercer()
       }
     }
   }
@@ -137,7 +137,7 @@ object @(record.scalaType) {
 
   private object Fields {
     @record.fields.map { field =>
-    val @(field.name) = @(record.scalaType).SCHEMA.getField("@(field.name)")}
+    val @(field.name) = @(record.scalaType).SCHEMA.getField("@(field.pegasusName)")}
   }
 
   def apply(@(record.fieldParamDefs)): @(record.scalaType) = {

@@ -23,6 +23,7 @@ import com.linkedin.pegasus.generator.spec.ClassTemplateSpec
 import com.linkedin.pegasus.generator.spec.EnumTemplateSpec
 import com.linkedin.pegasus.generator.spec.FixedTemplateSpec
 import com.linkedin.pegasus.generator.spec.MapTemplateSpec
+import com.linkedin.pegasus.generator.spec.PrimitiveTemplateSpec
 import com.linkedin.pegasus.generator.spec.RecordTemplateSpec
 import com.linkedin.pegasus.generator.spec.TyperefTemplateSpec
 import com.linkedin.pegasus.generator.spec.UnionTemplateSpec
@@ -87,8 +88,9 @@ class TwirlDataTemplateGenerator()
           Seq(GeneratedCode(code, CompilationUnit(map.getClassName, map.getNamespace)))
         case typeref: TyperefTemplateSpec => ??? // TODO(jbetz): Should this method ever be called for a typeref?
         case fixed: FixedTemplateSpec => ??? // TODO(jbetz): Add generator support
+        case primitive: PrimitiveTemplateSpec => Seq() // nothing to generate for primitives
         case _ =>
-          throw new IllegalArgumentException(s"Unsupported schema type: $schema")
+          throw new IllegalArgumentException(s"Unsupported schema type: ${topLevelSpec.getClass}")
       }
     }.toSeq
   }

@@ -24,7 +24,7 @@ import com.linkedin.data.ByteString
 
 
 
-@Generated(value = Array("WithComplexTypesMap"), comments = "Courier Data Template.", date = "Sat May 30 17:21:40 PDT 2015")
+@Generated(value = Array("WithComplexTypesMap"), comments = "Courier Data Template.", date = "Sun May 31 11:22:32 PDT 2015")
 final class WithComplexTypesMap private (private val dataMap: DataMap)
   extends ScalaRecordTemplate(dataMap, WithComplexTypesMap.SCHEMA) with Product {
   import WithComplexTypesMap._

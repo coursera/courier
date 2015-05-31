@@ -23,6 +23,7 @@ import com.linkedin.data.DataList
 import com.linkedin.data.DataMap
 import com.linkedin.data.schema.BooleanDataSchema
 import com.linkedin.data.schema.BytesDataSchema
+import com.linkedin.data.schema.DataSchemaLocation
 import com.linkedin.data.schema.DataSchemaResolver
 import com.linkedin.data.schema.DoubleDataSchema
 import com.linkedin.data.schema.FloatDataSchema
@@ -34,13 +35,15 @@ import com.linkedin.data.schema.SchemaParserFactory
 import com.linkedin.data.schema.StringDataSchema
 import com.linkedin.data.schema.StringDataSchemaLocation
 import com.linkedin.data.schema.resolver.DefaultDataSchemaResolver
+import com.linkedin.data.schema.resolver.FileDataSchemaLocation
 import com.linkedin.data.schema.resolver.FileDataSchemaResolver
 import com.linkedin.data.template.DataTemplate
 import com.linkedin.data.template.DataTemplateUtil
 import com.linkedin.data.template.JacksonDataTemplateCodec
 import com.linkedin.data.template.PrettyPrinterJacksonDataTemplateCodec
+import com.linkedin.pegasus.generator.DataSchemaParser
 
-case class TestSchema(schema: NamedDataSchema, resolver: DataSchemaResolver)
+case class TestSchema(schema: NamedDataSchema, resolver: DataSchemaResolver, location: DataSchemaLocation)
 
 object TestSchema {
   def apply(schemaJson: String): TestSchema = {
@@ -50,7 +53,7 @@ object TestSchema {
     val resolver = new DefaultDataSchemaResolver()
     resolver.bindNameToSchema(new Name(schema.getFullName), schema, location)
 
-    TestSchema(schema, resolver)
+    TestSchema(schema, resolver, location)
   }
 
   val pegasusPath = new File(sys.props("project.dir") + "/src/test/pegasus")
@@ -59,8 +62,9 @@ object TestSchema {
   def load(schemaName: String): TestSchema = {
     val why = new java.lang.StringBuilder
     val schema = fileResolver.findDataSchema(schemaName, why)
+    val location = new FileDataSchemaLocation(new File(s"$pegasusPath/${schemaName.replace('.', '/')}.pdsc"))
     assert(schema != null, why)
-    TestSchema(schema, fileResolver)
+    TestSchema(schema, fileResolver, location)
   }
 }
 
@@ -98,6 +102,7 @@ trait SchemaFixtures {
     val WithPrimitivesUnion = TestSchema.load(s"$ns.WithPrimitivesUnion")
     val WithPrimitiveTyperefsUnion = TestSchema.load(s"$ns.WithPrimitiveTyperefsUnion")
     val WithPrimitiveCustomTypesUnion = TestSchema.load(s"$ns.WithPrimitiveCustomTypesUnion")
+    val WithEmptyUnion = TestSchema.load(s"$ns.WithEmptyUnion")
   }
 
   object Arrays {
@@ -114,9 +119,25 @@ trait SchemaFixtures {
     val WithCustomTypesMap = TestSchema.load(s"$ns.WithCustomTypesMap")
   }
 
+  object Typerefs {
+    val ns = "org.coursera.typerefs"
+    val IntTyperef = TestSchema.load(s"$ns.IntTyperef")
+    val EnumTyperef = TestSchema.load(s"$ns.EnumTyperef")
+    val UnionTyperef = TestSchema.load(s"$ns.UnionTyperef")
+    val ArrayTyperef = TestSchema.load(s"$ns.ArrayTyperef")
+    val MapTyperef = TestSchema.load(s"$ns.MapTyperef")
+    val RecordTyperef = TestSchema.load(s"$ns.RecordTyperef")
+  }
+
   object CustomTypes {
     val ns = "org.coursera.customtypes"
     val CustomInt = TestSchema.load(s"$ns.CustomInt")
+  }
+
+  object Escaping {
+    val ns = "org.coursera.escaping"
+    val KeywordEscaping = TestSchema.load(s"$ns.KeywordEscaping")
+    val RecordNameEscaping = TestSchema.load(s"$ns.class")
   }
 
   val bytes1 = ByteString.copy(Array[Byte](0x0, 0x1, 0x2))

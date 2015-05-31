@@ -51,6 +51,18 @@ object RecordGeneratorTest extends SchemaFixtures with GeneratorTest {
 
 class RecordGeneratorTest extends GeneratorTest with SchemaFixtures with AssertionsForJUnit {
 
+
+  private val primitiveRecordFieldsJson =
+    s"""{
+       |  "floatField" : 3.3,
+       |  "doubleField" : 4.4,
+       |  "intField" : 1,
+       |  "bytesField" : "${'\\'}u0000${'\\'}u0001${'\\'}u0002",
+       |  "longField" : 2,
+       |  "booleanField" : true,
+       |  "stringField" : "str"
+       |}""".stripMargin
+
   @Test
   def testWithPrimitives(): Unit = {
     val original = WithPrimitives(1, 2L, 3.3f, 4.4d, true, "str", bytes1)
@@ -316,15 +328,4 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures with Asserti
       assert(copy.optionalFruits === None)
     }
   }
-
-  private val primitiveRecordFieldsJson =
-    s"""{
-       |  "floatField" : 3.3,
-       |  "doubleField" : 4.4,
-       |  "intField" : 1,
-       |  "bytesField" : "${'\\'}u0000${'\\'}u0001${'\\'}u0002",
-       |  "longField" : 2,
-       |  "booleanField" : true,
-       |  "stringField" : "str"
-       |}""".stripMargin
 }

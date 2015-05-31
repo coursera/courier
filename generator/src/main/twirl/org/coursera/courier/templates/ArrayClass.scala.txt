@@ -6,9 +6,9 @@
 
 @@Generated(value = Array("@(array.scalaType)"), comments="Courier Data Template.", date = "@(Calendar.getInstance().getTime())")
 final class @(array.scalaType)(private val dataList: DataList)
-  extends IndexedSeq[@(array.itemClass.fqn)]
+  extends IndexedSeq[@(array.itemClass.scalaTypeFullname)]
   with Product
-  with GenTraversable[@(array.itemClass.fqn)]
+  with GenTraversable[@(array.itemClass.scalaTypeFullname)]
   with DataTemplate[DataList] {
 
   override def length: Int = dataList.size()
@@ -18,7 +18,7 @@ final class @(array.scalaType)(private val dataList: DataList)
   private[this] def lookup(idx: Int) = {
     @array.itemClass match {
       case recordItem: RecordDefinition => {
-        @(array.itemClass.fqn)(dataList.get(idx).asInstanceOf[DataMap], DataTemplates.DataConversion.SetReadOnly)
+        @(array.itemClass.scalaTypeFullname)(dataList.get(idx).asInstanceOf[DataMap], DataTemplates.DataConversion.SetReadOnly)
       }
       case primitiveItem: PrimitiveDefinition => {
         dataList.get(idx).asInstanceOf[@(primitiveItem.dataType)]
@@ -27,7 +27,7 @@ final class @(array.scalaType)(private val dataList: DataList)
         @(enumItem.enumName).fromString(dataList.get(idx).asInstanceOf[String])
       }
       case customItem: ClassDefinition => {
-        DataTemplateUtil.coerceOutput(dataList.get(idx), classOf[@(array.itemClass.fqn)])
+        DataTemplateUtil.coerceOutput(dataList.get(idx), classOf[@(array.itemClass.scalaTypeFullname)])
       }
       case _: Any => { ??? }
     }
@@ -36,7 +36,7 @@ final class @(array.scalaType)(private val dataList: DataList)
     @* TODO: add union items *@
   }
 
-  override def apply(idx: Int): @(array.itemClass.fqn) = lookup(idx)
+  override def apply(idx: Int): @(array.itemClass.scalaTypeFullname) = lookup(idx)
 
   override def productElement(n: Int): Any = dataList.get(n)
   override def productArity: Int = dataList.size()
@@ -52,19 +52,19 @@ object @(array.scalaType) {
 
   @* Register custom types and coercers. *@
   @array.customInfo.map { customInfo =>
-    Custom.initializeCustomClass(classOf[@(customInfo.customClass.fqn)])
+    Custom.initializeCustomClass(classOf[@(customInfo.customClass.scalaTypeFullname)])
     @customInfo.coercerClass.map { coercer =>
-      @(coercer.fqn).registerCoercer()
+      @(coercer.scalaTypeFullname).registerCoercer()
     }
   }
 
   val empty = @(array.scalaType)()
 
-  def apply(elems: @(array.itemClass.fqn)*): @(array.scalaType) = {
+  def apply(elems: @(array.itemClass.scalaTypeFullname)*): @(array.scalaType) = {
     new @(array.scalaType)(new DataList(elems.map(coerceOutput).toList.asJava))
   }
 
-  def apply(collection: Traversable[@(array.itemClass.fqn)]): @(array.scalaType) = {
+  def apply(collection: Traversable[@(array.itemClass.scalaTypeFullname)]): @(array.scalaType) = {
     new @(array.scalaType)(new DataList(collection.map(coerceOutput).toList.asJava))
   }
 
@@ -74,17 +74,17 @@ object @(array.scalaType) {
 
   def newBuilder = new DataBuilder()
 
-  implicit val canBuildFrom = new CanBuildFrom[@(array.scalaType), @(array.itemClass.fqn), @(array.scalaType)] {
+  implicit val canBuildFrom = new CanBuildFrom[@(array.scalaType), @(array.itemClass.scalaTypeFullname), @(array.scalaType)] {
     def apply(from: @(array.scalaType)) = new DataBuilder(from)
     def apply() = newBuilder
   }
 
-  class DataBuilder(initial: @(array.scalaType)) extends mutable.Builder[@(array.itemClass.fqn), @(array.scalaType)] {
+  class DataBuilder(initial: @(array.scalaType)) extends mutable.Builder[@(array.itemClass.scalaTypeFullname), @(array.scalaType)] {
     def this() = this(new @(array.scalaType)(new DataList()))
 
     val elems = new DataList(initial.data())
 
-    def +=(x: @(array.itemClass.fqn)): this.type = {
+    def +=(x: @(array.itemClass.scalaTypeFullname)): this.type = {
       elems.add(coerceOutput(x))
       this
     }
@@ -99,7 +99,7 @@ object @(array.scalaType) {
     }
   }
 
-  private def coerceOutput(value: @(array.itemClass.fqn)): AnyRef = {
+  private def coerceOutput(value: @(array.itemClass.scalaTypeFullname)): AnyRef = {
     @array.itemClass match {
       case recordItem: RecordDefinition => {
         value.data()
@@ -111,7 +111,7 @@ object @(array.scalaType) {
         value.toString
       }
       case customItem: ClassDefinition => {
-        DataTemplateUtil.coerceInput(value, classOf[@(array.itemClass.fqn)], classOf[@(array.itemDataClass.get.fqn)])
+        DataTemplateUtil.coerceInput(value, classOf[@(array.itemClass.scalaTypeFullname)], classOf[@(array.itemDataClass.get.scalaTypeFullname)])
       }
       case _: Any => { ??? }
     }

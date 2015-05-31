@@ -1,6 +1,6 @@
 
 
-package org.coursera.records.test
+package org.coursera.escaping
 
 import javax.annotation.Generated
 
@@ -24,10 +24,10 @@ import com.linkedin.data.ByteString
 
 
 
-@Generated(value = Array("InlineOptionalRecord"), comments = "Courier Data Template.", date = "Sat May 30 22:38:24 PDT 2015")
-final class InlineOptionalRecord private (private val dataMap: DataMap)
-  extends ScalaRecordTemplate(dataMap, InlineOptionalRecord.SCHEMA) with Product {
-  import InlineOptionalRecord._
+@Generated(value = Array("KeywordEscaping"), comments = "Courier Data Template.", date = "Sat May 30 22:16:44 PDT 2015")
+final class KeywordEscaping private (private val dataMap: DataMap)
+  extends ScalaRecordTemplate(dataMap, KeywordEscaping.SCHEMA) with Product {
+  import KeywordEscaping._
 
   
   
@@ -35,16 +35,16 @@ final class InlineOptionalRecord private (private val dataMap: DataMap)
 
     
     
-        lazy val value: String = obtainDirect(InlineOptionalRecord.Fields.value, classOf[java.lang.String])
+        lazy val `type`: String = obtainDirect(KeywordEscaping.Fields.`type`, classOf[java.lang.String])
       
   
 
   
-  private def setFields(value: String): Unit = {
+  private def setFields(`type`: String): Unit = {
     
       
       
-           putDirect(InlineOptionalRecord.Fields.value, classOf[java.lang.String], value)
+           putDirect(KeywordEscaping.Fields.`type`, classOf[java.lang.String], `type`)
         
     
   }
@@ -54,13 +54,13 @@ final class InlineOptionalRecord private (private val dataMap: DataMap)
   override def productElement(n: Int): Any =
     n match {
       
-      case 0 => value
+      case 0 => `type`
       case _ => throw new IndexOutOfBoundsException(n.toString)
     }
 
-  override val productPrefix: String = "InlineOptionalRecord"
+  override val productPrefix: String = "KeywordEscaping"
 
-  override def canEqual(that: Any): Boolean = that.isInstanceOf[InlineOptionalRecord]
+  override def canEqual(that: Any): Boolean = that.isInstanceOf[KeywordEscaping]
 
   override def hashCode: Int = ScalaRunTime._hashCode(this)
 
@@ -70,18 +70,18 @@ final class InlineOptionalRecord private (private val dataMap: DataMap)
 
   
   
-    def copy(value: String = this.value): InlineOptionalRecord = {
+    def copy(`type`: String = this.`type`): KeywordEscaping = {
       val dataMap = new DataMap
-      val result = new InlineOptionalRecord(dataMap)
-      result.setFields(value)
+      val result = new KeywordEscaping(dataMap)
+      result.setFields(`type`)
       dataMap.setReadOnly()
       result
     }
   
 }
 
-object InlineOptionalRecord {
-  val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"record","name":"InlineOptionalRecord","namespace":"org.coursera.records.test","fields":[{"name":"value","type":"string"}]}""").asInstanceOf[RecordDataSchema]
+object KeywordEscaping {
+  val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"record","name":"KeywordEscaping","namespace":"org.coursera.escaping","fields":[{"name":"type","type":"string"}]}""").asInstanceOf[RecordDataSchema]
 
   
   
@@ -93,26 +93,26 @@ object InlineOptionalRecord {
 
   private object Fields {
     
-    val value = InlineOptionalRecord.SCHEMA.getField("value")
+    val `type` = KeywordEscaping.SCHEMA.getField("type")
   }
 
-  def apply(value: String): InlineOptionalRecord = {
+  def apply(`type`: String): KeywordEscaping = {
     val dataMap = new DataMap
-    val result = new InlineOptionalRecord(dataMap)
-    result.setFields(value)
+    val result = new KeywordEscaping(dataMap)
+    result.setFields(`type`)
     dataMap.setReadOnly()
     result
   }
 
-  def apply(dataMap: DataMap, conversion: DataConversion): InlineOptionalRecord = {
-    new InlineOptionalRecord(DataTemplates.makeImmutable(dataMap, SCHEMA, conversion))
+  def apply(dataMap: DataMap, conversion: DataConversion): KeywordEscaping = {
+    new KeywordEscaping(DataTemplates.makeImmutable(dataMap, SCHEMA, conversion))
   }
 
   
   
-      def unapply(record: InlineOptionalRecord): Option[(String)] = {
+      def unapply(record: KeywordEscaping): Option[(String)] = {
         try {
-          Some((record.value))
+          Some((record.`type`))
         } catch {
           case cast: TemplateOutputCastException => None
           case notPresent: RequiredFieldNotPresentException => None

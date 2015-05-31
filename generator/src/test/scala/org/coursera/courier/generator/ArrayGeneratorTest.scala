@@ -56,15 +56,17 @@ class ArrayGeneratorTest extends GeneratorTest with SchemaFixtures with Assertio
     val original = WithRecordArray(
       EmptyArray(Empty(), Empty(), Empty()),
       FruitsArray(Fruits.APPLE, Fruits.BANANA, Fruits.ORANGE))
-    assert(mapToJson(original) ===
-      """{
+
+    val roundTripped = WithRecordArray(roundTrip(original.data()), DataConversion.SetReadOnly)
+    assert(original === roundTripped)
+
+    Seq(original, roundTripped).foreach { record =>
+      assert(mapToJson(record) ===
+        """{
          |  "empties" : [ { }, { }, { } ],
          |  "fruits" : [ "APPLE", "BANANA", "ORANGE" ]
          |}""".stripMargin)
-
-    val roundTripped = WithRecordArray(roundTrip(original.data()), DataConversion.SetReadOnly)
-
-    assert(original === roundTripped)
+    }
   }
 
   @Test
@@ -78,27 +80,35 @@ class ArrayGeneratorTest extends GeneratorTest with SchemaFixtures with Assertio
       StringArray("a", "b", "c"),
       BytesArray(bytes1, bytes2))
     val roundTripped = WithPrimitivesArray(roundTrip(original.data()), DataConversion.SetReadOnly)
-    assert(mapToJson(original) ===
-      s"""{
-    |  "bytes" : [ "${'\\'}u0000${'\\'}u0001${'\\'}u0002", "${'\\'}u0003${'\\'}u0004${'\\'}u0005" ],
-    |  "longs" : [ 10, 20, 30 ],
-    |  "strings" : [ "a", "b", "c" ],
-    |  "doubles" : [ 11.1, 22.2, 33.3 ],
-    |  "booleans" : [ false, true ],
-    |  "floats" : [ 1.1, 2.2, 3.3 ],
-    |  "ints" : [ 1, 2, 3 ]
-    |}""".stripMargin)
+
     assert(original === roundTripped)
+
+    Seq(original, roundTripped).foreach { record =>
+      assert(mapToJson(record) ===
+        s"""{
+            |  "bytes" : [ "${'\\'}u0000${'\\'}u0001${'\\'}u0002", "${'\\'}u0003${'\\'}u0004${'\\'}u0005" ],
+            |  "longs" : [ 10, 20, 30 ],
+            |  "strings" : [ "a", "b", "c" ],
+            |  "doubles" : [ 11.1, 22.2, 33.3 ],
+            |  "booleans" : [ false, true ],
+            |  "floats" : [ 1.1, 2.2, 3.3 ],
+            |  "ints" : [ 1, 2, 3 ]
+            |}""".stripMargin)
+    }
   }
 
   @Test
   def testWithCustomTypesArray(): Unit = {
     val original = WithCustomTypesArray(CustomIntArray(CustomInt(1), CustomInt(2), CustomInt(3)))
-    val roundTripped = WithCustomTypesArray(roundTrip(original.data()), DataConversion.SetReadOnly)
-    assert(mapToJson(original) ===
-      """{
+    val roundTripped =WithCustomTypesArray(roundTrip(original.data()), DataConversion.SetReadOnly)
+
+    assert(original === roundTripped)
+
+    Seq(original, roundTripped).foreach { record =>
+      assert(mapToJson(original) ===
+        """{
         |  "ints" : [ 1, 2, 3 ]
         |}""".stripMargin)
-    assert(original === roundTripped)
+    }
   }
 }

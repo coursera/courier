@@ -20,7 +20,7 @@ import com.linkedin.data.template.Custom
 
 
 
-@Generated(value = Array("EmptyMap"), comments="Courier Data Template.", date = "Sat May 30 17:21:40 PDT 2015")
+@Generated(value = Array("EmptyMap"), comments="Courier Data Template.", date = "Sun May 31 11:22:32 PDT 2015")
 final class EmptyMap(private val dataMap: DataMap)
   extends immutable.Iterable[(String, org.coursera.records.test.Empty)]
   with Map[String, org.coursera.records.test.Empty]

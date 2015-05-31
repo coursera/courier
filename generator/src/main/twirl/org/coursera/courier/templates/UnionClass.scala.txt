@@ -28,7 +28,7 @@
           protected val @(member.classDefinition.memberName)Schema = SCHEMA.getType("@(primitiveMember.pegasusType)")
         }
         case _: Any => {
-          protected val @(member.classDefinition.memberName)Schema = SCHEMA.getType("@(member.classDefinition.fqn)")
+          protected val @(member.classDefinition.memberName)Schema = SCHEMA.getType("@(member.classDefinition.scalaTypeFullname)")
         }
       }
     }
@@ -51,18 +51,18 @@
 
     @union.members.map { member =>
       class @(member.classDefinition.memberName)(private val dataMap: DataMap)
-        extends @(union.scalaType)(dataMap) with Product1[@(member.classDefinition.fqn)] {
+        extends @(union.scalaType)(dataMap) with Product1[@(member.classDefinition.scalaTypeFullname)] {
         import @(member.classDefinition.memberName)._
 
         lazy val _1, value = @member.classDefinition match {
           case recordMember: RecordDefinition => {
-            obtainWrapped(@(member.classDefinition.memberName)Schema, classOf[@(member.classDefinition.fqn)], memberKey)
+            obtainWrapped(@(member.classDefinition.memberName)Schema, classOf[@(member.classDefinition.scalaTypeFullname)], memberKey)
           }
           case primitiveMember: PrimitiveDefinition => {
-            obtainDirect(@(member.classDefinition.memberName)Schema, classOf[@(member.classDefinition.fqn)], memberKey)
+            obtainDirect(@(member.classDefinition.memberName)Schema, classOf[@(member.classDefinition.scalaTypeFullname)], memberKey)
           }
           case customMember: ClassDefinition => {
-            obtainDirect(@(member.classDefinition.memberName)Schema, classOf[@(customMember.fqn)], memberKey)
+            obtainDirect(@(member.classDefinition.memberName)Schema, classOf[@(customMember.scalaTypeFullname)], memberKey)
           }
           case enumMember: EnumDefinition => {
             @(enumMember.enumFullname).fromString(
@@ -73,16 +73,16 @@
         /* TODO(jbetz): support array fields */
         /* TODO(jbetz): support union fields */
 
-        private def setFields(value: @(member.classDefinition.fqn)): Unit = {
+        private def setFields(value: @(member.classDefinition.scalaTypeFullname)): Unit = {
           @member.classDefinition match {
             case recordMember: RecordDefinition => {
-              selectWrapped(@(member.classDefinition.memberName)Schema, classOf[@(member.classDefinition.fqn)], memberKey, value)
+              selectWrapped(@(member.classDefinition.memberName)Schema, classOf[@(member.classDefinition.scalaTypeFullname)], memberKey, value)
             }
             case primitiveMember: PrimitiveDefinition => {
               selectDirect(@(member.classDefinition.memberName)Schema, classOf[@(primitiveMember.dataType)], memberKey, @primitiveMember.maybeBox{value})
             }
             case customMember: ClassDefinition => {
-              selectDirect(@(member.classDefinition.memberName)Schema, classOf[@(customMember.fqn)], classOf[@(member.dataClass.dataType)], memberKey, value)
+              selectDirect(@(member.classDefinition.memberName)Schema, classOf[@(customMember.scalaTypeFullname)], classOf[@(member.dataClass.dataType)], memberKey, value)
             }
             case enumMember: EnumDefinition => {
               selectDirect(@(member.classDefinition.memberName)Schema, classOf[String], memberKey, value.toString)
@@ -95,7 +95,7 @@
       }
 
       object @(member.classDefinition.memberName) {
-        def apply(value: @(member.classDefinition.fqn)): @(member.classDefinition.memberName) = {
+        def apply(value: @(member.classDefinition.scalaTypeFullname)): @(member.classDefinition.memberName) = {
           val dataMap = new DataMap
           val result = new @(member.classDefinition.memberName)(dataMap)
           result.setFields(value)
