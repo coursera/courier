@@ -23,9 +23,8 @@ import org.coursera.records.test.EmptyMap
 import org.coursera.typerefs.UnionTyperef
 import org.junit.BeforeClass
 import org.junit.Test
-import org.scalatest.junit.AssertionsForJUnit
 
-object TyperefGeneratorTest extends SchemaFixtures with GeneratorTest {
+object TyperefGeneratorTest extends GeneratorTest with SchemaFixtures {
 
   @BeforeClass
   def setup(): Unit = {
@@ -40,7 +39,7 @@ object TyperefGeneratorTest extends SchemaFixtures with GeneratorTest {
   }
 }
 
-class TyperefGeneratorTest extends GeneratorTest with SchemaFixtures with AssertionsForJUnit {
+class TyperefGeneratorTest extends GeneratorTest with SchemaFixtures {
 
   @Test
   def testTyperefs(): Unit = {

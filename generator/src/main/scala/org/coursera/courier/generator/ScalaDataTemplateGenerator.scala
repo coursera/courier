@@ -78,7 +78,6 @@ object ScalaDataTemplateGenerator {
 
     val generator = new TwirlDataTemplateGenerator()
 
-    // TODO: register scala predefined classes for arrays and maps (e.g. IntMap) here
     ScalaTypes.primitiveSchemas.foreach { primitiveSchema =>
       specGenerator.registerDefinedSchema(primitiveSchema)
     }
@@ -89,16 +88,13 @@ object ScalaDataTemplateGenerator {
       val location = new FileDataSchemaLocation(pair.second)
       specGenerator.generate(pair.first, location)
     }
+    val generatedSpecs = specGenerator.getGeneratedSpecs.asScala
 
-    parseResult.getSchemaAndFiles.asScala.foreach { pair =>
-      specGenerator.generate(pair.first)
-    }
-
-    val compilationUnits = specGenerator.getGeneratedSpecs.asScala.flatMap { spec =>
+    val compilationUnits = generatedSpecs.flatMap { spec =>
       generator.generate(spec)
     }
 
-    // TODO: enable file comparison for efficient generation, this approach writes all files
+    // TODO: needed? SBT plugin already figures out which files have changed.
     //val targetFiles: List[File] = JavaCodeUtil.targetFiles(targetDirectory, generator.getCodeModel, JavaCodeUtil.classLoaderFromResolverPath(schemaParser.getResolverPath), checker)
 
     val targetFiles = compilationUnits.map { compilationUnit =>

@@ -31,9 +31,8 @@ import org.coursera.records.test.WithPrimitiveTyperefs
 import org.coursera.records.test.WithPrimitives
 import org.junit.BeforeClass
 import org.junit.Test
-import org.scalatest.junit.AssertionsForJUnit
 
-object RecordGeneratorTest extends SchemaFixtures with GeneratorTest {
+object RecordGeneratorTest extends GeneratorTest with SchemaFixtures {
   @BeforeClass
   def setup(): Unit = {
     generateTestSchemas(Seq(
@@ -49,7 +48,7 @@ object RecordGeneratorTest extends SchemaFixtures with GeneratorTest {
   }
 }
 
-class RecordGeneratorTest extends GeneratorTest with SchemaFixtures with AssertionsForJUnit {
+class RecordGeneratorTest extends GeneratorTest with SchemaFixtures {
 
 
   private val primitiveRecordFieldsJson =
@@ -82,7 +81,7 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures with Asserti
       assert(primitives.stringField === "str")
       assert(primitives.bytesField === bytes1)
 
-      assert(mapToJson(primitives.data) === primitiveRecordFieldsJson)
+      assertJson(primitives, primitiveRecordFieldsJson)
     }
   }
 
@@ -107,7 +106,7 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures with Asserti
       assert(primitives.stringField === Some("str"))
       assert(primitives.bytesField.get === bytes1)
 
-      assert(mapToJson(primitives.data) === primitiveRecordFieldsJson)
+      assertJson(primitives, primitiveRecordFieldsJson)
 
       val copy = primitives.copy(longField = None)
       assert(copy.intField === Some(1))
@@ -136,7 +135,7 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures with Asserti
       assert(primitives.stringField === None)
       assert(primitives.bytesField === None)
 
-      assert(mapToJson(primitives.data) === s"""{ }""".stripMargin)
+      assertJson(primitives, "{ }")
 
       val copy = primitives.copy(longField = Some(2L))
       assert(copy.intField === None)
@@ -165,7 +164,7 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures with Asserti
       assert(primitives.stringField === "str")
       assert(primitives.bytesField === bytes1)
 
-      assert(mapToJson(primitives.data) === primitiveRecordFieldsJson)
+      assertJson(primitives, primitiveRecordFieldsJson)
     }
   }
 
@@ -191,7 +190,7 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures with Asserti
       assert(primitives.stringField === Some("str"))
       assert(primitives.bytesField.get === bytes1)
 
-      assert(mapToJson(primitives.data) === primitiveRecordFieldsJson)
+      assertJson(primitives, primitiveRecordFieldsJson)
 
       val copy = primitives.copy(longField = None)
       assert(copy.intField === Some(1))
@@ -220,7 +219,7 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures with Asserti
       assert(primitives.stringField === None)
       assert(primitives.bytesField === None)
 
-      assert(mapToJson(primitives.data) === s"""{ }""".stripMargin)
+      assertJson(primitives, "{ }")
 
       val copy = primitives.copy(longField = Some(1))
       assert(copy.intField === None)
@@ -242,7 +241,7 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures with Asserti
     Seq(original, roundTripped, reconstructed) foreach { primitives =>
       assert(primitives.intField.value === 1)
 
-      assert(mapToJson(primitives.data) ===
+      assertJson(primitives,
         s"""{
            |  "intField" : 1
            |}""".stripMargin)

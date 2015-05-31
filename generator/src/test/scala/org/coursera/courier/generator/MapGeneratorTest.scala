@@ -35,9 +35,8 @@ import org.coursera.records.test.Empty
 import org.coursera.records.test.EmptyMap
 import org.junit.BeforeClass
 import org.junit.Test
-import org.scalatest.junit.AssertionsForJUnit
 
-object MapGeneratorTest extends SchemaFixtures with GeneratorTest {
+object MapGeneratorTest extends GeneratorTest with SchemaFixtures {
 
   @BeforeClass
   def setup(): Unit = {
@@ -49,7 +48,7 @@ object MapGeneratorTest extends SchemaFixtures with GeneratorTest {
   }
 }
 
-class MapGeneratorTest extends GeneratorTest with SchemaFixtures with AssertionsForJUnit {
+class MapGeneratorTest extends GeneratorTest with SchemaFixtures {
 
   @Test
   def testWithComplexTypesMap(): Unit = {
@@ -60,7 +59,7 @@ class MapGeneratorTest extends GeneratorTest with SchemaFixtures with Assertions
     assert(original === roundTripped)
 
     Seq(original, roundTripped).map { record =>
-      assert(mapToJson(record) ===
+      assertJson(record,
         """{
       |  "empties" : {
       |    "b" : { },
@@ -92,7 +91,7 @@ class MapGeneratorTest extends GeneratorTest with SchemaFixtures with Assertions
     assert(original === roundTripped)
 
     Seq(original, roundTripped).map { record =>
-      assert(mapToJson(original) ===
+      assertJson(original,
         s"""{
         |  "bytes" : {
         |    "b" : "${'\\'}u0003${'\\'}u0004${'\\'}u0005",
@@ -144,7 +143,7 @@ class MapGeneratorTest extends GeneratorTest with SchemaFixtures with Assertions
     assert(original === roundTripped)
 
     Seq(original, roundTripped).map { record =>
-      assert(mapToJson(original) ===
+      assertJson(original,
         """{
         |  "ints" : {
         |    "b" : 2,

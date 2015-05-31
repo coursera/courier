@@ -19,9 +19,8 @@ package org.coursera.courier.generator
 import org.coursera.enums.Fruits
 import org.junit.BeforeClass
 import org.junit.Test
-import org.scalatest.junit.AssertionsForJUnit
 
-object EnumGeneratorTest extends SchemaFixtures with GeneratorTest {
+object EnumGeneratorTest extends GeneratorTest with SchemaFixtures {
 
   @BeforeClass
   def setup(): Unit = {
@@ -30,7 +29,7 @@ object EnumGeneratorTest extends SchemaFixtures with GeneratorTest {
   }
 }
 
-class EnumGeneratorTest extends GeneratorTest with SchemaFixtures with AssertionsForJUnit {
+class EnumGeneratorTest extends GeneratorTest with SchemaFixtures {
 
   @Test
   def testSimpleEnum(): Unit = {

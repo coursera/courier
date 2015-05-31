@@ -41,6 +41,7 @@ import com.linkedin.data.template.DataTemplate
 import com.linkedin.data.template.DataTemplateUtil
 import com.linkedin.data.template.JacksonDataTemplateCodec
 import com.linkedin.data.template.PrettyPrinterJacksonDataTemplateCodec
+import com.linkedin.data.template.RecordTemplate
 import com.linkedin.pegasus.generator.DataSchemaParser
 
 case class TestSchema(schema: NamedDataSchema, resolver: DataSchemaResolver, location: DataSchemaLocation)
@@ -143,32 +144,4 @@ trait SchemaFixtures {
   val bytes1 = ByteString.copy(Array[Byte](0x0, 0x1, 0x2))
   val bytes2 = ByteString.copy(Array[Byte](0x3, 0x4, 0x5))
   val bytes3 = ByteString.copy(Array[Byte](0x6, 0x7, 0x8))
-
-  val prettyPrinter = new PrettyPrinterJacksonDataTemplateCodec
-
-  def printJson(dataTemplate: DataTemplate[DataMap]): Unit = printJson(dataTemplate.data)
-
-  def printJson(dataMap: DataMap): Unit = println(mapToJson(dataMap))
-
-  def mapToJson(dataTemplate: DataTemplate[DataMap]): String = mapToJson(dataTemplate.data)
-
-  def listToJson(dataTemplate: DataTemplate[DataList]): String = listToJson(dataTemplate.data)
-
-  def mapToJson(dataMap: DataMap): String = prettyPrinter.mapToString(dataMap)
-
-  def listToJson(dataList: DataList): String = prettyPrinter.listToString(dataList)
-
-  val codec = new JacksonDataTemplateCodec
-
-  def readJsonToMap(string: String): DataMap = codec.stringToMap(string)
-
-  def readJsonToList(string: String): DataList = codec.stringToList(string)
-
-  def roundTrip(complex: DataMap): DataMap = {
-    readJsonToMap(mapToJson(complex))
-  }
-
-  def roundTrip(complex: DataList): DataList = {
-    readJsonToList(listToJson(complex))
-  }
 }

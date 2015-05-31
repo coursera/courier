@@ -37,11 +37,13 @@ import org.coursera.courier.generator.twirl.defs.EnumDefinition
 import org.coursera.courier.generator.twirl.defs.MapDefinition
 import org.coursera.courier.generator.twirl.defs.RecordDefinition
 import org.coursera.courier.generator.twirl.defs.ScalaTypes
+import org.coursera.courier.generator.twirl.defs.TyperefDefinition
 import org.coursera.courier.generator.twirl.defs.UnionDefinition
 import org.coursera.courier.templates.txt.ArrayClassFile
 import org.coursera.courier.templates.txt.EnumClassFile
 import org.coursera.courier.templates.txt.MapClassFile
 import org.coursera.courier.templates.txt.RecordClassFile
+import org.coursera.courier.templates.txt.TyperefClassFile
 import org.coursera.courier.templates.txt.UnionClassFile
 import scala.collection.JavaConverters._
 
@@ -86,7 +88,9 @@ class TwirlDataTemplateGenerator()
         case map: MapTemplateSpec =>
           val code = MapClassFile(MapDefinition(map)).body
           Seq(GeneratedCode(code, CompilationUnit(map.getClassName, map.getNamespace)))
-        case typeref: TyperefTemplateSpec => ??? // TODO(jbetz): Should this method ever be called for a typeref?
+        case typeref: TyperefTemplateSpec =>
+          val code = TyperefClassFile(TyperefDefinition(typeref)).body
+          Seq(GeneratedCode(code, CompilationUnit(typeref.getClassName, typeref.getNamespace)))
         case fixed: FixedTemplateSpec => ??? // TODO(jbetz): Add generator support
         case primitive: PrimitiveTemplateSpec => Seq() // nothing to generate for primitives
         case _ =>

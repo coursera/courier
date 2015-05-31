@@ -24,6 +24,7 @@ import com.linkedin.data.schema.DataSchema
 import com.linkedin.data.schema.DataSchemaConstants
 import com.linkedin.data.schema.DoubleDataSchema
 import com.linkedin.data.schema.EnumDataSchema
+import com.linkedin.data.schema.FixedDataSchema
 import com.linkedin.data.schema.FloatDataSchema
 import com.linkedin.data.schema.IntegerDataSchema
 import com.linkedin.data.schema.LongDataSchema
@@ -31,6 +32,7 @@ import com.linkedin.data.schema.MapDataSchema
 import com.linkedin.data.schema.PrimitiveDataSchema
 import com.linkedin.data.schema.RecordDataSchema
 import com.linkedin.data.schema.StringDataSchema
+import com.linkedin.data.schema.TyperefDataSchema
 import com.linkedin.data.schema.UnionDataSchema
 import com.linkedin.data.template.BooleanArray
 import com.linkedin.data.template.BooleanMap
@@ -136,14 +138,28 @@ object Definition {
       case enum: EnumTemplateSpec => EnumDefinition(enum)
       case array: ArrayTemplateSpec => ArrayDefinition(array)
       case map: MapTemplateSpec => MapDefinition(map)
-      case typeref: TyperefTemplateSpec => ??? // TODO
-      case fixed: FixedTemplateSpec => ??? // TODO
+      case typeref: TyperefTemplateSpec => TyperefDefinition(typeref)
+      case fixed: FixedTemplateSpec => FixedDefinition(fixed)
       case primitive: PrimitiveTemplateSpec => PrimitiveDefinition(primitive)
       case rawClass: ClassTemplateSpec => ClassDefinition(rawClass)
       case _ =>
         throw new IllegalArgumentException(s"Unsupported ClassTemplateSpec type: ${spec.getClass}")
     }
   }
+}
+
+case class TyperefDefinition(spec: TyperefTemplateSpec) extends Definition {
+  override def scalaType: String = ScalaEscaping.escape(spec.getClassName)
+  override def namespace: Option[String] = Option(spec.getNamespace)
+  override def schema: TyperefDataSchema = spec.getSchema
+  override def scalaDoc: Option[String] = Option(schema.getDoc).flatMap(Scaladoc.stringToScaladoc)
+}
+
+case class FixedDefinition(spec: FixedTemplateSpec) extends Definition {
+  override def scalaType: String = ScalaEscaping.escape(spec.getClassName)
+  override def namespace: Option[String] = Option(spec.getNamespace)
+  override def schema: FixedDataSchema = spec.getSchema
+  override def scalaDoc: Option[String] = Option(schema.getDoc).flatMap(Scaladoc.stringToScaladoc)
 }
 
 case class RecordDefinition(spec: RecordTemplateSpec) extends Definition {

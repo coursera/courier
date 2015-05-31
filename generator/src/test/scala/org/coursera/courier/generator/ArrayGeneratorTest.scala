@@ -35,9 +35,8 @@ import org.coursera.records.test.Empty
 import org.coursera.records.test.EmptyArray
 import org.junit.BeforeClass
 import org.junit.Test
-import org.scalatest.junit.AssertionsForJUnit
 
-object ArrayGeneratorTest extends SchemaFixtures with GeneratorTest {
+object ArrayGeneratorTest extends GeneratorTest with SchemaFixtures {
 
   @BeforeClass
   def setup(): Unit = {
@@ -49,7 +48,7 @@ object ArrayGeneratorTest extends SchemaFixtures with GeneratorTest {
   }
 }
 
-class ArrayGeneratorTest extends GeneratorTest with SchemaFixtures with AssertionsForJUnit {
+class ArrayGeneratorTest extends GeneratorTest with SchemaFixtures {
 
   @Test
   def testWithRecordArray(): Unit = {
@@ -61,7 +60,7 @@ class ArrayGeneratorTest extends GeneratorTest with SchemaFixtures with Assertio
     assert(original === roundTripped)
 
     Seq(original, roundTripped).foreach { record =>
-      assert(mapToJson(record) ===
+      assertJson(record,
         """{
          |  "empties" : [ { }, { }, { } ],
          |  "fruits" : [ "APPLE", "BANANA", "ORANGE" ]
@@ -84,7 +83,7 @@ class ArrayGeneratorTest extends GeneratorTest with SchemaFixtures with Assertio
     assert(original === roundTripped)
 
     Seq(original, roundTripped).foreach { record =>
-      assert(mapToJson(record) ===
+      assertJson(record,
         s"""{
             |  "bytes" : [ "${'\\'}u0000${'\\'}u0001${'\\'}u0002", "${'\\'}u0003${'\\'}u0004${'\\'}u0005" ],
             |  "longs" : [ 10, 20, 30 ],
@@ -105,7 +104,7 @@ class ArrayGeneratorTest extends GeneratorTest with SchemaFixtures with Assertio
     assert(original === roundTripped)
 
     Seq(original, roundTripped).foreach { record =>
-      assert(mapToJson(original) ===
+      assertJson(original,
         """{
         |  "ints" : [ 1, 2, 3 ]
         |}""".stripMargin)

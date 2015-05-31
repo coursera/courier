@@ -1,0 +1,16 @@
+@(typeref: org.coursera.courier.generator.twirl.defs.TyperefDefinition)
+
+@import java.util.Calendar
+@import com.linkedin.data.schema.SchemaToJsonEncoder
+@import com.linkedin.data.schema.JsonBuilder
+@import org.coursera.courier.generator.twirl.defs._
+
+@typeref.scalaDoc.map { doc => @doc }
+@@Generated(value = Array("@(typeref.scalaType)"), comments="Courier Data Template.", date = "@(Calendar.getInstance().getTime())")
+final class @(typeref.scalaType)() extends TyperefInfo(@(typeref.scalaType).SCHEMA) {
+
+}
+
+object @(typeref.scalaType) {
+  val SCHEMA = DataTemplateUtil.parseSchema(@("\"\"\"" + SchemaToJsonEncoder.schemaToJson(typeref.schema, JsonBuilder.Pretty.COMPACT) + "\"\"\"")).asInstanceOf[TyperefDataSchema]
+}

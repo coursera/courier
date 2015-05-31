@@ -20,9 +20,8 @@ import org.coursera.escaping.KeywordEscaping
 import org.coursera.escaping.`class`
 import org.junit.BeforeClass
 import org.junit.Test
-import org.scalatest.junit.AssertionsForJUnit
 
-object EscapingTest extends SchemaFixtures with GeneratorTest {
+object EscapingTest extends GeneratorTest with SchemaFixtures {
 
   @BeforeClass
   def setup(): Unit = {
@@ -32,19 +31,19 @@ object EscapingTest extends SchemaFixtures with GeneratorTest {
   }
 }
 
-class EscapingTest extends GeneratorTest with SchemaFixtures with AssertionsForJUnit {
+class EscapingTest extends GeneratorTest with SchemaFixtures {
 
   @Test
   def testEscaping(): Unit = {
     val withKeywordEscaping = KeywordEscaping(`type` = "test")
     assert(withKeywordEscaping.`type` === "test")
-    assert(mapToJson(withKeywordEscaping.data()) ===
+    assertJson(withKeywordEscaping,
       """{
         |  "type" : "test"
         |}""".stripMargin)
 
     // Please never actually name a schema like this!
     val withRecordNameEscaping = `class`()
-    assert(mapToJson(withRecordNameEscaping.data()) === "{ }")
+    assertJson(withRecordNameEscaping, "{ }")
   }
 }
