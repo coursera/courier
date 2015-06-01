@@ -33,7 +33,7 @@ object Courier extends Build {
         checkSnapshotDependencies,
         inquireVersions,
         runClean,
-        runTest,
+        ReleaseStep(action = Command.process("fulltest", _)),
         setReleaseVersion,
         commitReleaseVersion,
         tagRelease,
