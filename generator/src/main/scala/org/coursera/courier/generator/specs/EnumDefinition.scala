@@ -14,10 +14,12 @@
  limitations under the License.
  */
 
-package org.coursera.courier.generator
+package org.coursera.courier.generator.specs
 
 import com.linkedin.data.schema.EnumDataSchema
 import com.linkedin.pegasus.generator.spec.EnumTemplateSpec
+import org.coursera.courier.generator.ScalaEscaping
+import org.coursera.courier.generator.ScaladocEscaping
 import scala.collection.JavaConverters._
 
 case class EnumDefinition(spec: EnumTemplateSpec) extends Definition(spec) {

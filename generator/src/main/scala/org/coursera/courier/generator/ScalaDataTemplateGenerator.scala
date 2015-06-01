@@ -29,6 +29,7 @@ import com.linkedin.pegasus.generator.JavaCodeGeneratorBase
 import com.linkedin.pegasus.generator.PegasusDataTemplateGenerator
 import com.linkedin.pegasus.generator.TemplateSpecGenerator
 import com.linkedin.util.FileUtil
+import org.coursera.courier.generator.specs.Definition
 import org.coursera.courier.generator.twirl.TwirlDataTemplateGenerator
 
 import scala.collection.JavaConverters._

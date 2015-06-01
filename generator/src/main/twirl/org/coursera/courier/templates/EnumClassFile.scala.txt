@@ -1,4 +1,4 @@
-@(enum: org.coursera.courier.generator.EnumDefinition)
+@(enum: org.coursera.courier.generator.specs.EnumDefinition)
 
 package @(enum.namespace)
 

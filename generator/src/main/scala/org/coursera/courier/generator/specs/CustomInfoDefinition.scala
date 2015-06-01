@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-package org.coursera.courier.generator
+package org.coursera.courier.generator.specs
 
 import com.linkedin.pegasus.generator.spec.CustomInfoSpec
 

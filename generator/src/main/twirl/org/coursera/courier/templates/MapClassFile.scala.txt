@@ -1,4 +1,4 @@
-@(map: org.coursera.courier.generator.MapDefinition)
+@(map: org.coursera.courier.generator.specs.MapDefinition)
 
 package @(map.namespace)
 

@@ -14,35 +14,34 @@
  limitations under the License.
  */
 
-package org.coursera.courier.generator
+package org.coursera.courier.generator.specs
 
-import com.linkedin.data.schema.MapDataSchema
-import com.linkedin.pegasus.generator.spec.MapTemplateSpec
+import com.linkedin.data.schema.ArrayDataSchema
+import com.linkedin.pegasus.generator.spec.ArrayTemplateSpec
 
-case class MapDefinition(spec: MapTemplateSpec) extends Definition(spec) {
-  def schema: MapDataSchema = spec.getSchema
+case class ArrayDefinition(spec: ArrayTemplateSpec) extends Definition(spec) {
+  def schema: ArrayDataSchema = spec.getSchema
   def scalaDoc: Option[String] = None
 
-  def valueClass: Definition = Definition(spec.getValueClass)
-  def valueDataClass: Option[Definition] = Option(spec.getValueDataClass).map(Definition(_))
+  def itemClass: Definition = Definition(spec.getItemClass)
+  def itemDataClass: Option[Definition] = Option(spec.getItemDataClass).map(Definition(_))
   def customInfo: Option[CustomInfoDefinition] = Option(spec.getCustomInfo).map(CustomInfoDefinition)
 }
 
-object MapDefinition {
+object ArrayDefinition {
 
   /**
-   * For use when creating MapDefinition for pre-defined maps such as IntMap.
+   * For use when creating ArrayDefinitions for pre-defined arrays such as IntArray.
    */
   def forPredef(
       scalaType: String,
       namespace: String,
       primitiveDef: PrimitiveDefinition,
-      schema: MapDataSchema): MapDefinition = {
-
-    val spec = new MapTemplateSpec(schema)
+      schema: ArrayDataSchema): ArrayDefinition = {
+    val spec = new ArrayTemplateSpec(schema)
     spec.setClassName(scalaType)
     spec.setNamespace(namespace)
-    spec.setValueClass(primitiveDef.spec)
-    MapDefinition(spec)
+    spec.setItemClass(primitiveDef.spec)
+    ArrayDefinition(spec)
   }
 }

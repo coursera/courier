@@ -16,6 +16,8 @@
 
 package org.coursera.courier.generator
 
+import org.coursera.courier.generator.specs.Definition
+
 /**
  * Identifies a particular scala file.
  */

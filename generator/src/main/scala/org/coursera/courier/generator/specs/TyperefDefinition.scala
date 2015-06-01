@@ -14,12 +14,13 @@
  limitations under the License.
  */
 
-package org.coursera.courier.generator
+package org.coursera.courier.generator.specs
 
-import com.linkedin.data.schema.FixedDataSchema
-import com.linkedin.pegasus.generator.spec.FixedTemplateSpec
+import com.linkedin.data.schema.TyperefDataSchema
+import com.linkedin.pegasus.generator.spec.TyperefTemplateSpec
+import org.coursera.courier.generator.ScaladocEscaping
 
-case class FixedDefinition(spec: FixedTemplateSpec) extends Definition(spec) {
-  def schema: FixedDataSchema = spec.getSchema
+case class TyperefDefinition(spec: TyperefTemplateSpec) extends Definition(spec) {
+  def schema: TyperefDataSchema = spec.getSchema
   def scalaDoc: Option[String] = Option(schema.getDoc).flatMap(ScaladocEscaping.stringToScaladoc)
 }

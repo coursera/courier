@@ -1,4 +1,4 @@
-@(typeref: org.coursera.courier.generator.TyperefDefinition)
+@(typeref: org.coursera.courier.generator.specs.TyperefDefinition)
 
 package @(typeref.namespace)
 

@@ -1,8 +1,8 @@
-@(record: org.coursera.courier.generator.RecordDefinition)
+@(record: org.coursera.courier.generator.specs.RecordDefinition)
 @import java.util.Calendar
 @import com.linkedin.data.schema.SchemaToJsonEncoder
 @import com.linkedin.data.schema.JsonBuilder
-@import org.coursera.courier.generator._
+@import org.coursera.courier.generator.specs._
 
 @record.scalaDoc.map { doc => @doc }
 @@Generated(value = Array("@record.scalaType"), comments = "Courier Data Template.", date = "@(Calendar.getInstance().getTime())")

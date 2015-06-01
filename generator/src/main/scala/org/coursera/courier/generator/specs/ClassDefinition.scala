@@ -14,11 +14,12 @@
  limitations under the License.
  */
 
-package org.coursera.courier.generator
+package org.coursera.courier.generator.specs
 
 import com.linkedin.data.schema.DataSchema
 import com.linkedin.data.schema.PrimitiveDataSchema
 import com.linkedin.pegasus.generator.spec.ClassTemplateSpec
+import org.coursera.courier.generator.TypeConversions
 
 /**
  * A "raw" class definition.

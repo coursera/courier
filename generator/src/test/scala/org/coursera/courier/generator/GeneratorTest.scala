@@ -27,6 +27,7 @@ import com.linkedin.data.template.DataTemplate
 import com.linkedin.data.template.JacksonDataTemplateCodec
 import com.linkedin.data.template.PrettyPrinterJacksonDataTemplateCodec
 import com.linkedin.pegasus.generator.TemplateSpecGenerator
+import org.coursera.courier.generator.specs.Definition
 import org.coursera.courier.generator.twirl.TwirlDataTemplateGenerator
 import org.scalatest.junit.AssertionsForJUnit
 

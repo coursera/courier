@@ -34,6 +34,10 @@ import com.linkedin.data.template.LongMap
 import com.linkedin.data.template.StringArray
 import com.linkedin.data.template.StringMap
 import com.linkedin.pegasus.generator.spec.PrimitiveTemplateSpec
+import org.coursera.courier.generator.specs.ArrayDefinition
+import org.coursera.courier.generator.specs.Definition
+import org.coursera.courier.generator.specs.MapDefinition
+import org.coursera.courier.generator.specs.PrimitiveDefinition
 
 /**
  * Courier generates data bindings for a select set of schemas and provides those bindings in

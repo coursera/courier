@@ -1,4 +1,4 @@
-@(record: org.coursera.courier.generator.RecordDefinition)
+@(record: org.coursera.courier.generator.specs.RecordDefinition)
 @import java.util.Calendar
 @import com.linkedin.data.schema.SchemaToJsonEncoder
 @import com.linkedin.data.schema.JsonBuilder

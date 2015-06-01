@@ -14,46 +14,13 @@
  limitations under the License.
  */
 
-package org.coursera.courier.generator
+package org.coursera.courier.generator.specs
 
-import _root_.twirl.api.Txt
-import com.linkedin.data.schema.RecordDataSchema
-import com.linkedin.pegasus.generator.spec.RecordTemplateSpec
 import com.linkedin.pegasus.generator.spec.RecordTemplateSpec.Field
-import scala.collection.JavaConverters._
-
-case class RecordDefinition(spec: RecordTemplateSpec) extends Definition(spec) {
-  def schema: RecordDataSchema = spec.getSchema
-
-  def fields: Seq[RecordField] = spec.getFields.asScala.map(RecordField).toSeq
-
-  // parameter list rendering utilities
-  def fieldParamDefs: String = {
-    fields.map { field =>
-      s"${field.name}: ${field.scalaTypeFullname}"
-    }.mkString(", ")
-  }
-
-  def copyFieldParamDefs: String = {
-    fields.map { field =>
-      s"${field.name}: ${field.scalaTypeFullname} = this.${field.name}"
-    }.mkString(", ")
-  }
-
-  def fieldsAsParams: String = {
-    fields.map(_.name).mkString(", ")
-  }
-
-  def fieldsAsTypeParams: String = {
-    fields.map(_.scalaTypeFullname).mkString(", ")
-  }
-
-  def prefixedFieldParams(prefix: String): String = {
-    fields.map(field => s"$prefix${field.name}").mkString(", ")
-  }
-
-  def scalaDoc: Option[String] = Option(schema.getDoc).flatMap(ScaladocEscaping.stringToScaladoc)
-}
+import org.coursera.courier.generator.ScalaEscaping
+import org.coursera.courier.generator.ScaladocEscaping
+import org.coursera.courier.generator.TypeConversions
+import twirl.api.Txt
 
 /**
  * The field of a record, may be either a field directly defined in the record or an "include"

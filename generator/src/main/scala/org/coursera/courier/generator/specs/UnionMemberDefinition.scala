@@ -14,31 +14,10 @@
  limitations under the License.
  */
 
-package org.coursera.courier.generator
+package org.coursera.courier.generator.specs
 
 import com.linkedin.data.schema.DataSchema
-import com.linkedin.data.schema.UnionDataSchema
 import com.linkedin.pegasus.generator.spec.UnionTemplateSpec
-
-import scala.collection.JavaConverters._
-
-/**
- * Union names are inferred from the containing type or typeref.
- *
- * Note that all unions are defined anonymously, so pegasus makes a best effort to give
- * them a reasonable name.
- *
- * E.g. A union defined as the type of a field of a record will be named after that field.
- */
-case class UnionDefinition(spec: UnionTemplateSpec) extends Definition(spec) {
-  def schema: UnionDataSchema = spec.getSchema
-  def scalaDoc: Option[String] = None
-
-  /**
-   * The union member types.
-   */
-  def members: Seq[UnionMemberDefinition] = spec.getMembers.asScala.map(UnionMemberDefinition)
-}
 
 case class UnionMemberDefinition(spec: UnionTemplateSpec.Member) {
 

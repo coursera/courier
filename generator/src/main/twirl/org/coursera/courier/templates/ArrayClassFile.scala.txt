@@ -1,4 +1,4 @@
-@(array: org.coursera.courier.generator.ArrayDefinition)
+@(array: org.coursera.courier.generator.specs.ArrayDefinition)
 
 package @(array.namespace)
 

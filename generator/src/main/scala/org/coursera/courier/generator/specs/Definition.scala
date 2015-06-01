@@ -14,11 +14,9 @@
  limitations under the License.
  */
 
-package org.coursera.courier.generator
+package org.coursera.courier.generator.specs
 
-import _root_.twirl.api.Txt
 import com.linkedin.data.schema.DataSchema
-import com.linkedin.data.schema.PrimitiveDataSchema
 import com.linkedin.pegasus.generator.spec.ArrayTemplateSpec
 import com.linkedin.pegasus.generator.spec.ClassTemplateSpec
 import com.linkedin.pegasus.generator.spec.EnumTemplateSpec
@@ -28,6 +26,8 @@ import com.linkedin.pegasus.generator.spec.PrimitiveTemplateSpec
 import com.linkedin.pegasus.generator.spec.RecordTemplateSpec
 import com.linkedin.pegasus.generator.spec.TyperefTemplateSpec
 import com.linkedin.pegasus.generator.spec.UnionTemplateSpec
+import org.coursera.courier.generator.CourierPredef
+import org.coursera.courier.generator.ScalaEscaping
 
 /**
  * Pegasus provides `ClassTemplateSpec`s to "flatten" the data schemas provided to a
@@ -92,6 +92,13 @@ abstract class Definition(spec: ClassTemplateSpec) {
    */
   def memberName: String = scalaType + "Member"
 
+  /**
+   * The containing type of this type, if any.
+   *
+   * When a type is contained in another type, it should be generated as a subtype of that type.
+   *
+   * Unions are commonly generated as contained types.
+   */
   def enclosingDefinition = Option(spec.getEnclosingClass).map(Definition(_))
 }
 
@@ -114,30 +121,3 @@ object Definition {
     }
   }
 }
-
-/**
- * Convenience trait for primitive types since they sometimes need to be boxed/unboxed.
- */
-trait MaybeBoxable extends Definition {
-  def requiresBoxing = TypeConversions.isScalaValueType(schema)
-
-  def maybeBox(expr: Txt): Txt = {
-    if (requiresBoxing) {
-      Txt(s"$scalaType.box($expr)")
-    } else {
-      expr
-    }
-  }
-
-  def maybeUnbox(expr: Txt): Txt = {
-    if (requiresBoxing) {
-      Txt(s"$scalaType.unbox($expr)")
-    } else {
-      expr
-    }
-  }
-}
-
-
-
-

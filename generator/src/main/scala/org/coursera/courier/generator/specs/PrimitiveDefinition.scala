@@ -14,10 +14,11 @@
  limitations under the License.
  */
 
-package org.coursera.courier.generator
+package org.coursera.courier.generator.specs
 
 import com.linkedin.data.schema.PrimitiveDataSchema
 import com.linkedin.pegasus.generator.spec.PrimitiveTemplateSpec
+import org.coursera.courier.generator.TypeConversions
 
 case class PrimitiveDefinition(spec: PrimitiveTemplateSpec) extends Definition(spec) with MaybeBoxable {
   def schema: PrimitiveDataSchema = spec.getSchema
@@ -27,13 +28,14 @@ case class PrimitiveDefinition(spec: PrimitiveTemplateSpec) extends Definition(s
    */
   override def scalaType: String = TypeConversions.lookupScalaType(spec.getSchema)
 
+  override def namespace: Option[String] = Option(spec.getNamespace)
+
   /**
    * The java class used by pegasus for the primitive. E.g. `java.lang.Integer`.
    *
    * Pegasus always uses java boxed primitive classes.
    */
   override def dataType: String = TypeConversions.lookupJavaClass(spec.getSchema).getName
-  override def namespace: Option[String] = Option(spec.getNamespace)
   def scalaDoc: Option[String] = None
 
   /**
