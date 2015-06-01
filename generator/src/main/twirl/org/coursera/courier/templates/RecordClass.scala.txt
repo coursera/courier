@@ -153,12 +153,12 @@ object @(record.scalaType) {
     new @(record.scalaType)(DataTemplates.makeImmutable(dataMap, SCHEMA, conversion))
   }
 
-  @* TODO(jbetz): The arity-1 case here "works" but is not clean. For arity-1 we should return Option[Arg1Type], and we return Option[(Arg1Type)] which just happens to be correct, but the added parenthesis create a compiler warning. *@
+  @* Scala, why you make unapply so complicated? *@
   @record.fields.size match {
     case 0 => {
       def unapply(record: @(record.scalaType)): Boolean = true
     }
-    case _ => {
+    case i if i <= 22 => { @* Scala tuples only exist up to Tuple22. *@
       def unapply(record: @(record.scalaType)): Option[(@(record.fieldsAsTypeParams))] = {
         try {
           Some((@(record.prefixedFieldParams("record."))))
@@ -167,6 +167,9 @@ object @(record.scalaType) {
           case notPresent: RequiredFieldNotPresentException => None
         }
       }
+    }
+    case _ => {
+      /* unapply() not available for records with more than 22 fields due Scala's Tuple limit. */
     }
   }
 }

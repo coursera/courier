@@ -91,6 +91,8 @@ trait SchemaFixtures {
     val WithInlineRecord = TestSchema.load(s"$ns.WithInlineRecord")
     val WithComplexTypes = TestSchema.load(s"$ns.WithComplexTypes")
     val Empty = TestSchema.load(s"$ns.Empty")
+    val With22Fields = TestSchema.load(s"$ns.With22Fields")
+    val With23Fields = TestSchema.load(s"$ns.With23Fields")
   }
 
   object Enums {

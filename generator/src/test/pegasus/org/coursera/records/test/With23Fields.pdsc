@@ -1,0 +1,31 @@
+{
+  "type": "record",
+  "name": "With23Fields",
+  "namespace": "org.coursera.records.test",
+  "doc": "Scala's tuple limit is 22. Here we test beyond that limit.",
+  "fields": [
+    { "name": "field1", "type": "int" },
+    { "name": "field2", "type": "int" },
+    { "name": "field3", "type": "int" },
+    { "name": "field4", "type": "int" },
+    { "name": "field5", "type": "int" },
+    { "name": "field6", "type": "int" },
+    { "name": "field7", "type": "int" },
+    { "name": "field8", "type": "int" },
+    { "name": "field9", "type": "int" },
+    { "name": "field10", "type": "int" },
+    { "name": "field11", "type": "int" },
+    { "name": "field12", "type": "int" },
+    { "name": "field13", "type": "int" },
+    { "name": "field14", "type": "int" },
+    { "name": "field15", "type": "int" },
+    { "name": "field16", "type": "int" },
+    { "name": "field17", "type": "int" },
+    { "name": "field18", "type": "int" },
+    { "name": "field19", "type": "int" },
+    { "name": "field20", "type": "int" },
+    { "name": "field21", "type": "int" },
+    { "name": "field22", "type": "int" },
+    { "name": "field23", "type": "int" }
+  ]
+}

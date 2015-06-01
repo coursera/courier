@@ -44,7 +44,9 @@ object RecordGeneratorTest extends GeneratorTest with SchemaFixtures {
       Records.WithOptionalPrimitiveCustomTypes,
       Records.WithInlineRecord,
       Enums.Fruits,
-      Records.WithComplexTypes))
+      Records.WithComplexTypes,
+      Records.With22Fields,
+      Records.With23Fields))
   }
 }
 
