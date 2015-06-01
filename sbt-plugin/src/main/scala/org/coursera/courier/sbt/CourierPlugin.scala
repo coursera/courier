@@ -22,6 +22,7 @@ import sbt._
 import Keys._
 import java.io.File.pathSeparator
 import scala.collection.JavaConverters._
+import org.slf4j.impl.StaticLoggerBinder
 
 /**
  * Based on the SBT Plugin from Sleipnir by Dmitriy Yefremov, which is in turn based on
@@ -61,6 +62,9 @@ object CourierPlugin extends Plugin {
     courierCacheSources := streams.value.cacheDirectory / "pdsc.sources",
 
     courierGenerator in Compile := {
+      // Allow use of slf4j logging inside the generator code that we call into later
+      StaticLoggerBinder.sbtLogger = streams.value.log
+
       val log = streams.value.log
       val src = courierSourceDirectory.value
       val dst = courierDestinationDirectory.value

@@ -25,10 +25,9 @@ import org.coursera.courier.sbt.Sonatype
 /**
  * SBT project for Courier.
  */
-object CourierBuild extends Build {
+object Courier extends Build {
 
-  override lazy val settings =
-    super.settings ++ Sonatype.Settings ++ Seq(
+  override lazy val settings = super.settings ++ Sonatype.Settings ++ Seq(
 
     organization := "org.coursera.courier",
     releaseProcess := Seq[ReleaseStep](
@@ -46,34 +45,41 @@ object CourierBuild extends Build {
         pushChanges))
 
   // Our scala build version story is, unfortunately, a bit hairy.
-  // In order to keep it under control we only use the two below scala version numbers.
+  // In order to keep it under control we primarily concern ourselves with these two below Scala
+  // version numbers:
 
   lazy val sbtScalaVersion = "2.10.5" // the version of Scala used by the current sbt version.
   lazy val currentScalaVersion = "2.11.6" // The current scala version.
 
-  // We can add other scala versions here as needed for cross building.
+  // We can add other scala versions here as we want for cross building.
   lazy val crossBuildScalaVersions = Seq(sbtScalaVersion, currentScalaVersion)
 
   // Our plugin runs as part of SBT so must use the same Scala version that SBT currently uses.
-  lazy val pluginBuildSettings = Seq(
-    scalaVersion in ThisBuild := sbtScalaVersion)
+  lazy val pluginVersionSettings = Seq(
+    scalaVersion in ThisBuild := sbtScalaVersion,
+    crossScalaVersions in ThisBuild := Seq(sbtScalaVersion))
 
   // We cross build our runtime for recent versions of Scala.
-  lazy val runtimeBuildSettings = Seq(
+  lazy val runtimeVersionSettings = Seq(
     scalaVersion in ThisBuild := currentScalaVersion,
     crossScalaVersions in ThisBuild := crossBuildScalaVersions)
 
-  // Our generator needs to be built for the SBT plugin.
-  // We also cross built it to the current scala version so that we can test more easily
-  // in generator-test.
-  lazy val generatorBuildSettings = Seq(
+  // Strictly speaking, our generator only needs to be built for the SBT plugin Scala version.
+  // But we also cross built it to the current Scala version so that our generator-test
+  // project can depend on the generator and still run with the current Scala version, which
+  // is more convenient because it allow us to do all testing and development in the current
+  // Scala version.
+  lazy val generatorVersionSettings = Seq(
     scalaVersion in ThisBuild := sbtScalaVersion,
     crossScalaVersions in ThisBuild := crossBuildScalaVersions)
 
+  //
+  // Projects
+  //
   lazy val generator = Project(id = "courier-generator", base = file("generator"))
     .dependsOn(runtime)
     .aggregate(runtime)
-    .settings(generatorBuildSettings)
+    .settings(generatorVersionSettings)
     .settings(Twirl.settings: _*)
     .settings(
       libraryDependencies ++= Seq(
@@ -84,13 +90,15 @@ object CourierBuild extends Build {
         ExternalDependencies.Scalatest.scalatest))
 
   lazy val runtime = Project(id = "courier-runtime", base = file("runtime"))
-    .settings(runtimeBuildSettings)
+    .settings(runtimeVersionSettings)
     .settings(
       libraryDependencies += ExternalDependencies.Pegasus.data)
 
   lazy val generatorTest = Project(id = "courier-generator-test", base = file("generator-test"))
     .dependsOn(generator)
-    .settings(runtimeBuildSettings)
+    .aggregate(generator)
+    .settings(packagedArtifacts := Map.empty) // do not publish
+    .settings(runtimeVersionSettings)
     .settings(forkedVmCourierGeneratorSettings: _*)
     .settings(
       libraryDependencies ++= Seq(
@@ -101,11 +109,10 @@ object CourierBuild extends Build {
   lazy val courierSbtPlugin = Project(id = "courier-sbt-plugin", base = file("sbt-plugin"))
     .dependsOn(generator)
     .aggregate(generator)
-    .settings(pluginBuildSettings)
+    .settings(pluginVersionSettings)
+    .settings(libraryDependencies += "com.github.eirslett" %% "sbt-slf4j" % "0.1")
     .settings(
       sbtPlugin := true,
-      scalaVersion in ThisProject := "2.10.5", // SBT is currently on Scala 2.10
-      crossScalaVersions in ThisProject := Seq("2.10.5"),
       name := "courier-sbt-plugin")
 
 
@@ -117,7 +124,7 @@ object CourierBuild extends Build {
       packagedArtifacts := Map.empty, // disable publishing for this project
       libraryDependencies ++= Seq(
         ExternalDependencies.Pegasus.data,
-        ExternalDependencies.Pegasus.dataAvro16,
+        ExternalDependencies.Pegasus.dataAvro,
         ExternalDependencies.JUnit.junit,
         ExternalDependencies.Scalatest.scalatest,
         ("joda-time" % "joda-time" % "2.0").withSources().withJavadoc()))
@@ -125,13 +132,18 @@ object CourierBuild extends Build {
   lazy val root = Project(id = "courier", base = file("."))
     .aggregate(generator, runtime, courierSbtPlugin, generatorTest)
     .settings(packagedArtifacts := Map.empty) // disable publish for root aggregate module
+    .settings(
+      addCommandAlias("fulltest", ";test;scripted"),
+      addCommandAlias("fullpublish", ";courier-sbt-plugin:publish;+courier-runtime:publish"),
+      addCommandAlias(
+        "fullpublish-local", ";courier-sbt-plugin:publish-local;+courier-runtime:publish-local"))
 
   object ExternalDependencies {
     object Pegasus {
       val version = "2.6.0"
       val avroVersion = "1_6"
       val data = "com.linkedin.pegasus" % "data" % version
-      val dataAvro16 = "com.linkedin.pegasus" % s"data-avro-$avroVersion" % version
+      val dataAvro = "com.linkedin.pegasus" % s"data-avro-$avroVersion" % version
       val generator = "com.linkedin.pegasus" % "generator" % version
     }
 
@@ -156,8 +168,8 @@ object CourierBuild extends Build {
       "releases" at "https://oss.sonatype.org/service/local/staging/deploy/maven2"
   }
 
-  // The below is a quick-and-dirty way to test the generator from source.
-  // This approach has been taken directly from Sleipnir by Dmitriy Yefremov.
+  // In order to be able to quickly test our generator, we use
+  // this approach, which has has been taken directly from Sleipnir by Dmitriy Yefremov.
   lazy val forkedVmCourierGenerator = taskKey[Seq[File]](
     "Courier generator executed in a forked VM")
 

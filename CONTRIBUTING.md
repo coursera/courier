@@ -37,14 +37,7 @@ sbt compile
 To publish to the local ivy cache use:
 
 ```sh
-sbt "project courier-sbt-plugin" "publish-local" "project courier-runtime" "+publish-local"
-```
-
-To publish to maven local use:
-
-```sh
-sbt "project courier-sbt-plugin" "publish-m2" "project courier-runtime" "+publish-m2"
-
+sbt fullpublish-local
 ```
 
 The `+` cross builds to cross build to all supported scala versions.  We only cross build our
@@ -52,6 +45,12 @@ runtime jars, not our sbt plugins.
 
 Tests
 -----
+
+To run all tests:
+
+```sh
+sbt fulltest
+``
 
 The bulk of the generator should be tested by adding schemas to `generator-test/src/main/pegasus`
 and adding tests against those schemas in `generator-test/src/test/scala`.
@@ -91,7 +90,7 @@ To publish to maven central, configure your credentials as described by
 http://www.scala-sbt.org/0.13/docs/Using-Sonatype.html and then publish via SBT using:
 
 ```sh
-sbt "+publish"
+sbt fullpublish
 ```
 
 To publish to different repo, override the publication repo and set your credentials like so:
@@ -103,6 +102,11 @@ sbt \
 "set credentials += Credentials(\"/path/to/credentials_file\")" \
 "+publish"
 ```
+
+When published, the version number in `version.sbt` will automatically be incremented.
+It should always end with `-SNAPSHOT`. The `sbt-release` plugin is responsible for publishing
+the release versions and incrementing the version number, so this should not usually need to
+be done manually.
 
 Licensing
 ---------
