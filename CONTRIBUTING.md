@@ -28,20 +28,15 @@ be retained.
 Building from Source
 --------------------
 
-Clone the repo and run:
+1) Clone this repo.
 
-```sh
-sbt compile
-```
-
-To publish to the local ivy cache use:
+2) Publish a SNAPSHOT the local ivy cache:
 
 ```sh
 sbt fullpublish-local
 ```
 
-The `+` cross builds to cross build to all supported scala versions.  We only cross build our
-runtime jars, not our sbt plugins.
+Update any projects you would like to test to reference the SNAPSHOT that was published locally.
 
 Tests
 -----
@@ -52,8 +47,9 @@ To run all tests:
 sbt fulltest
 ``
 
-The bulk of the generator should be tested by adding schemas to `generator-test/src/main/pegasus`
-and adding tests against those schemas in `generator-test/src/test/scala`.
+The bulk of the generator is tested by `generator-test`.
+It contains schemas in `generator-test/src/main/pegasus`
+and contains uni tests against those schemas in `generator-test/src/test/scala`.
 
 These are all run via:
 
@@ -61,16 +57,19 @@ These are all run via:
 sbt test
 ```
 
-SBT Plugin specific tests should be added to the test projects under
+SBT Plugin specific tests are defined under in the `sbt-plugin` project at
 `sbt-plugin/src/sbt-test/courier-sbt-plugin`.
 
-These are run via:
+Each test is an actual SBT project with a series of tasks that are run and assertions
+made after those tasks have run.
+
+These test can be run via:
 
 ```sh
 sbt scripted
 ```
 
-For details on sbt plugin tests, see: http://eed3si9n.com/testing-sbt-plugins
+For details on these sbt plugin "scripted" tests, see: http://eed3si9n.com/testing-sbt-plugins
 
 Development Guidelines
 ----------------------

@@ -28,7 +28,6 @@ import org.coursera.courier.sbt.Sonatype
 object Courier extends Build {
 
   override lazy val settings = super.settings ++ Sonatype.Settings ++ Seq(
-
     organization := "org.coursera.courier",
     releaseProcess := Seq[ReleaseStep](
         checkSnapshotDependencies,
@@ -43,6 +42,10 @@ object Courier extends Build {
         commitNextVersion,
         ReleaseStep(action = Command.process("sonatypeReleaseAll", _)),
         pushChanges))
+
+  //
+  // Cross building
+  //
 
   // Our scala build version story is, unfortunately, a bit hairy.
   // In order to keep it under control we primarily concern ourselves with these two below Scala
@@ -138,6 +141,10 @@ object Courier extends Build {
       addCommandAlias(
         "fullpublish-local", ";courier-sbt-plugin:publish-local;+courier-runtime:publish-local"))
 
+  //
+  // Dependencies
+  //
+
   object ExternalDependencies {
     object Pegasus {
       val version = "2.6.0"
@@ -167,6 +174,10 @@ object Courier extends Build {
     val mavenCentralReleases =
       "releases" at "https://oss.sonatype.org/service/local/staging/deploy/maven2"
   }
+
+  //
+  // Helper tasks
+  //
 
   // In order to be able to quickly test our generator, we use
   // this approach, which has has been taken directly from Sleipnir by Dmitriy Yefremov.
