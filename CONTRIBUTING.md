@@ -50,6 +50,29 @@ sbt "project courier-sbt-plugin" "publish-m2" "project courier-runtime" "+publis
 The `+` cross builds to cross build to all supported scala versions.  We only cross build our
 runtime jars, not our sbt plugins.
 
+Tests
+-----
+
+The bulk of the generator should be tested by adding schemas to `generator-test/src/main/pegasus`
+and adding tests against those schemas in `generator-test/src/test/scala`.
+
+These are all run via:
+
+```sh
+sbt test
+```
+
+SBT Plugin specific tests should be added to the test projects under
+`sbt-plugin/src/sbt-test/courier-sbt-plugin`.
+
+These are run via:
+
+```sh
+sbt scripted
+```
+
+For details on sbt plugin tests, see: http://eed3si9n.com/testing-sbt-plugins
+
 Development Guidelines
 ----------------------
 

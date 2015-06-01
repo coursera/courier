@@ -52,7 +52,7 @@ object ScalaDataTemplateGenerator {
       Option(System.getProperty(PegasusDataTemplateGenerator.GENERATOR_GENERATE_IMPORTED))
         .exists(_.toBoolean)
     run(
-      System.getProperty(AbstractGenerator.GENERATOR_RESOLVER_PATH),
+      args(1),
       System.getProperty(JavaCodeGeneratorBase.GENERATOR_DEFAULT_PACKAGE),
       generateImported,
       args(0),

@@ -1,0 +1,4 @@
+# Generate a single schema and make sure it exists
+> compile
+$ exists target/scala-2.10/courier/org/coursera/fortune/Fortune.scala
+

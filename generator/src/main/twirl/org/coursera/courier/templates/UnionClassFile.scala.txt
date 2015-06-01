@@ -1,6 +1,6 @@
 @(union: org.coursera.courier.generator.specs.UnionDefinition)
 
-package @(union.namespace)
+@union.namespace.map { namespace => package @namespace }
 
 import javax.annotation.Generated
 
