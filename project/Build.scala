@@ -62,10 +62,17 @@ object CourierBuild extends Build with OverridablePublishSettings {
       libraryDependencies += ExternalDependencies.Scalatest.scalatest)
     .settings(libraryDependencies += ("joda-time" % "joda-time" % "2.0").withSources().withJavadoc())
 
+  lazy val courierSbtPlugin = Project(id = "courier-sbt-plugin", base = file("sbt-plugin"))
+    .dependsOn(generator)
+    .aggregate(generator)
+    .settings(
+      sbtPlugin := true,
+      scalaVersion in ThisBuild := "2.10.5",
+      name := "courier-sbt-plugin")
+
   lazy val root = Project(id = "courier", base = file("."))
     .settings(packagedArtifacts := Map.empty) // disable publish for root aggregate module
-    .aggregate(generator)
-    .aggregate(runtime)
+    .aggregate(generator, runtime, courierSbtPlugin)
 
   lazy val defaultPublishSettings = PublishSettings.mavenCentral
 

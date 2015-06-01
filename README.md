@@ -45,7 +45,7 @@ Add the generator dependencies to your SBT plugins:
 `project/plugins.sbt`:
 
 ```scala
-libraryDependencies += "org.coursera.courier" %% "courier-sbt-plugin" % "0.0.2"
+addSbtPlugin("org.coursera.courier" % "courier-sbt-plugin" % "0.0.2")
 ```
 
 Enable the generator to SBT build:
@@ -55,9 +55,9 @@ Enable the generator to SBT build:
 ```scala
 import sbt._
 import Keys._
-import org.coursera.courier.sbt.CourierGenerator
+import org.coursera.courier.sbt.CourierPlugin._
 
-object Example extends Build with CourierGenerator {
+object Example extends Build {
 
   val courierVersion = "0.0.1"
 
@@ -66,7 +66,7 @@ object Example extends Build with CourierGenerator {
     .aggregate(schemas)
 
   lazy val schemas = Project("schemas", file("schemas"))
-    .generateCourierBindings()
+    .settings(courierSettings: _*)
     .settings(libraryDependencies += "org.coursera.courier" %% "courier-runtime" % courierVersion)
     // ...
 }
