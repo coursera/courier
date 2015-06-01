@@ -1,8 +1,8 @@
-@(union: org.coursera.courier.generator.twirl.defs.UnionDefinition)
+@(union: org.coursera.courier.generator.UnionDefinition)
 @import java.util.Calendar
 @import com.linkedin.data.schema.SchemaToJsonEncoder
 @import com.linkedin.data.schema.JsonBuilder
-@import org.coursera.courier.generator.twirl.defs._
+@import org.coursera.courier.generator._
 
   @@Generated(value = Array("@(union.scalaType)"), comments="Courier Data Template.", date = "@(Calendar.getInstance().getTime())")
   sealed abstract class @(union.scalaType) protected(private val value: DataMap)

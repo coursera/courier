@@ -16,26 +16,19 @@
 
 package org.coursera.courier.generator
 
-/**
- * Identifies a particular scala file.
- */
-case class CompilationUnit(name: String, namespace: String)
+object ScaladocEscaping {
+  def stringToScaladoc(raw: String): Option[String] = {
+    raw.trim match {
+      case empty if empty.isEmpty => None
+      case nonEmpty =>
+        Some(s"""/**
+                | * ${escape(raw).replaceAll("\n", "\n * ")}
+                | */""".stripMargin)
+    }
+  }
 
-/**
- * Code that has been generated.
- */
-case class GeneratedCode(code: String, compilationUnit: CompilationUnit)
-
-/**
- * A simple pegasus code generator.
- */
-trait TemplateGenerator {
-
-  /**
-   * Generates code for the given spec.
-   *
-   * Because Definitions can currently contain nested type declarations that should be
-   * generated into top level class files, a single call to generate can produce multiple files.
-   */
-  def generate(spec: Definition): Seq[GeneratedCode]
+  def escape(raw: String): String = {
+    // TODO(jbetz): Add proper escaping of comment chars and scaladoc chars (markdown and html?)
+    raw
+  }
 }

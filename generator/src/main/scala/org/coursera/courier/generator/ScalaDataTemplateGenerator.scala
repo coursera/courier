@@ -30,7 +30,6 @@ import com.linkedin.pegasus.generator.PegasusDataTemplateGenerator
 import com.linkedin.pegasus.generator.TemplateSpecGenerator
 import com.linkedin.util.FileUtil
 import org.coursera.courier.generator.twirl.TwirlDataTemplateGenerator
-import org.coursera.courier.generator.twirl.defs.ScalaTypes
 
 import scala.collection.JavaConverters._
 
@@ -78,7 +77,7 @@ object ScalaDataTemplateGenerator {
 
     val generator = new TwirlDataTemplateGenerator()
 
-    ScalaTypes.primitiveSchemas.foreach { primitiveSchema =>
+    TypeConversions.primitiveSchemas.foreach { primitiveSchema =>
       specGenerator.registerDefinedSchema(primitiveSchema)
     }
 
@@ -91,7 +90,7 @@ object ScalaDataTemplateGenerator {
     val generatedSpecs = specGenerator.getGeneratedSpecs.asScala
 
     val compilationUnits = generatedSpecs.flatMap { spec =>
-      generator.generate(spec)
+      generator.generate(Definition(spec))
     }
 
     // TODO: needed? SBT plugin already figures out which files have changed.

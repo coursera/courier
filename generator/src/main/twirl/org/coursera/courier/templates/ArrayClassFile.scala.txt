@@ -1,4 +1,4 @@
-@(array: org.coursera.courier.generator.twirl.defs.ArrayDefinition)
+@(array: org.coursera.courier.generator.ArrayDefinition)
 
 package @(array.namespace)
 

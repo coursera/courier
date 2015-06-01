@@ -16,111 +16,111 @@
 
 package org.coursera.courier.generator.twirl
 
-import com.linkedin.data.schema.DataSchema
-import com.linkedin.data.schema.DataSchemaConstants
-import com.linkedin.pegasus.generator.spec.ArrayTemplateSpec
-import com.linkedin.pegasus.generator.spec.ClassTemplateSpec
-import com.linkedin.pegasus.generator.spec.EnumTemplateSpec
-import com.linkedin.pegasus.generator.spec.FixedTemplateSpec
-import com.linkedin.pegasus.generator.spec.MapTemplateSpec
-import com.linkedin.pegasus.generator.spec.PrimitiveTemplateSpec
-import com.linkedin.pegasus.generator.spec.RecordTemplateSpec
-import com.linkedin.pegasus.generator.spec.TyperefTemplateSpec
-import com.linkedin.pegasus.generator.spec.UnionTemplateSpec
 import com.typesafe.scalalogging.slf4j.StrictLogging
-import org.coursera.courier.data.IntArray
+import org.coursera.courier.generator.ArrayDefinition
 import org.coursera.courier.generator.CompilationUnit
+import org.coursera.courier.generator.CourierPredef
+import org.coursera.courier.generator.Definition
+import org.coursera.courier.generator.EnumDefinition
+import org.coursera.courier.generator.FixedDefinition
 import org.coursera.courier.generator.GeneratedCode
+import org.coursera.courier.generator.MapDefinition
+import org.coursera.courier.generator.PrimitiveDefinition
+import org.coursera.courier.generator.RecordDefinition
 import org.coursera.courier.generator.TemplateGenerator
-import org.coursera.courier.generator.twirl.defs.ArrayDefinition
-import org.coursera.courier.generator.twirl.defs.EnumDefinition
-import org.coursera.courier.generator.twirl.defs.MapDefinition
-import org.coursera.courier.generator.twirl.defs.RecordDefinition
-import org.coursera.courier.generator.twirl.defs.ScalaTypes
-import org.coursera.courier.generator.twirl.defs.TyperefDefinition
-import org.coursera.courier.generator.twirl.defs.UnionDefinition
+import org.coursera.courier.generator.TyperefDefinition
+import org.coursera.courier.generator.UnionDefinition
 import org.coursera.courier.templates.txt.ArrayClassFile
 import org.coursera.courier.templates.txt.EnumClassFile
 import org.coursera.courier.templates.txt.MapClassFile
 import org.coursera.courier.templates.txt.RecordClassFile
 import org.coursera.courier.templates.txt.TyperefClassFile
 import org.coursera.courier.templates.txt.UnionClassFile
-import scala.collection.JavaConverters._
 
+/**
+ * Generates Scala files using the Twirl string template engine.
+ */
 class TwirlDataTemplateGenerator()
   extends TemplateGenerator
   with StrictLogging {
 
-  /**
-   * Generates Scala files using the Twirl string template engine.
-   */
-  def generate(spec: ClassTemplateSpec): Seq[GeneratedCode] = {
+  def generate(spec: Definition): Seq[GeneratedCode] = {
     findTopLevelSpecs(List(spec), List(spec)).flatMap { topLevelSpec =>
-      val schema = topLevelSpec.getSchema
-      topLevelSpec match {
-        case predef if ScalaTypes.predef.contains(predef.getSchema) =>
-
-          // We only generate schemas for pre defined types when building courier-runtime.
-          ScalaTypes.predef(predef.getSchema) match { // TODO: clean up, we should generate these automatically, but only for courier-runtime
-            case array: ArrayDefinition =>
-              //val code = ArrayClassFile(array).body
-              //Seq(GeneratedCode(code, CompilationUnit(array.scalaType, array.namespace.get)))
-              Seq()
-            case map: MapDefinition =>
-              //val code = MapClassFile(map).body
-              //Seq(GeneratedCode(code, CompilationUnit(map.scalaType, map.namespace.get)))
-              Seq()
-            case _: Any =>
-              Seq()
-          }
-        case record: RecordTemplateSpec =>
-          val code = RecordClassFile(RecordDefinition(record)).body
-          Seq(GeneratedCode(code, CompilationUnit(record.getClassName, record.getNamespace)))
-        case union: UnionTemplateSpec =>
-          val code = UnionClassFile(UnionDefinition(union)).body
-          Seq(GeneratedCode(code, CompilationUnit(union.getClassName, union.getNamespace)))
-        case enum: EnumTemplateSpec =>
-          val code = EnumClassFile(EnumDefinition(enum)).body
-          Seq(GeneratedCode(code, CompilationUnit(enum.getClassName, enum.getNamespace)))
-        case array: ArrayTemplateSpec =>
-          val code = ArrayClassFile(ArrayDefinition(array)).body
-          Seq(GeneratedCode(code, CompilationUnit(array.getClassName, array.getNamespace)))
-        case map: MapTemplateSpec =>
-          val code = MapClassFile(MapDefinition(map)).body
-          Seq(GeneratedCode(code, CompilationUnit(map.getClassName, map.getNamespace)))
-        case typeref: TyperefTemplateSpec =>
-          val code = TyperefClassFile(TyperefDefinition(typeref)).body
-          Seq(GeneratedCode(code, CompilationUnit(typeref.getClassName, typeref.getNamespace)))
-        case fixed: FixedTemplateSpec => ??? // TODO(jbetz): Add generator support
-        case primitive: PrimitiveTemplateSpec => Seq() // nothing to generate for primitives
+      val maybeCode = topLevelSpec match {
+        case predef if CourierPredef.bySchema.contains(predef.schema) =>
+          None // Predefined types should already exist, so we don't generate them
+        case record: RecordDefinition =>
+          Some(RecordClassFile(record).body)
+        case union: UnionDefinition =>
+          Some(UnionClassFile(union).body)
+        case enum: EnumDefinition =>
+          Some(EnumClassFile(enum).body)
+        case array: ArrayDefinition =>
+          Some(ArrayClassFile(array).body)
+        case map: MapDefinition =>
+          Some(MapClassFile(map).body)
+        case typeref: TyperefDefinition =>
+          Some(TyperefClassFile(typeref).body)
+        case fixed: FixedDefinition =>
+          ??? // TODO(jbetz): Add generator support
+        case primitive: PrimitiveDefinition =>
+          None // nothing to generate for primitives
         case _ =>
           throw new IllegalArgumentException(s"Unsupported schema type: ${topLevelSpec.getClass}")
+      }
+      maybeCode.map { code =>
+        val namespace = topLevelSpec.namespace.getOrElse("")
+        GeneratedCode(code, CompilationUnit(topLevelSpec.scalaType, namespace))
       }
     }.toSeq
   }
 
   /**
-   * Currently, one ClassTemplateSpec is provided per .pdsc file. But some of those .pdsc contain
+   * Generate predefined types.
+   *
+   * We only generate schemas for pre defined types when re-generating types in courier-runtime.
+   */
+  def generatePredef(): Seq[GeneratedCode] = {
+    CourierPredef.bySchema.flatMap { case (schema, definition) =>
+      val code = definition match {
+        case array: ArrayDefinition =>
+          ArrayClassFile(array).body
+        case map: MapDefinition =>
+          MapClassFile(map).body
+        case _: Any =>
+          throw new IllegalArgumentException(s"Unsupported schema type: ${schema.getClass}")
+      }
+      val namespace = definition.namespace.getOrElse("")
+      Some(GeneratedCode(code, CompilationUnit(definition.scalaType, namespace)))
+    }.toSeq
+  }
+
+  /**
+   * Currently, one ClassDefinition is provided per .pdsc file. But some of those .pdsc contain
    * inline schema definitions that should be generated into top level classes.
    *
    * This method traverses the spec hierarchy, finding all specs that should be generated as top
    * level classes.
    *
    * I've asked the rest.li team to consider restructuring the generator utilities so that one
-   * ClassTemplateSpec per top level class is provided. If they restructure the utilities, this
+   * ClassDefinition per top level class is provided. If they restructure the utilities, this
    * method should no longer be needed.
    */
-  // TODO(jbetz): Make sure we don't attempt to generate the same schema multiple times. Because schemas can have circular dependencies, we need to keep a set somewhere? (write a test for this case)
-  private def findTopLevelSpecs(specsToSearch: List[ClassTemplateSpec], acc: List[ClassTemplateSpec]): List[ClassTemplateSpec] = {
+  // TODO(jbetz): Make sure we don't attempt to generate the same schema multiple times. Because
+  // schemas can have circular dependencies, we need to keep a set somewhere? (write a test for
+  // this case)
+  private def findTopLevelSpecs(
+      specsToSearch: List[Definition],
+      acc: List[Definition]): List[Definition] = {
     val nestedTypes = specsToSearch.flatMap {
-      case recordSpec: RecordTemplateSpec =>
-        recordSpec.getFields.asScala.map(_.getType)
-      case unionSpec: UnionTemplateSpec =>
-        unionSpec.getMembers.asScala.map(_.getClassTemplateSpec)
-      case arraySpec: ArrayTemplateSpec =>
-        List(arraySpec.getItemClass)
-      case mapSpec: MapTemplateSpec =>
-        List(mapSpec.getValueClass)
+      case record: RecordDefinition =>
+        record.fields.map(_.typ)
+      case union: UnionDefinition =>
+        union.members.map(_.classDefinition)
+      case array: ArrayDefinition =>
+        List(array.itemClass)
+      case map: MapDefinition =>
+        List(map.valueClass)
       case other: Any =>
         List()
     }
@@ -132,11 +132,12 @@ class TwirlDataTemplateGenerator()
     }
   }
 
-  private def isTopLevel(spec: ClassTemplateSpec): Boolean = {
-    val isContained = spec.getEnclosingClass != null
-    val isComplex = Option(spec.getSchema) match {
-      case Some(schema) if schema.isComplex => true
-      case _: Any => false
+  private def isTopLevel(spec: Definition): Boolean = {
+
+    val isContained = spec.enclosingDefinition.isDefined
+    val isComplex = Option(spec.schema) match {
+      case Some(schema) => schema.isComplex // TODO: make spec.schema optional
+      case None => false
     }
 
     !isContained && isComplex

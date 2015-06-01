@@ -1,4 +1,4 @@
-@(union: org.coursera.courier.generator.twirl.defs.UnionDefinition)
+@(union: org.coursera.courier.generator.UnionDefinition)
 
 package @(union.namespace)
 

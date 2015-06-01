@@ -38,7 +38,7 @@ trait GeneratorTest extends AssertionsForJUnit {
     testSchemas.map { testSchema =>
       val specGenerator = new TemplateSpecGenerator(testSchema.resolver)
       val generated = scalaGenerator.generate(
-        specGenerator.generate(testSchema.schema, testSchema.location))
+        Definition(specGenerator.generate(testSchema.schema, testSchema.location)))
 
       val baseDir = sys.props("project.dir") + "/target/scala-2.11/src_managed/test/courier"
       generated.foreach { generatedCode =>

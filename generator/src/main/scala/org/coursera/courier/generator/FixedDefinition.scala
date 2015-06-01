@@ -16,26 +16,10 @@
 
 package org.coursera.courier.generator
 
-/**
- * Identifies a particular scala file.
- */
-case class CompilationUnit(name: String, namespace: String)
+import com.linkedin.data.schema.FixedDataSchema
+import com.linkedin.pegasus.generator.spec.FixedTemplateSpec
 
-/**
- * Code that has been generated.
- */
-case class GeneratedCode(code: String, compilationUnit: CompilationUnit)
-
-/**
- * A simple pegasus code generator.
- */
-trait TemplateGenerator {
-
-  /**
-   * Generates code for the given spec.
-   *
-   * Because Definitions can currently contain nested type declarations that should be
-   * generated into top level class files, a single call to generate can produce multiple files.
-   */
-  def generate(spec: Definition): Seq[GeneratedCode]
+case class FixedDefinition(spec: FixedTemplateSpec) extends Definition(spec) {
+  def schema: FixedDataSchema = spec.getSchema
+  def scalaDoc: Option[String] = Option(schema.getDoc).flatMap(ScaladocEscaping.stringToScaladoc)
 }
