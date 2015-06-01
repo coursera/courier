@@ -24,22 +24,31 @@ import java.io.File.pathSeparator
 import scala.collection.JavaConverters._
 
 /**
- * Based on the SBT Plugin from Sleipnir by Dmitriy Yefremov.
+ * Based on the SBT Plugin from Sleipnir by Dmitriy Yefremov, which is in turn based on
+ * the rest.li-sbt-plugin project.
+ *
+ * @author Dmitriy Yefremov
+ * @author Dean Thompson
+ * @author Jim Brikman
+ * @author Joe Betz
  */
 object CourierPlugin extends Plugin {
 
-  val courierGenerator = taskKey[Seq[File]]("Generates Scala bindings for PDSC files")
+  val courierGenerator = taskKey[Seq[File]]("Generates Scala bindings for .pdsc files")
 
-  val courierSourceDirectory = settingKey[File]("Folder with PDSC files used to generate Scala bindings")
+  val courierSourceDirectory = settingKey[File](
+    "Directory with .pdsc files used to generate Scala bindings")
 
-  val courierDestinationDirectory = settingKey[File]("Folder with the generated bindings")
+  val courierDestinationDirectory = settingKey[File]("Directory with the generated bindings")
 
-  val courierPrefix = settingKey[Option[String]]("Namespace prefix used for generated Scala classes")
+  val courierPrefix = settingKey[Option[String]](
+    "Namespace prefix used for generated Scala classes")
 
   val courierCacheSources = taskKey[File]("Caches .pdsc sources")
 
   /**
-   * Settings that need to be added to the project to enable generation of Scala bindings for PDSC files located in the project.
+   * Settings that need to be added to the project to enable generation of Scala bindings for PDSC
+   * files located in the project.
    */
   val courierSettings: Seq[Def.Setting[_]] = Seq(
 
@@ -56,9 +65,10 @@ object CourierPlugin extends Plugin {
       val src = courierSourceDirectory.value
       val dst = courierDestinationDirectory.value
       val namespacePrefix = courierPrefix.value
+      // adds in .pdscs from projects that this project .dependsOn
       val resolverPathFiles = Seq(src.getAbsolutePath) ++
         (managedClasspath in Compile).value.map(_.data.getAbsolutePath) ++
-        (internalDependencyClasspath in Compile).value.map(_.data.getAbsolutePath) // adds in .pdscs from projects that this project .dependsOn
+        (internalDependencyClasspath in Compile).value.map(_.data.getAbsolutePath)
       val resolverPath = resolverPathFiles.mkString(pathSeparator)
 
       val cacheFileSources = courierCacheSources.value
@@ -73,13 +83,18 @@ object CourierPlugin extends Plugin {
       log.debug("Detected changed files: " + anyFilesChanged)
       if (anyFilesChanged) {
         log.info("Generating Scala bindings for PDSC...")
-        //TODO: remove this logging after the codebase is stabilized and not much debugging is needed
         log.info("Courier resolver path: " + resolverPath)
         log.info("Courier source path: " + src)
         log.info("Courier destination path: " + dst)
-        val result = ScalaDataTemplateGenerator.run(resolverPath, namespacePrefix.getOrElse(""), false, dst.absolutePath, sourceFiles.map(_.absolutePath).toArray)
+        val result = ScalaDataTemplateGenerator.run(
+          resolverPath = resolverPath,
+          defaultPackage = namespacePrefix.getOrElse(""),
+          generateImported = false,
+          targetDirectoryPath = dst.absolutePath,
+          sources = sourceFiles.map(_.absolutePath).toArray)
 
-        // NOTE: deleting stale files does not work properly with courier activated on two different projects
+        // NOTE: Deleting stale files does not work properly with courier activated on two different
+        // projects.
         //val staleFiles = previousScalaFiles.sorted.diff(generatedFiles.sorted)
         //log.info("Not deleting stale files " + staleFiles.mkString(", "))
         //IO.delete(staleFiles)
@@ -105,63 +120,21 @@ object CourierPlugin extends Plugin {
 
   )
 
-  // The code below is temporary. Clients should not generate bindings for downstream services.
-
-  val dataTemplatesDependencies = taskKey[Seq[File]]("Produces a list of dependencies with 'dataTemplate' configuration")
-
-  val dataTemplatesDependenciesFilter = settingKey[DependencyFilter]("Only dependencies passing the filter will be included")
-
-  val extractDataTemplatesTarget = settingKey[File]("Target directory for extracted data templates")
-
-  val extractDataTemplates = taskKey[Unit]("Extracts data templates from JAR files")
-
   /**
-   * Default filter to get the list of data template artifacts.
-   */
-  val DefaultDataTemplatesDependenciesFilter = DependencyFilter.fnToArtifactFilter { artifact =>
-    artifact.name.endsWith("-data-template") || artifact.configurations.toSeq.exists(_.name == "dataTemplate")
-  }
-
-  /**
-   * Settings that need to be added to the project to enable generation of Scala bindings for PDSC files coming from downstream services.
-   */
-  val courierDownstreamSettings: Seq[Def.Setting[_]] = courierSettings ++ Seq(
-
-    dataTemplatesDependenciesFilter := DefaultDataTemplatesDependenciesFilter,
-
-    extractDataTemplatesTarget := target.value / "pegasus-temp",
-
-    courierSourceDirectory := extractDataTemplatesTarget.value / "pegasus",
-
-    cleanFiles ++= Seq(extractDataTemplatesTarget.value, courierDestinationDirectory.value),
-
-    dataTemplatesDependencies := update.value.matching(dataTemplatesDependenciesFilter.value),
-
-    extractDataTemplates := {
-      val target = extractDataTemplatesTarget.value
-      IO.delete(target)
-      dataTemplatesDependencies.value.foreach { jar =>
-        streams.value.log.info(s"Extracting data templates from ${jar.getName} to $target")
-        IO.unzip(jar, target, new SimpleFilter(_.toLowerCase.endsWith(".pdsc")))
-      }
-    },
-
-    compile in Compile <<= (compile in Compile).dependsOn(extractDataTemplates)
-
-  )
-
-  /**
-   * Returns an indication of whether `sourceFiles` and their modify dates differ from what is recorded in `cacheFile`,
-   * plus a function that can be called to write `sourceFiles` and their modify dates to `cacheFile`.
+   * Returns an indication of whether `sourceFiles` and their modify dates differ from what is
+   * recorded in `cacheFile`, plus a function that can be called to write `sourceFiles` and their
+   * modify dates to `cacheFile`.
    */
   def prepareCacheUpdate(cacheFile: File, sourceFiles: Seq[File],
                          streams: std.TaskStreams[_]): (Boolean, () => Unit) = {
     val fileToModifiedMap = sourceFiles.map(f => f -> FileInfo.lastModified(f)).toMap
 
     val (_, previousFileToModifiedMap) = Sync.readInfo(cacheFile)(FileInfo.lastModified.format)
-    val relation = Seq.fill(sourceFiles.size)(file(".")) zip sourceFiles //we only care about the source files here
+    //we only care about the source files here
+    val relation = Seq.fill(sourceFiles.size)(file(".")).zip(sourceFiles)
 
-    streams.log.debug(fileToModifiedMap.size + " <- current VS previous ->" + previousFileToModifiedMap.size)
+    streams.log.debug(
+      s"${fileToModifiedMap.size} <- current VS previous -> ${previousFileToModifiedMap.size}")
     val anyFilesChanged = !cacheFile.exists || (previousFileToModifiedMap != fileToModifiedMap)
     def updateCache() {
       Sync.writeInfo(cacheFile, Relation.empty[File, File] ++ relation.toMap,
@@ -171,10 +144,11 @@ object CourierPlugin extends Plugin {
   }
 
   /**
-   * Generates settings that place the artifact generated by `packagingTaskKey` in the specified `ivyConfig`,
-   * while also suffixing the artifact name with "-" and the `ivyConfig`.
+   * Generates settings that place the artifact generated by `packagingTaskKey` in the specified
+   * `ivyConfig`, while also suffixing the artifact name with "-" and the `ivyConfig`.
    */
-  def restliArtifactSettings(packagingTaskKey : TaskKey[File])(ivyConfig : String): Seq[Def.Setting[_]] = {
+  def restliArtifactSettings(
+      packagingTaskKey : TaskKey[File])(ivyConfig : String): Seq[Def.Setting[_]] = {
     val config = Configurations.config(ivyConfig)
 
     Seq(
@@ -199,19 +173,23 @@ object CourierPlugin extends Plugin {
 
   // Returns settings that can be applied to a project to cause it to package the Pegasus artifacts.
   def pegasusArtifacts: Seq[Def.Setting[_]] = {
-    def packageDataModelMappings: Def.Initialize[Task[Seq[(File, String)]]] = courierSourceDirectory.map{ (dir) =>
-      mappings(dir, "*.pdsc")
-    }
+    def packageDataModelMappings: Def.Initialize[Task[Seq[(File, String)]]] =
+      courierSourceDirectory.map { (dir) =>
+        mappings(dir, "*.pdsc")
+      }
 
-    // The resulting settings create the two packaging tasks, put their artifacts in specific Ivy configs,
-    // and add their artifacts to the project.
+    // The resulting settings create the two packaging tasks, put their artifacts in specific
+    // Ivy configs, and add their artifacts to the project.
 
-    val defaultConfig = config("default").extend(Runtime).describedAs("Configuration for default artifacts.")
+    val defaultConfig = config("default").extend(Runtime).describedAs(
+      "Configuration for default artifacts.")
 
-    val dataTemplateConfig = new Configuration("dataTemplate", "pegasus data templates",
-      isPublic=true,
-      extendsConfigs=List(Compile),
-      transitive=true)
+    val dataTemplateConfig = new Configuration(
+      name = "dataTemplate",
+      description = "pegasus data templates",
+      isPublic = true,
+      extendsConfigs = List(Compile),
+      transitive = true)
 
     Defaults.packageTaskSettings(packageDataModel, packageDataModelMappings) ++
       restliArtifactSettings(packageDataModel)("dataModel") ++

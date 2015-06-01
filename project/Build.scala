@@ -14,39 +14,59 @@
  limitations under the License.
  */
 
+import sbtrelease.ReleasePlugin.autoImport._
+import sbtrelease.ReleaseStateTransformations._
 import sbt.Keys.libraryDependencies
 import sbt._
 import Keys._
 import twirl.sbt.TwirlPlugin._
+import org.coursera.courier.sbt.Sonatype
 
 /**
  * SBT project for Courier.
  */
-object CourierBuild extends Build with OverridablePublishSettings {
+object CourierBuild extends Build {
 
-  // TODO(jbetz): Use sbt-release plugin
-  val courierVersion = "0.0.2"
+  override lazy val settings =
+    super.settings ++ Sonatype.Settings ++ Seq(
 
-  override lazy val settings = super.settings ++ overridePublishSettings ++ Seq(
     organization := "org.coursera.courier",
-    scalaVersion in ThisBuild := "2.11.6",
-    // TODO(jbetz): If scala 2.9 cross builds with no issues, consider adding it?
-    crossScalaVersions := Seq("2.10.5", "2.11.6"),
-    version := courierVersion,
-    resolvers += "Local Maven Repository" at "file://"+Path.userHome.absolutePath+"/.m2/repository")
+    releaseProcess := Seq[ReleaseStep](
+        checkSnapshotDependencies,
+        inquireVersions,
+        runClean,
+        runTest,
+        setReleaseVersion,
+        commitReleaseVersion,
+        tagRelease,
+        ReleaseStep(action = Command.process("publishSigned", _)),
+        setNextVersion,
+        commitNextVersion,
+        ReleaseStep(action = Command.process("sonatypeReleaseAll", _)),
+        pushChanges))
+
+  lazy val pluginBuildSettings = Seq(
+    scalaVersion in ThisProject := "2.10.5")
+
+  lazy val runtimeBuildSettings = Seq(
+    scalaVersion in ThisProject := "2.11.6",
+    crossScalaVersions in ThisProject := Seq("2.10.5", "2.11.6"))
 
   lazy val generator = Project(id = "courier-generator", base = file("generator"))
+    .settings(pluginBuildSettings)
     .dependsOn(runtime)
     .aggregate(runtime)
     .settings(Twirl.settings: _*)
     .settings(
-      libraryDependencies += ExternalDependencies.Pegasus.data,
-      libraryDependencies += ExternalDependencies.Pegasus.generator,
-      libraryDependencies += ExternalDependencies.ScalaLogging.scalaLoggingSlf4j,
-      libraryDependencies += ExternalDependencies.JUnit.junit,
-      libraryDependencies += ExternalDependencies.Scalatest.scalatest)
+      libraryDependencies ++= Seq(
+        ExternalDependencies.Pegasus.data,
+        ExternalDependencies.Pegasus.generator,
+        ExternalDependencies.ScalaLogging.scalaLoggingSlf4j,
+        ExternalDependencies.JUnit.junit,
+        ExternalDependencies.Scalatest.scalatest))
 
   lazy val runtime = Project(id = "courier-runtime", base = file("runtime"))
+    .settings(runtimeBuildSettings)
     .settings(
       libraryDependencies += ExternalDependencies.Pegasus.data)
 
@@ -54,33 +74,35 @@ object CourierBuild extends Build with OverridablePublishSettings {
   // the Scala classes Courier should generate. Once the generator is stable, this project should
   // be deleted, with schemas that we can use for testing moved into appropriate test directories.
   lazy val spec = Project("spec", file("spec"))
-    .settings(packagedArtifacts := Map.empty) // disable publishing for this project
     .settings(
-      libraryDependencies += ExternalDependencies.Pegasus.data,
-      libraryDependencies += ExternalDependencies.Pegasus.dataAvro16,
-      libraryDependencies += ExternalDependencies.JUnit.junit,
-      libraryDependencies += ExternalDependencies.Scalatest.scalatest)
-    .settings(libraryDependencies += ("joda-time" % "joda-time" % "2.0").withSources().withJavadoc())
+      packagedArtifacts := Map.empty, // disable publishing for this project
+      libraryDependencies ++= Seq(
+        ExternalDependencies.Pegasus.data,
+        ExternalDependencies.Pegasus.dataAvro16,
+        ExternalDependencies.JUnit.junit,
+        ExternalDependencies.Scalatest.scalatest,
+        ("joda-time" % "joda-time" % "2.0").withSources().withJavadoc()))
 
   lazy val courierSbtPlugin = Project(id = "courier-sbt-plugin", base = file("sbt-plugin"))
+    .settings(pluginBuildSettings)
     .dependsOn(generator)
     .aggregate(generator)
     .settings(
       sbtPlugin := true,
-      scalaVersion in ThisBuild := "2.10.5",
+      scalaVersion in ThisProject := "2.10.5", // SBT is currently on Scala 2.10
+      crossScalaVersions in ThisProject := Seq("2.10.5"),
       name := "courier-sbt-plugin")
 
   lazy val root = Project(id = "courier", base = file("."))
     .settings(packagedArtifacts := Map.empty) // disable publish for root aggregate module
     .aggregate(generator, runtime, courierSbtPlugin)
 
-  lazy val defaultPublishSettings = PublishSettings.mavenCentral
-
   object ExternalDependencies {
     object Pegasus {
       val version = "2.6.0"
+      val avroVersion = "1_6"
       val data = "com.linkedin.pegasus" % "data" % version
-      val dataAvro16 = "com.linkedin.pegasus" % "data-avro-1_6" % version
+      val dataAvro16 = "com.linkedin.pegasus" % s"data-avro-$avroVersion" % version
       val generator = "com.linkedin.pegasus" % "generator" % version
     }
 
@@ -91,7 +113,7 @@ object CourierBuild extends Build with OverridablePublishSettings {
 
     object JUnit {
       val version = "4.11"
-      val junit = "junit" % "junit" % "4.11" % "test"
+      val junit = "junit" % "junit" % version % "test"
     }
 
     object Scalatest {
@@ -103,57 +125,6 @@ object CourierBuild extends Build with OverridablePublishSettings {
   object Repos {
     val mavenCentralReleases =
       "releases" at "https://oss.sonatype.org/service/local/staging/deploy/maven2"
-  }
-
-  object PublishSettings {
-    val mavenCentral = Seq(
-      publishMavenStyle := true,
-      publishTo := {
-        val nexus = "https://oss.sonatype.org"
-        if (version.value.trim.endsWith("SNAPSHOT")) {
-          Some("snapshots" at s"$nexus/content/repositories/snapshots")
-        } else {
-          Some("releases" at s"$nexus/service/local/staging/deploy/maven2")
-        }
-      },
-      publishArtifact in Test := false,
-      pomIncludeRepository := { _ => false },
-      pomExtra :=
-        <url>http://github.com/coursera/courier</url>
-          <licenses>
-            <license>
-              <name>Apache 2.0</name>
-              <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
-              <distribution>repo</distribution>
-            </license>
-          </licenses>
-          <scm>
-            <url>git@github.com:coursera/courier.git</url>
-            <connection>scm:git:git@github.com:coursera/courier.git</connection>
-          </scm>
-          <developers>
-            <developer>
-              <id>jpbetz</id>
-              <name>Joe Betz</name>
-            </developer>
-            <developer>
-              <id>Daniel Chia</id>
-              <name>danchia</name>
-            </developer>
-            <developer>
-              <id>Nick Dellamaggiore</id>
-              <name>nick</name>
-            </developer>
-            <developer>
-              <id>Josh Newman</id>
-              <name>josh</name>
-            </developer>
-            <developer>
-              <id>saeta</id>
-              <name>Brennan Saeta</name>
-            </developer>
-          </developers>
-    )
   }
 }
 

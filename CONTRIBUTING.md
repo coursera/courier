@@ -37,16 +37,18 @@ sbt compile
 To publish to the local ivy cache use:
 
 ```sh
-sbt publish-local
+sbt "project courier-sbt-plugin" "publish-local" "project courier-runtime" "+publish-local"
 ```
 
 To publish to maven local use:
 
 ```sh
-sbt publish-m2
+sbt "project courier-sbt-plugin" "publish-m2" "project courier-runtime" "+publish-m2"
+
 ```
 
-Add `+` to cross build to all supported scala versions, e.g. `sbt "+ publish-m2"`.
+The `+` cross builds to cross build to all supported scala versions.  We only cross build our
+runtime jars, not our sbt plugins.
 
 Development Guidelines
 ----------------------
