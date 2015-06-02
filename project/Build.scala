@@ -33,6 +33,7 @@ object Courier extends Build {
         checkSnapshotDependencies,
         inquireVersions,
         runClean,
+        ReleaseStep(action = Command.process("courier-generator-test:compile", _)),
         ReleaseStep(action = Command.process("fulltest", _)),
         setReleaseVersion,
         commitReleaseVersion,
@@ -100,7 +101,6 @@ object Courier extends Build {
 
   lazy val generatorTest = Project(id = "courier-generator-test", base = file("generator-test"))
     .dependsOn(generator)
-    .aggregate(generator)
     .settings(packagedArtifacts := Map.empty) // do not publish
     .settings(runtimeVersionSettings)
     .settings(forkedVmCourierGeneratorSettings: _*)
@@ -137,7 +137,7 @@ object Courier extends Build {
     .aggregate(generator, runtime, courierSbtPlugin, generatorTest)
     .settings(packagedArtifacts := Map.empty) // disable publish for root aggregate module
     .settings(
-      addCommandAlias("fulltest", ";test;scripted"),
+      addCommandAlias("fulltest", ";compile;test;scripted"),
       addCommandAlias("fullpublish", ";courier-sbt-plugin:publish;+courier-runtime:publish"),
       addCommandAlias(
         "fullpublish-local", ";courier-sbt-plugin:publish-local;+courier-runtime:publish-local"))
@@ -191,7 +191,7 @@ object Courier extends Build {
       val dst = target.value / s"scala-${scalaBinaryVersion.value}" / "courier"
       val classpath = (dependencyClasspath in Runtime in generator).value.files
       streams.value.log.info("Generating .pdsc bindings...")
-      val files = runForkedGenerator(src, dst, classpath)
+      val files = runForkedGenerator(src, dst, classpath, streams.value.log)
       streams.value.log.info(s"There are ${files.size} classes generated from .pdsc")
       files
     },
@@ -203,7 +203,7 @@ object Courier extends Build {
     cleanFiles += target.value / s"scala-${scalaBinaryVersion.value}" / "courier"
   )
 
-  def runForkedGenerator(src: File, dst: File, classpath: Seq[File]): Seq[File] = {
+  def runForkedGenerator(src: File, dst: File, classpath: Seq[File], log: Logger): Seq[File] = {
     val mainClass = "org.coursera.courier.generator.ScalaDataTemplateGenerator"
     val args = Seq(dst.toString, src.toString)
     val jvmOptions = Seq.empty
@@ -212,24 +212,16 @@ object Courier extends Build {
       try {
         val exitValue = new Fork.ForkScala(mainClass)(
           None, jvmOptions, classpath, args, None, CustomOutput(outStream))
-        val outputLines = scala.io.Source.fromFile(tmpFile).getLines()
+        val outputLines = scala.io.Source.fromFile(tmpFile).getLines().toSeq
         if (exitValue != 0) {
           outputLines.foreach(println)
           sys.error(s"Code generator failed with exit code: $exitValue")
+        } else {
+          outputLines.map(file(_)).toSeq
         }
       } finally {
         outStream.close()
       }
-      val outputLines = scala.io.Source.fromFile(tmpFile).getLines()
-      outputLines.flatMap { line =>
-        val parts = line.split(" Writing ")
-        if (parts.length == 2) {
-          val outputFile = file(parts(1))
-          Some(outputFile)
-        } else {
-          None
-        }
-      }.toSeq
     }
   }
 }

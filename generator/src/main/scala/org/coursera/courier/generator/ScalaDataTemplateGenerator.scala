@@ -51,12 +51,16 @@ object ScalaDataTemplateGenerator {
     val generateImported =
       Option(System.getProperty(PegasusDataTemplateGenerator.GENERATOR_GENERATE_IMPORTED))
         .exists(_.toBoolean)
-    run(
+    val result = run(
       args(1),
       System.getProperty(JavaCodeGeneratorBase.GENERATOR_DEFAULT_PACKAGE),
       generateImported,
       args(0),
       java.util.Arrays.copyOfRange(args, 1, args.length))
+
+    result.getTargetFiles.asScala.foreach { file =>
+      System.out.println(file.getAbsolutePath)
+    }
   }
 
   // rest.li-sbt-plugin expects this exact signature for the run method.
