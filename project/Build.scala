@@ -33,7 +33,6 @@ object Courier extends Build {
         checkSnapshotDependencies,
         inquireVersions,
         runClean,
-        ReleaseStep(action = Command.process("courier-generator-test:compile", _)),
         ReleaseStep(action = Command.process("fulltest", _)),
         setReleaseVersion,
         commitReleaseVersion,
@@ -42,7 +41,8 @@ object Courier extends Build {
         ReleaseStep(action = Command.process("+courier-runtime:publishSigned", _)),
         setNextVersion,
         commitNextVersion,
-        ReleaseStep(action = Command.process("sonatypeReleaseAll", _)),
+        ReleaseStep(action = Command.process("courier-sbt-plugin:sonatypeReleaseAll", _)),
+        ReleaseStep(action = Command.process("+courier-runtime:sonatypeReleaseAll", _)),
         pushChanges))
 
   //
