@@ -1,0 +1,12 @@
+{
+  "type": "record",
+  "name": "RecursivelyDefinedRecord",
+  "namespace": "org.coursera.records.test",
+  "fields": [
+    {
+      "name": "self",
+      "type": "RecursivelyDefinedRecord",
+      "optional": true
+    }
+  ]
+}

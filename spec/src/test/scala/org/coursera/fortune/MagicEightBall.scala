@@ -67,7 +67,7 @@ final class MagicEightBall private (private val dataMap: DataMap) extends Record
 }
 
 object MagicEightBall {
-  private val SCHEMA = DataTemplateUtil.parseSchema(
+  val SCHEMA = DataTemplateUtil.parseSchema(
     """
       |{
       |  "type": "record",

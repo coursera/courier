@@ -1,0 +1,19 @@
+@(definition: org.coursera.courier.generator.specs.Definition)
+
+@import org.coursera.courier.generator.specs._
+
+@definition.containedTypes.map { referenced =>
+  @referenced.enclosingDefinition match {
+    case Some(container) if container == definition => {
+      @referenced match {
+        case enclosedUnion: UnionDefinition => { @UnionClass(enclosedUnion) }
+        case enclosedRecord: RecordDefinition => { @RecordClass(enclosedRecord) }
+        case enclosedMap: MapDefinition => { @MapClass(enclosedMap) }
+        case enclosedArray: ArrayDefinition => { @ArrayClass(enclosedArray) }
+        case enclosedEnum: EnumDefinition => { @EnumClass(enclosedEnum) }
+        case enclosedTyperef: TyperefDefinition => { @TyperefClass(enclosedTyperef) }
+      }
+    }
+    case _ => { }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "type": "record",
+  "name": "class",
+  "namespace": "org.coursera.escaping",
+  "fields": []
+}

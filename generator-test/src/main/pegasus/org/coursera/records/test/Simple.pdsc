@@ -1,0 +1,14 @@
+{
+  "type": "record",
+  "name": "Simple",
+  "doc": "A simple record",
+  "namespace": "org.coursera.records.test",
+  "fields": [
+    {
+      "name": "message",
+      "type": "string",
+      "optional": true,
+      "doc": "A simple field"
+    }
+  ]
+}

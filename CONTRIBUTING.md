@@ -28,25 +28,48 @@ be retained.
 Building from Source
 --------------------
 
-Clone the repo and run:
+1) Clone this repo.
+
+2) Publish a SNAPSHOT the local ivy cache:
 
 ```sh
-sbt compile
+sbt fullpublish-local
 ```
 
-To publish to the local ivy cache use:
+Update any projects you would like to test to reference the SNAPSHOT that was published locally.
+
+Tests
+-----
+
+To run all tests:
 
 ```sh
-sbt publish-local
-```
+sbt fulltest
+``
 
-To publish to maven local use:
+The bulk of the generator is tested by `generator-test`.
+It contains schemas in `generator-test/src/main/pegasus`
+and contains uni tests against those schemas in `generator-test/src/test/scala`.
+
+These are all run via:
 
 ```sh
-sbt publish-m2
+sbt test
 ```
 
-Add `+` to cross build to all supported scala versions, e.g. `sbt "+ publish-m2"`.
+SBT Plugin specific tests are defined under in the `sbt-plugin` project at
+`sbt-plugin/src/sbt-test/courier-sbt-plugin`.
+
+Each test is an actual SBT project with a series of tasks that are run and assertions
+made after those tasks have run.
+
+These test can be run via:
+
+```sh
+sbt scripted
+```
+
+For details on these sbt plugin "scripted" tests, see: http://eed3si9n.com/testing-sbt-plugins
 
 Development Guidelines
 ----------------------
@@ -66,7 +89,9 @@ To publish to maven central, configure your credentials as described by
 http://www.scala-sbt.org/0.13/docs/Using-Sonatype.html and then publish via SBT using:
 
 ```sh
-sbt "+publish"
+sbt fullpublish
+# OR
+sbt fullpublish-signed
 ```
 
 To publish to different repo, override the publication repo and set your credentials like so:
@@ -74,10 +99,15 @@ To publish to different repo, override the publication repo and set your credent
 ```sh
 sbt \
 -Dsbt.override.publish.repos.release=https://<repoistory>/path/to/repo/releases \
--Dsbt.override.publish.repos.snapshot=https://<domain>/path/to/repo/snapshots \
+-Dsbt.override.publish.repos.snapshot=https://<repoistory>/path/to/repo/snapshots \
 "set credentials += Credentials(\"/path/to/credentials_file\")" \
-"+publish"
+"fullpublish"
 ```
+
+When published, the version number in `version.sbt` will automatically be incremented.
+It should always end with `-SNAPSHOT`. The `sbt-release` plugin is responsible for publishing
+the release versions and incrementing the version number, so this should not usually need to
+be done manually.
 
 Licensing
 ---------

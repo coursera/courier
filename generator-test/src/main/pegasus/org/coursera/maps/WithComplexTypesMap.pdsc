@@ -1,0 +1,12 @@
+{
+  "type": "record",
+  "name": "WithComplexTypesMap",
+  "namespace": "org.coursera.maps",
+  "fields": [
+    { "name": "empties", "type": { "type": "map", "values": "org.coursera.records.test.Empty"} },
+    { "name": "fruits", "type": { "type": "map", "values": "org.coursera.enums.Fruits"} },
+    { "name": "arrays", "type": { "type": "map", "values": { "type": "array", "items": "org.coursera.records.test.Simple" } } },
+    { "name": "maps", "type": { "type": "map", "values": { "type": "map", "values": "org.coursera.records.test.Simple" } } },
+    { "name": "unions", "type": { "type": "map", "values": ["int", "string", "org.coursera.records.test.Simple"] } }
+  ]
+}

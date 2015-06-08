@@ -1,0 +1,13 @@
+{
+  "type": "record",
+  "name": "WithOptionalComplexTypesDefaultNone",
+  "namespace": "org.coursera.records.test",
+  "fields": [
+    { "name": "record", "type": "Simple", "optional": true, "defaultNone": true },
+    { "name": "enum", "type": "org.coursera.enums.Fruits", "optional": true, "defaultNone": true },
+    { "name": "union", "type": ["int", "string", "Simple"], "optional": true, "defaultNone": true },
+    { "name": "array", "type": { "type": "array", "items": "int" }, "optional": true, "defaultNone": true },
+    { "name": "map", "type": { "type": "map", "values": "int" }, "optional": true, "defaultNone": true },
+    { "name": "custom", "type": "org.coursera.customtypes.CustomInt", "optional": true, "defaultNone": true }
+  ]
+}

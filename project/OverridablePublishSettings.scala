@@ -17,6 +17,16 @@
 import sbt._
 import Keys._
 
+/**
+ * Extend a SBT Build to support publication to alternate repos. Example usage:
+ *
+ * ```
+ * sbt \
+ *   -Dsbt.override.publish.repos.release=https://<alternate-repo>/general \
+ *   -Dsbt.override.publish.repos.snapshot=https://<alternate-repo>/general-snapshots \
+ *   "set credentials in Global += Credentials(\"<path-to-repo-credential-file>\")" "fullpublish"
+ * ```
+ */
 // TODO(jbetz): Look into using bintray to manage all publishing
 trait OverridablePublishSettings {
   private[this] val releaseKey = "sbt.override.publish.repos.release"
@@ -24,7 +34,7 @@ trait OverridablePublishSettings {
   private[this] val overrideReleaseRepo = Option(System.getProperty(releaseKey))
   private[this] val overrideSnapshotRepo = Option(System.getProperty(snapshotKey))
 
-  val defaultPublishSettings: Seq[Def.Setting[_]]
+  def defaultPublishSettings: Seq[Def.Setting[_]]
 
   val overridePublishSettings = {
     assert(overrideReleaseRepo.isDefined == overrideSnapshotRepo.isDefined,
@@ -33,13 +43,12 @@ trait OverridablePublishSettings {
     (overrideReleaseRepo, overrideSnapshotRepo) match {
       case (Some(release), Some(snapshot)) =>
         Seq(
-          publishTo := Some(if (version.value.trim.endsWith("SNAPSHOT")) {
-            println("version:" + version.value)
-          "snapshots" at snapshot
-        } else {
-          "releases" at release
-        })
-      )
+          publishTo := Some(
+            if (version.value.trim.endsWith("SNAPSHOT")) {
+              "snapshots" at snapshot
+            } else {
+              "releases" at release
+            }))
       case _: Any => defaultPublishSettings
     }
   }

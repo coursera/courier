@@ -1,0 +1,11 @@
+{
+  "type": "record",
+  "name": "WithCustomTypesArray",
+  "namespace": "org.coursera.arrays",
+  "fields": [
+    { "name": "ints", "type": { "type": "array", "items": "org.coursera.customtypes.CustomInt"} },
+    { "name": "arrays", "type": { "type": "array", "items": { "type": "array", "items": "org.coursera.records.test.Simple" } } },
+    { "name": "maps", "type": { "type": "array", "items": { "type": "map", "values": "org.coursera.records.test.Simple" } } },
+    { "name": "unions", "type": { "type": "array", "items": ["int", "string", "org.coursera.records.test.Simple"] } }
+  ]
+}
