@@ -1,0 +1,11 @@
+{
+  "type": "record",
+  "name": "KeywordEscaping",
+  "namespace": "org.coursera.escaping",
+  "fields": [
+    {
+      "name": "type",
+      "type": "string"
+    }
+  ]
+}

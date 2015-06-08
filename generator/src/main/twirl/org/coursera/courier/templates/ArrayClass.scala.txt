@@ -1,0 +1,143 @@
+@(array: org.coursera.courier.generator.specs.ArrayDefinition)
+
+@import com.linkedin.data.schema.SchemaToJsonEncoder
+@import com.linkedin.data.schema.JsonBuilder
+@import org.coursera.courier.generator.specs._
+
+@if(array.isTopLevel) {
+  @array.namespace.map { namespace => package @namespace }
+
+  import javax.annotation.Generated
+
+  import com.linkedin.data.ByteString
+  import com.linkedin.data.DataList
+  import com.linkedin.data.DataMap
+  import com.linkedin.data.schema.ArrayDataSchema
+  import com.linkedin.data.schema.DataSchema
+  import com.linkedin.data.template.DataTemplateUtil
+  import com.linkedin.data.template.DataTemplate
+  import org.coursera.courier.templates.DataTemplates
+  import org.coursera.courier.templates.DataTemplates.DataConversion
+
+  import scala.collection.GenTraversable
+  import scala.collection.JavaConverters._
+  import scala.collection.generic.CanBuildFrom
+  import scala.collection.mutable
+  import com.linkedin.data.template.Custom
+}
+
+@ClassAnnotations(array) final class @(array.scalaType)(private val dataList: DataList)
+  extends IndexedSeq[@(array.itemClass.scalaTypeFullname)]
+  with Product
+  with GenTraversable[@(array.itemClass.scalaTypeFullname)]
+  with DataTemplate[DataList] {
+
+  override def length: Int = dataList.size()
+
+  @* TODO(jbetz): Caching the whole list when we first access it may not be performant, need to benchmark. *@
+  private[this] lazy val list = dataList.asScala.map(coerceInput)
+
+  private[this] def coerceInput(any: AnyRef): @(array.itemClass.scalaTypeFullname) = {
+    @array.itemClass match {
+      case _: RecordDefinition | _: MapDefinition | _: UnionDefinition => {
+        @(array.itemClass.scalaTypeFullname)(any.asInstanceOf[DataMap], DataTemplates.DataConversion.SetReadOnly)
+      }
+      case _: ArrayDefinition => {
+        @(array.itemClass.scalaTypeFullname)(any.asInstanceOf[DataList], DataConversion.SetReadOnly)
+      }
+      case primitiveItem: PrimitiveDefinition => {
+        any.asInstanceOf[@(primitiveItem.dataType)]
+      }
+      case enumItem: EnumDefinition => {
+        @(enumItem.enumName).fromString(any.asInstanceOf[String])
+      }
+      case customItem: ClassDefinition => {
+        DataTemplateUtil.coerceOutput(any, classOf[@(array.itemClass.scalaTypeFullname)])
+      }
+    }
+  }
+
+  override def apply(idx: Int): @(array.itemClass.scalaTypeFullname) = list(idx)
+
+  override def productElement(n: Int): Any = dataList.get(n)
+  override def productArity: Int = dataList.size()
+
+  override def schema(): DataSchema = @(array.scalaType).SCHEMA
+
+  override def data(): DataList = dataList
+  override def copy(): DataTemplate[DataList] = this
+}
+
+object @(array.scalaType) {
+  val SCHEMA = DataTemplateUtil.parseSchema(@("\"\"\"" + SchemaToJsonEncoder.schemaToJson(array.arraySchema, JsonBuilder.Pretty.COMPACT) + "\"\"\"")).asInstanceOf[ArrayDataSchema]
+
+  @* Register custom types and coercers. *@
+  @array.customInfo.map { customInfo =>
+    Custom.initializeCustomClass(classOf[@(customInfo.customClass.scalaTypeFullname)])
+    @customInfo.coercerClass.map { coercer =>
+      @(coercer.scalaTypeFullname).registerCoercer()
+    }
+  }
+
+  val empty = @(array.scalaType)()
+
+  def apply(elems: @(array.itemClass.scalaTypeFullname)*): @(array.scalaType) = {
+    new @(array.scalaType)(new DataList(elems.map(coerceOutput).toList.asJava))
+  }
+
+  def apply(collection: Traversable[@(array.itemClass.scalaTypeFullname)]): @(array.scalaType) = {
+    new @(array.scalaType)(new DataList(collection.map(coerceOutput).toList.asJava))
+  }
+
+  def apply(dataList: DataList, conversion: DataConversion): @(array.scalaType) = {
+    new @(array.scalaType)(DataTemplates.makeImmutable(dataList, SCHEMA, conversion))
+  }
+
+  def newBuilder = new DataBuilder()
+
+  implicit val canBuildFrom = new CanBuildFrom[@(array.scalaType), @(array.itemClass.scalaTypeFullname), @(array.scalaType)] {
+    def apply(from: @(array.scalaType)) = new DataBuilder(from)
+    def apply() = newBuilder
+  }
+
+  class DataBuilder(initial: @(array.scalaType)) extends mutable.Builder[@(array.itemClass.scalaTypeFullname), @(array.scalaType)] {
+    def this() = this(new @(array.scalaType)(new DataList()))
+
+    val elems = new DataList(initial.data())
+
+    def +=(x: @(array.itemClass.scalaTypeFullname)): this.type = {
+      elems.add(coerceOutput(x))
+      this
+    }
+
+    def clear() = {
+      elems.clear()
+    }
+
+    def result() = {
+      elems.setReadOnly()
+      new @(array.scalaType)(elems)
+    }
+  }
+
+  private def coerceOutput(value: @(array.itemClass.scalaTypeFullname)): AnyRef = {
+    @array.itemClass match {
+      case _: RecordDefinition | _: MapDefinition | _: UnionDefinition => {
+        value.data()
+      }
+      case _: ArrayDefinition => {
+        value.data()
+      }
+      case primitiveItem: PrimitiveDefinition => {
+        @primitiveItem.maybeBox{value}
+      }
+      case enumItem: EnumDefinition => {
+        value.toString
+      }
+      case customItem: ClassDefinition => {
+        DataTemplateUtil.coerceInput(value, classOf[@(array.itemClass.scalaTypeFullname)], classOf[@(array.itemDataClass.get.scalaTypeFullname)])
+      }
+    }
+  }
+}
+

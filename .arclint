@@ -3,6 +3,9 @@
     "scalastyle": {
       "type"                :   "scalastyle",
       "include"             :   "(\\.scala$)",
+      "exclude"             :   [ "(^spec/)",
+                                  "(^runtime/src/main/scala/org/coursera/courier/data)"],
+
       "config"              :   "./scalastyle_config.xml"
     },
     "json": {

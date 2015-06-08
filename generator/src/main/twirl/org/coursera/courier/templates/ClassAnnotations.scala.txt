@@ -1,0 +1,9 @@
+@(definition: org.coursera.courier.generator.specs.Definition)
+@import java.util.Calendar
+
+@* Add any scaladoc and deprecated annotations as well as the Generated annotation.*@
+
+@definition.scalaDoc.map { doc => @doc }
+@if(definition.isDeprecated) {
+@@deprecated} @definition.deprecationMessage.map { message => (message = "@(message)") }
+@@Generated(value = Array("@(definition.scalaType)"), comments="Courier Data Template.", date = "@(Calendar.getInstance().getTime())")

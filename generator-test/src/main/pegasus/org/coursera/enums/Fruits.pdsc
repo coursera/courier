@@ -1,0 +1,9 @@
+{
+  "type" : "enum",
+  "name" : "Fruits",
+  "namespace" : "org.coursera.enums",
+  "symbols" : [ "APPLE", "BANANA", "ORANGE", "PINEAPPLE" ],
+  "symbolDocs": {
+    "APPLE": "An Apple."
+  }
+}

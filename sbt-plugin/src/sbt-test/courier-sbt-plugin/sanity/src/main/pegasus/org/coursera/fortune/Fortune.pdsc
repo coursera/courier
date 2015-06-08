@@ -1,0 +1,12 @@
+{
+  "type": "record",
+  "name": "Fortune",
+  "namespace": "org.coursera.fortune",
+  "doc": "A fortune.",
+  "fields": [
+    {
+      "name": "message",
+      "type": "string"
+    }
+  ]
+}

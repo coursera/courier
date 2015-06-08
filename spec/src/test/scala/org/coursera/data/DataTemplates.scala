@@ -19,10 +19,13 @@ package org.coursera.data
 import com.linkedin.data.DataList
 import com.linkedin.data.DataMap
 import com.linkedin.data.schema.DataSchema
+import com.linkedin.data.schema.RecordDataSchema
 import com.linkedin.data.schema.validation.RequiredMode
 import com.linkedin.data.schema.validation.ValidateDataAgainstSchema
 import com.linkedin.data.schema.validation.ValidationOptions
 import com.linkedin.data.schema.validation.ValidationResult
+import com.linkedin.data.template.DataTemplateUtil
+import com.linkedin.data.template.SetMode
 import scala.collection.JavaConverters._
 
 class DataValidationException(val validationResult: ValidationResult)
@@ -75,5 +78,47 @@ object DataTemplates {
     dataMap.put(unionTag, data)
     dataMap.setReadOnly()
     dataMap
+  }
+
+  def putDirect[T <: AnyRef](
+      dataMap: DataMap,
+      field: RecordDataSchema.Field,
+      valueClass: Class[T],
+      dataClass: Class[_],
+      obj: T): Unit = {
+    putDirect(dataMap, field, valueClass, dataClass, obj, SetMode.DISALLOW_NULL)
+  }
+
+  def putDirect[T <: AnyRef](
+      dataMap: DataMap,
+      field: RecordDataSchema.Field,
+      valueClass: Class[T],
+      dataClass: Class[_],
+      obj: T,
+      mode: SetMode): Unit = {
+    if (checkPutNullValue(field, obj, mode)) {
+      dataMap.put(field.getName, DataTemplateUtil.coerceInput(obj, valueClass, dataClass))
+    }
+  }
+
+  private def checkPutNullValue (field: RecordDataSchema.Field, obj: AnyRef, mode: SetMode): Boolean = {
+    if (obj == null) {
+      mode match {
+        case SetMode.IGNORE_NULL => false
+        case SetMode.REMOVE_IF_NULL => false
+        case SetMode.REMOVE_OPTIONAL_IF_NULL =>
+          if (field.getOptional) {
+            false
+          }
+          else {
+            throw new IllegalArgumentException(s"Cannot remove mandatory field ${field.getName}")
+          }
+        case SetMode.DISALLOW_NULL =>
+          throw new NullPointerException(s"Cannot set field ${field.getName} to null")
+      }
+    }
+    else {
+      true
+    }
   }
 }

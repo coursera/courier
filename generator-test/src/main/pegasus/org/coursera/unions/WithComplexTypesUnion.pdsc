@@ -1,0 +1,14 @@
+{
+  "type": "record",
+  "name": "WithComplexTypesUnion",
+  "namespace": "org.coursera.unions",
+  "fields": [
+    { "name": "union", "type": [
+      "org.coursera.records.test.Empty",
+      "org.coursera.enums.Fruits",
+      { "type": "array", "items": "org.coursera.records.test.Simple" },
+      { "type": "map", "values": "org.coursera.records.test.Simple" }
+    ]
+    }
+  ]
+}

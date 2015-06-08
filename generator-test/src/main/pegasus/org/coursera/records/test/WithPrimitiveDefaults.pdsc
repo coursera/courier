@@ -1,0 +1,15 @@
+{
+  "type": "record",
+  "name": "WithPrimitiveDefaults",
+  "namespace": "org.coursera.records.test",
+  "fields": [
+    { "name": "intWithDefault", "type": "int", "default": 1 },
+    { "name": "longWithDefault", "type": "long", "default": 2 },
+    { "name": "floatWithDefault", "type": "float", "default": 3.3 },
+    { "name": "doubleWithDefault", "type": "double", "default": 4.4 },
+    { "name": "booleanWithDefault", "type": "boolean", "default": true },
+    { "name": "stringWithDefault", "type": "string", "default": "DEFAULT" },
+    { "name": "bytesWithDefault", "type": "bytes", "default": "" },
+    { "name": "enumWithDefault", "type": "org.coursera.enums.Fruits", "default": "APPLE" }
+  ]
+}

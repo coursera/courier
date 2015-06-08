@@ -1,0 +1,14 @@
+{
+  "type": "record",
+  "name": "WithPrimitivesArray",
+  "namespace": "org.coursera.arrays",
+  "fields": [
+    { "name": "ints", "type": { "type": "array", "items": "int"} },
+    { "name": "longs", "type": { "type": "array", "items": "long"} },
+    { "name": "floats", "type": { "type": "array", "items": "float"} },
+    { "name": "doubles", "type": { "type": "array", "items": "double"} },
+    { "name": "booleans", "type": { "type": "array", "items": "boolean"} },
+    { "name": "strings", "type": { "type": "array", "items": "string"} },
+    { "name": "bytes", "type": { "type": "array", "items": "bytes"} }
+  ]
+}
