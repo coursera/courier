@@ -11,7 +11,7 @@ including JSON and [Avro](http://avro.apache.org/).
 Overview
 --------
 
-Courier is a Scala extension of the
+Courier is a language binding for Scala for the
 [Pegasus](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates) schema and data
 system, part of the [Rest.li](http://rest.li) umbrella project.
 
@@ -23,6 +23,15 @@ Avro, and generated Java data bindings.
 
 By using Courier, all the features of Pegasus can be leveraged by Scala developers but with
 Scala idiomatic data bindings that look and feel natural to a Scala developer.
+
+Features
+--------
+
+* Scala Idiomatic Data Binding Generator
+* SBT Plugin
+* Data and Schema Compatible with [Pegasus](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates)
+* Data and Schema Compatible with [Avro](http://avro.apache.org/)
+* Support for multiple "Data Codecs", including JSON, PSON, and Avro binary
 
 Development Status
 ------------------
