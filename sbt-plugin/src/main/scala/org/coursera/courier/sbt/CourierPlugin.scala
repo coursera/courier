@@ -53,37 +53,45 @@ object CourierPlugin extends Plugin {
    * Settings that need to be added to the project to enable generation of Scala bindings for PDSC
    * files located in the project.
    */
-  val courierSettings: Seq[Def.Setting[_]] = Seq(
+  val courierSettings: Seq[Def.Setting[_]] =
+    courierSettings(Compile) ++ courierSettings(Test) ++ Seq(
 
     courierPrefix := Some("scala"),
 
-    courierSourceDirectory := sourceDirectory.value / "main" / "pegasus",
+    libraryDependencies += {
+      val version = CourierPlugin.getClass.getPackage.getImplementationVersion
+      "org.coursera.courier" % s"courier-generator_${scalaBinaryVersion.value}" % version
+    })
 
-    courierDestinationDirectory := target.value / s"scala-${scalaBinaryVersion.value}" / "courier",
+  private def courierSettings(conf: Configuration): Seq[Def.Setting[_]] = Seq(
 
-    courierCacheSources := streams.value.cacheDirectory / "pdsc.sources",
+    courierSourceDirectory in conf := (sourceDirectory in conf).value / "pegasus",
 
-    watchSources := (courierSourceDirectory.value ** "*.pdsc").get,
+    courierDestinationDirectory in conf := (sourceManaged in conf).value / "courier",
 
-    courierGenerator in Compile := {
+    courierCacheSources in conf := (streams in conf).value.cacheDirectory / "pdsc.sources",
+
+    watchSources in conf := ((courierSourceDirectory in conf).value ** "*.pdsc").get,
+
+    courierGenerator in conf := {
       // Allow use of slf4j logging inside the generator code that we call into later
       //StaticLoggerBinder.sbtLogger = streams.value.log
 
-      val log = streams.value.log
-      val src = courierSourceDirectory.value
-      val dst = courierDestinationDirectory.value
+      val s = (streams in conf).value
+      val log = s.log
+      val src = (courierSourceDirectory in conf).value
+      val dst = (courierDestinationDirectory in conf).value
       val namespacePrefix = courierPrefix.value
 
       // adds in .pdscs from projects that this project .dependsOn
       val resolverPathFiles = Seq(src.getAbsolutePath) ++
-        (managedClasspath in Compile).value.map(_.data.getAbsolutePath) ++
-        (internalDependencyClasspath in Compile).value.map(_.data.getAbsolutePath)
+        (managedClasspath in conf).value.map(_.data.getAbsolutePath) ++
+        (internalDependencyClasspath in conf).value.map(_.data.getAbsolutePath)
       val resolverPath = resolverPathFiles.mkString(pathSeparator)
 
-      val cacheFileSources = courierCacheSources.value
+      val cacheFileSources = (courierCacheSources in conf).value
       val sourceFiles = (src ** "*.pdsc").get
       val previousScalaFiles = (dst ** "*.scala").get
-      val s = streams.value
 
       val (anyFilesChanged, cacheSourceFiles) = {
         prepareCacheUpdate(cacheFileSources, sourceFiles, s)
@@ -135,19 +143,13 @@ object CourierPlugin extends Plugin {
       }
     },
 
-    sourceGenerators in Compile <+= (courierGenerator in Compile),
+    sourceGenerators in conf <+= (courierGenerator in conf),
 
-    unmanagedSourceDirectories in Compile += courierSourceDirectory.value,
+    unmanagedSourceDirectories in conf += (courierSourceDirectory in conf).value,
 
-    managedSourceDirectories in Compile += courierDestinationDirectory.value,
+    managedSourceDirectories in conf += (courierDestinationDirectory in conf).value,
 
-    cleanFiles += courierDestinationDirectory.value,
-
-    libraryDependencies += {
-      val version = CourierPlugin.getClass.getPackage.getImplementationVersion
-      "org.coursera.courier" % s"courier-generator_${scalaBinaryVersion.value}" % version
-    }
-  )
+    cleanFiles in conf += (courierDestinationDirectory in conf).value)
 
   private[this] val JsonParseExceptionRegExp =
     """(?s).*\[Source: (.*?); line: (\d*), column: (\d*)\].*?""".r
