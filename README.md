@@ -51,7 +51,7 @@ Add the generator dependencies to your SBT plugins:
 `project/plugins.sbt`:
 
 ```scala
-addSbtPlugin("org.coursera.courier" % "courier-sbt-plugin" % "0.1.6")
+addSbtPlugin("org.coursera.courier" % "courier-sbt-plugin" % "0.1.7")
 ```
 
 Enable the generator to SBT build:
@@ -132,6 +132,10 @@ For details on the `.pdsc` file format, see
 
 The code generator is an extension of the Rest.li SBT Plugin, for more details, see
 [the rest.li-sbt-plugin wiki](https://github.com/linkedin/rest.li-sbt-plugin).
+
+#### Testing
+
+`.pdsc` files only needed for tests may be added to `src/test/pegasus`.
 
 Record Types
 ------------
