@@ -92,7 +92,13 @@ object Courier extends Build with OverridablePublishSettings {
   lazy val runtime = Project(id = "courier-runtime", base = file("runtime"))
     .settings(runtimeVersionSettings)
     .settings(
-      libraryDependencies += ExternalDependencies.Pegasus.data)
+      libraryDependencies ++= Seq(
+        ExternalDependencies.Pegasus.data,
+        ExternalDependencies.JUnit.junit,
+        ExternalDependencies.Scalatest.scalatest))
+    .settings(
+      libraryDependencies ++=
+        ExternalDependencies.ScalaParserCombinators.dependencies(scalaVersion.value))
 
   lazy val generatorTest = Project(id = "courier-generator-test", base = file("generator-test"))
     .dependsOn(generator)
@@ -162,6 +168,18 @@ object Courier extends Build with OverridablePublishSettings {
       val data = "com.linkedin.pegasus" % "data" % version
       val dataAvro = "com.linkedin.pegasus" % s"data-avro-$avroVersion" % version
       val generator = "com.linkedin.pegasus" % "generator" % version
+    }
+
+    object ScalaParserCombinators {
+      val version = "1.0.4"
+
+      // this is part of scala-library in 2.10 and earlier
+      def dependencies(scalaVersion: String) = CrossVersion.partialVersion(scalaVersion) match {
+        case Some((2, scalaMajor)) if scalaMajor > 10 =>
+          Seq("org.scala-lang.modules" %% "scala-parser-combinators" % version)
+        case _ =>
+          Seq.empty[ModuleID]
+      }
     }
 
     object ScalaLogging {
