@@ -87,7 +87,8 @@ object Courier extends Build with OverridablePublishSettings {
         ExternalDependencies.Pegasus.generator,
         ExternalDependencies.ScalaLogging.scalaLoggingSlf4j,
         ExternalDependencies.JUnit.junit,
-        ExternalDependencies.Scalatest.scalatest))
+        ExternalDependencies.Scalatest.scalatest,
+        ExternalDependencies.ApacheCommons.lang))
 
   lazy val runtime = Project(id = "courier-runtime", base = file("runtime"))
     .settings(runtimeVersionSettings)
@@ -167,7 +168,9 @@ object Courier extends Build with OverridablePublishSettings {
       val avroVersion = "1_6"
       val data = "com.linkedin.pegasus" % "data" % version
       val dataAvro = "com.linkedin.pegasus" % s"data-avro-$avroVersion" % version
-      val generator = "com.linkedin.pegasus" % "generator" % version
+      val generator = ("com.linkedin.pegasus" % "generator" % version)
+        .exclude("com.linkedin.pegasus", "r2-core")
+        .exclude("com.sun.codemodel", "codemodel")
     }
 
     object ScalaParserCombinators {
@@ -195,6 +198,11 @@ object Courier extends Build with OverridablePublishSettings {
     object Scalatest {
       val version = "2.2.3"
       val scalatest = "org.scalatest" %% "scalatest" % version % "test"
+    }
+
+    object ApacheCommons {
+      val version = "3.4"
+      val lang = "org.apache.commons" % "commons-lang3" % version
     }
   }
 
