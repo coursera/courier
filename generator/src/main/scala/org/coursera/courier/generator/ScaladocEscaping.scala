@@ -16,7 +16,7 @@
 
 package org.coursera.courier.generator
 
-import org.apache.commons.lang.StringEscapeUtils
+import org.apache.commons.lang3.StringEscapeUtils
 
 object ScaladocEscaping {
   def stringToScaladoc(raw: String): Option[String] = {
@@ -32,7 +32,7 @@ object ScaladocEscaping {
   // TODO(jbetz): escape markdown as well, or leave it as is and use it as the markup for doc
   // strings?
   def escape(raw: String): String = {
-    val htmlEscaped = StringEscapeUtils.escapeHtml(raw)
+    val htmlEscaped = StringEscapeUtils.escapeHtml4(raw)
 
     // escape "/*" and "*/" by replacing all slashes and asterisks with the entities
     htmlEscaped
