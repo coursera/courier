@@ -49,6 +49,9 @@ object CourierPlugin extends Plugin {
 
   val packageDataModel = taskKey[File]("Produces a data model jar containing only pdsc files")
 
+  val generateTyperefs = settingKey[Boolean](
+    "If set to true, generate 'TyperefInfo' classes for all typerefs.")
+
   /**
    * Settings that need to be added to the project to enable generation of Scala bindings for PDSC
    * files located in the project.
@@ -82,6 +85,7 @@ object CourierPlugin extends Plugin {
       val src = (courierSourceDirectory in conf).value
       val dst = (courierDestinationDirectory in conf).value
       val namespacePrefix = courierPrefix.value
+      val genTyperefs = (generateTyperefs in conf).value
 
       // adds in .pdscs from projects that this project .dependsOn
       val resolverPathFiles = Seq(src.getAbsolutePath) ++
@@ -109,7 +113,8 @@ object CourierPlugin extends Plugin {
             defaultPackage = namespacePrefix.getOrElse(""),
             generateImported = false,
             targetDirectoryPath = dst.absolutePath,
-            sources = sourceFiles.map(_.absolutePath).toArray)
+            sources = sourceFiles.map(_.absolutePath).toArray,
+            generateTyperefs = genTyperefs)
 
           // NOTE: Deleting stale files does not work properly with courier activated on two
           // different projects.
@@ -149,7 +154,9 @@ object CourierPlugin extends Plugin {
 
     managedSourceDirectories in conf += (courierDestinationDirectory in conf).value,
 
-    cleanFiles in conf += (courierDestinationDirectory in conf).value)
+    cleanFiles in conf += (courierDestinationDirectory in conf).value,
+
+    generateTyperefs in conf := false)
 
   private[this] val JsonParseExceptionRegExp =
     """(?s).*\[Source: (.*?); line: (\d*), column: (\d*)\].*?""".r

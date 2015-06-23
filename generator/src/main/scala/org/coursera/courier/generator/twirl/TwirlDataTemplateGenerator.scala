@@ -32,6 +32,7 @@ import org.coursera.courier.generator.specs.TyperefDefinition
 import org.coursera.courier.generator.specs.UnionDefinition
 import org.coursera.courier.templates.txt.ArrayClass
 import org.coursera.courier.templates.txt.EnumClass
+import org.coursera.courier.templates.txt.FixedClass
 import org.coursera.courier.templates.txt.MapClass
 import org.coursera.courier.templates.txt.RecordClass
 import org.coursera.courier.templates.txt.TyperefClass
@@ -40,7 +41,7 @@ import org.coursera.courier.templates.txt.UnionClass
 /**
  * Generates Scala files using the Twirl string template engine.
  */
-class TwirlDataTemplateGenerator()
+class TwirlDataTemplateGenerator(generateTyperefs: Boolean)
   extends TemplateGenerator
   with StrictLogging {
 
@@ -59,9 +60,13 @@ class TwirlDataTemplateGenerator()
       case map: MapDefinition =>
         Some(MapClass(map).body)
       case typeref: TyperefDefinition =>
-        Some(TyperefClass(typeref).body)
+        if (generateTyperefs) {
+          Some(TyperefClass(typeref).body)
+        } else {
+          None
+        }
       case fixed: FixedDefinition =>
-        ??? // TODO(jbetz): Add generator support for fixed (Low priority)
+        Some(FixedClass(fixed).body)
       case primitive: PrimitiveDefinition =>
         None // nothing to generate for primitives
       case _ =>

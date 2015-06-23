@@ -33,27 +33,14 @@ object DataTemplates {
   }
   type DataConversion = DataConversion.Value
 
-  private[this] val validationOptions =
-    new ValidationOptions(RequiredMode.FIXUP_ABSENT_WITH_DEFAULT)
-
-  private def validate(dataMap: DataComplex, schema: DataSchema) = {
-    val result = ValidateDataAgainstSchema.validate(dataMap, schema, validationOptions)
-    if (result.isValid) {
-      dataMap
-    } else {
-      throw new DataValidationException(result)
-    }
-  }
-
   def makeImmutable[T <: DataComplex](
       data: T, schema: DataSchema, conversion: DataConversion): T = {
     conversion match {
       case DataConversion.DeepCopy =>
         val copy = data.copy()
-        validate(copy, schema)
+        copy.setReadOnly()
         copy.asInstanceOf[T]
       case DataConversion.SetReadOnly =>
-        validate(data, schema)
         data.setReadOnly()
         data
     }

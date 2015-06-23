@@ -88,4 +88,7 @@ trait SchemaFixtures {
   val bytes1 = ByteString.copy(Array[Byte](0x0, 0x1, 0x2))
   val bytes2 = ByteString.copy(Array[Byte](0x3, 0x4, 0x5))
   val bytes3 = ByteString.copy(Array[Byte](0x6, 0x7, 0x8))
+
+  val bytesFixed8 = ByteString.copy(Array[Byte](0, 1, 2, 3, 4, 5, 6, 7))
+  val bytesFixed8String = "\\u0000\\u0001\\u0002\\u0003\\u0004\\u0005\\u0006\\u0007"
 }

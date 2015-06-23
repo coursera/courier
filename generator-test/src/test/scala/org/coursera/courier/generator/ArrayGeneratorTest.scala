@@ -32,6 +32,8 @@ import org.coursera.courier.generator.customtypes.CustomInt
 import org.coursera.customtypes.CustomIntArray
 import org.coursera.enums.Fruits
 import org.coursera.enums.FruitsArray
+import org.coursera.fixed.Fixed8
+import org.coursera.fixed.Fixed8Array
 import org.coursera.records.test.Empty
 import org.coursera.records.test.EmptyArray
 import org.coursera.records.test.Simple
@@ -101,7 +103,8 @@ class ArrayGeneratorTest extends GeneratorTest with SchemaFixtures {
       UnionsArray(
         Unions.IntMember(1),
         Unions.StringMember("str"),
-        Unions.SimpleMember(Simple(Some("u1"))))
+        Unions.SimpleMember(Simple(Some("u1")))),
+      Fixed8Array(Fixed8(bytesFixed8))
     )
     val roundTripped =WithCustomTypesArray(roundTrip(original.data()), DataConversion.SetReadOnly)
 
@@ -109,7 +112,7 @@ class ArrayGeneratorTest extends GeneratorTest with SchemaFixtures {
 
     Seq(original, roundTripped).foreach { record =>
       assertJson(original,
-        """{
+        s"""{
         |  "ints" : [ 1, 2, 3 ],
         |  "arrays": [ [ { "message": "a1" } ] ],
         |  "maps": [ { "a": { "message": "m1" } } ],
@@ -117,7 +120,8 @@ class ArrayGeneratorTest extends GeneratorTest with SchemaFixtures {
         |    { "int": 1 },
         |    { "string": "str" },
         |    { "org.coursera.records.test.Simple": { "message": "u1" }}
-        |  ]
+        |  ],
+        |  "fixed": [ "$bytesFixed8String" ]
         |}""".stripMargin)
     }
   }

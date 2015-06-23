@@ -1,4 +1,8 @@
-/*
+
+
+
+
+   /*
  Copyright 2015 Coursera Inc.
 
  Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,84 +35,86 @@ import scala.collection.JavaConverters._
 import scala.collection.generic.CanBuildFrom
 import scala.collection.mutable
 
-@Generated(value = Array("DoubleArray"), comments = "Courier Data Template.", date = "Sat May 30 12:21:42 PDT 2015")
-final class DoubleArray(private val dataList: DataList)
-  extends IndexedSeq[Double]
-  with Product
-  with GenTraversable[Double]
-  with DataTemplate[DataList] {
+   @Generated(value = Array("DoubleArray"), comments="Courier Data Template.", date = "Sat Jun 20 09:28:24 PDT 2015")
+    final class DoubleArray(private val dataList: DataList)
+     extends IndexedSeq[Double]
+     with Product
+     with GenTraversable[Double]
+     with DataTemplate[DataList] {
 
-  override def length: Int = dataList.size()
+     override def length: Int = dataList.size()
 
-  private[this] def lookup(idx: Int) = {
 
-    dataList.get(idx).asInstanceOf[java.lang.Double]
+     private[this] lazy val list = dataList.asScala.map(coerceInput)
 
-  }
+     private[this] def coerceInput(any: AnyRef): Double = {
 
-  override def apply(idx: Int): Double = lookup(idx)
+           DataTemplateUtil.coerceOutput(any, classOf[java.lang.Double])
 
-  override def productElement(n: Int): Any = dataList.get(n)
+     }
 
-  override def productArity: Int = dataList.size()
+     override def apply(idx: Int): Double = list(idx)
 
-  override def schema(): DataSchema = DoubleArray.SCHEMA
+     override def productElement(n: Int): Any = dataList.get(n)
+     override def productArity: Int = dataList.size()
 
-  override def data(): DataList = dataList
+     override def schema(): DataSchema = DoubleArray.SCHEMA
 
-  override def copy(): DataTemplate[DataList] = this
-}
+     override def data(): DataList = dataList
+     override def copy(): DataTemplate[DataList] = this
+   }
 
-object DoubleArray {
-  val SCHEMA = DataTemplateUtil.parseSchema( """{"type":"array","items":"double"}""").asInstanceOf[ArrayDataSchema]
+   object DoubleArray {
+     val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"array","items":"double"}""").asInstanceOf[ArrayDataSchema]
 
-  val empty = DoubleArray()
 
-  def apply(elems: Double*): DoubleArray = {
-    new DoubleArray(new DataList(elems.map(coerceOutput).toList.asJava))
-  }
 
-  def apply(collection: Traversable[Double]): DoubleArray = {
-    new DoubleArray(new DataList(collection.map(coerceOutput).toList.asJava))
-  }
 
-  def apply(dataList: DataList, conversion: DataConversion): DoubleArray = {
-    new DoubleArray(DataTemplates.makeImmutable(dataList, SCHEMA, conversion))
-  }
+     val empty = DoubleArray()
 
-  def newBuilder = new DataBuilder()
+     def apply(elems: Double*): DoubleArray = {
+       new DoubleArray(new DataList(elems.map(coerceOutput).toList.asJava))
+     }
 
-  implicit val canBuildFrom = new CanBuildFrom[DoubleArray, Double, DoubleArray] {
-    def apply(from: DoubleArray) = new DataBuilder(from)
+     def apply(collection: Traversable[Double]): DoubleArray = {
+       new DoubleArray(new DataList(collection.map(coerceOutput).toList.asJava))
+     }
 
-    def apply() = newBuilder
-  }
+     def apply(dataList: DataList, conversion: DataConversion): DoubleArray = {
+       new DoubleArray(DataTemplates.makeImmutable(dataList, SCHEMA, conversion))
+     }
 
-  class DataBuilder(initial: DoubleArray) extends mutable.Builder[Double, DoubleArray] {
-    def this() = this(new DoubleArray(new DataList()))
+     def newBuilder = new DataBuilder()
 
-    val elems = new DataList(initial.data())
+     implicit val canBuildFrom = new CanBuildFrom[DoubleArray, Double, DoubleArray] {
+       def apply(from: DoubleArray) = new DataBuilder(from)
+       def apply() = newBuilder
+     }
 
-    def +=(x: Double): this.type = {
-      elems.add(coerceOutput(x))
-      this
-    }
+     class DataBuilder(initial: DoubleArray) extends mutable.Builder[Double, DoubleArray] {
+       def this() = this(new DoubleArray(new DataList()))
 
-    def clear() = {
-      elems.clear()
-    }
+       val elems = new DataList(initial.data())
 
-    def result() = {
-      elems.setReadOnly()
-      new DoubleArray(elems)
-    }
-  }
+       def +=(x: Double): this.type = {
+         elems.add(coerceOutput(x))
+         this
+       }
 
-  private def coerceOutput(value: Double): AnyRef = {
+       def clear() = {
+         elems.clear()
+       }
 
-    Double.box(value)
+       def result() = {
+         elems.setReadOnly()
+         new DoubleArray(elems)
+       }
+     }
 
-  }
-}
+     private def coerceOutput(value: Double): AnyRef = {
 
+           DataTemplateUtil.coerceInput(Double.box(value), classOf[java.lang.Double], classOf[java.lang.Double])
+
+     }
+   }
 

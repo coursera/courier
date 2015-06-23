@@ -74,7 +74,7 @@ object @(union.scalaType) {
       def _1 = value
 
       lazy val value = @member.classDefinition match {
-        case _: RecordDefinition | _:ArrayDefinition | _: MapDefinition => {
+        case _: RecordDefinition | _:ArrayDefinition | _: MapDefinition | _: FixedDefinition=> {
           obtainWrapped(@(member.classDefinition.memberName)Schema, classOf[@(member.classDefinition.scalaTypeFullname)], memberKey)
         }
         case primitiveMember: PrimitiveDefinition => {
@@ -92,7 +92,7 @@ object @(union.scalaType) {
 
       private def setFields(value: @(member.classDefinition.scalaTypeFullname)): Unit = {
         @member.classDefinition match {
-          case _: RecordDefinition | _:ArrayDefinition | _: MapDefinition => {
+          case _: RecordDefinition | _:ArrayDefinition | _: MapDefinition | _: FixedDefinition => {
             selectWrapped(@(member.classDefinition.memberName)Schema, classOf[@(member.classDefinition.scalaTypeFullname)], memberKey, value)
           }
           case primitiveMember: PrimitiveDefinition => {

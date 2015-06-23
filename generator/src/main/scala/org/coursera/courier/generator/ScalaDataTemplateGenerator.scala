@@ -47,15 +47,20 @@ object ScalaDataTemplateGenerator {
         "or sourceDirectory or schemaName]+")
       System.exit(1)
     }
+    val targetDirectoryPath = args(0)
+    val resolverPath = args(1)
+    val sources = java.util.Arrays.copyOfRange(args, 1, args.length)
     val generateImported =
       Option(System.getProperty(PegasusDataTemplateGenerator.GENERATOR_GENERATE_IMPORTED))
         .exists(_.toBoolean)
     val result = run(
-      args(1),
+      resolverPath,
       System.getProperty(JavaCodeGeneratorBase.GENERATOR_DEFAULT_PACKAGE),
       generateImported,
-      args(0),
-      java.util.Arrays.copyOfRange(args, 1, args.length))
+      targetDirectoryPath,
+      sources,
+      false
+      /*generatePredef = true*/)
 
     result.getTargetFiles.asScala.foreach { file =>
       System.out.println(file.getAbsolutePath)
@@ -67,7 +72,9 @@ object ScalaDataTemplateGenerator {
       defaultPackage: String,
       generateImported: java.lang.Boolean,
       targetDirectoryPath: String,
-      sources: Array[String]): GeneratorResult = {
+      sources: Array[String],
+      generateTyperefs: Boolean,
+      generatePredef: Boolean = false): GeneratorResult = {
 
     val schemaParser = new DataSchemaParser(resolverPath)
     val specGenerator = new TemplateSpecGenerator(schemaParser.getSchemaResolver)
@@ -78,7 +85,7 @@ object ScalaDataTemplateGenerator {
       s"Unable to create ${targetDirectory.getAbsolutePath}. Directory either does not exist " +
       s"after attempting to create it, or part of the path exists and is not a directory.")
 
-    val generator = new TwirlDataTemplateGenerator()
+    val generator = new TwirlDataTemplateGenerator(generateTyperefs)
 
     TypeConversions.primitiveSchemas.foreach { primitiveSchema =>
       specGenerator.registerDefinedSchema(primitiveSchema)
@@ -98,8 +105,12 @@ object ScalaDataTemplateGenerator {
       generator.findTopLevelTypes(Definition(spec))
     }.toSet
 
-    val compilationUnits = topLevelTypes.flatMap { topLevel =>
-      generator.generate(topLevel)
+    val compilationUnits = if (generatePredef) {
+      generator.generatePredef()
+    } else {
+      topLevelTypes.flatMap { topLevel =>
+        generator.generate(topLevel)
+      }
     }
 
     val targetFiles = compilationUnits.map { compilationUnit =>
