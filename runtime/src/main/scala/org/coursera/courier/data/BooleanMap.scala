@@ -1,4 +1,8 @@
-/*
+
+
+
+
+   /*
  Copyright 2015 Coursera Inc.
 
  Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,117 +35,112 @@ import scala.collection.generic.CanBuildFrom
 import scala.collection.immutable
 import scala.collection.mutable
 
-@Generated(value = Array("BooleanMap"), comments = "Courier Data Template.", date = "Sat May 30 13:09:01 PDT 2015")
-final class BooleanMap(private val dataMap: DataMap)
-  extends immutable.Iterable[(String, Boolean)]
-  with Map[String, Boolean]
-  with immutable.MapLike[String, Boolean, immutable.Map[String, Boolean]]
-  with DataTemplate[DataMap] {
+   @Generated(value = Array("BooleanMap"), comments="Courier Data Template.", date = "Sat Jun 20 09:28:24 PDT 2015")
+    final class BooleanMap(private val dataMap: DataMap)
+     extends immutable.Iterable[(String, Boolean)]
+     with Map[String, Boolean]
+     with immutable.MapLike[String, Boolean, immutable.Map[String, Boolean]]
+     with DataTemplate[DataMap] {
+     import org.coursera.courier.data.BooleanMap._
 
-  import org.coursera.courier.data.BooleanMap._
 
-  // TODO(jbetz): Decide on caching policy for data template types. We should not be creating a
-  // new instance here on each lookup.
-  private[this] def lookup(key: String): Option[Boolean] = {
+     private[this] lazy val map = dataMap.asScala.map { case (k, v) => k -> coerceInput(v) }.toMap
 
-    Option(dataMap.get(key).asInstanceOf[java.lang.Boolean])
+     private[this] def coerceInput(any: AnyRef): Boolean = {
 
-  }
+           DataTemplateUtil.coerceOutput(any, classOf[java.lang.Boolean])
 
-  override def get(key: String): Option[Boolean] = lookup(key)
+     }
 
-  override def iterator: Iterator[(String, Boolean)] = new Iterator[(String, Boolean)] {
-    val underlying = dataMap.keySet().iterator()
+     override def get(key: String): Option[Boolean] = map.get(key)
 
-    override def hasNext: Boolean = underlying.hasNext
+     override def iterator: Iterator[(String, Boolean)] = map.iterator
 
-    override def next(): (String, Boolean) = {
-      val key = underlying.next()
-      key -> lookup(key).get
-    }
-  }
+     override def +[F >: Boolean](kv: (String, F)): Map[String, F] = {
+       val (key, value) = kv
+       value match {
+         case v: Boolean =>
+           val copy = dataMap.copy()
+           copy.put(key, coerceOutput(v))
+           copy.setReadOnly()
+           new BooleanMap(copy)
+         case _: Any =>
+           (iterator ++ Iterator.single(kv)).toMap
+       }
+     }
 
-  override def +[F >: Boolean](kv: (String, F)): Map[String, F] = {
-    val (key, value) = kv
-    value match {
-      case v: Boolean =>
-        val copy = dataMap.copy()
-        copy.put(key, coerceOutput(v))
-        copy.setReadOnly()
-        new BooleanMap(copy)
-      case _: Any =>
-        (iterator ++ Iterator.single(kv)).toMap
-    }
-  }
+     override def -(key: String): BooleanMap = {
+       val copy = dataMap.copy()
+       copy.remove(key)
+       copy.setReadOnly()
+       new BooleanMap(copy)
+     }
 
-  override def -(key: String): BooleanMap = {
-    val copy = dataMap.copy()
-    copy.remove(key)
-    copy.setReadOnly()
-    new BooleanMap(copy)
-  }
+     override def schema(): DataSchema = BooleanMap.SCHEMA
 
-  override def schema(): DataSchema = BooleanMap.SCHEMA
+     override def data(): DataMap = dataMap
 
-  override def data(): DataMap = dataMap
+     override def copy(): DataTemplate[DataMap] = this
+   }
 
-  override def copy(): DataTemplate[DataMap] = {
-    val copy = dataMap.copy()
-    copy.setReadOnly()
-    new BooleanMap(copy)
-  }
-}
+   object BooleanMap {
+     val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"map","values":"boolean"}""").asInstanceOf[MapDataSchema]
 
-object BooleanMap {
-  val SCHEMA = DataTemplateUtil.parseSchema( """{"type":"map","values":"boolean"}""").asInstanceOf[MapDataSchema]
 
-  val empty = BooleanMap()
 
-  def apply(elems: (String, Boolean)*): BooleanMap = {
-    BooleanMap(elems.toMap)
-  }
 
-  def apply(map: Map[String, Boolean]): BooleanMap = {
-    new BooleanMap(new DataMap(map.mapValues(coerceOutput).asJava))
-  }
 
-  def apply(dataMap: DataMap, conversion: DataConversion): BooleanMap = {
-    new BooleanMap(DataTemplates.makeImmutable(dataMap, SCHEMA, conversion))
-  }
 
-  def newBuilder = new DataBuilder()
 
-  implicit val canBuildFrom = new CanBuildFrom[BooleanMap, (String, Boolean), BooleanMap] {
-    def apply(from: BooleanMap) = new DataBuilder(from)
 
-    def apply() = newBuilder
-  }
 
-  class DataBuilder(initial: BooleanMap) extends mutable.Builder[(String, Boolean), BooleanMap] {
-    def this() = this(new BooleanMap(new DataMap()))
 
-    val entries = new DataMap(initial.data())
 
-    def +=(kv: (String, Boolean)): this.type = {
-      val (key, value) = kv
-      entries.put(key, coerceOutput(value))
-      this
-    }
+     val empty = BooleanMap()
 
-    def clear() = {
-      entries.clear()
-    }
+     def apply(elems: (String, Boolean)*): BooleanMap = {
+       BooleanMap(elems.toMap)
+     }
 
-    def result() = {
-      entries.setReadOnly()
-      new BooleanMap(entries)
-    }
-  }
+     def apply(map: Map[String, Boolean]): BooleanMap = {
+       new BooleanMap(new DataMap(map.mapValues(coerceOutput).asJava))
+     }
 
-  private def coerceOutput(value: Boolean): AnyRef = {
+     def apply(dataMap: DataMap, conversion: DataConversion): BooleanMap = {
+       new BooleanMap(DataTemplates.makeImmutable(dataMap, SCHEMA, conversion))
+     }
 
-    Boolean.box(value)
+     def newBuilder = new DataBuilder()
 
-  }
-}
+     implicit val canBuildFrom = new CanBuildFrom[BooleanMap, (String, Boolean), BooleanMap] {
+       def apply(from: BooleanMap) = new DataBuilder(from)
+       def apply() = newBuilder
+     }
 
+     class DataBuilder(initial: BooleanMap) extends mutable.Builder[(String, Boolean), BooleanMap] {
+       def this() = this(new BooleanMap(new DataMap()))
+
+       val entries = new DataMap(initial.data())
+
+       def +=(kv: (String, Boolean)): this.type = {
+         val (key, value) = kv
+         entries.put(key, coerceOutput(value))
+         this
+       }
+
+       def clear() = {
+         entries.clear()
+       }
+
+       def result() = {
+         entries.setReadOnly()
+         new BooleanMap(entries)
+       }
+     }
+
+     private def coerceOutput(value: Boolean): AnyRef = {
+
+           DataTemplateUtil.coerceInput(Boolean.box(value), classOf[java.lang.Boolean], classOf[java.lang.Boolean])
+
+     }
+   }

@@ -46,13 +46,16 @@
         @(array.itemClass.scalaTypeFullname)(any.asInstanceOf[DataList], DataConversion.SetReadOnly)
       }
       case primitiveItem: PrimitiveDefinition => {
-        any.asInstanceOf[@(primitiveItem.dataType)]
+        DataTemplateUtil.coerceOutput(any, classOf[@(primitiveItem.dataType)])
       }
       case enumItem: EnumDefinition => {
         @(enumItem.enumName).fromString(any.asInstanceOf[String])
       }
       case customItem: ClassDefinition => {
         DataTemplateUtil.coerceOutput(any, classOf[@(array.itemClass.scalaTypeFullname)])
+      }
+      case fixedItem: FixedDefinition => {
+        @(array.itemClass.scalaTypeFullname)(DataTemplateUtil.coerceOutput(any, classOf[ByteString]))
       }
     }
   }
@@ -128,8 +131,11 @@ object @(array.scalaType) {
       case _: ArrayDefinition => {
         value.data()
       }
+      case fixedItem: FixedDefinition => {
+        DataTemplateUtil.coerceInput(value.bytes(), classOf[ByteString], classOf[ByteString])
+      }
       case primitiveItem: PrimitiveDefinition => {
-        @primitiveItem.maybeBox{value}
+        DataTemplateUtil.coerceInput(@primitiveItem.maybeBox{value}, classOf[@(primitiveItem.dataType)], classOf[@(primitiveItem.dataType)])
       }
       case enumItem: EnumDefinition => {
         value.toString

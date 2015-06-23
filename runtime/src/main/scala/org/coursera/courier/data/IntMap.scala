@@ -1,4 +1,8 @@
-/*
+
+
+
+
+   /*
  Copyright 2015 Coursera Inc.
 
  Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,117 +35,112 @@ import scala.collection.generic.CanBuildFrom
 import scala.collection.immutable
 import scala.collection.mutable
 
-@Generated(value = Array("IntMap"), comments = "Courier Data Template.", date = "Sat May 30 13:09:01 PDT 2015")
-final class IntMap(private val dataMap: DataMap)
-  extends immutable.Iterable[(String, Int)]
-  with Map[String, Int]
-  with immutable.MapLike[String, Int, immutable.Map[String, Int]]
-  with DataTemplate[DataMap] {
+   @Generated(value = Array("IntMap"), comments="Courier Data Template.", date = "Sat Jun 20 09:28:24 PDT 2015")
+    final class IntMap(private val dataMap: DataMap)
+     extends immutable.Iterable[(String, Int)]
+     with Map[String, Int]
+     with immutable.MapLike[String, Int, immutable.Map[String, Int]]
+     with DataTemplate[DataMap] {
+     import org.coursera.courier.data.IntMap._
 
-  import org.coursera.courier.data.IntMap._
 
-  // TODO(jbetz): Decide on caching policy for data template types. We should not be creating a
-  // new instance here on each lookup.
-  private[this] def lookup(key: String): Option[Int] = {
+     private[this] lazy val map = dataMap.asScala.map { case (k, v) => k -> coerceInput(v) }.toMap
 
-    Option(dataMap.get(key).asInstanceOf[java.lang.Integer])
+     private[this] def coerceInput(any: AnyRef): Int = {
 
-  }
+           DataTemplateUtil.coerceOutput(any, classOf[java.lang.Integer])
 
-  override def get(key: String): Option[Int] = lookup(key)
+     }
 
-  override def iterator: Iterator[(String, Int)] = new Iterator[(String, Int)] {
-    val underlying = dataMap.keySet().iterator()
+     override def get(key: String): Option[Int] = map.get(key)
 
-    override def hasNext: Boolean = underlying.hasNext
+     override def iterator: Iterator[(String, Int)] = map.iterator
 
-    override def next(): (String, Int) = {
-      val key = underlying.next()
-      key -> lookup(key).get
-    }
-  }
+     override def +[F >: Int](kv: (String, F)): Map[String, F] = {
+       val (key, value) = kv
+       value match {
+         case v: Int =>
+           val copy = dataMap.copy()
+           copy.put(key, coerceOutput(v))
+           copy.setReadOnly()
+           new IntMap(copy)
+         case _: Any =>
+           (iterator ++ Iterator.single(kv)).toMap
+       }
+     }
 
-  override def +[F >: Int](kv: (String, F)): Map[String, F] = {
-    val (key, value) = kv
-    value match {
-      case v: Int =>
-        val copy = dataMap.copy()
-        copy.put(key, coerceOutput(v))
-        copy.setReadOnly()
-        new IntMap(copy)
-      case _: Any =>
-        (iterator ++ Iterator.single(kv)).toMap
-    }
-  }
+     override def -(key: String): IntMap = {
+       val copy = dataMap.copy()
+       copy.remove(key)
+       copy.setReadOnly()
+       new IntMap(copy)
+     }
 
-  override def -(key: String): IntMap = {
-    val copy = dataMap.copy()
-    copy.remove(key)
-    copy.setReadOnly()
-    new IntMap(copy)
-  }
+     override def schema(): DataSchema = IntMap.SCHEMA
 
-  override def schema(): DataSchema = IntMap.SCHEMA
+     override def data(): DataMap = dataMap
 
-  override def data(): DataMap = dataMap
+     override def copy(): DataTemplate[DataMap] = this
+   }
 
-  override def copy(): DataTemplate[DataMap] = {
-    val copy = dataMap.copy()
-    copy.setReadOnly()
-    new IntMap(copy)
-  }
-}
+   object IntMap {
+     val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"map","values":"int"}""").asInstanceOf[MapDataSchema]
 
-object IntMap {
-  val SCHEMA = DataTemplateUtil.parseSchema( """{"type":"map","values":"int"}""").asInstanceOf[MapDataSchema]
 
-  val empty = IntMap()
 
-  def apply(elems: (String, Int)*): IntMap = {
-    IntMap(elems.toMap)
-  }
 
-  def apply(map: Map[String, Int]): IntMap = {
-    new IntMap(new DataMap(map.mapValues(coerceOutput).asJava))
-  }
 
-  def apply(dataMap: DataMap, conversion: DataConversion): IntMap = {
-    new IntMap(DataTemplates.makeImmutable(dataMap, SCHEMA, conversion))
-  }
 
-  def newBuilder = new DataBuilder()
 
-  implicit val canBuildFrom = new CanBuildFrom[IntMap, (String, Int), IntMap] {
-    def apply(from: IntMap) = new DataBuilder(from)
 
-    def apply() = newBuilder
-  }
 
-  class DataBuilder(initial: IntMap) extends mutable.Builder[(String, Int), IntMap] {
-    def this() = this(new IntMap(new DataMap()))
 
-    val entries = new DataMap(initial.data())
 
-    def +=(kv: (String, Int)): this.type = {
-      val (key, value) = kv
-      entries.put(key, coerceOutput(value))
-      this
-    }
+     val empty = IntMap()
 
-    def clear() = {
-      entries.clear()
-    }
+     def apply(elems: (String, Int)*): IntMap = {
+       IntMap(elems.toMap)
+     }
 
-    def result() = {
-      entries.setReadOnly()
-      new IntMap(entries)
-    }
-  }
+     def apply(map: Map[String, Int]): IntMap = {
+       new IntMap(new DataMap(map.mapValues(coerceOutput).asJava))
+     }
 
-  private def coerceOutput(value: Int): AnyRef = {
+     def apply(dataMap: DataMap, conversion: DataConversion): IntMap = {
+       new IntMap(DataTemplates.makeImmutable(dataMap, SCHEMA, conversion))
+     }
 
-    Int.box(value)
+     def newBuilder = new DataBuilder()
 
-  }
-}
+     implicit val canBuildFrom = new CanBuildFrom[IntMap, (String, Int), IntMap] {
+       def apply(from: IntMap) = new DataBuilder(from)
+       def apply() = newBuilder
+     }
 
+     class DataBuilder(initial: IntMap) extends mutable.Builder[(String, Int), IntMap] {
+       def this() = this(new IntMap(new DataMap()))
+
+       val entries = new DataMap(initial.data())
+
+       def +=(kv: (String, Int)): this.type = {
+         val (key, value) = kv
+         entries.put(key, coerceOutput(value))
+         this
+       }
+
+       def clear() = {
+         entries.clear()
+       }
+
+       def result() = {
+         entries.setReadOnly()
+         new IntMap(entries)
+       }
+     }
+
+     private def coerceOutput(value: Int): AnyRef = {
+
+           DataTemplateUtil.coerceInput(Int.box(value), classOf[java.lang.Integer], classOf[java.lang.Integer])
+
+     }
+   }

@@ -1,4 +1,8 @@
-/*
+
+
+
+
+   /*
  Copyright 2015 Coursera Inc.
 
  Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,84 +36,86 @@ import scala.collection.JavaConverters._
 import scala.collection.generic.CanBuildFrom
 import scala.collection.mutable
 
-@Generated(value = Array("BytesArray"), comments = "Courier Data Template.", date = "Sat May 30 12:21:42 PDT 2015")
-final class BytesArray(private val dataList: DataList)
-  extends IndexedSeq[ByteString]
-  with Product
-  with GenTraversable[ByteString]
-  with DataTemplate[DataList] {
+   @Generated(value = Array("BytesArray"), comments="Courier Data Template.", date = "Sat Jun 20 09:28:24 PDT 2015")
+    final class BytesArray(private val dataList: DataList)
+     extends IndexedSeq[ByteString]
+     with Product
+     with GenTraversable[ByteString]
+     with DataTemplate[DataList] {
 
-  override def length: Int = dataList.size()
+     override def length: Int = dataList.size()
 
-  private[this] def lookup(idx: Int) = {
 
-    dataList.get(idx).asInstanceOf[com.linkedin.data.ByteString]
+     private[this] lazy val list = dataList.asScala.map(coerceInput)
 
-  }
+     private[this] def coerceInput(any: AnyRef): ByteString = {
 
-  override def apply(idx: Int): ByteString = lookup(idx)
+           DataTemplateUtil.coerceOutput(any, classOf[com.linkedin.data.ByteString])
 
-  override def productElement(n: Int): Any = dataList.get(n)
+     }
 
-  override def productArity: Int = dataList.size()
+     override def apply(idx: Int): ByteString = list(idx)
 
-  override def schema(): DataSchema = BytesArray.SCHEMA
+     override def productElement(n: Int): Any = dataList.get(n)
+     override def productArity: Int = dataList.size()
 
-  override def data(): DataList = dataList
+     override def schema(): DataSchema = BytesArray.SCHEMA
 
-  override def copy(): DataTemplate[DataList] = this
-}
+     override def data(): DataList = dataList
+     override def copy(): DataTemplate[DataList] = this
+   }
 
-object BytesArray {
-  val SCHEMA = DataTemplateUtil.parseSchema( """{"type":"array","items":"bytes"}""").asInstanceOf[ArrayDataSchema]
+   object BytesArray {
+     val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"array","items":"bytes"}""").asInstanceOf[ArrayDataSchema]
 
-  val empty = BytesArray()
 
-  def apply(elems: ByteString*): BytesArray = {
-    new BytesArray(new DataList(elems.map(coerceOutput).toList.asJava))
-  }
 
-  def apply(collection: Traversable[ByteString]): BytesArray = {
-    new BytesArray(new DataList(collection.map(coerceOutput).toList.asJava))
-  }
 
-  def apply(dataList: DataList, conversion: DataConversion): BytesArray = {
-    new BytesArray(DataTemplates.makeImmutable(dataList, SCHEMA, conversion))
-  }
+     val empty = BytesArray()
 
-  def newBuilder = new DataBuilder()
+     def apply(elems: ByteString*): BytesArray = {
+       new BytesArray(new DataList(elems.map(coerceOutput).toList.asJava))
+     }
 
-  implicit val canBuildFrom = new CanBuildFrom[BytesArray, ByteString, BytesArray] {
-    def apply(from: BytesArray) = new DataBuilder(from)
+     def apply(collection: Traversable[ByteString]): BytesArray = {
+       new BytesArray(new DataList(collection.map(coerceOutput).toList.asJava))
+     }
 
-    def apply() = newBuilder
-  }
+     def apply(dataList: DataList, conversion: DataConversion): BytesArray = {
+       new BytesArray(DataTemplates.makeImmutable(dataList, SCHEMA, conversion))
+     }
 
-  class DataBuilder(initial: BytesArray) extends mutable.Builder[ByteString, BytesArray] {
-    def this() = this(new BytesArray(new DataList()))
+     def newBuilder = new DataBuilder()
 
-    val elems = new DataList(initial.data())
+     implicit val canBuildFrom = new CanBuildFrom[BytesArray, ByteString, BytesArray] {
+       def apply(from: BytesArray) = new DataBuilder(from)
+       def apply() = newBuilder
+     }
 
-    def +=(x: ByteString): this.type = {
-      elems.add(coerceOutput(x))
-      this
-    }
+     class DataBuilder(initial: BytesArray) extends mutable.Builder[ByteString, BytesArray] {
+       def this() = this(new BytesArray(new DataList()))
 
-    def clear() = {
-      elems.clear()
-    }
+       val elems = new DataList(initial.data())
 
-    def result() = {
-      elems.setReadOnly()
-      new BytesArray(elems)
-    }
-  }
+       def +=(x: ByteString): this.type = {
+         elems.add(coerceOutput(x))
+         this
+       }
 
-  private def coerceOutput(value: ByteString): AnyRef = {
+       def clear() = {
+         elems.clear()
+       }
 
-    value
+       def result() = {
+         elems.setReadOnly()
+         new BytesArray(elems)
+       }
+     }
 
-  }
-}
+     private def coerceOutput(value: ByteString): AnyRef = {
 
+           DataTemplateUtil.coerceInput(value, classOf[com.linkedin.data.ByteString], classOf[com.linkedin.data.ByteString])
+
+     }
+   }
 

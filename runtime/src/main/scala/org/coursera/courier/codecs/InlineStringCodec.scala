@@ -52,11 +52,13 @@ import scala.collection.JavaConverters._
  *
  * - All map keys must be sorted in alpha-numeric order for serialization.
  * - Extraneous whitespace is not allowed.
+ * - Primitives must be represented in "canonical form". For example there may be no leading or
+ *   trailing zeros on numeric types.
  *
  * This encoding also has a few limitations:
  *
- * - It must be URL encoded before being used in URLs, but only to escape chars that might
- *   appear in string literals.
+ * - Serialized data must be URL encoded before being used in URLs, but only to escape chars that
+ *   might appear in string literals.
  * - It is lossy: All primitives types are downgraded to plain strings, but can be "fixed-up",
  *   this is explained in detail below.
  * - An array containing a single empty string (`[""]` in JSON), has the special representation of
@@ -71,7 +73,7 @@ import scala.collection.JavaConverters._
  *
  * Escaping:
  *
- * The chars `(),~!` must be escaped by prefixing them with `!`.
+ * When used in strings the reserved chars `(),~!` must be escaped by prefixing them with `!`.
  *
  * JSON Encoding                        | Inline String Encoding
  * -------------------------------------|---------------------------------------
@@ -188,7 +190,7 @@ object InlineStringCodec {
       handleParseErrors(parseAll(listParser, new InputStreamReader(input)))
     }
 
-    private def handleParseErrors[T](parseResult: ParseResult[T]): T = {
+    private[this] def handleParseErrors[T](parseResult: ParseResult[T]): T = {
       parseResult match {
         case Success(result, _) => result
         case failure: NoSuccess =>
@@ -197,15 +199,17 @@ object InlineStringCodec {
       }
     }
 
+    private[this] val primitiveRegex = s"""([^$reservedChars]|$escapeChar[$reservedChars])*""".r
+
     // This codec does not distinguish between primitive types, all are simply a string value
     // Pegasus will "Fix-up" these values into the correct primitive types when the data is
     // validated.
-    private def primitiveParser: Parser[String] =
-      s"""([^$reservedChars]|$escapeChar[$reservedChars])*""".r ^^ { value =>
+    private[this] val primitiveParser: Parser[String] =
+      primitiveRegex ^^ { value =>
       unescape(value)
     }
 
-    private def generalListParser: Parser[DataList] = {
+    private[this] val generalListParser: Parser[DataList] = {
       listPrefix ~ startCollection ~> repsep(dataParser, itemSeparator) <~ endCollection ^^ {
         case List(singleElement) if singleElement == "" => // see specialCaseListParser, below
           new DataList(0)
@@ -222,7 +226,7 @@ object InlineStringCodec {
     // distinguishable from an empty list somehow. We have decided to treat `List()` as an empty
     // list. So we provide a special representation of a List containing a single empty
     // string: `List(~)`.
-    private def specialCaseListParser: Parser[DataList] = {
+    private[this] val specialCaseListParser: Parser[DataList] = {
       listPrefix ~ startCollection ~ keyValueSeparator ~ endCollection ^^ {
         case _: AnyRef =>
           val dataList = new DataList(1)
@@ -231,15 +235,15 @@ object InlineStringCodec {
       }
     }
 
-    private def listParser: Parser[DataList] = generalListParser | specialCaseListParser
+    private[this] val listParser: Parser[DataList] = generalListParser | specialCaseListParser
 
-    private def keyValueParser: Parser[(String, AnyRef)] = {
+    private[this] val keyValueParser: Parser[(String, AnyRef)] = {
       primitiveParser ~ keyValueSeparator ~ dataParser ^^ {
         case key ~ _ ~ value => (key, value)
       }
     }
 
-    private def mapParser: Parser[DataMap] = {
+    private[this] val mapParser: Parser[DataMap] = {
       startCollection ~> repsep(keyValueParser, itemSeparator) <~ endCollection ^^ {
         case kvs: List[(String, AnyRef)] =>
           val dataMap = new DataMap(kvs.size)
@@ -250,11 +254,10 @@ object InlineStringCodec {
       }
     }
 
-    private def dataComplexParser: Parser[DataComplex] = mapParser | listParser
+    private[this] val dataComplexParser: Parser[DataComplex] = mapParser | listParser
 
-    private def dataParser: Parser[AnyRef] = dataComplexParser | primitiveParser
+    private[this] val dataParser: Parser[AnyRef] = dataComplexParser | primitiveParser
   }
-
 
   object Generator {
     private[this] val startCollectionBytes = startCollection.toString.getBytes(charset)
@@ -298,7 +301,7 @@ object InlineStringCodec {
       outputStream.write(endCollectionBytes)
     }
 
-    private def generate(data: AnyRef, outputStream: OutputStream): Unit = {
+    private[this] def generate(data: AnyRef, outputStream: OutputStream): Unit = {
       data match {
         case map: DataMap =>
           generateMap(map, outputStream)

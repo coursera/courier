@@ -1,4 +1,8 @@
-/*
+
+
+
+
+   /*
  Copyright 2015 Coursera Inc.
 
  Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,117 +35,112 @@ import scala.collection.generic.CanBuildFrom
 import scala.collection.immutable
 import scala.collection.mutable
 
-@Generated(value = Array("StringMap"), comments = "Courier Data Template.", date = "Sat May 30 13:09:01 PDT 2015")
-final class StringMap(private val dataMap: DataMap)
-  extends immutable.Iterable[(String, String)]
-  with Map[String, String]
-  with immutable.MapLike[String, String, immutable.Map[String, String]]
-  with DataTemplate[DataMap] {
+   @Generated(value = Array("StringMap"), comments="Courier Data Template.", date = "Sat Jun 20 09:28:24 PDT 2015")
+    final class StringMap(private val dataMap: DataMap)
+     extends immutable.Iterable[(String, String)]
+     with Map[String, String]
+     with immutable.MapLike[String, String, immutable.Map[String, String]]
+     with DataTemplate[DataMap] {
+     import org.coursera.courier.data.StringMap._
 
-  import org.coursera.courier.data.StringMap._
 
-  // TODO(jbetz): Decide on caching policy for data template types. We should not be creating a
-  // new instance here on each lookup.
-  private[this] def lookup(key: String): Option[String] = {
+     private[this] lazy val map = dataMap.asScala.map { case (k, v) => k -> coerceInput(v) }.toMap
 
-    Option(dataMap.get(key).asInstanceOf[java.lang.String])
+     private[this] def coerceInput(any: AnyRef): String = {
 
-  }
+           DataTemplateUtil.coerceOutput(any, classOf[java.lang.String])
 
-  override def get(key: String): Option[String] = lookup(key)
+     }
 
-  override def iterator: Iterator[(String, String)] = new Iterator[(String, String)] {
-    val underlying = dataMap.keySet().iterator()
+     override def get(key: String): Option[String] = map.get(key)
 
-    override def hasNext: Boolean = underlying.hasNext
+     override def iterator: Iterator[(String, String)] = map.iterator
 
-    override def next(): (String, String) = {
-      val key = underlying.next()
-      key -> lookup(key).get
-    }
-  }
+     override def +[F >: String](kv: (String, F)): Map[String, F] = {
+       val (key, value) = kv
+       value match {
+         case v: String =>
+           val copy = dataMap.copy()
+           copy.put(key, coerceOutput(v))
+           copy.setReadOnly()
+           new StringMap(copy)
+         case _: Any =>
+           (iterator ++ Iterator.single(kv)).toMap
+       }
+     }
 
-  override def +[F >: String](kv: (String, F)): Map[String, F] = {
-    val (key, value) = kv
-    value match {
-      case v: String =>
-        val copy = dataMap.copy()
-        copy.put(key, coerceOutput(v))
-        copy.setReadOnly()
-        new StringMap(copy)
-      case _: Any =>
-        (iterator ++ Iterator.single(kv)).toMap
-    }
-  }
+     override def -(key: String): StringMap = {
+       val copy = dataMap.copy()
+       copy.remove(key)
+       copy.setReadOnly()
+       new StringMap(copy)
+     }
 
-  override def -(key: String): StringMap = {
-    val copy = dataMap.copy()
-    copy.remove(key)
-    copy.setReadOnly()
-    new StringMap(copy)
-  }
+     override def schema(): DataSchema = StringMap.SCHEMA
 
-  override def schema(): DataSchema = StringMap.SCHEMA
+     override def data(): DataMap = dataMap
 
-  override def data(): DataMap = dataMap
+     override def copy(): DataTemplate[DataMap] = this
+   }
 
-  override def copy(): DataTemplate[DataMap] = {
-    val copy = dataMap.copy()
-    copy.setReadOnly()
-    new StringMap(copy)
-  }
-}
+   object StringMap {
+     val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"map","values":"string"}""").asInstanceOf[MapDataSchema]
 
-object StringMap {
-  val SCHEMA = DataTemplateUtil.parseSchema( """{"type":"map","values":"string"}""").asInstanceOf[MapDataSchema]
 
-  val empty = StringMap()
 
-  def apply(elems: (String, String)*): StringMap = {
-    StringMap(elems.toMap)
-  }
 
-  def apply(map: Map[String, String]): StringMap = {
-    new StringMap(new DataMap(map.mapValues(coerceOutput).asJava))
-  }
 
-  def apply(dataMap: DataMap, conversion: DataConversion): StringMap = {
-    new StringMap(DataTemplates.makeImmutable(dataMap, SCHEMA, conversion))
-  }
 
-  def newBuilder = new DataBuilder()
 
-  implicit val canBuildFrom = new CanBuildFrom[StringMap, (String, String), StringMap] {
-    def apply(from: StringMap) = new DataBuilder(from)
 
-    def apply() = newBuilder
-  }
 
-  class DataBuilder(initial: StringMap) extends mutable.Builder[(String, String), StringMap] {
-    def this() = this(new StringMap(new DataMap()))
 
-    val entries = new DataMap(initial.data())
 
-    def +=(kv: (String, String)): this.type = {
-      val (key, value) = kv
-      entries.put(key, coerceOutput(value))
-      this
-    }
+     val empty = StringMap()
 
-    def clear() = {
-      entries.clear()
-    }
+     def apply(elems: (String, String)*): StringMap = {
+       StringMap(elems.toMap)
+     }
 
-    def result() = {
-      entries.setReadOnly()
-      new StringMap(entries)
-    }
-  }
+     def apply(map: Map[String, String]): StringMap = {
+       new StringMap(new DataMap(map.mapValues(coerceOutput).asJava))
+     }
 
-  private def coerceOutput(value: String): AnyRef = {
+     def apply(dataMap: DataMap, conversion: DataConversion): StringMap = {
+       new StringMap(DataTemplates.makeImmutable(dataMap, SCHEMA, conversion))
+     }
 
-    value
+     def newBuilder = new DataBuilder()
 
-  }
-}
+     implicit val canBuildFrom = new CanBuildFrom[StringMap, (String, String), StringMap] {
+       def apply(from: StringMap) = new DataBuilder(from)
+       def apply() = newBuilder
+     }
 
+     class DataBuilder(initial: StringMap) extends mutable.Builder[(String, String), StringMap] {
+       def this() = this(new StringMap(new DataMap()))
+
+       val entries = new DataMap(initial.data())
+
+       def +=(kv: (String, String)): this.type = {
+         val (key, value) = kv
+         entries.put(key, coerceOutput(value))
+         this
+       }
+
+       def clear() = {
+         entries.clear()
+       }
+
+       def result() = {
+         entries.setReadOnly()
+         new StringMap(entries)
+       }
+     }
+
+     private def coerceOutput(value: String): AnyRef = {
+
+           DataTemplateUtil.coerceInput(value, classOf[java.lang.String], classOf[java.lang.String])
+
+     }
+   }

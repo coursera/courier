@@ -219,11 +219,15 @@ object Courier extends Build with OverridablePublishSettings {
   // this approach, which has has been taken directly from Sleipnir by Dmitriy Yefremov.
   lazy val forkedVmCourierGenerator = taskKey[Seq[File]](
     "Courier generator executed in a forked VM")
+  lazy val forkedVmCourierDest = settingKey[File]("Generator target directory")
 
   val forkedVmCourierGeneratorSettings = Seq(
+    forkedVmCourierDest :=
+      target.value / s"scala-${scalaBinaryVersion.value}" / "courier",
+
     forkedVmCourierGenerator in Compile := {
       val src = sourceDirectory.value / "main" / "pegasus"
-      val dst = target.value / s"scala-${scalaBinaryVersion.value}" / "courier"
+      val dst = forkedVmCourierDest.value
       val classpath = (dependencyClasspath in Runtime in generator).value.files
       streams.value.log.info("Generating .pdsc bindings...")
       val files = runForkedGenerator(src, dst, classpath, streams.value.log)

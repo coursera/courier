@@ -1,0 +1,32 @@
+@(fixed: org.coursera.courier.generator.specs.FixedDefinition)
+
+@import com.linkedin.data.schema.SchemaToJsonEncoder
+@import com.linkedin.data.schema.JsonBuilder
+@import org.coursera.courier.generator.specs._
+
+@if(fixed.isTopLevel) {
+  @fixed.namespace.map { namespace => package @namespace }
+
+  import javax.annotation.Generated
+
+  import com.linkedin.data.schema.DataSchema
+  import com.linkedin.data.template.DataTemplateUtil
+  import com.linkedin.data.ByteString
+  import com.linkedin.data.schema.FixedDataSchema
+  import com.linkedin.data.template.FixedTemplate
+  import com.linkedin.data.template.DataTemplateUtil
+}
+
+@ClassAnnotations(fixed) final class @(fixed.scalaType)(data: AnyRef) extends FixedTemplate(data, @(fixed.scalaType).SCHEMA) {
+
+}
+
+object @(fixed.scalaType) {
+  val SCHEMA = DataTemplateUtil.parseSchema(@("\"\"\"" + SchemaToJsonEncoder.schemaToJson(fixed.fixedSchema, JsonBuilder.Pretty.COMPACT) + "\"\"\"")).asInstanceOf[FixedDataSchema]
+
+  def apply(string: String): @(fixed.scalaType) = new @(fixed.scalaType)(string)
+
+  def apply(byteString: ByteString): @(fixed.scalaType) = new @(fixed.scalaType)(byteString)
+
+  def apply(bytes: Array[Byte]): @(fixed.scalaType) = new @(fixed.scalaType)(ByteString.copy(bytes))
+}

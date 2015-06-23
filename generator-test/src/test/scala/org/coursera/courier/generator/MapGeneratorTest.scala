@@ -29,6 +29,8 @@ import org.coursera.courier.generator.customtypes.CustomInt
 import org.coursera.customtypes.CustomIntMap
 import org.coursera.enums.Fruits
 import org.coursera.enums.FruitsMap
+import org.coursera.fixed.Fixed8
+import org.coursera.fixed.Fixed8Map
 import org.coursera.maps.WithComplexTypesMap
 import org.coursera.maps.WithCustomTypesMap
 import org.coursera.maps.WithPrimitivesMap
@@ -52,13 +54,14 @@ class MapGeneratorTest extends GeneratorTest with SchemaFixtures {
       FruitsMap("a" -> Fruits.APPLE, "b" -> Fruits.BANANA, "c" -> Fruits.ORANGE),
       SimpleArrayMap("a" -> SimpleArray(Simple(Some("v1")), Simple(Some("v2")))),
       SimpleMapMap("o1" -> SimpleMap("i1" -> Simple(Some("o1i1")), "i2" -> Simple(Some("o1i2")))),
-      UnionsMap("a" -> Unions.IntMember(1), "b" -> Unions.StringMember("u1")))
+      UnionsMap("a" -> Unions.IntMember(1), "b" -> Unions.StringMember("u1")),
+      Fixed8Map("a" -> Fixed8(bytesFixed8)))
     val roundTripped = WithComplexTypesMap(roundTrip(original.data()), DataConversion.SetReadOnly)
     assert(original === roundTripped)
 
     Seq(original, roundTripped).map { record =>
       assertJson(record,
-        """{
+        s"""{
       |  "empties" : {
       |    "b" : { },
       |    "c" : { },
@@ -81,6 +84,9 @@ class MapGeneratorTest extends GeneratorTest with SchemaFixtures {
       |  "unions": {
       |    "a": { "int": 1 },
       |    "b": { "string": "u1" }
+      |  },
+      |  "fixed": {
+      |    "a": "$bytesFixed8String"
       |  }
       |}""".stripMargin)
     }

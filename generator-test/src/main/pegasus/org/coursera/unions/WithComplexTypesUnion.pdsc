@@ -7,7 +7,8 @@
       "org.coursera.records.test.Empty",
       "org.coursera.enums.Fruits",
       { "type": "array", "items": "org.coursera.records.test.Simple" },
-      { "type": "map", "values": "org.coursera.records.test.Simple" }
+      { "type": "map", "values": "org.coursera.records.test.Simple" },
+      "org.coursera.fixed.Fixed8"
     ]
     }
   ]

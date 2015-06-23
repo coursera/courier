@@ -755,10 +755,59 @@ val dataMap = DataTemplates.readDataMap(json) // or readDataList
 val fortune = Fortune(dataMap, DataConversion.SetReadOnly) // or DataConversion.DeepCopy
 ```
 
+Codecs
+------
+
+Pegasus and Courier provides multiple "Codecs":
+
+* JacksonDataCodec - The primary JSON encoding used by Pegasus.
+* [InlineStringCodec](https://github.com/coursera/courier/blob/master/runtime/src/main/scala/org/coursera/courier/codecs/InlineStringCodec.scala#L38)
+  - URL "Friendly" string encoding of data.
+* [PsonDataCodec](https://github.com/linkedin/rest.li/blob/master/data/src/main/java/com/linkedin/data/codec/PsonDataCodec.java#L41) - Non-standard "performance" optimized JSON-like codec.
+* BsonDataCodec - The [bson](http://bsonspec.org/) binary encoding for JSON-like data.
+
+Example codec use:
+
+```
+val codec = new InlineStringCodec()
+
+// deserialize
+val dataMap = codec.bytesToMap("(key~value)".getBytes(Charset.forName("UTF-8"))
+
+// serialize
+val string = new String(codec.mapToBytes(dataMap, Charset.forName("UTF-8")))
+```
+
+All codecs also support input and output streams, e.g.:
+
+```
+val codec = PsonDataCodec()
+
+// deserialize
+val dataMap = codec.readMap(inputStream)
+
+// serialize
+codec.writeMap(dataMap, outputStream)
+```
+
+Avro Translators
+----------------
+
+Avro compatibility is provided using "translators" of Avro data:
+
+* AvroGenericToDataTranslator
+* DataMapToGenericRecordTranslator
+
+and Avro schemas:
+
+* SchemaTranslator - Translates Avro `Schema` to and from Pegasus `DataSchema`.
+
+
 Validation
 ----------
 
 https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates#data-to-schema-validation
+
 
 License
 -------
