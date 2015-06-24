@@ -16,6 +16,7 @@
 
 package org.coursera.courier.sbt
 
+import com.linkedin.util.FileUtil
 import org.coursera.courier.generator.ScalaDataTemplateGenerator
 
 import sbt._
@@ -102,8 +103,8 @@ object CourierPlugin extends Plugin {
       }
 
       log.debug("Detected changed files: " + anyFilesChanged)
-      if (anyFilesChanged) {
-        log.debug("Courier: Generating Scala bindings for .pdsc files.")
+      val results = if (anyFilesChanged) {
+        log.info("Courier: Generating Scala bindings for .pdsc files.")
         log.debug("Courier resolver path: " + resolverPath)
         log.debug("Courier source path: " + src)
         log.debug("Courier destination path: " + dst)
@@ -146,9 +147,11 @@ object CourierPlugin extends Plugin {
       } else {
         previousScalaFiles
       }
+      log.info(s"Courier sources: ${results.map(_.getAbsolutePath).mkString(", ")}")
+      results
     },
 
-    sourceGenerators in conf <+= (courierGenerator in conf),
+    sourceGenerators in conf += (courierGenerator in conf).taskValue,
 
     unmanagedSourceDirectories in conf += (courierSourceDirectory in conf).value,
 

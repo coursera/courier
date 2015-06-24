@@ -27,3 +27,12 @@ sbt scripted
 Test projects may be added or updated as needed, but should be used only to test plugin
 functionality, all other tests should be kept in `generator-test` as these scripted
 test take considerably longer to run due to the project setup and tear down that is required.
+
+To modify a test, first publish locally, then copy the test project to a separate directory
+and run it from there, e.g.:
+
+```sh
+cp -r sbt-plugin/src/sbt-test/courier-sbt-plugin/sanity ~/tmp
+cd ~/tmp
+sbt -Dplugin.version=<published-courier-version>
+```

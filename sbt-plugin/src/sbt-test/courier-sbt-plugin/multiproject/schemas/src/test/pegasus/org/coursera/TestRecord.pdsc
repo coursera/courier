@@ -1,0 +1,11 @@
+{
+  "name": "TestRecord",
+  "namespace": "org.coursera",
+  "type": "record",
+  "fields": [
+    {
+      "name": "field1",
+      "type": "int"
+    }
+  ]
+}
