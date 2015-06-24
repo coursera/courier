@@ -99,12 +99,13 @@ object ScalaDataTemplateGenerator {
     }
     val generatedSpecs = specGenerator.getGeneratedSpecs.asScala
 
-    // build a set of top level types so that we only generate each class file exactly once
-    // and so that we don't accidentally stack overflow if types are recursively defined
+    // Build a set of top level types so that we only generate each class file exactly once
+    // and so that we don't accidentally stack overflow if types are recursively defined.
     val topLevelTypes = generatedSpecs.flatMap { spec =>
       generator.findTopLevelTypes(Definition(spec))
     }.toSet
 
+    // Run the generator.
     val compilationUnits = if (generatePredef) {
       generator.generatePredef()
     } else {
@@ -113,16 +114,18 @@ object ScalaDataTemplateGenerator {
       }
     }
 
+    // Write the resulting files.
     val targetFiles = compilationUnits.map { compilationUnit =>
       writeCode(targetDirectory, compilationUnit)
     }
 
-    val upToDate = FileUtil.upToDate(parseResult.getSourceFiles, targetFiles.asJavaCollection)
-    val modifiedFiles = if (upToDate) {
-      Seq()
-    } else {
-      targetFiles
-    }
+    // CourierPlugin.prepareCacheUpdate checks if the generator needs to run using an SBT utility,
+    // so if we get here we know we should unconditionally run the generator. As a result, the
+    // modifiedFiles are always the same as the target files. (if we instead, used
+    // FileUtils.upToDate here to do the check, modifiedFiles might be empty if all files are
+    // upToDate).
+    val modifiedFiles = targetFiles
+
     new DefaultGeneratorResult(
       parseResult.getSourceFiles,
       targetFiles.asJavaCollection,
@@ -131,14 +134,13 @@ object ScalaDataTemplateGenerator {
 
   private[this] def writeCode(targetDirectory: File, generated: GeneratedCode): File = {
     val compilationUnit = generated.compilationUnit
-    val namespacePath = compilationUnit.namespace.replace(".", File.separator)
-    val directory = new File(targetDirectory, namespacePath)
+    val file = compilationUnit.toFile(targetDirectory)
+    val directory = file.getParentFile
     directory.mkdirs()
     assert(directory.exists() && directory.isDirectory,
       s"Unable to create ${directory.getAbsolutePath}. Directory either does not exist after " +
         s"attempting to create it, or part of the path exists and is not a directory.")
 
-    val file = new File(directory, s"${compilationUnit.name}.scala")
     if (!file.exists()) {
       assert(file.createNewFile(), s"Unable to create file ${file.getAbsolutePath}")
     }

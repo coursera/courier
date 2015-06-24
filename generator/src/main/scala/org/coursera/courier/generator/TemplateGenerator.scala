@@ -16,12 +16,20 @@
 
 package org.coursera.courier.generator
 
+import java.io.File
+
 import org.coursera.courier.generator.specs.Definition
 
 /**
  * Identifies a particular scala file.
  */
-case class CompilationUnit(name: String, namespace: String)
+case class CompilationUnit(name: String, namespace: String) {
+  def toFile(targetDirectory: File): File = {
+    val namespacePath = namespace.replace(".", File.separator)
+    val directory = new File(targetDirectory, namespacePath)
+    new File(directory, s"$name.scala")
+  }
+}
 
 /**
  * Code that has been generated.

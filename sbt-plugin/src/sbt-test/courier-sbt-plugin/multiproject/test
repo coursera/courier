@@ -1,0 +1,4 @@
+# Compile and run the sample app
+> project example
+> compile
+> run-main org.coursera.courier.testapp.Application
