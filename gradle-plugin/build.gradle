@@ -1,0 +1,81 @@
+apply plugin: 'scala'
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+repositories {
+  mavenCentral()
+  mavenLocal()
+}
+
+group = "org.coursera.courier"
+archivesBaseName = "gradle-plugin_2.11"
+version = "0.3.1"
+
+dependencies {
+  compile 'org.scala-lang:scala-library:2.11.5'
+  compile 'org.coursera.courier:courier-generator_2.11:0.3.1'
+  compile gradleApi()
+}
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            pom.project {
+                name 'Courier Gradle Plugin'
+                packaging 'jar'
+                // optionally artifactId can be defined here
+                description 'Scala data binding generator for multiple data formats including JSON and Avro.'
+                url 'https://github.com/coursera/courier'
+
+                scm {
+                    connection 'git@github.com:coursera/courier.git'
+                    developerConnection 'git@github.com:coursera/courier.git'
+                    url 'https://github.com/coursera/courier/tree/master'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'jpbetz'
+                        name 'Joe Betz'
+                        email 'jpbetz@gmail.com'
+                    }
+                }
+            }
+        }
+    }
+}

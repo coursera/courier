@@ -1,0 +1,25 @@
+buildscript {
+  repositories {
+    mavenCentral()
+    mavenLocal()
+  }
+  dependencies {
+    classpath 'org.scala-lang:scala-library:2.11.5'
+    classpath 'org.coursera.courier:gradle-plugin_2.11:0.3.1'
+  }
+}
+
+apply plugin: 'scala'
+apply plugin: 'courier'
+apply plugin: 'idea'
+
+repositories {
+  mavenCentral()
+  mavenLocal()
+}
+
+dependencies {
+  compile 'org.scala-lang:scala-library:2.11.5'
+  dataTemplateCompile 'org.scala-lang:scala-library:2.11.5'
+  dataTemplateCompile 'org.coursera.courier:courier-runtime_2.11:0.3.1'
+}

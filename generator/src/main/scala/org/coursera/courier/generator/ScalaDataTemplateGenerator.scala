@@ -80,6 +80,7 @@ object ScalaDataTemplateGenerator {
     val specGenerator = new TemplateSpecGenerator(schemaParser.getSchemaResolver)
 
     val targetDirectory = new File(targetDirectoryPath)
+    targetDirectory.delete()
     targetDirectory.mkdirs()
     assert(targetDirectory.exists() && targetDirectory.isDirectory,
       s"Unable to create ${targetDirectory.getAbsolutePath}. Directory either does not exist " +

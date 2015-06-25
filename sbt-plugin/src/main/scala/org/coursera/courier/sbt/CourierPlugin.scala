@@ -147,7 +147,6 @@ object CourierPlugin extends Plugin {
       } else {
         previousScalaFiles
       }
-      log.info(s"Courier sources: ${results.map(_.getAbsolutePath).mkString(", ")}")
       results
     },
 

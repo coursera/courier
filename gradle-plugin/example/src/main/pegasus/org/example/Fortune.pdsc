@@ -1,0 +1,11 @@
+{
+  "name": "Fortune",
+  "namespace": "org.example",
+  "type": "record",
+  "fields": [
+    {
+      "name": "message",
+      "type": "string"
+    }
+  ]
+}
