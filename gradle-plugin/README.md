@@ -1,12 +1,15 @@
 Courier Gradle Plugin
 ---------------------
 
-See `/example` directory for a complete example.
+A Gradle plugin for [Courier](https://github.com/coursera/courier).
 
 Usage
 -----
 
-Add the plugin to your root build.gradle file:
+To get started, first add the plugin to your Gradle project.
+
+
+E.g. in your root build.gradle file, add:
 
 ```groovy
 buildscript {
@@ -21,7 +24,7 @@ buildscript {
 }
 ```
 
-Apply the courier plugin to projects where it is needed:
+Next, apply the courier plugin to projects where it is needed:
 
 ```groovy
 apply plugin: 'idea'
@@ -40,10 +43,10 @@ dependencies {
 }
 ```
 
-WARN: The `idea` plugin must be BEFORE the `courier` plugin for the the courier plugin to correctly
-mark generated source directories as such.
+(WARN: The `idea` plugin must be BEFORE the `courier` plugin for the the courier plugin to correctly
+mark generated source directories as such.)
 
-Add `.pdsc` files to the `src/main/pegasus` directory of the project, e.g.:
+Lastly, give it a try! Add a `.pdsc` file to the `src/main/pegasus` directory of the project, e.g.:
 
 `src/main/pegasus/org/example/Fortune.pdsc`
 
@@ -61,21 +64,17 @@ Add `.pdsc` files to the `src/main/pegasus` directory of the project, e.g.:
 }
 ```
 
-Run `gradle build` to generate:
+Now, run `gradle build`. The code generator will run before the standard `compile` task, and the
+generated classes will be added to the class path of the `compile` task.
 
-`src/mainGeneratedDataBinding/scala/org/example/Fortune.scala`
+The generated classes can be found in the `src/mainGeneratedDataBinding/scala/` directory.
 
-The generated class will have the same behaviour as:
-```
-package org.example
-
-case class Fortune(message: String)
-```
-
-To depend on the generated
+It is recommended that you add this directory to your `.gitignore`.
 
 For more details on Courier generated classes, see:
 [https://github.com/coursera/courier/blob/master/README.md]
+
+See `/example` directory for a working example gradle project.
 
 Development
 -----------
