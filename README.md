@@ -28,7 +28,8 @@ Features
 --------
 
 * Scala Idiomatic Data Binding Generator
-* SBT Plugin
+* SBT Plugin (see below)
+* [Gradle Plugin](https://github.com/coursera/courier/tree/master/gradle-plugin)
 * Data and Schema Compatible with [Pegasus](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates)
 * Data and Schema Compatible with [Avro](http://avro.apache.org/)
 * Support for multiple "Data Codecs", including JSON, PSON, and Avro binary
@@ -45,6 +46,9 @@ For development progress, see: [Discussion Group](https://groups.google.com/d/fo
 
 Getting Started
 ---------------
+
+If you use Gradle instead of SBT, see the
+[Gradle Plugin](https://github.com/coursera/courier/tree/master/gradle-plugin) documentation.
 
 Add the generator dependencies to your SBT plugins:
 
