@@ -3,4 +3,5 @@ build
 example/build
 example/.gradle
 example/src/mainGeneratedCourier
+example/schemas/src/mainGeneratedCourier
 example/out
