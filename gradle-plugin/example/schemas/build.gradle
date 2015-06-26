@@ -1,0 +1,8 @@
+apply plugin: 'scala'
+apply plugin: 'courier'
+
+dependencies {
+  compile 'org.scala-lang:scala-library:2.11.5'
+  courierCompile 'org.scala-lang:scala-library:2.11.5'
+  courierCompile 'org.coursera.courier:courier-runtime_2.11:0.3.1'
+}

@@ -11,6 +11,7 @@ import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.FileCopyDetails
+import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputDirectory
@@ -18,15 +19,21 @@ import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.bundling.Jar
+import org.gradle.api.tasks.scala.ScalaCompile
 import org.gradle.plugins.ide.idea.GenerateIdeaModule
-import org.gradle.api.specs.Spec
 
 import scala.beans.BeanProperty
 import scala.collection.JavaConverters._
 
 /**
  * Provides a gradle plugin for Courier.
+ *
+ * This is a an port of:
+ *
+ * https://github.com/linkedin/rest.li/blob/master/gradle-plugins/
+ * src/main/groovy/com/linkedin/pegasus/gradle/PegasusPlugin.groovy#L1163
  */
+// TODO(jbetz): cross compile to scala 2.10 and 2.11 ?
 class CourierPlugin extends Plugin[Project] {
 
   // Source set specific state.
@@ -35,21 +42,22 @@ class CourierPlugin extends Plugin[Project] {
       sourceSet: SourceSet,
       compile: Configuration,
       dataModel: Configuration,
-      dataTemplate: Configuration,
-      dataTemplateCompile: Configuration) {
+      courierDataBinding: Configuration,
+      courierCompile: Configuration) {
 
-    val projectSourceSets = project.getProperties.get("sourceSets").asInstanceOf[SourceSetContainer]
+    val sourceSetContainer = project.
+      getProperties.get("sourceSets").asInstanceOf[SourceSetContainer]
 
-    val dataSchemaDir = project.file(getDataSchemaPath(project, sourceSet))
+    val  dataSchemaDir = project.file(getDataSchemaPath(project, sourceSet))
 
-    val generatedDataTemplateDir = project.file(getGeneratedDirPath(
-        project, sourceSet, "DataTemplate") + File.separatorChar + "scala")
+    val generatedDataBindingDir = project.file(getGeneratedDirPath(
+        project, sourceSet, genType = "Courier") + File.separatorChar + "scala")
 
-    val generateDataTemplateTask = sourceSet.getTaskName("generate", "dataTemplate")
+    val generateDataBindingTask = sourceSet.getTaskName("generate", "courier")
 
-    val targetSourceSetName = getGeneratedSourceSetName(sourceSet, "DataTemplate")
+    val targetSourceSetName = getGeneratedSourceSetName(sourceSet, "Courier")
 
-    val dataTemplateJarName = sourceSet.getName + "DataTemplateJar"
+    val dataBindingJarName = sourceSet.getName + "CourierJar"
   }
 
   /**
@@ -58,38 +66,61 @@ class CourierPlugin extends Plugin[Project] {
   def apply(project: Project): Unit = {
     val configurations = project.getConfigurations
 
-    // Declare the required Gradle "configurations".
-    val dataModel = configurations.create("dataModel")
-    val testDataModel = configurations.create("testDataModel")
+    /**
+     * Configurations for depending on data schemas, generating data bindings
+     * and publishing jars containing data schemas to the project artifacts.
+     *
+     * Used to declare dependencies on generated bindings and .pdsc files from other
+     * projects/artifacts.
+     */
+    val dataModel = configurations.maybeCreate("dataModel")
+    val testDataModel = configurations.maybeCreate("testDataModel")
       .setExtendsFrom(Seq(dataModel).asJava)
 
-    val dataTemplateCompile = configurations.create("dataTemplateCompile")
+    /**
+     * This is the configuration that is intended to be used in build.scala files to declare
+     * dependencies for the compilation phase of the generated code.
+     *
+     * This is used purely for it's classpath.
+     *
+     * TODO(jbetz): implicitly add scala lib to this
+     */
+    val courierCompile = configurations.maybeCreate("courierCompile")
       .setVisible(false)
 
-    val testDataTemplateCompile = configurations.create("testDataTemplateCompile")
-      .setVisible(false)
+    /**
+     * Configurations for publishing jars containing data schemas and generated data templates
+     * to the project artifacts.
+     *
+     * Published data template jars depends on the configurations used to compile the classes
+     * in the jar, this includes the data models/templates used by the data template generator
+     * and the classes used to compile the generated classes.
+     */
+    val courierDataBinding = configurations.maybeCreate("courier")
+      .setExtendsFrom(Seq(courierCompile, dataModel).asJava)
 
-    val dataTemplate = configurations.create("dataTemplate")
-      .setExtendsFrom(Seq(dataTemplateCompile, dataModel).asJava)
+    val testCourierDataBinding = configurations.maybeCreate("testCourier")
+      .setExtendsFrom(Seq(courierDataBinding, testDataModel).asJava)
 
-    val testDataTemplate = configurations.create("testDataTemplate")
-      .setExtendsFrom(Seq(dataTemplate, testDataModel).asJava)
-
+    /**
+     * Standard compile configurations for this project.
+     */
     val compile = project.getConfigurations.findByName("compile")
     val testCompile = project.getConfigurations.findByName("testCompile")
-
 
     // Apply plugin settings to all source sets in the project.
     val sourceSets = project.getProperties.get("sourceSets").asInstanceOf[SourceSetContainer]
     Seq(sourceSets.asScala.toSeq: _*).foreach { sourceSet =>
-      val courierConfigurations = if (isTestSourceSet(sourceSet)) {
-        SourceSetConfig(
-          project, sourceSet, testCompile, testDataModel, testDataTemplate, testDataTemplateCompile)
-      } else {
-        SourceSetConfig(
-          project, sourceSet, compile, dataModel, dataTemplate, dataTemplateCompile)
+      if (!sourceSet.getName.equalsIgnoreCase("generated")) {
+        val courierConfigurations = if (isTestSourceSet(sourceSet)) {
+          SourceSetConfig(
+            project, sourceSet, testCompile, testDataModel, testCourierDataBinding, courierCompile)
+        } else {
+          SourceSetConfig(
+            project, sourceSet, compile, dataModel, courierDataBinding, courierCompile)
+        }
+        configureGeneration(courierConfigurations)
       }
-      configureGeneration(courierConfigurations)
     }
   }
 
@@ -103,9 +134,9 @@ class CourierPlugin extends Plugin[Project] {
     // Attach the GeneratorTask task to the sourceSet of the project.
     val generatorTask = config.project.task(
       Map("type" -> classOf[GeneratorTask]).asJava,
-      config.generateDataTemplateTask).asInstanceOf[GeneratorTask]
+      config.generateDataBindingTask).asInstanceOf[GeneratorTask]
     generatorTask.inputDir = config.dataSchemaDir
-    generatorTask.destinationDir = config.generatedDataTemplateDir
+    generatorTask.destinationDir = config.generatedDataBindingDir
     generatorTask.resolverPath = config.dataModel
     generatorTask.onlyIf(new Spec[Task] {
       override def isSatisfiedBy(t: Task): Boolean = {
@@ -117,53 +148,58 @@ class CourierPlugin extends Plugin[Project] {
   // TODO(jbetz): support javadoc jars
 
   // Create new source set for generated code.
-  val targetSourceSet = config.projectSourceSets.create(config.targetSourceSetName)
-  val scala = targetSourceSet.getAllSource.srcDir("scala")
-     scala.srcDir(config.generatedDataTemplateDir)
+  val targetSourceSet = config.sourceSetContainer.maybeCreate(config.targetSourceSetName)
 
   // Add compile classpath to generated code source set.
-  targetSourceSet.setCompileClasspath(config.dataModel.plus(config.dataTemplateCompile))
+  // TODO: only scala should be set for this sourceSet, java and resources should be removed.
+  targetSourceSet.setCompileClasspath(config.dataModel.plus(config.courierCompile))
 
   // Intellij plugin.
   addGeneratedDir(
-    config.project, targetSourceSet, Seq(config.dataModel, config.dataTemplateCompile).asJava)
+    config.project, targetSourceSet, Seq(config.dataModel, config.courierCompile).asJava)
 
     // Make sure that code is generated before compiling it.
   val compileGeneratedClassesTask =
     config.project.getTasks.findByName(targetSourceSet.getCompileTaskName("scala"))
   compileGeneratedClassesTask.dependsOn(generatorTask)
 
-    // Create data template jar file.
-    val dataTemplateJarTask = config.project.task(
-      Map("type" -> classOf[Jar]).asJava, config.dataTemplateJarName)
+    // Create data binding jar file.
+    val dataBindingJarTask = config.project.task(
+      Map("type" -> classOf[Jar]).asJava, config.dataBindingJarName)
         .dependsOn(compileGeneratedClassesTask).asInstanceOf[Jar]
-    dataTemplateJarTask
-      .from(config.dataSchemaDir).eachFile(new Action[FileCopyDetails] {
-        def execute(t: FileCopyDetails): Unit = {
+
+    dataBindingJarTask.from(targetSourceSet.getOutput)
+    dataBindingJarTask.from(config.dataSchemaDir)
+
+      // This eachFile applies to all files (both .class and .pdsc)
+    dataBindingJarTask.eachFile(new Action[FileCopyDetails] {
+      def execute(t: FileCopyDetails): Unit = {
+        if(t.getPath.endsWith(".pdsc")) {
           t.setPath(s"pegasus${File.separatorChar}${t.getPath}")
         }
-      })
-    dataTemplateJarTask.from(targetSourceSet.getOutput)
-    dataTemplateJarTask.setAppendix(getAppendix(config.sourceSet, "data-template"))
-    dataTemplateJarTask.setDescription("Generate a data template jar")
+      }
+    })
 
-    // Add the data model and date template jars to the list of project artifacts.
+    dataBindingJarTask.setAppendix(getAppendix(config.sourceSet, "courier"))
+    dataBindingJarTask.setDescription("Generate a data binding jar")
+
+    // Add the data model and courier date binding jars to the list of project artifacts.
     val artifacts = config.project.getArtifacts
-    artifacts.add(config.dataTemplate.getName, dataTemplateJarTask)
+    artifacts.add(config.courierDataBinding.getName, dataBindingJarTask)
 
     // Include additional dependencies into the appropriate configuration used to compile the
-    // input source set must include the generated data template classes and their dependencies
+    // input source set must include the generated data binding classes and their dependencies
     // the configuration.
     config.compile
         .extendsFrom(config.dataModel)
-        .extendsFrom(config.dataTemplateCompile)
+        .extendsFrom(config.courierCompile)
 
     config.project.getDependencies.add(
-      config.compile.getName, config.project.files(dataTemplateJarTask.getArchivePath))
+      config.compile.getName, config.project.files(dataBindingJarTask.getArchivePath))
 
     // Add dependency for jar task, which transitively depends on other tasks.
     config.project.getTasks.findByName(
-      config.sourceSet.getCompileJavaTaskName).dependsOn(dataTemplateJarTask)
+      config.sourceSet.getCompileTaskName("scala")).dependsOn(dataBindingJarTask)
   }
 
   private[this] def getAppendix(sourceSet: SourceSet, suffix: String): String = {
@@ -221,28 +257,27 @@ class CourierPlugin extends Plugin[Project] {
       project: Project,
       sourceSet: SourceSet,
       configurations: java.util.Collection[Configuration]): Unit = {
-    if (project.getProperties.containsKey("ideaModule")) {
-      val ideaModule =
-        project.getProperties.get("ideaModule").asInstanceOf[GenerateIdeaModule].getModule
+
+    Option(project.getTasks.findByName("ideaModule")).map { ideaModuleTask =>
+      val ideaModule = ideaModuleTask.asInstanceOf[GenerateIdeaModule].getModule
+
+      val scalaCompileTask = project.getTasks.findByName(sourceSet.getCompileTaskName("scala"))
+        .asInstanceOf[ScalaCompile]
+
       if (isTestSourceSet(sourceSet)) {
         val sourceDirs = ideaModule.getTestSourceDirs
-        sourceDirs.addAll(sourceSet.getJava.getSrcDirs)
+        sourceDirs.addAll(scalaCompileTask.getSource.getFiles)
         ideaModule.setTestSourceDirs(sourceDirs)
       }
       else {
         val sourceDirs = ideaModule.getSourceDirs
-        sourceDirs.addAll(sourceSet.getJava.getSrcDirs)
+        sourceDirs.addAll(scalaCompileTask.getSource.getFiles)
         ideaModule.setSourceDirs(sourceDirs)
       }
 
-      val generatedDirs = ideaModule.getGeneratedSourceDirs
-      val files = configurations.asScala.flatMap(_.getFiles.asScala)
-      generatedDirs.addAll(files.asJavaCollection)
-      ideaModule.setGeneratedSourceDirs(generatedDirs)
-
-      /*val compilePlus = ideaModule.getScopes.get("COMPILE").get("plus")
+      val compilePlus = ideaModule.getScopes.get("COMPILE").get("plus")
       compilePlus.addAll(configurations)
-      ideaModule.getScopes.get("COMPILE").put("plus", compilePlus)*/
+      ideaModule.getScopes.get("COMPILE").put("plus", compilePlus)
     }
   }
 }
