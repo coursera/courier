@@ -1,8 +1,10 @@
 Courier
 =======
 
-Generate Scala idiomatic data bindings from schemas and use them with multiple data formats
-including JSON and [Avro](http://avro.apache.org/).
+Courier generates Scala idiomatic data bindings from schemas.
+
+Courier generated bindings work with multiple data formats including JSON and
+[Avro](http://avro.apache.org/).
 
 * [Source](http://github.com/coursera/courier)
 * [Documentation](https://github.com/coursera/courier/wiki)
@@ -33,16 +35,6 @@ Features
 * Data and Schema Compatible with [Pegasus](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates)
 * Data and Schema Compatible with [Avro](http://avro.apache.org/)
 * Support for multiple "Data Codecs", including JSON, PSON, and Avro binary
-
-Development Status
-------------------
-
-Courier is currently in the early development phases. Our current goal is to have the generator
-built and ready for early adoption by end of June.
-
-For the current design proposal, see: [Courier Design](https://github.com/coursera/courier/wiki/Design)
-
-For development progress, see: [Discussion Group](https://groups.google.com/d/forum/courier)
 
 Getting Started
 ---------------
