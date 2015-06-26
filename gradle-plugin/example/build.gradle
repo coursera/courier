@@ -9,17 +9,13 @@ buildscript {
   }
 }
 
-apply plugin: 'scala'
-apply plugin: 'courier'
 apply plugin: 'idea'
 
-repositories {
-  mavenCentral()
-  mavenLocal()
-}
+subprojects {
+  apply plugin: 'idea'
 
-dependencies {
-  compile 'org.scala-lang:scala-library:2.11.5'
-  dataTemplateCompile 'org.scala-lang:scala-library:2.11.5'
-  dataTemplateCompile 'org.coursera.courier:courier-runtime_2.11:0.3.1'
+  repositories {
+    mavenCentral()
+    mavenLocal()
+  }
 }

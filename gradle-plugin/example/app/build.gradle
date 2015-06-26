@@ -1,0 +1,7 @@
+apply plugin: 'scala'
+
+dependencies {
+  compile 'org.scala-lang:scala-library:2.11.5'
+  compile project(path: ':schemas', configuration: 'courier')
+  // compile project(':schemas') // can be used if you want both generated bindings and src/main/scala
+}

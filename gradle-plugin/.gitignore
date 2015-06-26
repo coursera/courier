@@ -3,3 +3,4 @@ build
 example/build
 example/.gradle
 example/src/mainGeneratedDataTemplate
+example/out
