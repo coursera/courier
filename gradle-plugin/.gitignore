@@ -2,5 +2,5 @@ build
 .gradle
 example/build
 example/.gradle
-example/src/mainGeneratedDataTemplate
+example/src/mainGeneratedCourier
 example/out
