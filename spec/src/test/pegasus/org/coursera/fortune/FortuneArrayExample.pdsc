@@ -1,8 +1,0 @@
-{
-  "name": "FortuneArrayExample",
-  "namespace": "org.coursera.fortune",
-  "type": "record",
-  "fields": {
-    "fortunes": { "type": "array", "items": "Fortune" }
-  }
-}

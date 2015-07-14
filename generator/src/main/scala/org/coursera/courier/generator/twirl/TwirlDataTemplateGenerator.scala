@@ -47,7 +47,7 @@ class TwirlDataTemplateGenerator(generateTyperefs: Boolean)
 
   def generate(topLevelSpec: Definition): Option[GeneratedCode] = {
     val maybeCode = topLevelSpec match {
-      case predef: Definition if predef.schema.exists(CourierPredef.bySchema.contains) =>
+      case predef: Definition if CourierPredef.definitions.contains(predef) =>
         None // Predefined types should already exist, so we don't generate them
       case record: RecordDefinition =>
         Some(RecordClass(record).body)

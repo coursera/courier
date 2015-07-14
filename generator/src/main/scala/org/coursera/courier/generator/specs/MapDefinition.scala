@@ -16,25 +16,49 @@
 
 package org.coursera.courier.generator.specs
 
+import com.linkedin.data.schema.DataSchema
+import com.linkedin.data.schema.DataSchemaConstants
 import com.linkedin.data.schema.MapDataSchema
-import com.linkedin.pegasus.generator.spec.MapTemplateSpec
+import com.linkedin.pegasus.generator.spec.PrimitiveTemplateSpec
+import org.coursera.courier.generator.CourierMapTemplateSpec
 
-case class MapDefinition(spec: MapTemplateSpec) extends Definition(spec) {
+case class MapDefinition(spec: CourierMapTemplateSpec) extends Definition(spec) {
+  import MapDefinition._
+
   def mapSchema: MapDataSchema = spec.getSchema
   def schema: Option[MapDataSchema] = Some(mapSchema)
   def scalaDoc: Option[String] = None
 
   def valueClass: Definition = Definition(spec.getValueClass)
   def valueDataClass: Option[Definition] = Option(spec.getValueDataClass).map(Definition(_))
-
   def customInfo: Option[CustomInfoDefinition] = {
     Option(spec.getCustomInfo).map(CustomInfoDefinition)
   }
 
-  def directReferencedTypes: Set[Definition] = Set(valueClass)
+  private def declaredKeyClass: Option[Definition] = Option(spec.getKeyClass).map(Definition(_))
+  def keyClass: Definition = declaredKeyClass.getOrElse(stringDef)
+  def keyDataClass: Option[Definition] = Option(spec.getKeyDataClass).map(Definition(_))
+
+  def keyCustomInfo: Option[CustomInfoDefinition] = {
+    Option(spec.getKeyCustomInfo).map(CustomInfoDefinition)
+  }
+
+  def keySchema: DataSchema = {
+    if (keyCustomInfo.isDefined) {
+      keyCustomInfo.get.customSchema
+    } else {
+      Option(spec.getKeyClass)
+        .flatMap(k => Option(k.getSchema)).getOrElse(DataSchemaConstants.STRING_DATA_SCHEMA)
+    }
+  }
+
+  def customInfos: Seq[CustomInfoDefinition] = Seq(customInfo, keyCustomInfo).flatten
+  def directReferencedTypes: Set[Definition] = Set(Some(valueClass), declaredKeyClass).flatten
 }
 
 object MapDefinition {
+
+  val stringDef = PrimitiveDefinition(PrimitiveTemplateSpec.getInstance(DataSchema.Type.STRING))
 
   /**
    * For use when creating MapDefinition for pre-defined maps such as IntMap.
@@ -43,12 +67,16 @@ object MapDefinition {
       scalaType: String,
       namespace: String,
       primitiveDef: PrimitiveDefinition,
-      schema: MapDataSchema): MapDefinition = {
+      schema: MapDataSchema,
+      keyPrimitiveDef: Option[PrimitiveDefinition] = None): MapDefinition = {
 
-    val spec = new MapTemplateSpec(schema)
+    val spec = new CourierMapTemplateSpec(schema)
     spec.setClassName(scalaType)
     spec.setNamespace(namespace)
     spec.setValueClass(primitiveDef.spec)
+    keyPrimitiveDef.foreach { keyDef =>
+      spec.setKeyClass(keyDef.spec)
+    }
     MapDefinition(spec)
   }
 }

@@ -33,13 +33,13 @@
 
 
  
-@Generated(value = Array("LongMap"), comments="Courier Data Template.", date = "Fri Jul 10 10:23:12 PDT 2015")
- final class LongMap(private val dataMap: DataMap)
-  extends immutable.Iterable[(String, Long)]
-  with Map[String, Long]
-  with immutable.MapLike[String, Long, immutable.Map[String, Long]]
+@Generated(value = Array("IntToLongMap"), comments="Courier Data Template.", date = "Fri Jul 10 10:23:12 PDT 2015")
+ final class IntToLongMap(private val dataMap: DataMap)
+  extends immutable.Iterable[(Int, Long)]
+  with Map[Int, Long]
+  with immutable.MapLike[Int, Long, immutable.Map[Int, Long]]
   with DataTemplate[DataMap] {
-  import LongMap._
+  import IntToLongMap._
 
   
   private[this] lazy val map = dataMap.asScala.map { case (k, v) => coerceKeyInput(k) -> coerceInput(v) }.toMap
@@ -52,11 +52,11 @@
   }
 
 
-  private[this] def coerceKeyInput(key: String): String = {
+  private[this] def coerceKeyInput(key: String): Int = {
     
-  def coerceKeyDataInput(any: AnyRef): String = {
+  def coerceKeyDataInput(any: AnyRef): Int = {
     
-        DataTemplateUtil.coerceOutput(any, classOf[java.lang.String])
+        DataTemplateUtil.coerceOutput(any, classOf[java.lang.Integer])
       
   }
 
@@ -64,40 +64,40 @@
     coerceKeyDataInput(InlineStringCodec.stringToData(key, KEY_SCHEMA))
   }
 
-  override def get(key: String): Option[Long] = map.get(key)
+  override def get(key: Int): Option[Long] = map.get(key)
 
-  override def iterator: Iterator[(String, Long)] = map.iterator
+  override def iterator: Iterator[(Int, Long)] = map.iterator
 
-  override def +[F >: Long](kv: (String, F)): Map[String, F] = {
+  override def +[F >: Long](kv: (Int, F)): Map[Int, F] = {
     val (key, value) = kv
     value match {
       case v: Long =>
         val copy = dataMap.copy()
         copy.put(coerceKeyOutput(key), coerceOutput(v))
         copy.setReadOnly()
-        new LongMap(copy)
+        new IntToLongMap(copy)
       case _: Any =>
         (iterator ++ Iterator.single(kv)).toMap
     }
   }
 
-  override def -(key: String): LongMap = {
+  override def -(key: Int): IntToLongMap = {
     val copy = dataMap.copy()
     copy.remove(key)
     copy.setReadOnly()
-    new LongMap(copy)
+    new IntToLongMap(copy)
   }
 
-  override def schema(): DataSchema = LongMap.SCHEMA
+  override def schema(): DataSchema = IntToLongMap.SCHEMA
 
   override def data(): DataMap = dataMap
 
   override def copy(): DataTemplate[DataMap] = this
 }
 
-object LongMap {
-  val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"map","values":"long"}""").asInstanceOf[MapDataSchema]
-  val KEY_SCHEMA = DataTemplateUtil.parseSchema(""""string"""")
+object IntToLongMap {
+  val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"map","values":"long","keys":"int"}""").asInstanceOf[MapDataSchema]
+  val KEY_SCHEMA = DataTemplateUtil.parseSchema(""""int"""")
 
   
   
@@ -109,33 +109,33 @@ object LongMap {
 
 
 
-  val empty = LongMap()
+  val empty = IntToLongMap()
 
-  def apply(elems: (String, Long)*): LongMap = {
-    LongMap(elems.toMap)
+  def apply(elems: (Int, Long)*): IntToLongMap = {
+    IntToLongMap(elems.toMap)
   }
 
-  def apply(map: Map[String, Long]): LongMap = {
-    new LongMap(new DataMap(map.map { case (k, v) => coerceKeyOutput(k) -> coerceOutput(v) }.asJava))
+  def apply(map: Map[Int, Long]): IntToLongMap = {
+    new IntToLongMap(new DataMap(map.map { case (k, v) => coerceKeyOutput(k) -> coerceOutput(v) }.asJava))
   }
 
-  def apply(dataMap: DataMap, conversion: DataConversion): LongMap = {
-    new LongMap(DataTemplates.makeImmutable(dataMap, SCHEMA, conversion))
+  def apply(dataMap: DataMap, conversion: DataConversion): IntToLongMap = {
+    new IntToLongMap(DataTemplates.makeImmutable(dataMap, SCHEMA, conversion))
   }
 
   def newBuilder = new DataBuilder()
 
-  implicit val canBuildFrom = new CanBuildFrom[LongMap, (String, Long), LongMap] {
-    def apply(from: LongMap) = new DataBuilder(from)
+  implicit val canBuildFrom = new CanBuildFrom[IntToLongMap, (Int, Long), IntToLongMap] {
+    def apply(from: IntToLongMap) = new DataBuilder(from)
     def apply() = newBuilder
   }
 
-  class DataBuilder(initial: LongMap) extends mutable.Builder[(String, Long), LongMap] {
-    def this() = this(new LongMap(new DataMap()))
+  class DataBuilder(initial: IntToLongMap) extends mutable.Builder[(Int, Long), IntToLongMap] {
+    def this() = this(new IntToLongMap(new DataMap()))
 
     val entries = new DataMap(initial.data())
 
-    def +=(kv: (String, Long)): this.type = {
+    def +=(kv: (Int, Long)): this.type = {
       val (key, value) = kv
       entries.put(coerceKeyOutput(key), coerceOutput(value))
       this
@@ -147,7 +147,7 @@ object LongMap {
 
     def result() = {
       entries.setReadOnly()
-      new LongMap(entries)
+      new IntToLongMap(entries)
     }
   }
 
@@ -159,11 +159,11 @@ object LongMap {
   }
 
 
-  private def coerceKeyOutput(key: String): String = {
+  private def coerceKeyOutput(key: Int): String = {
     
-  def coerceKeyDataOutput(value: String): AnyRef = {
+  def coerceKeyDataOutput(value: Int): AnyRef = {
     
-        DataTemplateUtil.coerceInput(value, classOf[java.lang.String], classOf[java.lang.String])
+        DataTemplateUtil.coerceInput(Int.box(value), classOf[java.lang.Integer], classOf[java.lang.Integer])
       
   }
 

@@ -60,7 +60,7 @@ object ScalaDataTemplateGenerator {
       targetDirectoryPath,
       sources,
       false
-      /*generatePredef = true*/)
+      /*,generatePredef = true*/)
 
     result.getTargetFiles.asScala.foreach { file =>
       System.out.println(file.getAbsolutePath)
@@ -77,7 +77,7 @@ object ScalaDataTemplateGenerator {
       generatePredef: Boolean = false): GeneratorResult = {
 
     val schemaParser = new DataSchemaParser(resolverPath)
-    val specGenerator = new TemplateSpecGenerator(schemaParser.getSchemaResolver)
+    val specGenerator = new CourierTemplateSpecGenerator(schemaParser.getSchemaResolver)
 
     val targetDirectory = new File(targetDirectoryPath)
     targetDirectory.delete()

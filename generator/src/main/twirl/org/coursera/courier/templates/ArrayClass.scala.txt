@@ -18,7 +18,6 @@
   import com.linkedin.data.template.DataTemplate
   import org.coursera.courier.templates.DataTemplates
   import org.coursera.courier.templates.DataTemplates.DataConversion
-
   import scala.collection.GenTraversable
   import scala.collection.JavaConverters._
   import scala.collection.generic.CanBuildFrom
