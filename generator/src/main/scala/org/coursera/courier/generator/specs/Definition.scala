@@ -26,6 +26,7 @@ import com.linkedin.pegasus.generator.spec.PrimitiveTemplateSpec
 import com.linkedin.pegasus.generator.spec.RecordTemplateSpec
 import com.linkedin.pegasus.generator.spec.TyperefTemplateSpec
 import com.linkedin.pegasus.generator.spec.UnionTemplateSpec
+import org.coursera.courier.generator.CourierMapTemplateSpec
 import org.coursera.courier.generator.CourierPredef
 import org.coursera.courier.generator.ScalaEscaping
 import scala.collection.JavaConverters._
@@ -64,7 +65,9 @@ abstract class Definition(spec: ClassTemplateSpec) extends Deprecatable {
    *
    * Only present for complex types.
    */
-  def namespace: Option[String] = Option(spec.getNamespace)
+  def namespace: Option[String] = Option(spec.getNamespace).flatMap { ns =>
+    if (ns.trim.isEmpty) None else Some(ns)
+  }
 
   /**
    * The fully qualified name of the scala type.
@@ -177,7 +180,7 @@ object Definition {
       case union: UnionTemplateSpec => UnionDefinition(union)
       case enum: EnumTemplateSpec => EnumDefinition(enum)
       case array: ArrayTemplateSpec => ArrayDefinition(array)
-      case map: MapTemplateSpec => MapDefinition(map)
+      case map: CourierMapTemplateSpec => MapDefinition(map)
       case typeref: TyperefTemplateSpec => TyperefDefinition(typeref)
       case fixed: FixedTemplateSpec => FixedDefinition(fixed)
       case primitive: PrimitiveTemplateSpec => PrimitiveDefinition(primitive)

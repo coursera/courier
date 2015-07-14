@@ -10,7 +10,7 @@
         "name": "OptionalIntCustomType",
         "type": "typeref",
         "ref": "int",
-        "java": {
+        "scala": {
           "class": "org.coursera.courier.generator.customtypes.CustomInt",
           "coercerClass": "org.coursera.courier.generator.customtypes.CustomIntCoercer"
         }

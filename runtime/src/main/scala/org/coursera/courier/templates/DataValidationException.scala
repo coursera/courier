@@ -17,6 +17,7 @@
 package org.coursera.courier.templates
 
 import com.linkedin.data.schema.validation.ValidationResult
+
 import scala.collection.JavaConverters._
 
 class DataValidationException(val validationResult: ValidationResult)

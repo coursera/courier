@@ -1,0 +1,10 @@
+{
+  "type": "record",
+  "name": "WithoutNamespace",
+  "fields": [
+    {
+      "name": "field1",
+      "type": "string"
+    }
+  ]
+}

@@ -33,13 +33,13 @@
 
 
  
-@Generated(value = Array("FloatMap"), comments="Courier Data Template.", date = "Fri Jul 10 10:23:12 PDT 2015")
- final class FloatMap(private val dataMap: DataMap)
-  extends immutable.Iterable[(String, Float)]
-  with Map[String, Float]
-  with immutable.MapLike[String, Float, immutable.Map[String, Float]]
+@Generated(value = Array("IntToFloatMap"), comments="Courier Data Template.", date = "Fri Jul 10 10:23:12 PDT 2015")
+ final class IntToFloatMap(private val dataMap: DataMap)
+  extends immutable.Iterable[(Int, Float)]
+  with Map[Int, Float]
+  with immutable.MapLike[Int, Float, immutable.Map[Int, Float]]
   with DataTemplate[DataMap] {
-  import FloatMap._
+  import IntToFloatMap._
 
   
   private[this] lazy val map = dataMap.asScala.map { case (k, v) => coerceKeyInput(k) -> coerceInput(v) }.toMap
@@ -52,11 +52,11 @@
   }
 
 
-  private[this] def coerceKeyInput(key: String): String = {
+  private[this] def coerceKeyInput(key: String): Int = {
     
-  def coerceKeyDataInput(any: AnyRef): String = {
+  def coerceKeyDataInput(any: AnyRef): Int = {
     
-        DataTemplateUtil.coerceOutput(any, classOf[java.lang.String])
+        DataTemplateUtil.coerceOutput(any, classOf[java.lang.Integer])
       
   }
 
@@ -64,40 +64,40 @@
     coerceKeyDataInput(InlineStringCodec.stringToData(key, KEY_SCHEMA))
   }
 
-  override def get(key: String): Option[Float] = map.get(key)
+  override def get(key: Int): Option[Float] = map.get(key)
 
-  override def iterator: Iterator[(String, Float)] = map.iterator
+  override def iterator: Iterator[(Int, Float)] = map.iterator
 
-  override def +[F >: Float](kv: (String, F)): Map[String, F] = {
+  override def +[F >: Float](kv: (Int, F)): Map[Int, F] = {
     val (key, value) = kv
     value match {
       case v: Float =>
         val copy = dataMap.copy()
         copy.put(coerceKeyOutput(key), coerceOutput(v))
         copy.setReadOnly()
-        new FloatMap(copy)
+        new IntToFloatMap(copy)
       case _: Any =>
         (iterator ++ Iterator.single(kv)).toMap
     }
   }
 
-  override def -(key: String): FloatMap = {
+  override def -(key: Int): IntToFloatMap = {
     val copy = dataMap.copy()
     copy.remove(key)
     copy.setReadOnly()
-    new FloatMap(copy)
+    new IntToFloatMap(copy)
   }
 
-  override def schema(): DataSchema = FloatMap.SCHEMA
+  override def schema(): DataSchema = IntToFloatMap.SCHEMA
 
   override def data(): DataMap = dataMap
 
   override def copy(): DataTemplate[DataMap] = this
 }
 
-object FloatMap {
-  val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"map","values":"float"}""").asInstanceOf[MapDataSchema]
-  val KEY_SCHEMA = DataTemplateUtil.parseSchema(""""string"""")
+object IntToFloatMap {
+  val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"map","values":"float","keys":"int"}""").asInstanceOf[MapDataSchema]
+  val KEY_SCHEMA = DataTemplateUtil.parseSchema(""""int"""")
 
   
   
@@ -109,33 +109,33 @@ object FloatMap {
 
 
 
-  val empty = FloatMap()
+  val empty = IntToFloatMap()
 
-  def apply(elems: (String, Float)*): FloatMap = {
-    FloatMap(elems.toMap)
+  def apply(elems: (Int, Float)*): IntToFloatMap = {
+    IntToFloatMap(elems.toMap)
   }
 
-  def apply(map: Map[String, Float]): FloatMap = {
-    new FloatMap(new DataMap(map.map { case (k, v) => coerceKeyOutput(k) -> coerceOutput(v) }.asJava))
+  def apply(map: Map[Int, Float]): IntToFloatMap = {
+    new IntToFloatMap(new DataMap(map.map { case (k, v) => coerceKeyOutput(k) -> coerceOutput(v) }.asJava))
   }
 
-  def apply(dataMap: DataMap, conversion: DataConversion): FloatMap = {
-    new FloatMap(DataTemplates.makeImmutable(dataMap, SCHEMA, conversion))
+  def apply(dataMap: DataMap, conversion: DataConversion): IntToFloatMap = {
+    new IntToFloatMap(DataTemplates.makeImmutable(dataMap, SCHEMA, conversion))
   }
 
   def newBuilder = new DataBuilder()
 
-  implicit val canBuildFrom = new CanBuildFrom[FloatMap, (String, Float), FloatMap] {
-    def apply(from: FloatMap) = new DataBuilder(from)
+  implicit val canBuildFrom = new CanBuildFrom[IntToFloatMap, (Int, Float), IntToFloatMap] {
+    def apply(from: IntToFloatMap) = new DataBuilder(from)
     def apply() = newBuilder
   }
 
-  class DataBuilder(initial: FloatMap) extends mutable.Builder[(String, Float), FloatMap] {
-    def this() = this(new FloatMap(new DataMap()))
+  class DataBuilder(initial: IntToFloatMap) extends mutable.Builder[(Int, Float), IntToFloatMap] {
+    def this() = this(new IntToFloatMap(new DataMap()))
 
     val entries = new DataMap(initial.data())
 
-    def +=(kv: (String, Float)): this.type = {
+    def +=(kv: (Int, Float)): this.type = {
       val (key, value) = kv
       entries.put(coerceKeyOutput(key), coerceOutput(value))
       this
@@ -147,7 +147,7 @@ object FloatMap {
 
     def result() = {
       entries.setReadOnly()
-      new FloatMap(entries)
+      new IntToFloatMap(entries)
     }
   }
 
@@ -159,11 +159,11 @@ object FloatMap {
   }
 
 
-  private def coerceKeyOutput(key: String): String = {
+  private def coerceKeyOutput(key: Int): String = {
     
-  def coerceKeyDataOutput(value: String): AnyRef = {
+  def coerceKeyDataOutput(value: Int): AnyRef = {
     
-        DataTemplateUtil.coerceInput(value, classOf[java.lang.String], classOf[java.lang.String])
+        DataTemplateUtil.coerceInput(Int.box(value), classOf[java.lang.Integer], classOf[java.lang.Integer])
       
   }
 

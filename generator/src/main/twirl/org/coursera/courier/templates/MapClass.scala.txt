@@ -4,6 +4,56 @@
 @import com.linkedin.data.schema.JsonBuilder
 @import org.coursera.courier.generator.specs._
 
+@inputCoercer(methodName: String, inputClass: Definition) = {
+  def @(methodName)(any: AnyRef): @(inputClass.scalaTypeFullname) = {
+    @inputClass match {
+      case _: RecordDefinition | _: MapDefinition | _: UnionDefinition => {
+        @(inputClass.scalaTypeFullname)(any.asInstanceOf[DataMap], DataConversion.SetReadOnly)
+      }
+      case _: ArrayDefinition => {
+        @(inputClass.scalaTypeFullname)(any.asInstanceOf[DataList], DataConversion.SetReadOnly)
+      }
+      case primitiveItem: PrimitiveDefinition => {
+        DataTemplateUtil.coerceOutput(any, classOf[@(primitiveItem.dataType)])
+      }
+      case enumItem: EnumDefinition => {
+        @(enumItem.enumFullname).fromString(any.asInstanceOf[String])
+      }
+      case customItem: ClassDefinition => {
+        DataTemplateUtil.coerceOutput(any, classOf[@(inputClass.scalaTypeFullname)])
+      }
+      case fixedItem: FixedDefinition => {
+        @(inputClass.scalaTypeFullname)(DataTemplateUtil.coerceOutput(any, classOf[ByteString]))
+      }
+    }
+  }
+}
+
+@outputCoercer(methodName: String, outputClass: Definition, outputDataClass: Option[Definition]) = {
+  def @(methodName)(value: @(outputClass.scalaTypeFullname)): AnyRef = {
+    @outputClass match {
+      case _: RecordDefinition | _: MapDefinition | _: UnionDefinition => {
+        value.data()
+      }
+      case _: ArrayDefinition => {
+        value.data()
+      }
+      case fixedItem: FixedDefinition => {
+        DataTemplateUtil.coerceInput(value.bytes(), classOf[ByteString], classOf[ByteString])
+      }
+      case primitiveItem: PrimitiveDefinition => {
+        DataTemplateUtil.coerceInput(@primitiveItem.maybeBox{value}, classOf[@(primitiveItem.dataType)], classOf[@(primitiveItem.dataType)])
+      }
+      case enumItem: EnumDefinition => {
+        value.toString
+      }
+      case customItem: ClassDefinition => {
+        DataTemplateUtil.coerceInput(value, classOf[@(outputClass.scalaTypeFullname)], classOf[@(outputDataClass.get.scalaTypeFullname)])
+      }
+    }
+  }
+}
+
 @if(map.isTopLevel) {
   @map.namespace.map { namespace => package @namespace }
 
@@ -23,51 +73,37 @@
   import scala.collection.mutable
   import scala.collection.JavaConverters._
   import com.linkedin.data.template.Custom
+  import org.coursera.courier.codecs.InlineStringCodec
 }
 
 @ClassAnnotations(map) final class @(map.scalaType)(private val dataMap: DataMap)
-  extends immutable.Iterable[(String, @(map.valueClass.scalaTypeFullname))]
-  with Map[String, @(map.valueClass.scalaTypeFullname)]
-  with immutable.MapLike[String, @(map.valueClass.scalaTypeFullname), immutable.Map[String, @(map.valueClass.scalaTypeFullname)]]
+  extends immutable.Iterable[(@(map.keyClass.scalaTypeFullname), @(map.valueClass.scalaTypeFullname))]
+  with Map[@(map.keyClass.scalaTypeFullname), @(map.valueClass.scalaTypeFullname)]
+  with immutable.MapLike[@(map.keyClass.scalaTypeFullname), @(map.valueClass.scalaTypeFullname), immutable.Map[@(map.keyClass.scalaTypeFullname), @(map.valueClass.scalaTypeFullname)]]
   with DataTemplate[DataMap] {
   import @(map.scalaType)._
 
   @* TODO(jbetz): Caching the whole map when we first access it may not be performant, need to benchmark. *@
-  private[this] lazy val map = dataMap.asScala.map { case (k, v) => k -> coerceInput(v) }.toMap
+  private[this] lazy val map = dataMap.asScala.map { case (k, v) => coerceKeyInput(k) -> coerceInput(v) }.toMap
 
-  private[this] def coerceInput(any: AnyRef): @(map.valueClass.scalaTypeFullname) = {
-    @map.valueClass match {
-      case _: RecordDefinition | _: MapDefinition | _: UnionDefinition => {
-        @(map.valueClass.scalaTypeFullname)(any.asInstanceOf[DataMap], DataConversion.SetReadOnly)
-      }
-      case _: ArrayDefinition => {
-        @(map.valueClass.scalaTypeFullname)(any.asInstanceOf[DataList], DataConversion.SetReadOnly)
-      }
-      case primitiveItem: PrimitiveDefinition => {
-        DataTemplateUtil.coerceOutput(any, classOf[@(primitiveItem.dataType)])
-      }
-      case enumItem: EnumDefinition => {
-        @(enumItem.enumName).fromString(any.asInstanceOf[String])
-      }
-      case customItem: ClassDefinition => {
-        DataTemplateUtil.coerceOutput(any, classOf[@(map.valueClass.scalaTypeFullname)])
-      }
-      case fixedItem: FixedDefinition => {
-        @(map.valueClass.scalaTypeFullname)(DataTemplateUtil.coerceOutput(any, classOf[ByteString]))
-      }
-    }
+  private[this] @inputCoercer("coerceInput", map.valueClass)
+
+  private[this] def coerceKeyInput(key: String): @(map.keyClass.scalaTypeFullname) = {
+    @inputCoercer("coerceKeyDataInput", map.keyClass)
+
+    coerceKeyDataInput(InlineStringCodec.stringToData(key, KEY_SCHEMA))
   }
 
-  override def get(key: String): Option[@(map.valueClass.scalaTypeFullname)] = map.get(key)
+  override def get(key: @(map.keyClass.scalaTypeFullname)): Option[@(map.valueClass.scalaTypeFullname)] = map.get(key)
 
-  override def iterator: Iterator[(String, @(map.valueClass.scalaTypeFullname))] = map.iterator
+  override def iterator: Iterator[(@(map.keyClass.scalaTypeFullname), @(map.valueClass.scalaTypeFullname))] = map.iterator
 
-  override def +[F >: @(map.valueClass.scalaTypeFullname)](kv: (String, F)): Map[String, F] = {
+  override def +[F >: @(map.valueClass.scalaTypeFullname)](kv: (@(map.keyClass.scalaTypeFullname), F)): Map[@(map.keyClass.scalaTypeFullname), F] = {
     val (key, value) = kv
     value match {
       case v: @(map.valueClass.scalaTypeFullname) =>
         val copy = dataMap.copy()
-        copy.put(key, coerceOutput(v))
+        copy.put(coerceKeyOutput(key), coerceOutput(v))
         copy.setReadOnly()
         new @(map.scalaType)(copy)
       case _: Any =>
@@ -75,9 +111,9 @@
     }
   }
 
-  override def -(key: String): @(map.scalaType) = {
+  override def -(key: @(map.keyClass.scalaTypeFullname)): @(map.scalaType) = {
     val copy = dataMap.copy()
-    copy.remove(key)
+    copy.remove(coerceKeyOutput(key))
     copy.setReadOnly()
     new @(map.scalaType)(copy)
   }
@@ -91,9 +127,10 @@
 
 object @(map.scalaType) {
   val SCHEMA = DataTemplateUtil.parseSchema(@("\"\"\"" + SchemaToJsonEncoder.schemaToJson(map.mapSchema, JsonBuilder.Pretty.COMPACT) + "\"\"\"")).asInstanceOf[MapDataSchema]
+  val KEY_SCHEMA = DataTemplateUtil.parseSchema(@("\"\"\"" + SchemaToJsonEncoder.schemaToJson(map.keySchema, JsonBuilder.Pretty.COMPACT) + "\"\"\""))
 
   @* Register custom types and coercers. *@
-  @map.customInfo.map { customInfo =>
+  @map.customInfos.map { customInfo =>
     Custom.initializeCustomClass(classOf[@(customInfo.customClass.scalaTypeFullname)])
     @customInfo.coercerClass.map { coercer =>
       @(coercer.scalaTypeFullname).registerCoercer()
@@ -105,12 +142,12 @@ object @(map.scalaType) {
 
   val empty = @(map.scalaType)()
 
-  def apply(elems: (String, @(map.valueClass.scalaTypeFullname))*): @(map.scalaType) = {
+  def apply(elems: (@(map.keyClass.scalaTypeFullname), @(map.valueClass.scalaTypeFullname))*): @(map.scalaType) = {
     @(map.scalaType)(elems.toMap)
   }
 
-  def apply(map: Map[String, @(map.valueClass.scalaTypeFullname)]): @(map.scalaType) = {
-    new @(map.scalaType)(new DataMap(map.mapValues(coerceOutput).asJava))
+  def apply(map: Map[@(map.keyClass.scalaTypeFullname), @(map.valueClass.scalaTypeFullname)]): @(map.scalaType) = {
+    new @(map.scalaType)(new DataMap(map.map { case (k, v) => coerceKeyOutput(k) -> coerceOutput(v) }.asJava))
   }
 
   def apply(dataMap: DataMap, conversion: DataConversion): @(map.scalaType) = {
@@ -119,19 +156,19 @@ object @(map.scalaType) {
 
   def newBuilder = new DataBuilder()
 
-  implicit val canBuildFrom = new CanBuildFrom[@(map.scalaType), (String, @(map.valueClass.scalaTypeFullname)), @(map.scalaType)] {
+  implicit val canBuildFrom = new CanBuildFrom[@(map.scalaType), (@(map.keyClass.scalaTypeFullname), @(map.valueClass.scalaTypeFullname)), @(map.scalaType)] {
     def apply(from: @(map.scalaType)) = new DataBuilder(from)
     def apply() = newBuilder
   }
 
-  class DataBuilder(initial: @(map.scalaType)) extends mutable.Builder[(String, @(map.valueClass.scalaTypeFullname)), @(map.scalaType)] {
+  class DataBuilder(initial: @(map.scalaType)) extends mutable.Builder[(@(map.keyClass.scalaTypeFullname), @(map.valueClass.scalaTypeFullname)), @(map.scalaType)] {
     def this() = this(new @(map.scalaType)(new DataMap()))
 
     val entries = new DataMap(initial.data())
 
-    def +=(kv: (String, @(map.valueClass.scalaTypeFullname))): this.type = {
+    def +=(kv: (@(map.keyClass.scalaTypeFullname), @(map.valueClass.scalaTypeFullname))): this.type = {
       val (key, value) = kv
-      entries.put(key, coerceOutput(value))
+      entries.put(coerceKeyOutput(key), coerceOutput(value))
       this
     }
 
@@ -145,26 +182,11 @@ object @(map.scalaType) {
     }
   }
 
-  private def coerceOutput(value: @(map.valueClass.scalaTypeFullname)): AnyRef = {
-    @map.valueClass match {
-      case _: RecordDefinition | _: MapDefinition | _: UnionDefinition => {
-        value.data()
-      }
-      case _: ArrayDefinition => {
-        value.data()
-      }
-      case fixedItem: FixedDefinition => {
-        DataTemplateUtil.coerceInput(value.bytes(), classOf[ByteString], classOf[ByteString])
-      }
-      case primitiveItem: PrimitiveDefinition => {
-        DataTemplateUtil.coerceInput(@primitiveItem.maybeBox{value}, classOf[@(primitiveItem.dataType)], classOf[@(primitiveItem.dataType)])
-      }
-      case enumItem: EnumDefinition => {
-        value.toString
-      }
-      case customItem: ClassDefinition => {
-        DataTemplateUtil.coerceInput(value, classOf[@(map.valueClass.scalaTypeFullname)], classOf[@(map.valueDataClass.get.scalaTypeFullname)])
-      }
-    }
+  private @outputCoercer("coerceOutput", map.valueClass, map.valueDataClass)
+
+  private def coerceKeyOutput(key: @(map.keyClass.scalaTypeFullname)): String = {
+    @outputCoercer("coerceKeyDataOutput", map.keyClass, map.keyDataClass)
+
+    InlineStringCodec.dataToString(coerceKeyDataOutput(key))
   }
 }

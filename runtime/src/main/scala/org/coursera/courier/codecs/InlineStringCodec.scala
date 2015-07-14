@@ -29,10 +29,28 @@ import com.linkedin.data.DataComplex
 import com.linkedin.data.DataList
 import com.linkedin.data.DataMap
 import com.linkedin.data.codec.DataCodec
+import com.linkedin.data.schema.ArrayDataSchema
+import com.linkedin.data.schema.BooleanDataSchema
+import com.linkedin.data.schema.BytesDataSchema
+import com.linkedin.data.schema.DataSchema
+import com.linkedin.data.schema.DoubleDataSchema
+import com.linkedin.data.schema.EnumDataSchema
+import com.linkedin.data.schema.FixedDataSchema
+import com.linkedin.data.schema.FloatDataSchema
+import com.linkedin.data.schema.IntegerDataSchema
+import com.linkedin.data.schema.LongDataSchema
+import com.linkedin.data.schema.MapDataSchema
+import com.linkedin.data.schema.RecordDataSchema
+import com.linkedin.data.schema.StringDataSchema
+import com.linkedin.data.schema.UnionDataSchema
+import com.linkedin.data.schema.validation.CoercionMode
+import com.linkedin.data.schema.validation.RequiredMode
+import com.linkedin.data.schema.validation.ValidateDataAgainstSchema
+import com.linkedin.data.schema.validation.ValidationOptions
 
+import scala.collection.JavaConverters._
 import scala.collection.immutable.SortedSet
 import scala.util.parsing.combinator.RegexParsers
-import scala.collection.JavaConverters._
 
 /**
  * Provides a URL "Friendly" string encoding of data.
@@ -146,6 +164,84 @@ class InlineStringCodec extends DataCodec {
 
 object InlineStringCodec {
   val charset = Charset.forName("UTF-8")
+
+  val defaultValidationOptions = new ValidationOptions(
+    RequiredMode.FIXUP_ABSENT_WITH_DEFAULT,
+    CoercionMode.STRING_TO_PRIMITIVE)
+
+  val instance = new InlineStringCodec()
+
+  /**
+   * Returns the deserialized string value, either a primitive Scala type, a [[ByteString]],
+   * a [[DataMap]] or a [[DataList]], depending on the schema provided.
+   * Throws an [[IOException]] or [[NumberFormatException]] if deserialization
+   * fails.
+   *
+   * For primitive types Scala's built in primitive serializiation/deserialization is used.
+   * For [[ByteString]], "avro string" format is used.
+   * For complex types, [[InlineStringCodec]] is used.
+   */
+  def stringToData(key: String, schema: DataSchema): AnyRef = {
+    schema.getDereferencedDataSchema match {
+      case _: IntegerDataSchema => Int.box(key.toInt)
+      case _: LongDataSchema => Long.box(key.toInt)
+      case _: FloatDataSchema => Float.box(key.toFloat)
+      case _: DoubleDataSchema => Double.box(key.toDouble)
+      case _: BooleanDataSchema => Boolean.box(key.toBoolean)
+      case _: StringDataSchema => key
+      case _: BytesDataSchema => ByteString.copyString(key, InlineStringCodec.charset)
+      case _: RecordDataSchema | _: UnionDataSchema | _: MapDataSchema =>
+        stringToDataMap(key, schema)
+      case _: ArrayDataSchema => stringToDataList(key, schema)
+      case _: EnumDataSchema => key
+      case _: FixedDataSchema => ByteString.copyString(key, InlineStringCodec.charset)
+      case unknown: DataSchema =>
+        throw new IllegalArgumentException(s"Unsupported schema type: ${unknown.getClass}")
+    }
+  }
+
+  private[this] def stringToDataMap(key: String, schema: DataSchema): DataMap = {
+    val map = instance.bytesToMap(key.getBytes(InlineStringCodec.charset))
+    val validationResult = ValidateDataAgainstSchema.validate(map, schema, defaultValidationOptions)
+    if (!validationResult.isValid) {
+      throw new IOException(validationResult.getMessages.asScala.map(_.toString).mkString(", "))
+    }
+    map
+  }
+
+  private[this] def stringToDataList(key: String, schema: DataSchema): DataList = {
+    val list = instance.bytesToList(key.getBytes(InlineStringCodec.charset))
+    val validationResult =
+      ValidateDataAgainstSchema.validate(list, schema, defaultValidationOptions)
+    if (!validationResult.isValid) {
+      throw new IOException(validationResult.getMessages.asScala.map(_.toString).mkString(", "))
+    }
+    list
+  }
+
+  /**
+   * Returns the serialized value of the given data. Accepts primitive Scala types, [[ByteString]],
+   * [[DataMap]] and [[DataList]].
+   *
+   * For primitive types Scala's built in primitive serializiation/deserialization is used.
+   * For [[ByteString]], "avro string" format is used.
+   * For complex types, [[InlineStringCodec]] is used.
+   */
+  def dataToString(any: AnyRef): String = {
+    any match {
+      case map: DataMap => new String(instance.mapToBytes(map), InlineStringCodec.charset)
+      case list: DataList => new String(instance.listToBytes(list), InlineStringCodec.charset)
+      case int: java.lang.Integer => int.toString
+      case long: java.lang.Long => long.toString
+      case float: java.lang.Float => float.toString
+      case double: java.lang.Double => double.toString
+      case boolean: java.lang.Boolean => boolean.toString
+      case string: String => string
+      case bytes: ByteString => bytes.asAvroString()
+      case unknown: AnyRef =>
+        throw new IllegalArgumentException(s"Unsupported type: ${unknown.getClass}")
+    }
+  }
 
   private[this] val escapeChar = '!'
   private[this] val startCollection = '('

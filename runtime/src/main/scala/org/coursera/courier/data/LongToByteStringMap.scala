@@ -33,13 +33,13 @@
 
 
  
-@Generated(value = Array("BytesMap"), comments="Courier Data Template.", date = "Fri Jul 10 10:23:12 PDT 2015")
- final class BytesMap(private val dataMap: DataMap)
-  extends immutable.Iterable[(String, ByteString)]
-  with Map[String, ByteString]
-  with immutable.MapLike[String, ByteString, immutable.Map[String, ByteString]]
+@Generated(value = Array("LongToByteStringMap"), comments="Courier Data Template.", date = "Fri Jul 10 10:23:12 PDT 2015")
+ final class LongToByteStringMap(private val dataMap: DataMap)
+  extends immutable.Iterable[(Long, ByteString)]
+  with Map[Long, ByteString]
+  with immutable.MapLike[Long, ByteString, immutable.Map[Long, ByteString]]
   with DataTemplate[DataMap] {
-  import BytesMap._
+  import LongToByteStringMap._
 
   
   private[this] lazy val map = dataMap.asScala.map { case (k, v) => coerceKeyInput(k) -> coerceInput(v) }.toMap
@@ -52,11 +52,11 @@
   }
 
 
-  private[this] def coerceKeyInput(key: String): String = {
+  private[this] def coerceKeyInput(key: String): Long = {
     
-  def coerceKeyDataInput(any: AnyRef): String = {
+  def coerceKeyDataInput(any: AnyRef): Long = {
     
-        DataTemplateUtil.coerceOutput(any, classOf[java.lang.String])
+        DataTemplateUtil.coerceOutput(any, classOf[java.lang.Long])
       
   }
 
@@ -64,40 +64,40 @@
     coerceKeyDataInput(InlineStringCodec.stringToData(key, KEY_SCHEMA))
   }
 
-  override def get(key: String): Option[ByteString] = map.get(key)
+  override def get(key: Long): Option[ByteString] = map.get(key)
 
-  override def iterator: Iterator[(String, ByteString)] = map.iterator
+  override def iterator: Iterator[(Long, ByteString)] = map.iterator
 
-  override def +[F >: ByteString](kv: (String, F)): Map[String, F] = {
+  override def +[F >: ByteString](kv: (Long, F)): Map[Long, F] = {
     val (key, value) = kv
     value match {
       case v: ByteString =>
         val copy = dataMap.copy()
         copy.put(coerceKeyOutput(key), coerceOutput(v))
         copy.setReadOnly()
-        new BytesMap(copy)
+        new LongToByteStringMap(copy)
       case _: Any =>
         (iterator ++ Iterator.single(kv)).toMap
     }
   }
 
-  override def -(key: String): BytesMap = {
+  override def -(key: Long): LongToByteStringMap = {
     val copy = dataMap.copy()
     copy.remove(key)
     copy.setReadOnly()
-    new BytesMap(copy)
+    new LongToByteStringMap(copy)
   }
 
-  override def schema(): DataSchema = BytesMap.SCHEMA
+  override def schema(): DataSchema = LongToByteStringMap.SCHEMA
 
   override def data(): DataMap = dataMap
 
   override def copy(): DataTemplate[DataMap] = this
 }
 
-object BytesMap {
-  val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"map","values":"bytes"}""").asInstanceOf[MapDataSchema]
-  val KEY_SCHEMA = DataTemplateUtil.parseSchema(""""string"""")
+object LongToByteStringMap {
+  val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"map","values":"bytes","keys":"long"}""").asInstanceOf[MapDataSchema]
+  val KEY_SCHEMA = DataTemplateUtil.parseSchema(""""long"""")
 
   
   
@@ -109,33 +109,33 @@ object BytesMap {
 
 
 
-  val empty = BytesMap()
+  val empty = LongToByteStringMap()
 
-  def apply(elems: (String, ByteString)*): BytesMap = {
-    BytesMap(elems.toMap)
+  def apply(elems: (Long, ByteString)*): LongToByteStringMap = {
+    LongToByteStringMap(elems.toMap)
   }
 
-  def apply(map: Map[String, ByteString]): BytesMap = {
-    new BytesMap(new DataMap(map.map { case (k, v) => coerceKeyOutput(k) -> coerceOutput(v) }.asJava))
+  def apply(map: Map[Long, ByteString]): LongToByteStringMap = {
+    new LongToByteStringMap(new DataMap(map.map { case (k, v) => coerceKeyOutput(k) -> coerceOutput(v) }.asJava))
   }
 
-  def apply(dataMap: DataMap, conversion: DataConversion): BytesMap = {
-    new BytesMap(DataTemplates.makeImmutable(dataMap, SCHEMA, conversion))
+  def apply(dataMap: DataMap, conversion: DataConversion): LongToByteStringMap = {
+    new LongToByteStringMap(DataTemplates.makeImmutable(dataMap, SCHEMA, conversion))
   }
 
   def newBuilder = new DataBuilder()
 
-  implicit val canBuildFrom = new CanBuildFrom[BytesMap, (String, ByteString), BytesMap] {
-    def apply(from: BytesMap) = new DataBuilder(from)
+  implicit val canBuildFrom = new CanBuildFrom[LongToByteStringMap, (Long, ByteString), LongToByteStringMap] {
+    def apply(from: LongToByteStringMap) = new DataBuilder(from)
     def apply() = newBuilder
   }
 
-  class DataBuilder(initial: BytesMap) extends mutable.Builder[(String, ByteString), BytesMap] {
-    def this() = this(new BytesMap(new DataMap()))
+  class DataBuilder(initial: LongToByteStringMap) extends mutable.Builder[(Long, ByteString), LongToByteStringMap] {
+    def this() = this(new LongToByteStringMap(new DataMap()))
 
     val entries = new DataMap(initial.data())
 
-    def +=(kv: (String, ByteString)): this.type = {
+    def +=(kv: (Long, ByteString)): this.type = {
       val (key, value) = kv
       entries.put(coerceKeyOutput(key), coerceOutput(value))
       this
@@ -147,7 +147,7 @@ object BytesMap {
 
     def result() = {
       entries.setReadOnly()
-      new BytesMap(entries)
+      new LongToByteStringMap(entries)
     }
   }
 
@@ -159,11 +159,11 @@ object BytesMap {
   }
 
 
-  private def coerceKeyOutput(key: String): String = {
+  private def coerceKeyOutput(key: Long): String = {
     
-  def coerceKeyDataOutput(value: String): AnyRef = {
+  def coerceKeyDataOutput(value: Long): AnyRef = {
     
-        DataTemplateUtil.coerceInput(value, classOf[java.lang.String], classOf[java.lang.String])
+        DataTemplateUtil.coerceInput(Long.box(value), classOf[java.lang.Long], classOf[java.lang.Long])
       
   }
 

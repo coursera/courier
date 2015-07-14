@@ -122,20 +122,6 @@ object Courier extends Build with OverridablePublishSettings {
       sbtPlugin := true,
       name := "courier-sbt-plugin")
 
-
-  // This is a temporary project. It contains hand written files that exemplify the structure of
-  // the Scala classes Courier should generate. Once the generator is stable, this project should
-  // be deleted, with schemas that we can use for testing moved into appropriate test directories.
-  lazy val spec = Project("spec", file("spec"))
-    .settings(
-      packagedArtifacts := Map.empty, // disable publishing for this project
-      libraryDependencies ++= Seq(
-        ExternalDependencies.Pegasus.data,
-        ExternalDependencies.Pegasus.dataAvro,
-        ExternalDependencies.JUnit.junit,
-        ExternalDependencies.Scalatest.scalatest,
-        ("joda-time" % "joda-time" % "2.0").withSources().withJavadoc()))
-
   lazy val root = Project(id = "courier", base = file("."))
     .aggregate(generator, runtime, courierSbtPlugin, generatorTest)
     .settings(runtimeVersionSettings)

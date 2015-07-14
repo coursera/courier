@@ -21,9 +21,6 @@ import com.linkedin.data.DataList
 import com.linkedin.data.DataMap
 import com.linkedin.data.codec.JacksonDataCodec
 import com.linkedin.data.schema.DataSchema
-import com.linkedin.data.schema.validation.RequiredMode
-import com.linkedin.data.schema.validation.ValidateDataAgainstSchema
-import com.linkedin.data.schema.validation.ValidationOptions
 
 object DataTemplates {
 

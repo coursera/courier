@@ -17,23 +17,37 @@
 package org.coursera.courier.generator
 
 import org.coursera.courier.data.BooleanMap
+import org.coursera.courier.data.BooleanToStringMap
+import org.coursera.courier.data.ByteStringToStringMap
 import org.coursera.courier.data.BytesMap
-import org.coursera.courier.templates.DataTemplates
-import DataTemplates.DataConversion
 import org.coursera.courier.data.DoubleMap
+import org.coursera.courier.data.DoubleToStringMap
 import org.coursera.courier.data.FloatMap
+import org.coursera.courier.data.FloatToStringMap
+import org.coursera.courier.data.IntArray
+import org.coursera.courier.data.IntArrayToStringMap
 import org.coursera.courier.data.IntMap
+import org.coursera.courier.data.IntToStringMap
 import org.coursera.courier.data.LongMap
+import org.coursera.courier.data.LongToStringMap
 import org.coursera.courier.data.StringMap
 import org.coursera.courier.generator.customtypes.CustomInt
+import org.coursera.courier.templates.DataTemplates
+import org.coursera.courier.templates.DataTemplates.DataConversion
 import org.coursera.customtypes.CustomIntMap
+import org.coursera.customtypes.CustomIntToStringMap
 import org.coursera.enums.Fruits
 import org.coursera.enums.FruitsMap
+import org.coursera.enums.FruitsToStringMap
 import org.coursera.fixed.Fixed8
 import org.coursera.fixed.Fixed8Map
+import org.coursera.fixed.Fixed8ToStringMap
+import org.coursera.maps.RecordKey
+import org.coursera.maps.RecordKeyToStringMap
 import org.coursera.maps.WithComplexTypesMap
 import org.coursera.maps.WithCustomTypesMap
 import org.coursera.maps.WithPrimitivesMap
+import org.coursera.maps.WithTypedKeyMap
 import org.coursera.records.test.Empty
 import org.coursera.records.test.EmptyMap
 import org.coursera.records.test.Simple
@@ -41,7 +55,7 @@ import org.coursera.records.test.SimpleArray
 import org.coursera.records.test.SimpleArrayMap
 import org.coursera.records.test.SimpleMap
 import org.coursera.records.test.SimpleMapMap
-import org.junit.BeforeClass
+import org.coursera.records.test.SimpleToStringMap
 import org.junit.Test
 
 class MapGeneratorTest extends GeneratorTest with SchemaFixtures {
@@ -59,7 +73,7 @@ class MapGeneratorTest extends GeneratorTest with SchemaFixtures {
     val roundTripped = WithComplexTypesMap(roundTrip(original.data()), DataConversion.SetReadOnly)
     assert(original === roundTripped)
 
-    Seq(original, roundTripped).map { record =>
+    Seq(original, roundTripped).foreach { record =>
       assertJson(record,
         s"""{
       |  "empties" : {
@@ -107,7 +121,7 @@ class MapGeneratorTest extends GeneratorTest with SchemaFixtures {
 
     assert(original === roundTripped)
 
-    Seq(original, roundTripped).map { record =>
+    Seq(original, roundTripped).foreach { record =>
       assertJson(original,
         s"""{
         |  "bytes" : {
@@ -150,16 +164,14 @@ class MapGeneratorTest extends GeneratorTest with SchemaFixtures {
   }
 
   @Test
-  def
-  testWithCustomTypesMap(): Unit = {
+  def testWithCustomTypesMap(): Unit = {
     val original = WithCustomTypesMap(
       CustomIntMap("a" -> CustomInt(1), "b" -> CustomInt(2), "c" ->CustomInt(3)))
-    val
-    roundTripped = WithCustomTypesMap(roundTrip(original.data()), DataConversion.SetReadOnly)
+    val roundTripped = WithCustomTypesMap(roundTrip(original.data()), DataConversion.SetReadOnly)
 
     assert(original === roundTripped)
 
-    Seq(original, roundTripped).map { record =>
+    Seq(original, roundTripped).foreach { record =>
       assertJson(original,
         """{
         |  "ints" : {
@@ -169,5 +181,55 @@ class MapGeneratorTest extends GeneratorTest with SchemaFixtures {
         |  }
         |}""".stripMargin)
     }
+  }
+
+  @Test
+  def testWithTypedKeyMap(): Unit = {
+    val original = WithTypedKeyMap(
+      IntToStringMap(1 -> "int"),
+      LongToStringMap(2L -> "long"),
+      FloatToStringMap(3.14f -> "float"),
+      DoubleToStringMap(2.71d -> "double"),
+      BooleanToStringMap(true -> "boolean"),
+      StringMap("key" -> "string"),
+      ByteStringToStringMap(bytesFixed8 -> "bytes"),
+      SimpleToStringMap(Simple(Some("key")) -> "record"),
+      IntArrayToStringMap(IntArray(1, 2) -> "array"),
+      FruitsToStringMap(Fruits.APPLE -> "enum"),
+      CustomIntToStringMap(CustomInt(100) -> "custom"),
+      Fixed8ToStringMap(Fixed8(bytesFixed8) -> "fixed"),
+      RecordKeyToStringMap(RecordKey(100, false) -> "inlineRecord"))
+
+    val roundTripped = WithTypedKeyMap(roundTrip(original.data()), DataConversion.SetReadOnly)
+
+    assert(original === roundTripped)
+
+    Seq(original, roundTripped).foreach { record =>
+      assertJson(original,
+        s"""{
+          |  "ints" : { "1": "int" },
+          |  "longs" : { "2": "long" },
+          |  "floats" : { "3.14": "float" },
+          |  "doubles" : { "2.71": "double" },
+          |  "booleans" : { "true": "boolean" },
+          |  "strings" : { "key": "string" },
+          |  "bytes" : { "$bytesFixed8String": "bytes" },
+          |  "record" : { "(message~key)": "record" },
+          |  "array" : { "List(1,2)": "array" },
+          |  "enum" : { "APPLE": "enum" },
+          |  "custom" : { "100": "custom" },
+          |  "fixed" : { "$bytesFixed8String": "fixed" },
+          |  "inlineRecord": { "(x~100,y~false)": "inlineRecord" }
+          |}""".stripMargin)
+    }
+  }
+
+  @Test
+  def testTypedMapOperations(): Unit = {
+    val customMap = CustomIntToStringMap(CustomInt(100) -> "custom")
+    assert(customMap.get(CustomInt(100)) === Some("custom"))
+    assert((customMap - CustomInt(100)).size === 0)
+    assert((customMap + (CustomInt(101) -> "custom2")).size === 2)
+    assert(customMap.iterator.toSeq == Seq(CustomInt(100) -> "custom"))
   }
 }

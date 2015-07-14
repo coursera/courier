@@ -33,13 +33,13 @@
 
 
  
-@Generated(value = Array("BooleanMap"), comments="Courier Data Template.", date = "Fri Jul 10 10:23:12 PDT 2015")
- final class BooleanMap(private val dataMap: DataMap)
-  extends immutable.Iterable[(String, Boolean)]
-  with Map[String, Boolean]
-  with immutable.MapLike[String, Boolean, immutable.Map[String, Boolean]]
+@Generated(value = Array("IntToBooleanMap"), comments="Courier Data Template.", date = "Fri Jul 10 10:23:12 PDT 2015")
+ final class IntToBooleanMap(private val dataMap: DataMap)
+  extends immutable.Iterable[(Int, Boolean)]
+  with Map[Int, Boolean]
+  with immutable.MapLike[Int, Boolean, immutable.Map[Int, Boolean]]
   with DataTemplate[DataMap] {
-  import BooleanMap._
+  import IntToBooleanMap._
 
   
   private[this] lazy val map = dataMap.asScala.map { case (k, v) => coerceKeyInput(k) -> coerceInput(v) }.toMap
@@ -52,11 +52,11 @@
   }
 
 
-  private[this] def coerceKeyInput(key: String): String = {
+  private[this] def coerceKeyInput(key: String): Int = {
     
-  def coerceKeyDataInput(any: AnyRef): String = {
+  def coerceKeyDataInput(any: AnyRef): Int = {
     
-        DataTemplateUtil.coerceOutput(any, classOf[java.lang.String])
+        DataTemplateUtil.coerceOutput(any, classOf[java.lang.Integer])
       
   }
 
@@ -64,40 +64,40 @@
     coerceKeyDataInput(InlineStringCodec.stringToData(key, KEY_SCHEMA))
   }
 
-  override def get(key: String): Option[Boolean] = map.get(key)
+  override def get(key: Int): Option[Boolean] = map.get(key)
 
-  override def iterator: Iterator[(String, Boolean)] = map.iterator
+  override def iterator: Iterator[(Int, Boolean)] = map.iterator
 
-  override def +[F >: Boolean](kv: (String, F)): Map[String, F] = {
+  override def +[F >: Boolean](kv: (Int, F)): Map[Int, F] = {
     val (key, value) = kv
     value match {
       case v: Boolean =>
         val copy = dataMap.copy()
         copy.put(coerceKeyOutput(key), coerceOutput(v))
         copy.setReadOnly()
-        new BooleanMap(copy)
+        new IntToBooleanMap(copy)
       case _: Any =>
         (iterator ++ Iterator.single(kv)).toMap
     }
   }
 
-  override def -(key: String): BooleanMap = {
+  override def -(key: Int): IntToBooleanMap = {
     val copy = dataMap.copy()
     copy.remove(key)
     copy.setReadOnly()
-    new BooleanMap(copy)
+    new IntToBooleanMap(copy)
   }
 
-  override def schema(): DataSchema = BooleanMap.SCHEMA
+  override def schema(): DataSchema = IntToBooleanMap.SCHEMA
 
   override def data(): DataMap = dataMap
 
   override def copy(): DataTemplate[DataMap] = this
 }
 
-object BooleanMap {
-  val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"map","values":"boolean"}""").asInstanceOf[MapDataSchema]
-  val KEY_SCHEMA = DataTemplateUtil.parseSchema(""""string"""")
+object IntToBooleanMap {
+  val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"map","values":"boolean","keys":"int"}""").asInstanceOf[MapDataSchema]
+  val KEY_SCHEMA = DataTemplateUtil.parseSchema(""""int"""")
 
   
   
@@ -109,33 +109,33 @@ object BooleanMap {
 
 
 
-  val empty = BooleanMap()
+  val empty = IntToBooleanMap()
 
-  def apply(elems: (String, Boolean)*): BooleanMap = {
-    BooleanMap(elems.toMap)
+  def apply(elems: (Int, Boolean)*): IntToBooleanMap = {
+    IntToBooleanMap(elems.toMap)
   }
 
-  def apply(map: Map[String, Boolean]): BooleanMap = {
-    new BooleanMap(new DataMap(map.map { case (k, v) => coerceKeyOutput(k) -> coerceOutput(v) }.asJava))
+  def apply(map: Map[Int, Boolean]): IntToBooleanMap = {
+    new IntToBooleanMap(new DataMap(map.map { case (k, v) => coerceKeyOutput(k) -> coerceOutput(v) }.asJava))
   }
 
-  def apply(dataMap: DataMap, conversion: DataConversion): BooleanMap = {
-    new BooleanMap(DataTemplates.makeImmutable(dataMap, SCHEMA, conversion))
+  def apply(dataMap: DataMap, conversion: DataConversion): IntToBooleanMap = {
+    new IntToBooleanMap(DataTemplates.makeImmutable(dataMap, SCHEMA, conversion))
   }
 
   def newBuilder = new DataBuilder()
 
-  implicit val canBuildFrom = new CanBuildFrom[BooleanMap, (String, Boolean), BooleanMap] {
-    def apply(from: BooleanMap) = new DataBuilder(from)
+  implicit val canBuildFrom = new CanBuildFrom[IntToBooleanMap, (Int, Boolean), IntToBooleanMap] {
+    def apply(from: IntToBooleanMap) = new DataBuilder(from)
     def apply() = newBuilder
   }
 
-  class DataBuilder(initial: BooleanMap) extends mutable.Builder[(String, Boolean), BooleanMap] {
-    def this() = this(new BooleanMap(new DataMap()))
+  class DataBuilder(initial: IntToBooleanMap) extends mutable.Builder[(Int, Boolean), IntToBooleanMap] {
+    def this() = this(new IntToBooleanMap(new DataMap()))
 
     val entries = new DataMap(initial.data())
 
-    def +=(kv: (String, Boolean)): this.type = {
+    def +=(kv: (Int, Boolean)): this.type = {
       val (key, value) = kv
       entries.put(coerceKeyOutput(key), coerceOutput(value))
       this
@@ -147,7 +147,7 @@ object BooleanMap {
 
     def result() = {
       entries.setReadOnly()
-      new BooleanMap(entries)
+      new IntToBooleanMap(entries)
     }
   }
 
@@ -159,11 +159,11 @@ object BooleanMap {
   }
 
 
-  private def coerceKeyOutput(key: String): String = {
+  private def coerceKeyOutput(key: Int): String = {
     
-  def coerceKeyDataOutput(value: String): AnyRef = {
+  def coerceKeyDataOutput(value: Int): AnyRef = {
     
-        DataTemplateUtil.coerceInput(value, classOf[java.lang.String], classOf[java.lang.String])
+        DataTemplateUtil.coerceInput(Int.box(value), classOf[java.lang.Integer], classOf[java.lang.Integer])
       
   }
 

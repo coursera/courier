@@ -35,6 +35,7 @@
   import com.linkedin.data.schema.MapDataSchema
   import com.linkedin.data.schema.ArrayDataSchema
   import scala.collection.GenTraversable
+  import org.coursera.courier.codecs.InlineStringCodec
 }
 
 @ClassAnnotations(record) final class @record.scalaType private (private val dataMap: DataMap)

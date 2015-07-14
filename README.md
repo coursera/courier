@@ -47,7 +47,7 @@ Add the generator dependencies to your SBT plugins:
 `project/plugins.sbt`:
 
 ```scala
-addSbtPlugin("org.coursera.courier" % "courier-sbt-plugin" % "0.1.7")
+addSbtPlugin("org.coursera.courier" % "courier-sbt-plugin" % "0.4.1")
 ```
 
 Enable the generator to SBT build:
@@ -61,7 +61,7 @@ import org.coursera.courier.sbt.CourierPlugin._
 
 object Example extends Build {
 
-  val courierVersion = "0.1.6"
+  val courierVersion = "0.4.1"
 
   lazy val example = Project("example", file("example"))
     .dependsOn(schemas)
@@ -312,21 +312,34 @@ Map Type
 --------
 
 [Pegasus Maps](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates#map-type)
-are always defined with a `values` type using the form:
+are defined with a `values` type, and an optional `keys` type, using the form:
 
 ```json
-{ "type": "map", "values": "org.example.Fortune" }
+{ "type": "map", "keys": "int", "values": "org.example.Fortune" }
 ```
 
 This will be generated as:
 
 ```scala
-class FortuneMap extends Map[String, Fortune]
+class IntToFortuneMap extends Map[Int, Fortune]
 ```
 
-All maps are keyed by `String`.
+If no "keys" type is specified, the key type will default to "string". For example:
 
-For example, to define a field of a record containing a map, use:
+```json
+{ "type": "map", "values": "org.example.Note" }
+```
+
+will be generated as:
+
+```scala
+class NoteMap extends Map[String, Note]
+```
+
+When complex types are used for "keys", [InlineStringCodec](https://github.com/coursera/courier/blob/master/runtime/src/main/scala/org/coursera/courier/codecs/InlineStringCodec.scala#L38)
+is used to serialize/deserialize complex type keys to JSON strings.
+
+To define a field of a record containing a map, use:
 
 ```json
 {
@@ -348,10 +361,11 @@ case class Fortune(mapField: IntMap)
 Like arrays, map values can be of any type, and the map types for all primitives
 are predefined.
 
-Schema type                                        | Scala type
----------------------------------------------------|------------------------------------------------
-`{ "type": "map", "values": "int" }`               | `org.coursera.courier.data.IntMap` (predefined)
-`{ "type": "map", "values": "org.example.Record" }`| `org.example.RecordMap` (generated)
+Schema type                                                                        | Scala type
+-----------------------------------------------------------------------------------|------------------------------------------------
+`{ "type": "map", "values": "int" }`                                               | `org.coursera.courier.data.IntMap` (predefined)
+`{ "type": "map", "values": "org.example.Record" }`                                | `org.example.RecordMap` (generated)
+`{ "type": "map", "keys": "org.example.SimpleId", "values": "org.example.Record" }`| `org.example.SimpleIdToRecordMap` (generated)
 
 All generated Maps implement Scala's `Map` and `Iterable` traits and behave
 like a standard Scala collection type.
@@ -376,6 +390,7 @@ Scala Expression                                              | Equivalent JSON 
 --------------------------------------------------------------|--------------------------------------------
 IntMap("a" -> 1, "b" -> 2, "c" -> 3)                          |`{ "a": 1, "b": 2, "c": 3 }`
 RecordMap("a" -> Record(field = 1), "b" -> Record(field = 2)) |`{ "a": { "field": 1 }, "b": { "field": 2 } }`
+SimpleIdToRecordMap(SimpleId(id = 1000) -> Record(field = 1)) |`{ "(id~1000)": { "field": 1 } }`
 
 
 Ordinarily, maps are defined inline inside other types. But if needed,

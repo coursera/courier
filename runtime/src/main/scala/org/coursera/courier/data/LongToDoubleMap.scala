@@ -33,13 +33,13 @@
 
 
  
-@Generated(value = Array("DoubleMap"), comments="Courier Data Template.", date = "Fri Jul 10 10:23:12 PDT 2015")
- final class DoubleMap(private val dataMap: DataMap)
-  extends immutable.Iterable[(String, Double)]
-  with Map[String, Double]
-  with immutable.MapLike[String, Double, immutable.Map[String, Double]]
+@Generated(value = Array("LongToDoubleMap"), comments="Courier Data Template.", date = "Fri Jul 10 10:23:12 PDT 2015")
+ final class LongToDoubleMap(private val dataMap: DataMap)
+  extends immutable.Iterable[(Long, Double)]
+  with Map[Long, Double]
+  with immutable.MapLike[Long, Double, immutable.Map[Long, Double]]
   with DataTemplate[DataMap] {
-  import DoubleMap._
+  import LongToDoubleMap._
 
   
   private[this] lazy val map = dataMap.asScala.map { case (k, v) => coerceKeyInput(k) -> coerceInput(v) }.toMap
@@ -52,11 +52,11 @@
   }
 
 
-  private[this] def coerceKeyInput(key: String): String = {
+  private[this] def coerceKeyInput(key: String): Long = {
     
-  def coerceKeyDataInput(any: AnyRef): String = {
+  def coerceKeyDataInput(any: AnyRef): Long = {
     
-        DataTemplateUtil.coerceOutput(any, classOf[java.lang.String])
+        DataTemplateUtil.coerceOutput(any, classOf[java.lang.Long])
       
   }
 
@@ -64,40 +64,40 @@
     coerceKeyDataInput(InlineStringCodec.stringToData(key, KEY_SCHEMA))
   }
 
-  override def get(key: String): Option[Double] = map.get(key)
+  override def get(key: Long): Option[Double] = map.get(key)
 
-  override def iterator: Iterator[(String, Double)] = map.iterator
+  override def iterator: Iterator[(Long, Double)] = map.iterator
 
-  override def +[F >: Double](kv: (String, F)): Map[String, F] = {
+  override def +[F >: Double](kv: (Long, F)): Map[Long, F] = {
     val (key, value) = kv
     value match {
       case v: Double =>
         val copy = dataMap.copy()
         copy.put(coerceKeyOutput(key), coerceOutput(v))
         copy.setReadOnly()
-        new DoubleMap(copy)
+        new LongToDoubleMap(copy)
       case _: Any =>
         (iterator ++ Iterator.single(kv)).toMap
     }
   }
 
-  override def -(key: String): DoubleMap = {
+  override def -(key: Long): LongToDoubleMap = {
     val copy = dataMap.copy()
     copy.remove(key)
     copy.setReadOnly()
-    new DoubleMap(copy)
+    new LongToDoubleMap(copy)
   }
 
-  override def schema(): DataSchema = DoubleMap.SCHEMA
+  override def schema(): DataSchema = LongToDoubleMap.SCHEMA
 
   override def data(): DataMap = dataMap
 
   override def copy(): DataTemplate[DataMap] = this
 }
 
-object DoubleMap {
-  val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"map","values":"double"}""").asInstanceOf[MapDataSchema]
-  val KEY_SCHEMA = DataTemplateUtil.parseSchema(""""string"""")
+object LongToDoubleMap {
+  val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"map","values":"double","keys":"long"}""").asInstanceOf[MapDataSchema]
+  val KEY_SCHEMA = DataTemplateUtil.parseSchema(""""long"""")
 
   
   
@@ -109,33 +109,33 @@ object DoubleMap {
 
 
 
-  val empty = DoubleMap()
+  val empty = LongToDoubleMap()
 
-  def apply(elems: (String, Double)*): DoubleMap = {
-    DoubleMap(elems.toMap)
+  def apply(elems: (Long, Double)*): LongToDoubleMap = {
+    LongToDoubleMap(elems.toMap)
   }
 
-  def apply(map: Map[String, Double]): DoubleMap = {
-    new DoubleMap(new DataMap(map.map { case (k, v) => coerceKeyOutput(k) -> coerceOutput(v) }.asJava))
+  def apply(map: Map[Long, Double]): LongToDoubleMap = {
+    new LongToDoubleMap(new DataMap(map.map { case (k, v) => coerceKeyOutput(k) -> coerceOutput(v) }.asJava))
   }
 
-  def apply(dataMap: DataMap, conversion: DataConversion): DoubleMap = {
-    new DoubleMap(DataTemplates.makeImmutable(dataMap, SCHEMA, conversion))
+  def apply(dataMap: DataMap, conversion: DataConversion): LongToDoubleMap = {
+    new LongToDoubleMap(DataTemplates.makeImmutable(dataMap, SCHEMA, conversion))
   }
 
   def newBuilder = new DataBuilder()
 
-  implicit val canBuildFrom = new CanBuildFrom[DoubleMap, (String, Double), DoubleMap] {
-    def apply(from: DoubleMap) = new DataBuilder(from)
+  implicit val canBuildFrom = new CanBuildFrom[LongToDoubleMap, (Long, Double), LongToDoubleMap] {
+    def apply(from: LongToDoubleMap) = new DataBuilder(from)
     def apply() = newBuilder
   }
 
-  class DataBuilder(initial: DoubleMap) extends mutable.Builder[(String, Double), DoubleMap] {
-    def this() = this(new DoubleMap(new DataMap()))
+  class DataBuilder(initial: LongToDoubleMap) extends mutable.Builder[(Long, Double), LongToDoubleMap] {
+    def this() = this(new LongToDoubleMap(new DataMap()))
 
     val entries = new DataMap(initial.data())
 
-    def +=(kv: (String, Double)): this.type = {
+    def +=(kv: (Long, Double)): this.type = {
       val (key, value) = kv
       entries.put(coerceKeyOutput(key), coerceOutput(value))
       this
@@ -147,7 +147,7 @@ object DoubleMap {
 
     def result() = {
       entries.setReadOnly()
-      new DoubleMap(entries)
+      new LongToDoubleMap(entries)
     }
   }
 
@@ -159,11 +159,11 @@ object DoubleMap {
   }
 
 
-  private def coerceKeyOutput(key: String): String = {
+  private def coerceKeyOutput(key: Long): String = {
     
-  def coerceKeyDataOutput(value: String): AnyRef = {
+  def coerceKeyDataOutput(value: Long): AnyRef = {
     
-        DataTemplateUtil.coerceInput(value, classOf[java.lang.String], classOf[java.lang.String])
+        DataTemplateUtil.coerceInput(Long.box(value), classOf[java.lang.Long], classOf[java.lang.Long])
       
   }
 
