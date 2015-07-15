@@ -28,6 +28,7 @@ import play.twirl.sbt.Import.TwirlKeys
 import com.simplytyped.Antlr4Plugin._
 import sbtassembly.AssemblyKeys._
 import sbtassembly.AssemblyPlugin.defaultShellScript
+import pl.project13.scala.sbt.JmhPlugin
 
 /**
  * SBT project for Courier.
@@ -225,7 +226,7 @@ object Courier extends Build with OverridablePublishSettings {
         ExternalDependencies.Slf4j.slf4jSimple))
 
   lazy val swiftGeneratorTest = Project(id = "swift-generator-test", base = file("swift") / "generator-test")
-    .dependsOn(androidGenerator, androidRuntime)
+    .dependsOn(swiftGenerator)
     .settings(forkedVmCourierGeneratorSettings)
     .settings(junitTestSettings)
     .settings(plainJavaProjectSettings)
@@ -239,6 +240,21 @@ object Courier extends Build with OverridablePublishSettings {
       packagedArtifacts := Map.empty, // do not publish
       libraryDependencies ++= Seq(
         ExternalDependencies.JodaTime.jodaTime))
+
+  lazy val benchmark = Project(id = "benchmark", base = file("benchmark"))
+    .dependsOn(scalaGenerator)
+    .settings(scalaVersion in ThisBuild := currentScalaVersion)
+    .settings(packagedArtifacts := Map.empty) // do not publish
+    .settings(forkedVmCourierGeneratorSettings)
+    .settings(
+      libraryDependencies ++= Seq("com.typesafe.play" %% "play-json" % "2.3.8"),
+      forkedVmCourierMainClass := "org.coursera.courier.generator.ScalaDataTemplateGenerator",
+      forkedVmCourierClasspath := (dependencyClasspath in Runtime in scalaGenerator).value.files,
+      forkedVmSourceDirectory := sourceDirectory.value / "main" / "courier",
+      forkedVmCourierDest :=
+        target.value / s"scala-${scalaBinaryVersion.value}" / "courier",
+      packagedArtifacts := Map.empty) // do not publish
+    .enablePlugins(JmhPlugin)
 
   lazy val courierSbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
     .dependsOn(scalaGenerator)

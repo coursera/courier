@@ -1,0 +1,13 @@
+{
+  "type": "record",
+  "name": "Primitives",
+  "namespace": "org.coursera.benchmark",
+  "fields": [
+    { "name": "intField", "type": "int" },
+    { "name": "longField", "type": "long" },
+    { "name": "floatField", "type": "float" },
+    { "name": "doubleField", "type": "double" },
+    { "name": "booleanField", "type": "boolean" },
+    { "name": "stringField", "type": "string" }
+  ]
+}

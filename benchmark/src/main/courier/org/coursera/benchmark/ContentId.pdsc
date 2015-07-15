@@ -1,0 +1,10 @@
+{
+  "name": "ContentId",
+  "namespace": "org.coursera.benchmark",
+  "type": "typeref",
+  "ref": "int",
+  "scala": {
+    "class": "org.coursera.courier.benchmark.data.ContentId",
+    "coercerClass": "org.coursera.courier.benchmark.data.ContentIdCoercer"
+  }
+}

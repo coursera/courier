@@ -1,0 +1,44 @@
+{
+  "type": "record",
+  "name": "Payload",
+  "namespace": "org.coursera.benchmark",
+  "fields": [
+    { "name": "title", "type": "string" },
+    { "name": "offset", "type": "int" },
+    {
+      "name": "elements",
+      "type": {
+        "type": "array",
+        "items": {
+          "type": "record",
+          "name": "Element",
+          "namespace": "org.coursera.benchmark",
+          "fields": [
+            { "name": "title", "type": "string" },
+            { "name": "version", "type": "long" },
+            { "name": "weight", "type": "double", "optional": true },
+            { "name": "active", "type": "boolean" },
+            {
+              "name": "body",
+              "type": {
+                "type": "record",
+                "name": "Body",
+                "namespace": "org.coursera.benchmark",
+                "fields": [
+                  { "name": "termWeights", "type": { "type": "map", "values": "float" } },
+                  { "name": "text", "type": "string" },
+                  { "name": "enum", "type": {
+                      "name": "ContentType",
+                      "type": "enum",
+                      "symbols": [ "AUDIO", "VIDEO", "TEXT" ]
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
