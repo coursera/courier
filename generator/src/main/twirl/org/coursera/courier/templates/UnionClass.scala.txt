@@ -114,12 +114,12 @@ object @(union.scalaType) {
         val dataMap = new DataMap
         val result = new @(member.classDefinition.memberName)(dataMap)
         result.setFields(value)
-        dataMap.setReadOnly()
+        dataMap.makeReadOnly()
         result
       }
 
       def apply(dataMap: DataMap): @(member.classDefinition.memberName) = {
-        dataMap.setReadOnly()
+        dataMap.makeReadOnly()
         new @(member.classDefinition.memberName)(dataMap)
       }
 

@@ -136,7 +136,7 @@
       val dataMap = new DataMap
       val result = new @(record.scalaType)(dataMap)
       result.setFields(@(record.fieldsAsParams))
-      dataMap.setReadOnly()
+      dataMap.makeReadOnly()
       result
     }
   }
@@ -168,7 +168,7 @@ object @(record.scalaType) {
     val dataMap = new DataMap
     val result = new @(record.scalaType)(dataMap)
     result.setFields(@(record.fieldsAsParams))
-    dataMap.setReadOnly()
+    dataMap.makeReadOnly()
     result
   }
 
