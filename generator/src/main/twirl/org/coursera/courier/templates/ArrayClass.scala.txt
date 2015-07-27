@@ -117,7 +117,7 @@ object @(array.scalaType) {
     }
 
     def result() = {
-      elems.setReadOnly()
+      elems.makeReadOnly()
       new @(array.scalaType)(elems)
     }
   }

@@ -35,10 +35,10 @@ object DataTemplates {
     conversion match {
       case DataConversion.DeepCopy =>
         val copy = data.copy()
-        copy.setReadOnly()
+        copy.makeReadOnly()
         copy.asInstanceOf[T]
       case DataConversion.SetReadOnly =>
-        data.setReadOnly()
+        data.makeReadOnly()
         data
     }
   }
