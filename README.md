@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/coursera/courier.svg)](https://travis-ci.org/coursera/courier)
+
 Courier
 =======
 
