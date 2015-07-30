@@ -9,7 +9,7 @@ Courier generated bindings work with multiple data formats including JSON and
 [Avro](http://avro.apache.org/).
 
 * [Source](http://github.com/coursera/courier)
-* [Documentation](https://github.com/coursera/courier/wiki)
+* [Documentation](http://coursera.github.io/courier/)
 * [Discussion Group](https://groups.google.com/d/forum/courier)
 
 Overview
