@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Courier by coursera</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Courier</h1>
+      <h2 class="project-tagline">Scala data binding generator for multiple data formats including JSON and Avro.</h2>
+      <a href="https://github.com/coursera/courier" class="btn">View on GitHub</a>
+      <a href="https://github.com/coursera/courier/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/coursera/courier/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="courier" class="anchor" href="#courier" aria-hidden="true"><span class="octicon octicon-link"></span></a>Courier</h1>
+
+<p>Courier generates Scala idiomatic data bindings from schemas.</p>
+
+<p>Courier generated bindings work with multiple data formats including JSON and
+<a href="http://avro.apache.org/">Avro</a>.</p>
+
+<ul>
+<li><a href="http://github.com/coursera/courier">Source</a></li>
+<li><a href="https://github.com/coursera/courier/wiki">Documentation</a></li>
+<li><a href="https://groups.google.com/d/forum/courier">Discussion Group</a></li>
+</ul>
+
+<h2>
+<a id="overview" class="anchor" href="#overview" aria-hidden="true"><span class="octicon octicon-link"></span></a>Overview</h2>
+
+<p>Courier is a language binding for Scala for the
+<a href="https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates">Pegasus</a> schema and data
+system, part of the <a href="http://rest.li">Rest.li</a> umbrella project.</p>
+
+<p>Pegasus contains an expressive schema language for JSON structured data that is based on the Avro
+schema language, but adds optional fields a few other conveniences to make it easy to define the
+structure of natural looking JSON. Pegasus also has a rich feature set including schema
+based validation, data translation between multiple data formats, schema compatibility with
+Avro, and generated Java data bindings.</p>
+
+<p>By using Courier, all the features of Pegasus can be leveraged by Scala developers but with
+Scala idiomatic data bindings that look and feel natural to a Scala developer.</p>
+
+<h2>
+<a id="features" class="anchor" href="#features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Features</h2>
+
+<ul>
+<li>Scala Idiomatic Data Binding Generator</li>
+<li><a href="https://github.com/coursera/courier#getting-started">SBT Plugin</a></li>
+<li><a href="https://github.com/coursera/courier/tree/master/gradle-plugin">Gradle Plugin</a></li>
+<li>Data and Schema Compatible with <a href="https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates">Pegasus</a>
+</li>
+<li>Data and Schema Compatible with <a href="http://avro.apache.org/">Avro</a>
+</li>
+<li>Support for multiple "Data Codecs", including JSON, PSON, and Avro binary</li>
+</ul>
+
+<h2>
+<a id="getting-started" class="anchor" href="#getting-started" aria-hidden="true"><span class="octicon octicon-link"></span></a>Getting Started</h2>
+
+<p>Here we setup a simple SBT project with Courier. If you use Gradle instead of SBT, see the
+<a href="https://github.com/coursera/courier/tree/master/gradle-plugin">Gradle Plugin</a> documentation.</p>
+
+<p>Add the generator dependencies to your SBT plugins:</p>
+
+<p><code>project/plugins.sbt</code>:</p>
+
+<div class="highlight highlight-scala"><pre>addSbtPlugin(<span class="pl-s"><span class="pl-pds">"</span>org.coursera.courier<span class="pl-pds">"</span></span> <span class="pl-k">%</span> <span class="pl-s"><span class="pl-pds">"</span>courier-sbt-plugin<span class="pl-pds">"</span></span> <span class="pl-k">%</span> <span class="pl-s"><span class="pl-pds">"</span>0.4.1<span class="pl-pds">"</span></span>)</pre></div>
+
+<p>Enable the generator to SBT build:</p>
+
+<p><code>project/Build.scala</code>:</p>
+
+<div class="highlight highlight-scala"><pre><span class="pl-k">import</span> <span class="pl-v">sbt.</span><span class="pl-v">_</span>
+<span class="pl-k">import</span> <span class="pl-v">Keys.</span><span class="pl-v">_</span>
+<span class="pl-k">import</span> <span class="pl-v">org.coursera.courier.sbt.CourierPlugin.</span><span class="pl-v">_</span>
+
+<span class="pl-k">object</span> <span class="pl-en">Example</span> <span class="pl-k">extends</span> <span class="pl-e">Build</span> {
+
+  <span class="pl-k">val</span> <span class="pl-en">courierVersion</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>0.4.1<span class="pl-pds">"</span></span>
+
+  <span class="pl-k">lazy</span> <span class="pl-k">val</span> <span class="pl-en">example</span> <span class="pl-k">=</span> <span class="pl-en">Project</span>(<span class="pl-s"><span class="pl-pds">"</span>example<span class="pl-pds">"</span></span>, file(<span class="pl-s"><span class="pl-pds">"</span>example<span class="pl-pds">"</span></span>))
+    .dependsOn(schemas)
+    .aggregate(schemas)
+    <span class="pl-c">// ...</span>
+
+  <span class="pl-k">lazy</span> <span class="pl-k">val</span> <span class="pl-en">schemas</span> <span class="pl-k">=</span> <span class="pl-en">Project</span>(<span class="pl-s"><span class="pl-pds">"</span>schemas<span class="pl-pds">"</span></span>, file(<span class="pl-s"><span class="pl-pds">"</span>schemas<span class="pl-pds">"</span></span>))
+    .settings(<span class="pl-v">courierSettings</span>: _<span class="pl-k">*</span>)
+    .settings(libraryDependencies <span class="pl-k">+</span><span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>org.coursera.courier<span class="pl-pds">"</span></span> <span class="pl-k">%%</span> <span class="pl-s"><span class="pl-pds">"</span>courier-runtime<span class="pl-pds">"</span></span> <span class="pl-k">%</span> courierVersion)
+}</pre></div>
+
+<p>Add <code>.pdsc</code> files to the <code>src/main/pegasus</code> directory of your project. For example:</p>
+
+<p><code>schemas/src/main/pegasus/org/example/fortune/Fortune.pdsc</code>:</p>
+
+<div class="highlight highlight-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>Fortune<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>namespace<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>org.example.fortune<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>record<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>fields<span class="pl-pds">"</span></span>: [
+    { <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>message<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>string<span class="pl-pds">"</span></span> }
+  ]
+}
+</pre></div>
+
+<p>In SBT, run:</p>
+
+<div class="highlight highlight-sh"><pre>project example
+compile</pre></div>
+
+<p>When run, the <code>org.example.fortune.Fortune</code> Scala class is generated. It behaves the same as
+a case class, but can be serialized to JSON, or any other data format a Pegasus codec is available
+for.  For example:</p>
+
+<p><code>example/src/main/scala/Main.scala</code>:</p>
+
+<div class="highlight highlight-scala"><pre><span class="pl-k">import</span> <span class="pl-v">com.linkedin.data.template.</span><span class="pl-v">PrettyPrinterJacksonDataTemplateCodec</span>
+<span class="pl-k">import</span> <span class="pl-v">org.example.fortune.</span><span class="pl-v">Fortune</span>
+
+<span class="pl-k">object</span> <span class="pl-en">Example</span> <span class="pl-k">extends</span> <span class="pl-e">App</span> {
+  <span class="pl-k">val</span> <span class="pl-en">fortune</span> <span class="pl-k">=</span> <span class="pl-en">Fortune</span>(message <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>Today is your lucky day!<span class="pl-pds">"</span></span>)
+
+  <span class="pl-k">val</span> <span class="pl-en">codec</span> <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">PrettyPrinterJacksonDataTemplateCodec</span>
+  println(codec.mapToString(fortune.dataMap))
+  <span class="pl-c">// -&gt; { "message": "Today is your lucky day!" }</span>
+}</pre></div>
+
+<p>The generator is run automatically before <code>src/main/scala</code> compilation. It also registers for
+triggered execution to support SBT commands like <code>~compile</code>, which will cause the generator to
+run immediately whenever a .pdsc file is changed.</p>
+
+<p>The generator will write Scala files to the <code>target/scala-&lt;scalaMajorVersion&gt;/courier</code> directory of
+your project and add them to the compile classpath.</p>
+
+<p>For details on the <code>.pdsc</code> file format, see
+<a href="https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates">Pegasus Schemas and Data</a>.</p>
+
+<p>The code generator is an extension of the Rest.li SBT Plugin, for more details, see
+<a href="https://github.com/linkedin/rest.li-sbt-plugin">the rest.li-sbt-plugin wiki</a>.</p>
+
+<h4>
+<a id="testing" class="anchor" href="#testing" aria-hidden="true"><span class="octicon octicon-link"></span></a>Testing</h4>
+
+<p><code>.pdsc</code> files only needed for tests may be added to <code>src/test/pegasus</code>.</p>
+
+<h2>
+<a id="record-types" class="anchor" href="#record-types" aria-hidden="true"><span class="octicon octicon-link"></span></a>Record Types</h2>
+
+<p><a href="https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates#record-type">Pegasus Records</a>
+contain any number of fields, which may be any pegasus type, including
+primitives, enums, unions, maps and arrays.</p>
+
+<p>For example, a basic record type containing a few fields:</p>
+
+<div class="highlight highlight-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>Example<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>namespace<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>org.example<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>doc<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>A simple record.<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>record<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>fields<span class="pl-pds">"</span></span>: [
+    { <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>field1<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>string<span class="pl-pds">"</span></span> },
+    { <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>field2<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>int<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>optional<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span> }
+  ]
+}</pre></div>
+
+<p>This will be generated as:</p>
+
+<div class="highlight highlight-scala"><pre><span class="pl-c">/** A simple record */</span>
+<span class="pl-k">case</span> <span class="pl-k">class</span> <span class="pl-en">Example</span>(<span class="pl-v">field1</span>: <span class="pl-k">String</span>, <span class="pl-v">field2</span>: <span class="pl-en">Option</span>[<span class="pl-k">Int</span>])</pre></div>
+
+<p><a href="https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates#record-field-attributes">Record Fields</a>
+may be optional and/or may have default values.</p>
+
+<table>
+<thead>
+<tr>
+<th>Schema Field</th>
+<th>Generated Scala</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>"type": "string"</code></td>
+<td><code>case class Record(field: String)</code></td>
+</tr>
+<tr>
+<td><code>..., "default": "message"</code></td>
+<td><code>case class Record(field: String = "message")</code></td>
+</tr>
+<tr>
+<td><code>..., "optional": true</code></td>
+<td><code>case class Record(field: Option[String])</code></td>
+</tr>
+<tr>
+<td><code>..., "optional": true "default": "message"</code></td>
+<td><code>case class Record(field: Option[String] = Some("message"))</code></td>
+</tr>
+<tr>
+<td><code>..., "optional": true, "defaultNone": true</code></td>
+<td><code>case class Record(field: Option[String] = None)</code></td>
+</tr>
+</tbody>
+</table>
+
+<p>Note that <code>"defaultNone"</code> is not part of Pegasus, but is a custom property supported by Courier
+specifically added it make it possible to generate idiomatic Scala bindings.</p>
+
+<p>Schema fields may also be documented or marked as deprecated:</p>
+
+<table>
+<thead>
+<tr>
+<th>Schema Field</th>
+<th>Generated Scala</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>..., "doc": "A documented field"</code></td>
+<td><code>case class Record(/** A documented field */ field: String)</code></td>
+</tr>
+<tr>
+<td><code>..., "deprecated": "Use field X instead"</code></td>
+<td><code>case class Record(@deprecated(message = "Use field X instead") field: String)</code></td>
+</tr>
+</tbody>
+</table>
+
+<p>Records may <a href="https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates#including-fields-from-another-record">include fields from other records</a>
+using <code>"include"</code>:</p>
+
+<div class="highlight highlight-scala"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span> <span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>WithIncluded<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span> <span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>record<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>include<span class="pl-pds">"</span></span> <span class="pl-k">:</span> [ <span class="pl-s"><span class="pl-pds">"</span>Foo<span class="pl-pds">"</span></span> ],
+  <span class="pl-s"><span class="pl-pds">"</span>fields<span class="pl-pds">"</span></span> <span class="pl-k">:</span> [ ... ]
+}</pre></div>
+
+<p>In pegasus, field inclusion does not imply inheritance, it is merely a
+convenience to reduce duplication when writing schemas.</p>
+
+<h4>
+<a id="record-backward-compatibility" class="anchor" href="#record-backward-compatibility" aria-hidden="true"><span class="octicon octicon-link"></span></a>Record Backward Compatibility</h4>
+
+<p>The backward compatibility rules for records are:</p>
+
+<p>Compatible changes:</p>
+
+<ul>
+<li>Adding an optional fields</li>
+<li>Adding a field with a default (required or optional)</li>
+</ul>
+
+<p>When accessing fields:</p>
+
+<ul>
+<li>Unrecognized fields must be ignored.</li>
+<li>Fields with defaults should always be written, either with the desired value or
+the default value.</li>
+<li>The default value for a field should be assumed if the field is absent and is
+needed by the reader.</li>
+</ul>
+
+<h2>
+<a id="primitive-types" class="anchor" href="#primitive-types" aria-hidden="true"><span class="octicon octicon-link"></span></a>Primitive Types</h2>
+
+<p>The <a href="https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates#primitive-types">Pegasus primitive</a>
+types are: int, long, float, double, boolean, string and bytes.</p>
+
+<table>
+<thead>
+<tr>
+<th>Schema Type</th>
+<th>Scala Type</th>
+<th>Example JSON data</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"int"</td>
+<td>Int</td>
+<td>100</td>
+</tr>
+<tr>
+<td>"long"</td>
+<td>Long</td>
+<td>10000000</td>
+</tr>
+<tr>
+<td>"float"</td>
+<td>Float</td>
+<td>3.14</td>
+</tr>
+<tr>
+<td>"double"</td>
+<td>Double</td>
+<td>2.718281</td>
+</tr>
+<tr>
+<td>"boolean"</td>
+<td>Boolean</td>
+<td>true</td>
+</tr>
+<tr>
+<td>"string"</td>
+<td>String</td>
+<td>"coursera"</td>
+</tr>
+<tr>
+<td>"bytes"</td>
+<td>ByteString</td>
+<td>"\u0001\u0002"</td>
+</tr>
+</tbody>
+</table>
+
+<p>A 'null' type also exists, but should generally be avoided in favor of optional fields.</p>
+
+<h2>
+<a id="array-type" class="anchor" href="#array-type" aria-hidden="true"><span class="octicon octicon-link"></span></a>Array Type</h2>
+
+<p><a href="https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates#array-type">Pegasus Arrays</a>
+are defined with a <code>items</code> type using the form:</p>
+
+<div class="highlight highlight-json"><pre>{ <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>array<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>items<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>org.example.Fortune<span class="pl-pds">"</span></span> }</pre></div>
+
+<p>This will be generated as:</p>
+
+<div class="highlight highlight-scala"><pre><span class="pl-k">class</span> <span class="pl-en">FortuneArray</span> <span class="pl-k">extends</span> <span class="pl-e">IndexedSeq</span>[<span class="pl-en">Fortune</span>]</pre></div>
+
+<p>For example, to define a field of a record containing an array, use:</p>
+
+<div class="highlight highlight-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>Fortune<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>namespace<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>org.example.fortune<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>record<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>fields<span class="pl-pds">"</span></span>: [
+    { <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>arrayField<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>: { <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>array<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>items<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>int<span class="pl-pds">"</span></span> } }
+  ]
+}</pre></div>
+
+<p>This will be generated as:</p>
+
+<div class="highlight highlight-scala"><pre><span class="pl-k">case</span> <span class="pl-k">class</span> <span class="pl-en">Fortune</span>(<span class="pl-v">arrayField</span>: <span class="pl-en">IntArray</span>)</pre></div>
+
+<p>Array items may be any pegasus type.</p>
+
+<p>The array types for all primitive value types (<code>IntArray</code>, <code>StringArray</code>, ...) are pre-generated by Courier and
+provided in the <code>courier-runtime</code> artifact in the <code>org.coursera.courier.data</code> package. The generator
+is aware of these classes and will refer to them instead of generating them when primitive arrays are used.</p>
+
+<table>
+<thead>
+<tr>
+<th>Schema type</th>
+<th>Scala type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>{ "type": "array", "items": "int" }</code></td>
+<td>
+<code>org.coursera.courier.data.IntArray</code> (predefined)</td>
+</tr>
+<tr>
+<td><code>{ "type": "array", "items": "org.example.Record" }</code></td>
+<td>
+<code>org.example.RecordArray</code> (generated)</td>
+</tr>
+</tbody>
+</table>
+
+<p>All generated Arrays implement Scala's <code>IndexedSeq</code>, <code>Traversable</code> and <code>Product</code> traits and behave
+like a standard Scala collection type.</p>
+
+<div class="highlight highlight-scala"><pre><span class="pl-k">val</span> <span class="pl-en">array</span> <span class="pl-k">=</span> <span class="pl-en">IntArray</span>(<span class="pl-c1">10</span>, <span class="pl-c1">20</span>, <span class="pl-c1">30</span>)
+
+array(<span class="pl-c1">0</span>)
+
+array.map { int <span class="pl-k">=&gt;</span> ... }
+
+array.zipWithIndex
+
+array.filter(_ <span class="pl-k">&gt;</span> <span class="pl-c1">20</span>)
+
+array.toSet</pre></div>
+
+<p>Unsurprisingly, Pegasus arrays are represented in JSON as arrays.</p>
+
+<table>
+<thead>
+<tr>
+<th>Scala Expression</th>
+<th>Equivalent JSON data</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IntArray(1, 2, 3)</td>
+<td><code>[1, 2, 3]</code></td>
+</tr>
+<tr>
+<td>RecordArray(Record(field = 1), Record(field = 2))</td>
+<td><code>[ { "field": 1 }, { "field": 2 } ]</code></td>
+</tr>
+</tbody>
+</table>
+
+<p>Ordinarily, arrays are defined inline inside other types. But if needed,
+typerefs allow a map to be defined in a separate .pdsc file and be assigned a
+unique type name. See below for more details about typerefs.</p>
+
+<h2>
+<a id="map-type" class="anchor" href="#map-type" aria-hidden="true"><span class="octicon octicon-link"></span></a>Map Type</h2>
+
+<p><a href="https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates#map-type">Pegasus Maps</a>
+are defined with a <code>values</code> type, and an optional <code>keys</code> type, using the form:</p>
+
+<div class="highlight highlight-json"><pre>{ <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>map<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>keys<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>int<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>values<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>org.example.Fortune<span class="pl-pds">"</span></span> }</pre></div>
+
+<p>This will be generated as:</p>
+
+<div class="highlight highlight-scala"><pre><span class="pl-k">class</span> <span class="pl-en">IntToFortuneMap</span> <span class="pl-k">extends</span> <span class="pl-e">Map</span>[<span class="pl-k">Int</span>, <span class="pl-en">Fortune</span>]</pre></div>
+
+<p>If no "keys" type is specified, the key type will default to "string". For example:</p>
+
+<div class="highlight highlight-json"><pre>{ <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>map<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>values<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>org.example.Note<span class="pl-pds">"</span></span> }</pre></div>
+
+<p>will be generated as:</p>
+
+<div class="highlight highlight-scala"><pre><span class="pl-k">class</span> <span class="pl-en">NoteMap</span> <span class="pl-k">extends</span> <span class="pl-e">Map</span>[<span class="pl-k">String</span>, <span class="pl-en">Note</span>]</pre></div>
+
+<p>When complex types are used for "keys", <a href="https://github.com/coursera/courier/blob/master/runtime/src/main/scala/org/coursera/courier/codecs/InlineStringCodec.scala#L38">InlineStringCodec</a>
+is used to serialize/deserialize complex type keys to JSON strings.</p>
+
+<p>To define a field of a record containing a map, use:</p>
+
+<div class="highlight highlight-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>Fortune<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>namespace<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>org.example.fortune<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>record<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>fields<span class="pl-pds">"</span></span>: [
+    { <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>mapField<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>: { <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>amp<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>values<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>int<span class="pl-pds">"</span></span> } }
+  ]
+}</pre></div>
+
+<p>This will be generated as:</p>
+
+<div class="highlight highlight-scala"><pre><span class="pl-k">case</span> <span class="pl-k">class</span> <span class="pl-en">Fortune</span>(<span class="pl-v">mapField</span>: <span class="pl-en">IntMap</span>)</pre></div>
+
+<p>Like arrays, map values can be of any type, and the map types for all primitives
+are predefined.</p>
+
+<table>
+<thead>
+<tr>
+<th>Schema type</th>
+<th>Scala type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>{ "type": "map", "values": "int" }</code></td>
+<td>
+<code>org.coursera.courier.data.IntMap</code> (predefined)</td>
+</tr>
+<tr>
+<td><code>{ "type": "map", "values": "org.example.Record" }</code></td>
+<td>
+<code>org.example.RecordMap</code> (generated)</td>
+</tr>
+<tr>
+<td><code>{ "type": "map", "keys": "org.example.SimpleId", "values": "org.example.Record" }</code></td>
+<td>
+<code>org.example.SimpleIdToRecordMap</code> (generated)</td>
+</tr>
+</tbody>
+</table>
+
+<p>All generated Maps implement Scala's <code>Map</code> and <code>Iterable</code> traits and behave
+like a standard Scala collection type.</p>
+
+<div class="highlight highlight-scala"><pre><span class="pl-k">val</span> <span class="pl-en">map</span> <span class="pl-k">=</span> <span class="pl-en">IntMap</span>(<span class="pl-s"><span class="pl-pds">"</span>a<span class="pl-pds">"</span></span> <span class="pl-k">-</span><span class="pl-k">&gt;</span> <span class="pl-c1">1</span>, <span class="pl-s"><span class="pl-pds">"</span>b<span class="pl-pds">"</span></span> <span class="pl-k">-</span><span class="pl-k">&gt;</span> <span class="pl-c1">2</span>, <span class="pl-s"><span class="pl-pds">"</span>c<span class="pl-pds">"</span></span> <span class="pl-k">-</span><span class="pl-k">&gt;</span> <span class="pl-c1">3</span>)
+
+map.get(<span class="pl-s"><span class="pl-pds">"</span>a<span class="pl-pds">"</span></span>)
+
+map.getOrElse(<span class="pl-s"><span class="pl-pds">"</span>b<span class="pl-pds">"</span></span>, <span class="pl-c1">0</span>)
+
+map.contains(<span class="pl-s"><span class="pl-pds">"</span>c<span class="pl-pds">"</span></span>)
+
+map.mapValues { v <span class="pl-k">=&gt;</span> ... }
+
+map.filterKeys { _.startsWith(<span class="pl-s"><span class="pl-pds">"</span>a<span class="pl-pds">"</span></span>) }</pre></div>
+
+<p>Maps are represented in JSON as objects:</p>
+
+<table>
+<thead>
+<tr>
+<th>Scala Expression</th>
+<th>Equivalent JSON data</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IntMap("a" -&gt; 1, "b" -&gt; 2, "c" -&gt; 3)</td>
+<td><code>{ "a": 1, "b": 2, "c": 3 }</code></td>
+</tr>
+<tr>
+<td>RecordMap("a" -&gt; Record(field = 1), "b" -&gt; Record(field = 2))</td>
+<td><code>{ "a": { "field": 1 }, "b": { "field": 2 } }</code></td>
+</tr>
+<tr>
+<td>SimpleIdToRecordMap(SimpleId(id = 1000) -&gt; Record(field = 1))</td>
+<td><code>{ "(id~1000)": { "field": 1 } }</code></td>
+</tr>
+</tbody>
+</table>
+
+<p>Ordinarily, maps are defined inline inside other types. But if needed,
+typerefs allow a map to be defined in a separate .pdsc file and be assigned a
+unique type name name. See below for more details about typerefs.</p>
+
+<h2>
+<a id="union-type" class="anchor" href="#union-type" aria-hidden="true"><span class="octicon octicon-link"></span></a>Union Type</h2>
+
+<p><a href="https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates#union-type">Pegasus Unions</a>
+ are <a href="http://en.wikipedia.org/wiki/Tagged_union">tagged union</a> types.</p>
+
+<p>A union type may be defined with any number of member types.  Each member may be any pegasus
+type except union: primitive, record, enum, map or array.</p>
+
+<p>Unions types are defined in using the form:</p>
+
+<div class="highlight highlight-json"><pre>[ <span class="pl-s"><span class="pl-pds">"</span>&lt;MemberType1&gt;<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>&lt;MemberType2&gt;<span class="pl-pds">"</span></span> ]</pre></div>
+
+<p>For example, a union that holds an <code>int</code>, <code>string</code> or a <code>Fortune</code>
+would be defined as:</p>
+
+<div class="highlight highlight-json"><pre>[ <span class="pl-s"><span class="pl-pds">"</span>int<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>string<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>org.example.Fortune<span class="pl-pds">"</span></span> ]</pre></div>
+
+<p>The member type names also serve as the "member keys" (sometimes called "union tags"),
+and identify which union member type data holds.</p>
+
+<p>For example:</p>
+
+<table>
+<thead>
+<tr>
+<th>Schema type</th>
+<th>Member key</th>
+<th>Example JSON data</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"int"</td>
+<td>"int"</td>
+<td><code>{ "int": 1 }</code></td>
+</tr>
+<tr>
+<td>"string"</td>
+<td>"string"</td>
+<td><code>{ "string": "coursera" }</code></td>
+</tr>
+<tr>
+<td>"org.example.Fortune"</td>
+<td>"org.example.Fortune"</td>
+<td><code>{ "org.example.Fortune": { "message": "Today is your lucky day!" }</code></td>
+</tr>
+</tbody>
+</table>
+
+<p>Let's look at an example of a union in use.  To define a field of a record containing a
+union of two other records, we would define:</p>
+
+<div class="highlight highlight-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>Question<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>namespace<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>org.example<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>record<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>fields<span class="pl-pds">"</span></span>: [
+    { <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>answerFormat<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>: [ <span class="pl-s"><span class="pl-pds">"</span>MultipleChoice<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>TextEntry<span class="pl-pds">"</span></span> ] }
+  ]
+}</pre></div>
+
+<p>This will be generated as:</p>
+
+<div class="highlight highlight-scala"><pre><span class="pl-k">case</span> <span class="pl-k">class</span> <span class="pl-en">Question</span>(<span class="pl-v">answerFormat</span>: <span class="pl-en">Question</span>.<span class="pl-en">AnswerFormat</span>)
+
+<span class="pl-k">object</span> <span class="pl-en">Question</span> {
+  <span class="pl-c">// ...</span>
+
+  <span class="pl-k">sealed</span> <span class="pl-k">abstract</span> <span class="pl-k">class</span> <span class="pl-en">AnswerFormat</span>()
+  <span class="pl-k">case</span> <span class="pl-k">class</span> <span class="pl-en">MultipleChoiceMmeber</span>(<span class="pl-v">value</span>: <span class="pl-en">MultipleChoice</span>) <span class="pl-k">extends</span> <span class="pl-e">AnswerFormat</span>
+  <span class="pl-k">case</span> <span class="pl-k">class</span> <span class="pl-en">TextEntryMember</span>(<span class="pl-v">value</span>: <span class="pl-en">TextEntry</span>) <span class="pl-k">extends</span> <span class="pl-e">AnswerFormat</span>
+  <span class="pl-k">case</span> <span class="pl-k">class</span> <span class="pl-en">$UnknownMember</span>() <span class="pl-k">extends</span> <span class="pl-e">AnswerFormat</span> <span class="pl-c">// for backward compatibility (see below)</span>
+}</pre></div>
+
+<p>Here, because the union was defined inline in in the Question record, it is
+generated as a class scoped within Question type.
+It is also assigned a name based on the field is is contained in.</p>
+
+<p>If the union were instead defined with a typeref it would be assigned the name
+of the typeref and be generated as a top level type. This will be covered
+in more detail later.</p>
+
+<p>Note that each member type is "boxed" in a <code>&lt;Type&gt;Member</code> case class. This is
+because Scala does not (yet) support disjoint types directly in the type system.</p>
+
+<p>Here's how the <code>AnswerFormat</code> union can be used to create a new <code>Question</code>:</p>
+
+<table>
+<thead>
+<tr>
+<th>Scala Expression</th>
+<th>Equivalent JSON data</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Question(TextEntryMember(TextEntry(...)))</code></td>
+<td><code>{ "answerFormat": { "org.example.TextEntry": { ... } } }</code></td>
+</tr>
+<tr>
+<td><code>Question(MultipleChoiceMmeber(MultipleChoice(...)))</code></td>
+<td><code>{ "answerFormat": { "org.example.MultipleChoice": { ... } }}</code></td>
+</tr>
+</tbody>
+</table>
+
+<p>To read the union, pattern matching may be used, e.g.:</p>
+
+<div class="highlight highlight-scala"><pre>question.answerFormat <span class="pl-k">match</span> {
+  <span class="pl-k">case</span> <span class="pl-en">TextEntryMember</span>(textEntry) <span class="pl-k">=&gt;</span> ...
+  <span class="pl-k">case</span> <span class="pl-en">MultipleChoiceMember</span>(multipleChoice) <span class="pl-k">=&gt;</span> ...
+  <span class="pl-k">case</span> $<span class="pl-en">UnknownMember</span> <span class="pl-k">=&gt;</span> ... <span class="pl-c">// for backward compatibility (see below)</span>
+}</pre></div>
+
+<p>Because the union is defined using a sealed base type, Scala can statically
+check that the cases used are exhaustive.</p>
+
+<p>The member key of primitives, maps, arrays and unions are the same as their type name:</p>
+
+<table>
+<thead>
+<tr>
+<th>Scala Expression</th>
+<th>Equivalent JSON data</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Record(field = IntMember(1))</code></td>
+<td><code>{ "field": { "int": 1 } }</code></td>
+</tr>
+<tr>
+<td><code>Record(field = StringMember("a"))</code></td>
+<td><code>{ "field": { "string": "a" } }</code></td>
+</tr>
+<tr>
+<td><code>Record(field = IntMapMember(IntMap("a" -&gt; 1)))</code></td>
+<td><code>{ "field": { "map": { "a": 1 } } }</code></td>
+</tr>
+<tr>
+<td><code>Record(field = IntArrayMember(IntArray(1,2,3)))</code></td>
+<td><code>{ "field": { "array": [1, 2, 3] } }</code></td>
+</tr>
+</tbody>
+</table>
+
+<p>Ordinarily, unions are defined inside other types. But if needed,
+typerefs may be used to define a union in a separate .pdsc file and give the union
+any desired name. See below for more details about typerefs.</p>
+
+<h4>
+<a id="union-backward-compatibility" class="anchor" href="#union-backward-compatibility" aria-hidden="true"><span class="octicon octicon-link"></span></a>Union Backward Compatibility</h4>
+
+<p><code>$UnknownMember</code> indicates an unrecognized union member was read
+from serialized data. <code>$UnknownMember</code> is primarily intended to ease
+managing backward compatibility in systems where reader and writers of the data
+may be using different versions of a schema, because, in such system, a reader might
+receive data containing union members they do not yet recognize.</p>
+
+<p>Note that the presence of the <code>$UnknownMember</code> symbol does not, by itself, guarantee
+that adding an a member to the a union is backward compatible. In order to ensure
+this, one must be sure that all readers of the union
+handle reading the <code>$UnknownMember</code> in a backward compatible way. Depending on
+the semantic meaning of the union, this may or may not be possible, and so
+the backward compatibility of changes to union members should be approached
+with care.</p>
+
+<h2>
+<a id="enum-type" class="anchor" href="#enum-type" aria-hidden="true"><span class="octicon octicon-link"></span></a>Enum Type</h2>
+
+<p><a href="https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates#enum-type">Pegasus enums</a></p>
+
+<p>Enums types may contain any number of symbols, for example:</p>
+
+<div class="highlight highlight-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span> : <span class="pl-s"><span class="pl-pds">"</span>enum<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span> : <span class="pl-s"><span class="pl-pds">"</span>Fruits<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>namespace<span class="pl-pds">"</span></span> : <span class="pl-s"><span class="pl-pds">"</span>org.example<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>symbols<span class="pl-pds">"</span></span> : [<span class="pl-s"><span class="pl-pds">"</span>APPLE<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>BANANA<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>ORANGE<span class="pl-pds">"</span></span>]
+}</pre></div>
+
+<p>This will be generated as:</p>
+
+<div class="highlight highlight-scala"><pre><span class="pl-k">object</span> <span class="pl-en">Fruits</span> extend <span class="pl-en">Enumeration</span></pre></div>
+
+<p>where symbols are referenced as:</p>
+
+<div class="highlight highlight-scala"><pre><span class="pl-en">Fruits</span>.<span class="pl-en">APPLE</span></pre></div>
+
+<p>and the enum's Scala type is:</p>
+
+<div class="highlight highlight-scala"><pre><span class="pl-en">Fruits</span>.<span class="pl-en">Fruits</span></pre></div>
+
+<p>Enums are referenced in other schemas either by name, e.g.:</p>
+
+<div class="highlight highlight-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>record<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>FruitBasket<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>namespace<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>org.example<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>fields<span class="pl-pds">"</span></span>: [
+    { <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>fruit<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>org.example.Fruits<span class="pl-pds">"</span></span> }
+  ]
+}</pre></div>
+
+<p>..or by inlining their type definition, e.g.:</p>
+
+<div class="highlight highlight-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>record<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>FruitBasket<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>namespace<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>org.example<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>fields<span class="pl-pds">"</span></span>: [
+    {
+      <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>fruit<span class="pl-pds">"</span></span>,
+      <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>: {
+        <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>enum<span class="pl-pds">"</span></span>,
+        <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>Fruits<span class="pl-pds">"</span></span>,
+        <span class="pl-s"><span class="pl-pds">"</span>symbols<span class="pl-pds">"</span></span>: [<span class="pl-s"><span class="pl-pds">"</span>APPLE<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>BANANA<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>ORANGE<span class="pl-pds">"</span></span>]
+      }
+    }
+  ]
+}</pre></div>
+
+<p>This fully generated enum looks like:</p>
+
+<div class="highlight highlight-scala"><pre><span class="pl-k">object</span> <span class="pl-en">Fruits</span> <span class="pl-k">extends</span> <span class="pl-e">Enumeration</span> {
+  <span class="pl-k">type</span> <span class="pl-en">Fruits</span> <span class="pl-k">=</span> <span class="pl-en">Value</span>
+
+  <span class="pl-k">val</span> <span class="pl-en">APPLE</span> <span class="pl-k">=</span> <span class="pl-en">Value</span>(<span class="pl-s"><span class="pl-pds">"</span>APPLE<span class="pl-pds">"</span></span>)
+  <span class="pl-k">val</span> <span class="pl-en">BANANA</span> <span class="pl-k">=</span> <span class="pl-en">Value</span>(<span class="pl-s"><span class="pl-pds">"</span>BANANA<span class="pl-pds">"</span></span>)
+  <span class="pl-k">val</span> <span class="pl-en">ORANGE</span> <span class="pl-k">=</span> <span class="pl-en">Value</span>(<span class="pl-s"><span class="pl-pds">"</span>ORANGE<span class="pl-pds">"</span></span>)
+
+  <span class="pl-k">val</span> <span class="pl-en">$UNKNOWN</span> <span class="pl-k">=</span> <span class="pl-en">Value</span>(<span class="pl-s"><span class="pl-pds">"</span>$UNKNOWN<span class="pl-pds">"</span></span>) <span class="pl-c">// for backward compatibility (see below)</span>
+}</pre></div>
+
+<p>Enums are represented in JSON as strings, e.g. <code>"APPLE"</code></p>
+
+<h4>
+<a id="enum-backward-compatibility" class="anchor" href="#enum-backward-compatibility" aria-hidden="true"><span class="octicon octicon-link"></span></a>Enum Backward Compatibility</h4>
+
+<p><code>$UNKNOWN</code> indicates an unrecognized symbol was
+read from serialized data. <code>$UNKNOWN</code> is primarily intended to ease
+managing backward compatibility in systems where reader and writers of the data
+may be using different versions of a schema, because, in such system, a reader might
+receive data containing enum symbols they do not yet recognize.</p>
+
+<p>Note that the presence of the <code>$UNKNOWN</code> symbol does not, by itself, guarantee
+that adding an a symbol to the enum is backward compatible. In order to ensure
+this, one must be sure that all readers of the enum
+handle the <code>$UNKNOWN</code> symbol in a backward compatible way. Depending on
+the semantic meaning of the enum, this may or may not be possible, and so
+the backward compatibility of changes to enum symbols should be approached
+with care.</p>
+
+<h2>
+<a id="typerefs" class="anchor" href="#typerefs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Typerefs</h2>
+
+<p><a href="https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates#typeref">Pegasus Typerefs</a>
+provide a lightweight alias to any other type.</p>
+
+<p>They can be used for a variety of purposes. A few common uses:</p>
+
+<p>(1) Provide a name for a union, map, or array so that it can be referenced by name. E.g.:</p>
+
+<div class="highlight highlight-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>AnswerTypes<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>namespace<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>org.example<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>typeref<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>ref<span class="pl-pds">"</span></span>: [<span class="pl-s"><span class="pl-pds">"</span>MutlipleChoice<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>TextEntry<span class="pl-pds">"</span></span>]
+}
+</pre></div>
+
+<p>This will be generated as:</p>
+
+<div class="highlight highlight-scala"><pre><span class="pl-k">abstract</span> <span class="pl-k">class</span> <span class="pl-en">AnswerTypes</span>
+<span class="pl-k">case</span> <span class="pl-k">class</span> <span class="pl-en">MutlipleChoiceMember</span>(<span class="pl-v">value</span>: <span class="pl-en">MutlipleChoice</span>) <span class="pl-k">extends</span> <span class="pl-e">AnswerTypes</span>
+<span class="pl-k">case</span> <span class="pl-k">class</span> <span class="pl-en">TextEntryMember</span>(<span class="pl-v">value</span>: <span class="pl-en">TextEntry</span>) <span class="pl-k">extends</span> <span class="pl-e">AnswerTypes</span></pre></div>
+
+<p>And can be referred to from any other type using the name
+<code>org.example.AnswerTypes</code>, e.g.:</p>
+
+<div class="highlight highlight-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>record<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>Question<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>namespace<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>org.example<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>fields<span class="pl-pds">"</span></span>: [
+    { <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>answerFormat<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>org.example.AnswerTypes<span class="pl-pds">"</span></span> }
+  ]
+}</pre></div>
+
+<p>This is particularly useful because unions, maps and arrays cannot otherwise be
+named directly like records and enums can.</p>
+
+<p>(2) Provide additional clarity when using primitive types for specific purposes.</p>
+
+<div class="highlight highlight-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>UnixTimestamp<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>namespace<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>org.example<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>typeref<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>ref<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>long<span class="pl-pds">"</span></span>
+}</pre></div>
+
+<p>No classes will be generated for this typeref. In Scala, typerefs to primitives
+are simply bound to their reference types (unless the typref is defined as a
+custom, see below for details).  E.g. <code>UnixTypestamp</code> will simply be bound
+to <code>Long</code> in Scala.</p>
+
+<h2>
+<a id="custom-types" class="anchor" href="#custom-types" aria-hidden="true"><span class="octicon octicon-link"></span></a>Custom Types</h2>
+
+<p><a href="https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates#custom-java-class-binding-for-primitive-types">Pegasus Custom Types</a>
+allow any Scala type to be bound to any pegasus primitive type.</p>
+
+<p>For example, <a href="http://www.joda.org/joda-time/">Joda time</a> has a convenient
+<code>DateTime</code> class. If we wish to use this class in Scala to represent date times,
+all we need to do is define a pegasus custom type that binds to it:</p>
+
+<div class="highlight highlight-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>DateTime<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>namespace<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>org.example<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>typeref<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>ref<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>string<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>doc<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>ISO 8601 date-time.<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>scala<span class="pl-pds">"</span></span>: {
+    <span class="pl-s"><span class="pl-pds">"</span>class<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>org.joda.time.DateTime<span class="pl-pds">"</span></span>,
+    <span class="pl-s"><span class="pl-pds">"</span>coercerClass<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>org.coursera.models.common.DateTimeCoercer<span class="pl-pds">"</span></span>
+  }
+}
+</pre></div>
+
+<p>The coercer is responsible for converting the pegasus "referenced" type, in this
+case <code>"string"</code> to the Joda <code>DateTime</code> class:</p>
+
+<div class="highlight highlight-scala"><pre><span class="pl-k">class</span> <span class="pl-en">DateTimeCoercer</span> <span class="pl-k">extends</span> <span class="pl-e">DirectCoercer</span>[<span class="pl-en">DateTime</span>] {
+  <span class="pl-k">override</span> <span class="pl-k">def</span> <span class="pl-en">coerceInput</span>(<span class="pl-v">obj</span>: <span class="pl-en">DateTime</span>)<span class="pl-k">:</span> <span class="pl-en">AnyRef</span> <span class="pl-k">=</span> {
+    <span class="pl-en">DateTimeCoercer</span>.iso8601Format.print(obj)
+  }
+  <span class="pl-k">override</span> <span class="pl-k">def</span> <span class="pl-en">coerceOutput</span>(<span class="pl-v">obj</span>: <span class="pl-en">Any</span>)<span class="pl-k">:</span> <span class="pl-en">DateTime</span> <span class="pl-k">=</span> {
+    obj <span class="pl-k">match</span> {
+      <span class="pl-k">case</span> <span class="pl-v">string</span>: <span class="pl-k">String</span> <span class="pl-k">=&gt;</span> <span class="pl-en">DateTimeCoercer</span>.iso8601Format.parseDateTime(string)
+      <span class="pl-k">case</span> <span class="pl-v">_</span>: <span class="pl-en">Any</span> <span class="pl-k">=&gt;</span> <span class="pl-c">// ...</span>
+    }
+  }
+}
+<span class="pl-k">object</span> <span class="pl-en">DateTimeCoercer</span> {
+  registerCoercer()
+  <span class="pl-k">def</span> <span class="pl-en">registerCoercer</span>()<span class="pl-k">:</span> <span class="pl-k">Unit</span> <span class="pl-k">=</span> {
+    <span class="pl-en">Custom</span>.registerCoercer(<span class="pl-k">new</span> <span class="pl-en">DateTimeCoercer,</span> <span class="pl-c1">classOf</span>[<span class="pl-en">DateTime</span>])
+  }
+  <span class="pl-k">val</span> <span class="pl-en">iso8601Format</span> <span class="pl-k">=</span> <span class="pl-en">ISODateTimeFormat</span>.dateTime()
+}
+</pre></div>
+
+<p>Once a custom type is defined, it can be used in any type. For example, to use the DateTime
+custom type in a record:</p>
+
+<div class="highlight highlight-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>record<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>Fortune<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>namespace<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>org.example<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>fields<span class="pl-pds">"</span></span>: [
+    { <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>createdAt<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>org.example.DateTime<span class="pl-pds">"</span></span> }
+  ]
+}</pre></div>
+
+<p>This will be generated as:</p>
+
+<div class="highlight highlight-scala"><pre><span class="pl-k">case</span> <span class="pl-k">class</span> <span class="pl-en">Fortune</span>(<span class="pl-v">createdAt</span>: org.joda.time.<span class="pl-en">DateTime</span>)</pre></div>
+
+<h2>
+<a id="json-serializationdeserialization" class="anchor" href="#json-serializationdeserialization" aria-hidden="true"><span class="octicon octicon-link"></span></a>JSON serialization/deserialization</h2>
+
+<p>All of the pegasus complex types may be serialized using:</p>
+
+<div class="highlight highlight-scala"><pre><span class="pl-k">val</span> <span class="pl-en">fortune</span> <span class="pl-k">=</span> <span class="pl-en">Fortune</span>(message <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>Today is your lucky day!<span class="pl-pds">"</span></span>)
+<span class="pl-k">val</span> <span class="pl-en">json</span> <span class="pl-k">=</span> <span class="pl-en">DataTemplates</span>.writeDataMap(fortune.data()) <span class="pl-c">// or writeDataList</span></pre></div>
+
+<p>And deserialized using:</p>
+
+<div class="highlight highlight-scala"><pre><span class="pl-k">val</span> <span class="pl-en">dataMap</span> <span class="pl-k">=</span> <span class="pl-en">DataTemplates</span>.readDataMap(json) <span class="pl-c">// or readDataList</span>
+<span class="pl-k">val</span> <span class="pl-en">fortune</span> <span class="pl-k">=</span> <span class="pl-en">Fortune</span>(dataMap, <span class="pl-en">DataConversion</span>.<span class="pl-en">SetReadOnly</span>) <span class="pl-c">// or DataConversion.DeepCopy</span></pre></div>
+
+<h2>
+<a id="codecs" class="anchor" href="#codecs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Codecs</h2>
+
+<p>Pegasus and Courier provides multiple "Codecs":</p>
+
+<ul>
+<li>JacksonDataCodec - The primary JSON encoding used by Pegasus.</li>
+<li>
+<a href="https://github.com/coursera/courier/blob/master/runtime/src/main/scala/org/coursera/courier/codecs/InlineStringCodec.scala#L38">InlineStringCodec</a>
+
+<ul>
+<li>URL "Friendly" string encoding of data.</li>
+</ul>
+</li>
+<li>
+<a href="https://github.com/linkedin/rest.li/blob/master/data/src/main/java/com/linkedin/data/codec/PsonDataCodec.java#L41">PsonDataCodec</a> - Non-standard "performance" optimized JSON-like codec.</li>
+<li>BsonDataCodec - The <a href="http://bsonspec.org/">bson</a> binary encoding for JSON-like data.</li>
+</ul>
+
+<p>Example codec use:</p>
+
+<pre><code>val codec = new InlineStringCodec()
+
+// deserialize
+val dataMap = codec.bytesToMap("(key~value)".getBytes(Charset.forName("UTF-8"))
+
+// serialize
+val string = new String(codec.mapToBytes(dataMap, Charset.forName("UTF-8")))
+</code></pre>
+
+<p>All codecs also support input and output streams, e.g.:</p>
+
+<pre><code>val codec = PsonDataCodec()
+
+// deserialize
+val dataMap = codec.readMap(inputStream)
+
+// serialize
+codec.writeMap(dataMap, outputStream)
+</code></pre>
+
+<h2>
+<a id="avro-translators" class="anchor" href="#avro-translators" aria-hidden="true"><span class="octicon octicon-link"></span></a>Avro Translators</h2>
+
+<p>Avro compatibility is provided using "translators" of Avro data:</p>
+
+<ul>
+<li>AvroGenericToDataTranslator</li>
+<li>DataMapToGenericRecordTranslator</li>
+</ul>
+
+<p>and Avro schemas:</p>
+
+<ul>
+<li>SchemaTranslator - Translates Avro <code>Schema</code> to and from Pegasus <code>DataSchema</code>.</li>
+</ul>
+
+<h2>
+<a id="validation" class="anchor" href="#validation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Validation</h2>
+
+<p><a href="https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates#data-to-schema-validation">https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates#data-to-schema-validation</a></p>
+
+<h2>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h2>
+
+<p>Courier is <a href="LICENSE.txt">Apache 2.0 Licensed</a>.</p>
+
+<h2>
+<a id="contributing" class="anchor" href="#contributing" aria-hidden="true"><span class="octicon octicon-link"></span></a>Contributing</h2>
+
+<p>For development and submitting pull requests, please see the
+<a href="CONTRIBUTING.md">Contributing document</a>.</p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/coursera/courier">Courier</a> is maintained by <a href="https://github.com/coursera">coursera</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
+
