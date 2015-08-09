@@ -1,4 +1,3 @@
 @(field: org.coursera.courier.generator.specs.RecordField)
-@field.scalaDoc.map { doc => @doc }
-@if(field.isDeprecated) {
+@field.scalaDoc.map { doc => @doc } @if(field.isDeprecated) {
 @@deprecated} @field.deprecationMessage.map { message => (message = "@(message)") }

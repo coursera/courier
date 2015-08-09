@@ -88,6 +88,7 @@ object Courier extends Build with OverridablePublishSettings {
         ExternalDependencies.ScalaLogging.scalaLoggingSlf4j,
         ExternalDependencies.JUnit.junit,
         ExternalDependencies.Scalatest.scalatest,
+        ExternalDependencies.Scalariform.scalariform,
         ExternalDependencies.ApacheCommons.lang),
       dependencyOverrides += ExternalDependencies.ApacheCommons.io)
 
@@ -194,6 +195,11 @@ object Courier extends Build with OverridablePublishSettings {
 
       val ioVersion = "2.4"
       val io = "commons-io" % "commons-io" % ioVersion
+    }
+
+    object Scalariform {
+      val version = "0.1.6"
+      val scalariform = "org.scalariform" %% "scalariform" % version
     }
   }
 
