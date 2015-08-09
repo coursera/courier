@@ -38,6 +38,11 @@ import org.coursera.courier.templates.txt.RecordClass
 import org.coursera.courier.templates.txt.TyperefClass
 import org.coursera.courier.templates.txt.UnionClass
 
+import scalariform.formatter.ScalaFormatter
+import scalariform.formatter.preferences.CompactControlReadability
+import scalariform.formatter.preferences.DoubleIndentClassDeclaration
+import scalariform.formatter.preferences.FormattingPreferences
+
 /**
  * Generates Scala files using the Twirl string template engine.
  */
@@ -73,9 +78,17 @@ class TwirlDataTemplateGenerator(generateTyperefs: Boolean)
         throw new IllegalArgumentException(s"Unsupported schema type: ${topLevelSpec.getClass}")
     }
     maybeCode.map { code =>
+      val formattedCode = ScalaFormatter.format(code)
       val namespace = topLevelSpec.namespace.getOrElse("")
-      GeneratedCode(code, CompilationUnit(topLevelSpec.scalaType, namespace))
+      GeneratedCode(formattedCode, CompilationUnit(topLevelSpec.scalaType, namespace))
     }
+  }
+
+  private[this] val formatterPrefs = {
+    new FormattingPreferences(
+      Map(
+        DoubleIndentClassDeclaration -> true,
+        CompactControlReadability -> true))
   }
 
   /**
