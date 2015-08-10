@@ -16,30 +16,34 @@
 
 package org.coursera.courier.generator
 
-import java.io.File
-
+import com.linkedin.data.schema.DataSchema
+import com.linkedin.pegasus.generator.spec.ClassTemplateSpec
+import org.coursera.courier.api.GeneratedCode
+import org.coursera.courier.api.GeneratedCodeTargetFile
+import org.coursera.courier.api.PegasusCodeGenerator
 import org.coursera.courier.generator.specs.Definition
+
+import scala.annotation.meta.beanGetter
+import scala.collection.JavaConverters._
 
 /**
  * Identifies a particular scala file.
  */
-case class CompilationUnit(name: String, namespace: String) {
-  def toFile(targetDirectory: File): File = {
-    val namespacePath = namespace.replace(".", File.separator)
-    val directory = new File(targetDirectory, namespacePath)
-    new File(directory, s"$name.scala")
-  }
-}
+case class ScalaCompilationUnit(name: String, namespace: String)
+  extends GeneratedCodeTargetFile(name, namespace, "scala")
 
 /**
  * Code that has been generated.
  */
-case class GeneratedCode(code: String, compilationUnit: CompilationUnit)
+case class ScalaGeneratedCode(
+    @beanGetter code: String,
+    @beanGetter target: ScalaCompilationUnit)
+  extends GeneratedCode(target, code)
 
 /**
  * A simple pegasus code generator.
  */
-trait TemplateGenerator {
+trait TemplateGenerator extends PegasusCodeGenerator {
 
   /**
    * Generates code for the given spec.
@@ -47,25 +51,25 @@ trait TemplateGenerator {
    * Because Definitions can currently contain nested type declarations that should be
    * generated into top level class files, a single call to generate can produce multiple files.
    */
-  def generate(spec: Definition): Option[GeneratedCode]
+  def generate(definition: Definition): Option[ScalaGeneratedCode]
 
   /**
    * Generate all predefined types.
    *
    * We only generate schemas for pre defined types when re-generating types in courier-runtime.
    */
-  def generatePredef(): Seq[GeneratedCode]
+  def generatePredefinedTypes(): Seq[ScalaGeneratedCode]
 
-  /**
-   * Currently, one ClassDefinition is provided per .pdsc file. But some of those .pdsc contain
-   * inline schema definitions that should be generated into top level classes.
-   *
-   * This method traverses the spec hierarchy, finding all specs that should be generated as top
-   * level classes.
-   *
-   * I've asked the rest.li team to consider restructuring the generator utilities so that one
-   * ClassDefinition per top level class is provided. If they restructure the utilities, this
-   * method should no longer be needed.
-   */
-  def findTopLevelTypes(definition: Definition): Set[Definition]
+  // Implement the Java API
+  override def generate(spec: ClassTemplateSpec): GeneratedCode = {
+    generate(Definition(spec)).orNull
+  }
+
+  override def generatePredef: java.util.Collection[GeneratedCode] = {
+    generatePredefinedTypes().map(_.asInstanceOf[GeneratedCode]).asJavaCollection
+  }
+
+  override def definedSchemas(): java.util.Collection[DataSchema] = {
+    TypeConversions.primitiveSchemas.asJavaCollection
+  }
 }

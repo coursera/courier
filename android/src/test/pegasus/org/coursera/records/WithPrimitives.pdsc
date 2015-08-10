@@ -1,0 +1,24 @@
+{
+  "type": "record",
+  "name": "WithPrimitives",
+  "namespace": "org.coursera.records",
+  "fields": [
+    { "name": "intField", "type": "int" },
+    { "name": "longField", "type": "long" },
+    { "name": "floatField", "type": "float" },
+    { "name": "doubleField", "type": "double" },
+    { "name": "booleanField", "type": "boolean" },
+    { "name": "stringField", "type": "string" },
+    { "name": "bytesField", "type": "bytes" },
+
+    { "name": "record", "type": "Simple" },
+    { "name": "enumeration", "type": "org.coursera.enums.Fruits" },
+    //{ "name": "union", "type": ["int", "string", "Simple"] },
+    { "name": "union", "type": "org.coursera.typerefs.UnionTyperef" },
+    { "name": "array", "type": { "type": "array", "items": "int" } },
+    { "name": "arrayArray", "type": { "type": "array", "items": { "type": "array", "items": "int" } } },
+    { "name": "map", "type": { "type": "map", "values": "int" } },
+    { "name": "mapMap", "type": { "type": "map", "values": { "type": "map", "values": "int" } } }
+    //{ "name": "custom", "toJavaSourceType": "org.coursera.customtypes.CustomInt" }
+  ]
+}

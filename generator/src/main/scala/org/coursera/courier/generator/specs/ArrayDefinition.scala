@@ -19,7 +19,7 @@ package org.coursera.courier.generator.specs
 import com.linkedin.data.schema.ArrayDataSchema
 import com.linkedin.pegasus.generator.spec.ArrayTemplateSpec
 
-case class ArrayDefinition(spec: ArrayTemplateSpec) extends Definition(spec) {
+case class ArrayDefinition(override val spec: ArrayTemplateSpec) extends Definition(spec) {
   def arraySchema: ArrayDataSchema = spec.getSchema
   def schema: Option[ArrayDataSchema] = Some(arraySchema)
   def scalaDoc: Option[String] = None

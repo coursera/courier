@@ -17,6 +17,11 @@
 package org.coursera.courier.sbt
 
 import com.linkedin.util.FileUtil
+import org.apache.commons.lang3.exception.ExceptionUtils
+import org.coursera.courier.ScalaGenerator
+import org.coursera.courier.api.DefaultGeneratorRunner
+import org.coursera.courier.api.GeneratorRunnerOptions
+import org.coursera.courier.api.PegasusCodeGenerator
 import org.coursera.courier.generator.ScalaDataTemplateGenerator
 
 import sbt._
@@ -37,6 +42,9 @@ import xsbti.Severity
 object CourierPlugin extends Plugin {
 
   val courierGenerator = taskKey[Seq[File]]("Generates Scala bindings for .pdsc files")
+
+  val courierGeneratorClass = settingKey[Class[_ <: PegasusCodeGenerator]](
+    "PegasusCodeGenerator implementation class run by this generator.")
 
   val courierSourceDirectory = settingKey[File](
     "Directory with .pdsc files used to generate Scala bindings")
@@ -69,6 +77,8 @@ object CourierPlugin extends Plugin {
 
   private def courierSettings(conf: Configuration): Seq[Def.Setting[_]] = Seq(
 
+    courierGeneratorClass in conf := classOf[ScalaGenerator],
+
     courierSourceDirectory in conf := (sourceDirectory in conf).value / "pegasus",
 
     courierDestinationDirectory in conf := (sourceManaged in conf).value / "courier",
@@ -87,6 +97,7 @@ object CourierPlugin extends Plugin {
       val dst = (courierDestinationDirectory in conf).value
       val namespacePrefix = courierPrefix.value
       val genTyperefs = (generateTyperefs in conf).value
+      val generatorClass = (courierGeneratorClass in conf).value
 
       // adds in .pdscs from projects that this project .dependsOn
       val resolverPathFiles = Seq(src.getAbsolutePath) ++
@@ -109,13 +120,15 @@ object CourierPlugin extends Plugin {
         log.debug("Courier source path: " + src)
         log.debug("Courier destination path: " + dst)
         try {
-          val result = ScalaDataTemplateGenerator.run(
-            resolverPath = resolverPath,
-            defaultPackage = namespacePrefix.getOrElse(""),
-            generateImported = false,
-            targetDirectoryPath = dst.absolutePath,
-            sources = sourceFiles.map(_.absolutePath).toArray,
-            generateTyperefs = genTyperefs)
+          val generator = generatorClass.newInstance()
+          val result = new DefaultGeneratorRunner().run(
+            generator,
+            new GeneratorRunnerOptions(
+              dst.absolutePath,
+              sourceFiles.map(_.absolutePath).toArray,
+              resolverPath)
+                .setDefaultPackage(namespacePrefix.getOrElse(""))
+                .setGenerateTyperefs(genTyperefs))
 
           // NOTE: Deleting stale files does not work properly with courier activated on two
           // different projects.
@@ -137,7 +150,7 @@ object CourierPlugin extends Plugin {
                   Severity.Error)
               case _ =>
                 throw new MessageOnlyException(
-                  "Courier generator error, cause: " + e.getMessage)
+                  "Courier generator error, cause: " + ExceptionUtils.getStackTrace(e))
             }
           }
           case e: Throwable => {

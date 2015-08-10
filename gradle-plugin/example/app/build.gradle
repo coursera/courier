@@ -2,6 +2,8 @@ apply plugin: 'scala'
 
 dependencies {
   compile 'org.scala-lang:scala-library:2.11.5'
+  compile "org.coursera.courier:courier-runtime_$scalaMajorVersion:$courierVersion"
+
   compile project(path: ':schemas2', configuration: 'courier')
-  // compile project(':schemas2') // can be used if you want both generated bindings and src/main/scala
+  //compile project(':schemas2') // can be used if you want both generated bindings and src/main/scala
 }

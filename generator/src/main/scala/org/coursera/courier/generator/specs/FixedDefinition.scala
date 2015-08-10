@@ -20,7 +20,7 @@ import com.linkedin.data.schema.FixedDataSchema
 import com.linkedin.pegasus.generator.spec.FixedTemplateSpec
 import org.coursera.courier.generator.ScaladocEscaping
 
-case class FixedDefinition(spec: FixedTemplateSpec) extends Definition(spec) {
+case class FixedDefinition(override val spec: FixedTemplateSpec) extends Definition(spec) {
   def fixedSchema: FixedDataSchema = spec.getSchema
   def schema: Option[FixedDataSchema] = Some(fixedSchema)
 

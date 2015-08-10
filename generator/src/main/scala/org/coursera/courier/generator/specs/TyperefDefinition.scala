@@ -20,7 +20,7 @@ import com.linkedin.data.schema.TyperefDataSchema
 import com.linkedin.pegasus.generator.spec.TyperefTemplateSpec
 import org.coursera.courier.generator.ScaladocEscaping
 
-case class TyperefDefinition(spec: TyperefTemplateSpec) extends Definition(spec) {
+case class TyperefDefinition(override val spec: TyperefTemplateSpec) extends Definition(spec) {
   def typerefSchema: TyperefDataSchema = spec.getSchema
   def schema: Option[TyperefDataSchema] = Some(typerefSchema)
 

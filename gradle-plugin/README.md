@@ -3,8 +3,13 @@ Courier Gradle Plugin
 
 A Gradle plugin for [Courier](https://github.com/coursera/courier).
 
-Usage
------
+This plugin can be used to generate Pegasus data bindings for multiple targets including:
+
+* Scala
+* Java Android (GSON based)
+
+Scala Setup
+-----------
 
 To get started, first add the plugin to your Gradle project.
 
@@ -19,7 +24,8 @@ buildscript {
   }
   dependencies {
     classpath 'org.scala-lang:scala-library:2.11.5'
-    classpath 'org.coursera.courier:gradle-plugin_2.11:0.3.1'
+    classpath 'org.coursera.courier:gradle-plugin_2.11:0.5.0'
+    // classpath "org.coursera.courier:courier-android:0.5.0" // for Java Android bindings
   }
 }
 ```
@@ -36,17 +42,31 @@ repositories {
   mavenLocal()
 }
 
+courier {
+  codeGenerator 'org.coursera.courier.generator.twirl.TwirlDataTemplateGenerator'
+  // codeGenerator 'org.coursera.courier.android.RythmTemplateGenerator' // for Java Android bindings
+}
+
 dependencies {
   compile 'org.scala-lang:scala-library:2.11.5'
   courierCompile 'org.scala-lang:scala-library:2.11.5'
-  courierCompile 'org.coursera.courier:courier-runtime_2.11:0.3.1'
+  courierCompile 'org.coursera.courier:courier-runtime_2.11:0.5.0'
+  // courierCompile 'com.google.code.gson:gson:2.3.1' // for Java Android bindings
 }
 ```
 
 (WARN: The `idea` plugin must be BEFORE the `courier` plugin for the the courier plugin to correctly
 mark generated source directories as such.)
 
-Lastly, give it a try! Add a `.pdsc` file to the `src/main/pegasus` directory of the project, e.g.:
+Java Android Setup
+------------------
+
+
+
+Usage
+-------------------
+
+Add a `.pdsc` file to the `src/main/pegasus` directory of the project, e.g.:
 
 `src/main/pegasus/org/example/Fortune.pdsc`
 

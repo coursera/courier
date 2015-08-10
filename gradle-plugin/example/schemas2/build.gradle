@@ -1,9 +1,9 @@
-apply plugin: 'scala'
+apply plugin: 'scala' // For Scala, I believe order matters.
 apply plugin: 'courier'
 
 dependencies {
-  dataModel project(path: ':schemas', configuration: 'courier') // TODO: configuration: 'dataModel' should work as well.
-  compile 'org.scala-lang:scala-library:2.11.5'
-  courierCompile 'org.scala-lang:scala-library:2.11.5'
-  courierCompile 'org.coursera.courier:courier-runtime_2.11:0.3.1'
+  pegasus project(path: ':schemas', configuration: 'pegasus')
+  compile "org.scala-lang:scala-library:$scalaVersion"
+  courierCompile "org.scala-lang:scala-library:$scalaVersion"
+  courierCompile "org.coursera.courier:courier-runtime_$scalaMajorVersion:$courierVersion"
 }

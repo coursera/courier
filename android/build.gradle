@@ -1,0 +1,86 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+repositories {
+  mavenCentral()
+  mavenLocal()
+}
+
+group = "org.coursera.courier"
+archivesBaseName = "courier-android"
+version = courierVersion
+
+
+dependencies {
+  compile 'org.rythmengine:rythm-engine:1.0.1'
+  compile 'com.linkedin.pegasus:generator:2.6.0'
+  compile 'com.google.code.gson:gson:2.3.1'
+  compile "org.coursera.courier:courier-generator-api:$courierVersion"
+  //compile 'jalopy:jalopy:1.5rc3' // TODO: Jelopy is tool old, depends on obsolete log4j APIs or something
+  testCompile 'junit:junit:4.12'
+}
+
+
+task javadocJar(type: Jar) {
+  classifier = 'javadoc'
+  from javadoc
+}
+
+task sourcesJar(type: Jar) {
+  classifier = 'sources'
+  from sourceSets.main.allSource
+}
+
+artifacts {
+  archives javadocJar, sourcesJar
+}
+
+signing {
+  sign configurations.archives
+}
+
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+      repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+        authentication(userName: ossrhUsername, password: ossrhPassword)
+      }
+
+      snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+        authentication(userName: ossrhUsername, password: ossrhPassword)
+      }
+
+      pom.project {
+        name 'Courier Android Generator'
+        packaging 'jar'
+        // optionally artifactId can be defined here
+        description 'Scala data binding generator for multiple data formats including JSON and Avro.'
+        url 'https://github.com/coursera/courier'
+
+        scm {
+          connection 'git@github.com:coursera/courier.git'
+          developerConnection 'git@github.com:coursera/courier.git'
+          url 'https://github.com/coursera/courier/tree/master'
+        }
+
+        licenses {
+          license {
+            name 'The Apache License, Version 2.0'
+            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+          }
+        }
+
+        developers {
+          developer {
+            id 'jpbetz'
+            name 'Joe Betz'
+            email 'jpbetz@gmail.com'
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,10 @@
+@args com.linkedin.data.schema.NamedDataSchema schema
+@import java.util.Calendar
+
+@* Add any scaladoc and deprecated annotations as well as the Generated annotation.*@
+
+@if (schema.getDoc() != null && !schema.getDoc().trim().equals("")) { /** @schema.getDoc() */ }
+@if (schema.getProperties().containsKey("deprecated") && !Boolean.FALSE.equals(schema.getProperties().get("deprecated"))) {
+@@Deprecated @if(schema.getProperties().get("deprecated") instanceof String) { // schema.getProperties().get("deprecated") }
+}
+@@Generated(value = "@schema.getName()", comments="Courier generated GSON data binding for Android", date = "@Calendar.getInstance().getTime()")

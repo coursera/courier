@@ -4,8 +4,15 @@ buildscript {
     mavenLocal()
   }
   dependencies {
-    classpath 'org.scala-lang:scala-library:2.11.5'
-    classpath 'org.coursera.courier:gradle-plugin_2.11:0.3.1'
+    //classpath "org.coursera.courier:gradle-plugin_$scalaMajorVersion:$courierVersion"
+    classpath "org.coursera.courier:gradle-plugin:$courierVersion"
+
+    // For Scala
+    classpath "org.scala-lang:scala-library:$scalaVersion" // picked up implicitly, but best to add it explicitly
+    classpath "org.coursera.courier:courier-generator_$scalaMajorVersion:$courierVersion"
+
+    // For Java Android
+    classpath "org.coursera.courier:courier-android:$courierVersion"
   }
 }
 

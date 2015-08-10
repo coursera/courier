@@ -1,0 +1,35 @@
+@args com.linkedin.pegasus.generator.spec.RecordTemplateSpec record
+@import com.linkedin.pegasus.generator.spec.ClassTemplateSpec
+@import com.linkedin.pegasus.generator.spec.RecordTemplateSpec.Field
+@import com.linkedin.pegasus.generator.spec.PrimitiveTemplateSpec
+@import com.linkedin.pegasus.generator.spec.MapTemplateSpec
+@import com.linkedin.pegasus.generator.spec.UnionTemplateSpec
+@import com.linkedin.pegasus.generator.spec.ArrayTemplateSpec
+@import org.coursera.courier.android.JavaSyntax
+@import org.coursera.courier.api.ClassTemplateSpecs
+@import org.coursera.courier.android.TypedDefinitions
+
+@if (record.getNamespace() != null) {package @record.getNamespace();}
+
+import javax.annotation.Generated;
+import com.google.gson.annotations.SerializedName;
+
+@classAnnotations(record.getSchema())
+public final class @record.getClassName() {
+  @for(Field field: record.getFields()) {
+    @fieldAnnotations(field)
+    public @JavaSyntax.toType(field.getType()) @field.getSchemaField().getName();
+  }
+
+  @for(ClassTemplateSpec enclosed: ClassTemplateSpecs.directContainedTypes(record)) {
+    @if (enclosed instanceof UnionTemplateSpec) {
+      @if (TypedDefinitions.isTypedDefinition((UnionTemplateSpec)enclosed)) {
+        @typedDefinition(enclosed, TypedDefinitions.getTypedDefinitionMapping((UnionTemplateSpec)enclosed, false))
+      } else if (TypedDefinitions.isFlatTypedDefinition((UnionTemplateSpec)enclosed)) {
+        @flatTypedDefinition(enclosed, TypedDefinitions.getTypedDefinitionMapping((UnionTemplateSpec)enclosed, true))
+      } else {
+        @union(enclosed)
+      }
+    }
+  }
+}

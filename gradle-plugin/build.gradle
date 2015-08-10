@@ -1,4 +1,4 @@
-apply plugin: 'scala'
+apply plugin: 'groovy'
 apply plugin: 'maven'
 apply plugin: 'signing'
 
@@ -8,12 +8,11 @@ repositories {
 }
 
 group = "org.coursera.courier"
-archivesBaseName = "gradle-plugin_2.11"
-version = "0.3.1"
+archivesBaseName = "gradle-plugin"
+version = courierVersion
 
 dependencies {
-  compile 'org.scala-lang:scala-library:2.11.5'
-  compile 'org.coursera.courier:courier-generator_2.11:0.3.1'
+  compile "org.coursera.courier:courier-generator-api:$courierVersion"
   compile gradleApi()
 }
 

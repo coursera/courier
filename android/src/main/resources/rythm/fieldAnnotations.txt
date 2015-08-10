@@ -1,0 +1,6 @@
+@args com.linkedin.pegasus.generator.spec.RecordTemplateSpec.Field field
+
+@if (field.getSchemaField().getDoc() != null && !field.getSchemaField().getDoc().trim().equals("")) { /** @field.getSchemaField().getDoc() */ }
+@if (field.getSchemaField().getProperties().containsKey("deprecated") && !Boolean.FALSE.equals(field.getSchemaField().getProperties().get("deprecated"))) {
+@@Deprecated @if(field.getSchemaField().getProperties().get("deprecated") instanceof String) { // field.getSchemaField().getProperties().get("deprecated") }
+}

@@ -34,7 +34,7 @@ import org.coursera.courier.generator.TypeConversions
  *   ???
  *
  */
-case class ClassDefinition(spec: ClassTemplateSpec) extends Definition(spec) with MaybeBoxable {
+case class ClassDefinition(override val spec: ClassTemplateSpec) extends Definition(spec) with MaybeBoxable {
   def schema: Option[DataSchema] = Option(spec.getSchema)
 
   override def scalaType = schema.collect {

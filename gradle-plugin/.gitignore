@@ -1,8 +1,7 @@
-build
 .gradle
-example/build
-example/.gradle
-example/src/mainGeneratedCourier
-example/schemas/src/mainGeneratedCourier
-example/schemas2/src/mainGeneratedCourier
-example/out
+build
+/gradle
+/example/src/mainGeneratedCourier
+/example/schemas/src/mainGeneratedCourier
+/example/schemas2/src/mainGeneratedCourier
+/example/out
