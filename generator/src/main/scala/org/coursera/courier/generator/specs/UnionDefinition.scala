@@ -28,7 +28,7 @@ import scala.collection.JavaConverters._
  *
  * E.g. A union defined as the type of a field of a record will be named after that field.
  */
-case class UnionDefinition(spec: UnionTemplateSpec) extends Definition(spec) {
+case class UnionDefinition(override val spec: UnionTemplateSpec) extends Definition(spec) {
   def unionSchema: UnionDataSchema = spec.getSchema
   def schema: Option[UnionDataSchema] = Option(unionSchema)
 

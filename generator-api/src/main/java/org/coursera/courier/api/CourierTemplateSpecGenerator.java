@@ -14,17 +14,46 @@
  * limitations under the License.
  */
 
-package org.coursera.courier.generator;
+package org.coursera.courier.api;
 
 import com.linkedin.data.DataMap;
-import com.linkedin.data.schema.*;
+import com.linkedin.data.schema.ArrayDataSchema;
+import com.linkedin.data.schema.ComplexDataSchema;
+import com.linkedin.data.schema.DataSchema;
+import com.linkedin.data.schema.DataSchemaLocation;
+import com.linkedin.data.schema.DataSchemaResolver;
+import com.linkedin.data.schema.EnumDataSchema;
+import com.linkedin.data.schema.FixedDataSchema;
+import com.linkedin.data.schema.MapDataSchema;
+import com.linkedin.data.schema.NamedDataSchema;
+import com.linkedin.data.schema.PrimitiveDataSchema;
+import com.linkedin.data.schema.RecordDataSchema;
+import com.linkedin.data.schema.SchemaParser;
+import com.linkedin.data.schema.TyperefDataSchema;
+import com.linkedin.data.schema.UnionDataSchema;
 import com.linkedin.data.template.DataTemplate;
 import com.linkedin.pegasus.generator.CodeUtil;
-import com.linkedin.pegasus.generator.spec.*;
+import com.linkedin.pegasus.generator.spec.ArrayTemplateSpec;
+import com.linkedin.pegasus.generator.spec.ClassTemplateSpec;
+import com.linkedin.pegasus.generator.spec.CustomInfoSpec;
+import com.linkedin.pegasus.generator.spec.EnumTemplateSpec;
+import com.linkedin.pegasus.generator.spec.FixedTemplateSpec;
+import com.linkedin.pegasus.generator.spec.ModifierSpec;
+import com.linkedin.pegasus.generator.spec.PrimitiveTemplateSpec;
+import com.linkedin.pegasus.generator.spec.RecordTemplateSpec;
+import com.linkedin.pegasus.generator.spec.TyperefTemplateSpec;
+import com.linkedin.pegasus.generator.spec.UnionTemplateSpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Collection;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Modified version of {@link com.linkedin.pegasus.generator.TemplateSpecGenerator} that
@@ -57,7 +86,7 @@ public class CourierTemplateSpecGenerator {
 
   private final Collection<ClassTemplateSpec> _classTemplateSpecs = new HashSet<ClassTemplateSpec>();
   /**
-   * Map of {@link ClassTemplateSpec} to {@link com.linkedin.data.schema.DataSchemaLocation}.
+   * Map of {@link com.linkedin.pegasus.generator.spec.ClassTemplateSpec} to {@link com.linkedin.data.schema.DataSchemaLocation}.
    */
   private final Map<ClassTemplateSpec, DataSchemaLocation> _classToDataSchemaLocationMap = new HashMap<ClassTemplateSpec, DataSchemaLocation>();
   /**
@@ -65,17 +94,18 @@ public class CourierTemplateSpecGenerator {
    */
   private final Map<String, DataSchema> _classNameToSchemaMap = new HashMap<String, DataSchema>(100);
   /**
-   * Map of {@link DataSchema} to {@link ClassTemplateSpec}.
+   * Map of {@link com.linkedin.data.schema.DataSchema} to {@link com.linkedin.pegasus.generator.spec.ClassTemplateSpec}.
    */
   private final IdentityHashMap<DataSchema, ClassTemplateSpec> _schemaToClassMap = new IdentityHashMap<DataSchema, ClassTemplateSpec>(100);
   /**
-   * Map of {@link DataSchema} to the information about the immediate dereferenced {@link DataSchema} with custom Java class binding.
+   * Map of {@link com.linkedin.data.schema.DataSchema} to the information about the immediate dereferenced {@link com.linkedin.data.schema.DataSchema} with custom Java class binding.
    */
   private final Deque<DataSchemaLocation> _locationStack = new ArrayDeque<DataSchemaLocation>();
   private final Map<DataSchema, CustomInfoSpec> _immediateCustomMap = new IdentityHashMap<DataSchema, CustomInfoSpec>();
 
   private final DataSchemaResolver _schemaResolver;
   private final SchemaParser _schemaParser;
+  private final String _dataNamespace;
 
   /**
    * Return Java class name for a {@link com.linkedin.data.schema.NamedDataSchema}.
@@ -97,14 +127,20 @@ public class CourierTemplateSpecGenerator {
     return sb.toString();
   }
 
-  public CourierTemplateSpecGenerator(DataSchemaResolver schemaResolver)
+  /**
+   * @param dataNamespace Provides the namespace to use for generated classes that have no other
+   *                      reasonable default namespace.  E.g. An generated type for array of ints
+   *                      would be generated in this namespace.
+   */
+  public CourierTemplateSpecGenerator(DataSchemaResolver schemaResolver, String dataNamespace)
   {
     _schemaResolver = schemaResolver;
     _schemaParser = new SchemaParser(schemaResolver);
+    _dataNamespace = dataNamespace;
   }
 
   /**
-   * @return location of the {@link ClassTemplateSpec} is originated, most likely the pdsc file that defines it
+   * @return location of the {@link com.linkedin.pegasus.generator.spec.ClassTemplateSpec} is originated, most likely the pdsc file that defines it
    */
   public DataSchemaLocation getClassLocation(ClassTemplateSpec classSpec)
   {
@@ -112,7 +148,7 @@ public class CourierTemplateSpecGenerator {
   }
 
   /**
-   * Instead of generate spec for the specify {@link DataSchema}, assume it is already defined in the system.
+   * Instead of generate spec for the specify {@link com.linkedin.data.schema.DataSchema}, assume it is already defined in the system.
    */
   public void registerDefinedSchema(DataSchema schema)
   {
@@ -122,7 +158,7 @@ public class CourierTemplateSpecGenerator {
   }
 
   /**
-   * Generate {@link ClassTemplateSpec} from the specified {@link DataSchema} without knowing the location.
+   * Generate {@link com.linkedin.pegasus.generator.spec.ClassTemplateSpec} from the specified {@link com.linkedin.data.schema.DataSchema} without knowing the location.
    */
   public ClassTemplateSpec generate(DataSchema schema)
   {
@@ -130,7 +166,7 @@ public class CourierTemplateSpecGenerator {
   }
 
   /**
-   * Generate {@link ClassTemplateSpec} from the specified {@link DataSchema} and its location.
+   * Generate {@link com.linkedin.pegasus.generator.spec.ClassTemplateSpec} from the specified {@link com.linkedin.data.schema.DataSchema} and its location.
    */
   public ClassTemplateSpec generate(DataSchema schema, DataSchemaLocation location)
   {
@@ -146,7 +182,7 @@ public class CourierTemplateSpecGenerator {
   }
 
   /**
-   * Emit message if the schema is a {@link NamedDataSchema} and the class name ends with one of the special suffixes, e.g. "Array", "Map".
+   * Emit message if the schema is a {@link com.linkedin.data.schema.NamedDataSchema} and the class name ends with one of the special suffixes, e.g. "Array", "Map".
    * <p/>
    * <p/>
    * This may potentially conflict with class names for Java binding for array or map of this type.
@@ -232,7 +268,7 @@ public class CourierTemplateSpecGenerator {
    * Checks if a class name conflict occurs, if it occurs throws {@link IllegalArgumentException}.
    *
    * @param className provides the Java class name.
-   * @param schema    provides the {@link DataSchema} that would be bound if there is no conflict.
+   * @param schema    provides the {@link com.linkedin.data.schema.DataSchema} that would be bound if there is no conflict.
    *
    * @throws IllegalArgumentException
    */
@@ -292,12 +328,12 @@ public class CourierTemplateSpecGenerator {
   /**
    * Register a new class TemplateSpec.
    * <p/>
-   * Registration is necessary to associate the {@link ClassTemplateSpec} with the source file for which it was generated. This may be used later to determine if generated class should be emitted
+   * Registration is necessary to associate the {@link com.linkedin.pegasus.generator.spec.ClassTemplateSpec} with the source file for which it was generated. This may be used later to determine if generated class should be emitted
    * based on the location of the source file.
    * <p/>
-   * Registration also associates the {@link DataSchema} to the generated {@link ClassTemplateSpec} and the generated class's full name to the the {@link ClassTemplateSpec}.
+   * Registration also associates the {@link com.linkedin.data.schema.DataSchema} to the generated {@link com.linkedin.pegasus.generator.spec.ClassTemplateSpec} and the generated class's full name to the the {@link com.linkedin.pegasus.generator.spec.ClassTemplateSpec}.
    *
-   * @param schema            provides the {@link DataSchema} of the generated class.
+   * @param schema            provides the {@link com.linkedin.data.schema.DataSchema} of the generated class.
    * @param classTemplateSpec provides the generated class.
    */
   private void registerClassTemplateSpec(DataSchema schema, ClassTemplateSpec classTemplateSpec)
@@ -385,7 +421,7 @@ public class CourierTemplateSpecGenerator {
   }
 
   /**
-   * Determine whether a custom class has been defined for the {@link DataSchema}.
+   * Determine whether a custom class has been defined for the {@link com.linkedin.data.schema.DataSchema}.
    * <p/>
    * A custom class is defined through the "java" property of the schema. Within this property, a custom class is specified if "java" is a map that contains a "class" property whose value is a string.
    * This value specifies the Java class name of the custom class.
@@ -868,7 +904,7 @@ public class CourierTemplateSpecGenerator {
           }
           else
           {
-            namespace = CourierPredef.dataNamespace();
+            namespace = _dataNamespace;
           }
         }
         else

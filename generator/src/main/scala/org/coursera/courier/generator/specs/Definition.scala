@@ -21,14 +21,14 @@ import com.linkedin.pegasus.generator.spec.ArrayTemplateSpec
 import com.linkedin.pegasus.generator.spec.ClassTemplateSpec
 import com.linkedin.pegasus.generator.spec.EnumTemplateSpec
 import com.linkedin.pegasus.generator.spec.FixedTemplateSpec
-import com.linkedin.pegasus.generator.spec.MapTemplateSpec
 import com.linkedin.pegasus.generator.spec.PrimitiveTemplateSpec
 import com.linkedin.pegasus.generator.spec.RecordTemplateSpec
 import com.linkedin.pegasus.generator.spec.TyperefTemplateSpec
 import com.linkedin.pegasus.generator.spec.UnionTemplateSpec
-import org.coursera.courier.generator.CourierMapTemplateSpec
+import org.coursera.courier.api.CourierMapTemplateSpec
 import org.coursera.courier.generator.CourierPredef
 import org.coursera.courier.generator.ScalaEscaping
+
 import scala.collection.JavaConverters._
 
 /**
@@ -42,7 +42,7 @@ import scala.collection.JavaConverters._
  * This trait is for all Scala classes that wrap ClassTemplateSpec and it's sub-classes, it
  * represents the common properties shared by all pegasus data binding generator utility types.
  */
-abstract class Definition(spec: ClassTemplateSpec) extends Deprecatable {
+abstract class Definition(val spec: ClassTemplateSpec) extends Deprecatable {
 
   /**
    * The schema of the type. Not present for definitions of "raw" classes, such as the 'coercer'

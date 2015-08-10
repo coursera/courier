@@ -1,0 +1,12 @@
+{
+  "name": "UnionTyperef",
+  "namespace": "org.coursera.typerefs",
+  "type": "typeref",
+  "ref": ["string", "int", "org.coursera.records.Simple"],
+  //"typedDefinition": {
+  "flatTypedDefinition": {
+    "string": "stringType",
+    "int": "intType",
+    "org.coursera.records.Simple": "simpleType"
+  }
+}

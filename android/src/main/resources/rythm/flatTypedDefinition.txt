@@ -1,0 +1,33 @@
+@args com.linkedin.pegasus.generator.spec.UnionTemplateSpec union, java.util.Map<String, String> memberKeyToTypeName
+@import com.linkedin.pegasus.generator.spec.RecordTemplateSpec
+@import com.linkedin.pegasus.generator.spec.RecordTemplateSpec.Field
+@import com.linkedin.pegasus.generator.spec.UnionTemplateSpec.Member
+@import org.coursera.courier.android.JavaSyntax
+@import com.linkedin.data.schema.DataSchema.Type
+
+@if (union.getEnclosingClass() == null) {
+  @if (union.getNamespace() != null) {package @union.getNamespace();}
+
+  import javax.annotation.Generated;
+}
+
+@if (union.getTyperefClass() != null) {
+  @classAnnotations(union.getTyperefClass().getSchema())
+}
+public interface @union.getClassName() {
+  @for(Member member: union.getMembers()) {
+    @if (member.getClassTemplateSpec().getSchema().getType() != Type.RECORD) {
+      // flatTypedDefinition members must all be records, but found: @member.getClassTemplateSpec().getSchema().getUnionMemberKey()
+    } else {
+      public @if (union.getEnclosingClass() != null) {static} class @JavaSyntax.toUnionMemberName(member.getClassTemplateSpec())Member implements @union.getClassName() {
+        public final String typeName = "@memberKeyToTypeName.get(member.getClassTemplateSpec().getSchema().getUnionMemberKey())";
+
+        // fields for: @member.getClassTemplateSpec().getFullName()
+        @for(Field field: ((RecordTemplateSpec)member.getClassTemplateSpec()).getFields()) {
+          @fieldAnnotations(field)
+          public @JavaSyntax.toType(field.getType()) @field.getSchemaField().getName();
+        }
+      }
+    }
+  }
+}

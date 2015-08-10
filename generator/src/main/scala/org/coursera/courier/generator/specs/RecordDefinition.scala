@@ -24,7 +24,7 @@ import org.coursera.courier.generator.ScaladocEscaping
 import org.coursera.courier.generator.TypeConversions
 import scala.collection.JavaConverters._
 
-case class RecordDefinition(spec: RecordTemplateSpec) extends Definition(spec) {
+case class RecordDefinition(override val spec: RecordTemplateSpec) extends Definition(spec) {
   def recordSchema: RecordDataSchema = spec.getSchema
   def schema: Option[RecordDataSchema] = Some(recordSchema)
 

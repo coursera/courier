@@ -1,0 +1,21 @@
+@args com.linkedin.pegasus.generator.spec.UnionTemplateSpec union, java.util.Map<String, String> memberKeyToTypeName
+@import com.linkedin.pegasus.generator.spec.UnionTemplateSpec.Member
+@import org.coursera.courier.android.JavaSyntax
+
+@if (union.getEnclosingClass() == null) {
+  @if (union.getNamespace() != null) {package @union.getNamespace();}
+
+  import javax.annotation.Generated;
+}
+
+@if (union.getTyperefClass() != null) {
+  @classAnnotations(union.getTyperefClass().getSchema())
+}
+public interface @union.getClassName() {
+  @for(Member member: union.getMembers()) {
+    public @if (union.getEnclosingClass() != null) {static} class @JavaSyntax.toUnionMemberName(member.getClassTemplateSpec())Member implements @union.getClassName() {
+      public final String typeName = "@memberKeyToTypeName.get(member.getClassTemplateSpec().getSchema().getUnionMemberKey())";
+      public @JavaSyntax.toType(member.getClassTemplateSpec()) definition;
+    }
+  }
+}

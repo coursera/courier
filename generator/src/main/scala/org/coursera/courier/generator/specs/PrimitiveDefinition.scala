@@ -20,7 +20,7 @@ import com.linkedin.data.schema.PrimitiveDataSchema
 import com.linkedin.pegasus.generator.spec.PrimitiveTemplateSpec
 import org.coursera.courier.generator.TypeConversions
 
-case class PrimitiveDefinition(spec: PrimitiveTemplateSpec)
+case class PrimitiveDefinition(override val spec: PrimitiveTemplateSpec)
   extends Definition(spec) with MaybeBoxable {
 
   def primitiveSchema: PrimitiveDataSchema = spec.getSchema

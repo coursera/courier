@@ -22,7 +22,7 @@ import org.coursera.courier.generator.ScalaEscaping
 import org.coursera.courier.generator.ScaladocEscaping
 import scala.collection.JavaConverters._
 
-case class EnumDefinition(spec: EnumTemplateSpec) extends Definition(spec) {
+case class EnumDefinition(override val spec: EnumTemplateSpec) extends Definition(spec) {
   val enumSchema: EnumDataSchema = spec.getSchema
   def schema: Option[EnumDataSchema] = Some(enumSchema)
 

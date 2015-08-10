@@ -1,0 +1,16 @@
+@args com.linkedin.pegasus.generator.spec.EnumTemplateSpec enumeration
+@import org.coursera.courier.android.JavaSyntax
+
+@if (enumeration.getNamespace() != null) {package @enumeration.getNamespace();}
+
+import javax.annotation.Generated;
+
+// TODO: need an UNKNOWN symbol.
+// https://github.com/google/gson/issues/640
+// Maybe we just need to use strings to represent enum values?
+@classAnnotations(enumeration.getSchema())
+public enum @enumeration.getClassName() {
+  @for(String symbol: enumeration.getSchema().getSymbols()) {
+    @symbol,
+  }
+}

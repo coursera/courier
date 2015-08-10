@@ -16,20 +16,11 @@
 
 package org.coursera.courier.generator
 
-import java.io.File
-import java.io.FileOutputStream
-import java.io.PrintWriter
-
-import com.linkedin.data.schema.resolver.FileDataSchemaLocation
-import com.linkedin.pegasus.generator.DataSchemaParser
-import com.linkedin.pegasus.generator.DefaultGeneratorResult
-import com.linkedin.pegasus.generator.GeneratorResult
 import com.linkedin.pegasus.generator.JavaCodeGeneratorBase
 import com.linkedin.pegasus.generator.PegasusDataTemplateGenerator
-import com.linkedin.pegasus.generator.TemplateSpecGenerator
-import com.linkedin.util.FileUtil
-import org.coursera.courier.generator.specs.Definition
-import org.coursera.courier.generator.twirl.TwirlDataTemplateGenerator
+import org.coursera.courier.ScalaGenerator
+import org.coursera.courier.api.DefaultGeneratorRunner
+import org.coursera.courier.api.GeneratorRunnerOptions
 
 import scala.collection.JavaConverters._
 
@@ -39,7 +30,6 @@ import scala.collection.JavaConverters._
  * Both the class and companion object hook into the extension points of rest.li-sbt-plugin.
  */
 object ScalaDataTemplateGenerator {
-
   def main(args: Array[String]) {
     if (args.length < 2) {
       println(
@@ -53,105 +43,24 @@ object ScalaDataTemplateGenerator {
     val generateImported =
       Option(System.getProperty(PegasusDataTemplateGenerator.GENERATOR_GENERATE_IMPORTED))
         .exists(_.toBoolean)
-    val result = run(
-      resolverPath,
-      System.getProperty(JavaCodeGeneratorBase.GENERATOR_DEFAULT_PACKAGE),
-      generateImported,
-      targetDirectoryPath,
-      sources,
-      false
-      /*,generatePredef = true*/)
+    val defaultPackage = System.getProperty(JavaCodeGeneratorBase.GENERATOR_DEFAULT_PACKAGE)
+    val generateTyperefs = false
+    val generatePredef = false // set to true temporarily to manually generate predef
+
+    val result = new DefaultGeneratorRunner().run(
+      new ScalaGenerator(),
+      new GeneratorRunnerOptions(
+        targetDirectoryPath,
+        sources,
+        resolverPath)
+        .setDefaultPackage(defaultPackage)
+        .setDataNamespace(CourierPredef.dataNamespace)
+        .setGenerateImported(generateImported)
+        .setGenerateTyperefs(generateTyperefs)
+        .setGeneratePredef(generatePredef))
 
     result.getTargetFiles.asScala.foreach { file =>
       System.out.println(file.getAbsolutePath)
     }
-  }
-
-  def run(
-      resolverPath: String,
-      defaultPackage: String,
-      generateImported: java.lang.Boolean,
-      targetDirectoryPath: String,
-      sources: Array[String],
-      generateTyperefs: Boolean,
-      generatePredef: Boolean = false): GeneratorResult = {
-
-    val schemaParser = new DataSchemaParser(resolverPath)
-    val specGenerator = new CourierTemplateSpecGenerator(schemaParser.getSchemaResolver)
-
-    val targetDirectory = new File(targetDirectoryPath)
-    targetDirectory.delete()
-    targetDirectory.mkdirs()
-    assert(targetDirectory.exists() && targetDirectory.isDirectory,
-      s"Unable to create ${targetDirectory.getAbsolutePath}. Directory either does not exist " +
-      s"after attempting to create it, or part of the path exists and is not a directory.")
-
-    val generator = new TwirlDataTemplateGenerator(generateTyperefs)
-
-    TypeConversions.primitiveSchemas.foreach { primitiveSchema =>
-      specGenerator.registerDefinedSchema(primitiveSchema)
-    }
-
-    val parseResult = schemaParser.parseSources(sources)
-
-    parseResult.getSchemaAndFiles.asScala.foreach { pair =>
-      val location = new FileDataSchemaLocation(pair.second)
-      specGenerator.generate(pair.first, location)
-    }
-    val generatedSpecs = specGenerator.getGeneratedSpecs.asScala
-
-    // Build a set of top level types so that we only generate each class file exactly once
-    // and so that we don't accidentally stack overflow if types are recursively defined.
-    val topLevelTypes = generatedSpecs.flatMap { spec =>
-      generator.findTopLevelTypes(Definition(spec))
-    }.toSet
-
-    // Run the generator.
-    val compilationUnits = if (generatePredef) {
-      generator.generatePredef()
-    } else {
-      topLevelTypes.flatMap { topLevel =>
-        generator.generate(topLevel)
-      }
-    }
-
-    // Write the resulting files.
-    val targetFiles = compilationUnits.map { compilationUnit =>
-      writeCode(targetDirectory, compilationUnit)
-    }
-
-    // CourierPlugin.prepareCacheUpdate checks if the generator needs to run using an SBT utility,
-    // so if we get here we know we should unconditionally run the generator. As a result, the
-    // modifiedFiles are always the same as the target files. (if we instead, used
-    // FileUtils.upToDate here to do the check, modifiedFiles might be empty if all files are
-    // upToDate).
-    val modifiedFiles = targetFiles
-
-    new DefaultGeneratorResult(
-      parseResult.getSourceFiles,
-      targetFiles.asJavaCollection,
-      modifiedFiles.asJavaCollection)
-  }
-
-  private[this] def writeCode(targetDirectory: File, generated: GeneratedCode): File = {
-    val compilationUnit = generated.compilationUnit
-    val file = compilationUnit.toFile(targetDirectory)
-    val directory = file.getParentFile
-    directory.mkdirs()
-    assert(directory.exists() && directory.isDirectory,
-      s"Unable to create ${directory.getAbsolutePath}. Directory either does not exist after " +
-        s"attempting to create it, or part of the path exists and is not a directory.")
-
-    if (!file.exists()) {
-      assert(file.createNewFile(), s"Unable to create file ${file.getAbsolutePath}")
-    }
-
-    val stream = new PrintWriter(new FileOutputStream(file))
-    try {
-      stream.write(generated.code)
-    } finally {
-      stream.close()
-    }
-    file
   }
 }

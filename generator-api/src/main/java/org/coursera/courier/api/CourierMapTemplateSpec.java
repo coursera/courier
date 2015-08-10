@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.coursera.courier.generator;
+package org.coursera.courier.api;
 
 import com.linkedin.data.schema.DataSchema;
 import com.linkedin.data.schema.MapDataSchema;

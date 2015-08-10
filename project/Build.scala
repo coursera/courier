@@ -77,8 +77,8 @@ object Courier extends Build with OverridablePublishSettings {
   // Projects
   //
   lazy val generator = Project(id = "courier-generator", base = file("generator"))
-    .dependsOn(runtime)
-    .aggregate(runtime)
+    .dependsOn(runtime, generatorApi)
+    .aggregate(runtime, generatorApi)
     .settings(generatorVersionSettings)
     .enablePlugins(SbtTwirl)
     .settings(
@@ -91,6 +91,15 @@ object Courier extends Build with OverridablePublishSettings {
         ExternalDependencies.Scalariform.scalariform,
         ExternalDependencies.ApacheCommons.lang),
       dependencyOverrides += ExternalDependencies.ApacheCommons.io)
+
+  lazy val generatorApi = Project(id = "courier-generator-api", base = file("generator-api"))
+    .settings(
+      autoScalaLibrary := false,
+      crossPaths := false,
+      libraryDependencies ++= Seq(
+        ExternalDependencies.Pegasus.data,
+        ExternalDependencies.Pegasus.generator,
+        ExternalDependencies.JUnit.junit))
 
   lazy val runtime = Project(id = "courier-runtime", base = file("runtime"))
     .settings(runtimeVersionSettings)
@@ -143,8 +152,13 @@ object Courier extends Build with OverridablePublishSettings {
       addCommandAlias(
         "fullpublish-local",
         s";++$sbtScalaVersion;project courier-sbt-plugin;publish-local" +
-        s";++$currentScalaVersion;project courier-generator;publish-local"))
+        s";++$currentScalaVersion;project courier-generator;publish-local"),
         //s";++$currentScalaVersion;project courier-runtime;publish-local"))
+      addCommandAlias(
+        "fullpublish-mavenlocal",
+        s";++$sbtScalaVersion;project courier-sbt-plugin;publishM2" +
+        s";++$currentScalaVersion;project courier-generator;publishM2"))
+        //s";++$currentScalaVersion;project courier-runtime;publishM2"))
 
   //
   // Dependencies
