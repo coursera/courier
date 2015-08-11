@@ -17,6 +17,7 @@
 package org.coursera.courier.generator.specs
 
 import com.linkedin.pegasus.generator.spec.RecordTemplateSpec.Field
+import org.coursera.courier.generator.CourierEscaping
 import org.coursera.courier.generator.ScalaEscaping
 import org.coursera.courier.generator.ScaladocEscaping
 import org.coursera.courier.generator.TypeConversions
@@ -130,7 +131,10 @@ case class RecordField(field: Field) extends Deprecatable {
   /**
    * Escaped name for use in scala source.
    */
-  def name = ScalaEscaping.escapeSymbol(schemaField.getName)
+  def name = {
+    CourierEscaping.escapeReservedClassField(
+      ScalaEscaping.escapeSymbol(schemaField.getName))
+  }
 
   /**
    * Unescaped name.
