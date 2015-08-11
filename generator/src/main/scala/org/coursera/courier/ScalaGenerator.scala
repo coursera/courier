@@ -85,7 +85,7 @@ class ScalaGenerator()
     maybeCode.map { code =>
       val formattedCode = ScalaFormatter.format(code)
       val namespace = topLevelSpec.namespace.getOrElse("")
-      ScalaGeneratedCode(code, ScalaCompilationUnit(topLevelSpec.scalaType, namespace))
+      ScalaGeneratedCode(formattedCode, ScalaCompilationUnit(topLevelSpec.scalaType, namespace))
     }
   }
 
