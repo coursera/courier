@@ -17,6 +17,8 @@
 package org.coursera.courier.generator
 
 import org.coursera.escaping.KeywordEscaping
+import org.coursera.escaping.ReservedClassFieldEscaping
+import org.coursera.escaping.ReservedClassFieldEscaping
 import org.coursera.escaping.`class`
 import org.junit.BeforeClass
 import org.junit.Test
@@ -35,5 +37,22 @@ class EscapingTest extends GeneratorTest with SchemaFixtures {
     // Please never actually name a schema like this!
     val withRecordNameEscaping = `class`()
     assertJson(withRecordNameEscaping, "{ }")
+  }
+
+  @Test
+  def testReservedClassFields(): Unit = {
+    val reservedClassFields = ReservedClassFieldEscaping(
+      data$ = "dataText",
+      schema$ = "schemaText",
+      copy$ = "copyText",
+      clone$ = "cloneText")
+
+    assertJson(reservedClassFields,
+      """{
+        |  "data" : "dataText",
+        |  "schema": "schemaText",
+        |  "copy": "copyText",
+        |  "clone": "cloneText"
+        |}""".stripMargin)
   }
 }
