@@ -78,7 +78,6 @@ object Courier extends Build with OverridablePublishSettings {
   //
   lazy val generator = Project(id = "courier-generator", base = file("generator"))
     .dependsOn(runtime, generatorApi)
-    .aggregate(runtime, generatorApi)
     .settings(generatorVersionSettings)
     .enablePlugins(SbtTwirl)
     .settings(
@@ -132,33 +131,32 @@ object Courier extends Build with OverridablePublishSettings {
       sbtPlugin := true,
       name := "courier-sbt-plugin")
 
+  // TODO(jbetz): Once SBT supports scala 2.11, we can enable .aggregate for all
+  // project dependencies that have .dependsOn in the above projects, and then we will only
+  // need to run `project courier-sbt-plugin;publish` here, which will dramatically simplify things.
+  // Until then we have to be very explicit about publishing exactly what we want, mainly
+  // to avoid build failures that would happen if we tried to publish the sbt plugin with scala
+  // 2.11.
+  def publishCommands(publishCommand: String) =
+    s";++$sbtScalaVersion;project courier-sbt-plugin;$publishCommand" +
+    s";++$currentScalaVersion;project courier-generator;$publishCommand" +
+    s";project courier-generator-api;$publishCommand" + // java project, so we do not cross build
+    s";++$sbtScalaVersion;project courier-runtime;$publishCommand" +
+    s";++$currentScalaVersion;project courier-runtime;$publishCommand"
+
   lazy val root = Project(id = "courier", base = file("."))
     .aggregate(generator, runtime, courierSbtPlugin, generatorTest)
     .settings(runtimeVersionSettings)
     .settings(packagedArtifacts := Map.empty) // disable publish for root aggregate module
-    // TODO(jbetz): should only need to publish the runtime at current version
     .settings(
-      addCommandAlias("fulltest", ";compile;test;scripted"),
-      addCommandAlias(
-        "fullpublish",
-        s";++$sbtScalaVersion;project courier-sbt-plugin;publish" +
-        s";++$currentScalaVersion;project courier-generator;publish"),
-        //s";++$currentScalaVersion;project courier-runtime;publish"),
-      addCommandAlias(
-        "fullpublish-signed",
-        s";++$sbtScalaVersion;project courier-sbt-plugin;publish-signed" +
-        s";++$currentScalaVersion;project courier-generator;publish-signed"),
-        //s";++$currentScalaVersion;project courier-runtime;publish-signed"),
-      addCommandAlias(
-        "fullpublish-local",
-        s";++$sbtScalaVersion;project courier-sbt-plugin;publish-local" +
-        s";++$currentScalaVersion;project courier-generator;publish-local"),
-        //s";++$currentScalaVersion;project courier-runtime;publish-local"))
-      addCommandAlias(
-        "fullpublish-mavenlocal",
-        s";++$sbtScalaVersion;project courier-sbt-plugin;publishM2" +
-        s";++$currentScalaVersion;project courier-generator;publishM2"))
-        //s";++$currentScalaVersion;project courier-runtime;publishM2"))
+      // scripted attempts to publish what it needs, but because of the above mentioned cross
+      // build issues, we have to manually publish what we need before we test here
+      addCommandAlias("fulltest", s";compile;test;fullpublish-ivylocal;" +
+                      "project courier;++$sbtScalaVersion;scripted"),
+      addCommandAlias("fullpublish", publishCommands("publish")),
+      addCommandAlias("fullpublish-signed", publishCommands("publish-signed")),
+      addCommandAlias("fullpublish-ivylocal", publishCommands("publish-local")),
+      addCommandAlias("fullpublish-mavenlocal", publishCommands("publishM2")))
 
   //
   // Dependencies
