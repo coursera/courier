@@ -151,8 +151,8 @@ object Courier extends Build with OverridablePublishSettings {
     .settings(
       // scripted attempts to publish what it needs, but because of the above mentioned cross
       // build issues, we have to manually publish what we need before we test here
-      addCommandAlias("fulltest", s";compile;test;fullpublish-ivylocal;" +
-                      "project courier;++$sbtScalaVersion;scripted"),
+      addCommandAlias(s"fulltest", s";compile;test;fullpublish-ivylocal;" +
+                      s"project courier;++$sbtScalaVersion;scripted"),
       addCommandAlias("fullpublish", publishCommands("publish")),
       addCommandAlias("fullpublish-signed", publishCommands("publish-signed")),
       addCommandAlias("fullpublish-ivylocal", publishCommands("publish-local")),
