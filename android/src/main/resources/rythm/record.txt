@@ -15,10 +15,11 @@ import javax.annotation.Generated;
 import com.google.gson.annotations.SerializedName;
 
 @classAnnotations(record.getSchema())
-public final class @record.getClassName() {
+public final class @JavaSyntax.escapeKeyword(record.getClassName()) {
   @for(Field field: record.getFields()) {
+
     @fieldAnnotations(field)
-    public @JavaSyntax.toType(field.getType()) @field.getSchemaField().getName();
+    public @JavaSyntax.toType(field.getType()) @JavaSyntax.escapeKeyword(field.getSchemaField().getName());
   }
 
   @for(ClassTemplateSpec enclosed: ClassTemplateSpecs.directContainedTypes(record)) {

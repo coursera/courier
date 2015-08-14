@@ -85,6 +85,9 @@ Development Guidelines
 Publishing
 ----------
 
+Set your JAVA_HOME to a Java 7 SDK!  Do **not** use Java 8 yet, there are a lot of
+developers still on Java 7.
+
 To publish to maven central, configure your credentials as described by
 http://www.scala-sbt.org/0.13/docs/Using-Sonatype.html and then publish via SBT using:
 

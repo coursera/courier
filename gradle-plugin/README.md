@@ -99,6 +99,9 @@ See `/example` directory for a working example gradle project.
 Development
 -----------
 
+Set your JAVA_HOME to a Java 7 SDK!  Do **not** use Java 8 yet, there are a lot of
+developers still on Java 7.
+
 The plugin is a port of the PegasusPlugin from the rest.li project.
 
 It was written in Scala instead of Groovy in hopes that we build and publish `gradle-plugin`
@@ -107,6 +110,25 @@ more work than we had expected and the code readability has suffered.  Also, we 
 out how to actually integrate this project into the main courier sbt multi-project. The main
 remaining issue is that we don't know how to depend on the jars imported via gradle's `gradleApi()`
 command from an SBT project.
+
+### Building dependencies
+
+To pick up changes from Courier, first update all versions to a `-SNAPSHOT` in both courier
+and this project, then run:
+
+```
+cd courier
+sbt fullpublish-mavenlocal
+```
+
+To pick up changes from `courier/gradle-plugin` first update all versions to a `-SNAPSHOT` in both
+gradle-plugin and this project, then run:
+
+```
+cd courier/gradle-plugin
+./gradlew install
+```
+### Publishing
 
 To publish locally:
 
@@ -118,17 +140,10 @@ To publish to a maven repository:
 
 ```sh
 gradle uploadArchives
+
 ```
 
 TODO
 ----
-
-* [ ] Figure out how to make 'gradle-plugin' just another sbt-project so we don't need to publish
-      it separately.  The only issue is that `gradleApi()` pulls in jars that do not appear to be
-      in maven central.  Maybe we can get them from elsewhere?
-* [ ] Automatically include the correct scala library and courier-runtime dependencies in `courierCompile`.
-      For scala library, find it in the compile classpath and use it.
-      For courier-runtime, if it's not already in courierCompile, add it with the same version as the plugin.
 * [ ] Fix "gradle idea" generation to mark all generated source dirs as such
-* [ ] Figure out how to automatically cross build to scala 2.10 and 2.11
 * [ ] Only enable signing when publishing to maven central

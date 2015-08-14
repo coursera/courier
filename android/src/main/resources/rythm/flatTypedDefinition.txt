@@ -14,18 +14,18 @@
 @if (union.getTyperefClass() != null) {
   @classAnnotations(union.getTyperefClass().getSchema())
 }
-public interface @union.getClassName() {
+public interface @JavaSyntax.escapeKeyword(union.getClassName()) {
   @for(Member member: union.getMembers()) {
     @if (member.getClassTemplateSpec().getSchema().getType() != Type.RECORD) {
       // flatTypedDefinition members must all be records, but found: @member.getClassTemplateSpec().getSchema().getUnionMemberKey()
     } else {
-      public @if (union.getEnclosingClass() != null) {static} class @JavaSyntax.toUnionMemberName(member.getClassTemplateSpec())Member implements @union.getClassName() {
+      public @if (union.getEnclosingClass() != null) {static} class @JavaSyntax.toUnionMemberName(member.getClassTemplateSpec()) implements @union.getClassName() {
         public final String typeName = "@memberKeyToTypeName.get(member.getClassTemplateSpec().getSchema().getUnionMemberKey())";
-
-        // fields for: @member.getClassTemplateSpec().getFullName()
+        // Fields for: @member.getClassTemplateSpec().getFullName()
         @for(Field field: ((RecordTemplateSpec)member.getClassTemplateSpec()).getFields()) {
+
           @fieldAnnotations(field)
-          public @JavaSyntax.toType(field.getType()) @field.getSchemaField().getName();
+          public @JavaSyntax.toType(field.getType()) @JavaSyntax.escapeKeyword(field.getSchemaField().getName());
         }
       }
     }

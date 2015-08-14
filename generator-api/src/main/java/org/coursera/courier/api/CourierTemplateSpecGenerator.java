@@ -106,6 +106,7 @@ public class CourierTemplateSpecGenerator {
   private final DataSchemaResolver _schemaResolver;
   private final SchemaParser _schemaParser;
   private final String _dataNamespace;
+  private final String _customTypeLanguage;
 
   /**
    * Return Java class name for a {@link com.linkedin.data.schema.NamedDataSchema}.
@@ -128,15 +129,30 @@ public class CourierTemplateSpecGenerator {
   }
 
   /**
+   * @deprecated Use below constructor and provide a customTypeLanguage.
+   */
+  @Deprecated()
+  public CourierTemplateSpecGenerator(
+      DataSchemaResolver schemaResolver,
+      String dataNamespace)
+  {
+    this(schemaResolver, dataNamespace, "scala");
+  }
+
+  /**
    * @param dataNamespace Provides the namespace to use for generated classes that have no other
    *                      reasonable default namespace.  E.g. An generated type for array of ints
    *                      would be generated in this namespace.
    */
-  public CourierTemplateSpecGenerator(DataSchemaResolver schemaResolver, String dataNamespace)
+  public CourierTemplateSpecGenerator(
+      DataSchemaResolver schemaResolver,
+      String dataNamespace,
+      String customTypeLanguage)
   {
     _schemaResolver = schemaResolver;
     _schemaParser = new SchemaParser(schemaResolver);
     _dataNamespace = dataNamespace;
+    _customTypeLanguage = customTypeLanguage;
   }
 
   /**
