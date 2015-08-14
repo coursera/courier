@@ -16,7 +16,6 @@
 
 package org.coursera.courier
 
-import com.typesafe.scalalogging.slf4j.StrictLogging
 import org.coursera.courier.generator.CourierPredef
 import org.coursera.courier.generator.ScalaCompilationUnit
 import org.coursera.courier.generator.ScalaGeneratedCode
@@ -47,8 +46,7 @@ import scalariform.formatter.preferences.FormattingPreferences
  * Generates Scala files using the Twirl string template engine.
  */
 class ScalaGenerator()
-  extends TemplateGenerator
-  with StrictLogging {
+  extends TemplateGenerator {
 
   // TODO(jbetz): Make configurable
   val generateTyperefs = false
