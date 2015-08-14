@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015 Coursera Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.coursera.courier;
 
 import com.linkedin.data.schema.DataSchema;
@@ -5,6 +21,7 @@ import com.linkedin.pegasus.generator.spec.ClassTemplateSpec;
 import com.linkedin.pegasus.generator.spec.EnumTemplateSpec;
 import com.linkedin.pegasus.generator.spec.RecordTemplateSpec;
 import com.linkedin.pegasus.generator.spec.UnionTemplateSpec;
+import org.coursera.courier.android.PoorMansJavaSourceFormatter;
 import org.coursera.courier.android.TypedDefinitions;
 import org.coursera.courier.api.GeneratedCode;
 import org.coursera.courier.api.GeneratedCodeTargetFile;
@@ -54,17 +71,10 @@ public class AndroidGenerator implements PegasusCodeGenerator {
         code = engine.render("rythm/union.txt", templateSpec);
       }
     } else {
-      return null; //throw new IllegalArgumentException("Unrecognized template spec type: " + templateSpec.getClass());
+      return null; // Indicates that we are declining to generate code for the type (e.g. map or array)
     }
     JavaCompilationUnit compilationUnit = new JavaCompilationUnit(templateSpec.getClassName(), templateSpec.getNamespace());
-    // TODO: find a better java source formatter, jalopy is crazy old and depends on obsolete log4j apis
-    /*
-    StringBuffer sb = new StringBuffer();
-    Jalopy formatter = new Jalopy();
-    formatter.setInput(code, compilationUnit.toFile(new File("")).getAbsolutePath());
-    formatter.setOutput(sb);
-    formatter.format();
-    code = sb.toString();*/
+    code = PoorMansJavaSourceFormatter.format(code);
 
     return new GeneratedCode(compilationUnit, code);
   }

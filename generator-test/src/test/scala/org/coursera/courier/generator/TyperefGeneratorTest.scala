@@ -16,12 +16,15 @@
 
 package org.coursera.courier.generator
 
+import org.coursera.courier.generator.customtypes.CustomInt
+import org.coursera.courier.generator.customtypes.CustomIntWrapper
 import org.coursera.courier.templates.DataTemplates.DataConversion
 import org.coursera.enums.Fruits
 import org.coursera.records.test.Empty
 import org.coursera.records.test.EmptyArray
 import org.coursera.records.test.EmptyMap
 import org.coursera.records.test.WithComplexTyperefs
+import org.coursera.records.test.WithCustomIntWrapper
 import org.coursera.typerefs.UnionTyperef
 import org.junit.Test
 
@@ -46,6 +49,13 @@ class TyperefGeneratorTest extends GeneratorTest with SchemaFixtures {
       EmptyArray(Empty()),
       UnionTyperef.IntMember(1))
     val roundTripped = WithComplexTyperefs(roundTrip(original.data()), DataConversion.SetReadOnly)
+    assert(original === roundTripped)
+  }
+
+  @Test
+  def testCustomTypeOfCustomType(): Unit = {
+    val original = WithCustomIntWrapper(CustomIntWrapper(CustomInt(10)))
+    val roundTripped = WithCustomIntWrapper(roundTrip(original.data()), DataConversion.SetReadOnly)
     assert(original === roundTripped)
   }
 }

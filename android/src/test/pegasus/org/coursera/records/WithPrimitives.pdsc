@@ -1,10 +1,11 @@
 {
   "type": "record",
   "name": "WithPrimitives",
+  "deprecated": "Hopelessly obsolete, use something else instead.",
   "namespace": "org.coursera.records",
   "fields": [
-    { "name": "intField", "type": "int" },
-    { "name": "longField", "type": "long" },
+    { "name": "intField", "type": "int", "deprecated": "Use long instead." },
+    { "name": "longField", "type": "long", "deprecated": true },
     { "name": "floatField", "type": "float" },
     { "name": "doubleField", "type": "double" },
     { "name": "booleanField", "type": "boolean" },

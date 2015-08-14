@@ -11,9 +11,9 @@
 @if (union.getTyperefClass() != null) {
   @classAnnotations(union.getTyperefClass().getSchema())
 }
-public interface @union.getClassName() {
+public interface @JavaSyntax.escapeKeyword(union.getClassName()) {
   @for(Member member: union.getMembers()) {
-    public @if (union.getEnclosingClass() != null) {static} class @JavaSyntax.toUnionMemberName(member.getClassTemplateSpec())Member implements @union.getClassName() {
+    public @if (union.getEnclosingClass() != null) {static} class @JavaSyntax.toUnionMemberName(member.getClassTemplateSpec()) implements @union.getClassName() {
       public final String typeName = "@memberKeyToTypeName.get(member.getClassTemplateSpec().getSchema().getUnionMemberKey())";
       public @JavaSyntax.toType(member.getClassTemplateSpec()) definition;
     }
