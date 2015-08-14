@@ -1,0 +1,40 @@
+apply plugin: 'java'
+
+archivesBaseName = "courier-android-generator"
+
+dependencies {
+  compile project(':runtime')
+  compile externalDependency.rythm
+  compile externalDependency.pegasusGenerator
+  compile externalDependency.gson
+  compile externalDependency.courierGeneratorApi
+  testCompile externalDependency.junit
+}
+
+// To test the generator, we run it on some .pdscs before executing the test tasks
+configurations {
+  peagsus
+}
+
+File pegasusSrcDir = file('src/test/pegasus')
+File pegasusTargetDir = file('src/test/mainGeneratedPegasus')
+
+sourceSets.test.java.srcDir pegasusTargetDir
+
+idea.module {
+  testSourceDirs += pegasusTargetDir
+}
+
+task generateTestClasses(type: JavaExec, dependsOn: compileJava) {
+  FileTree pdscFiles = fileTree(dir: pegasusSrcDir)
+  pdscFiles.include '**/*.pdsc'
+
+  classpath = sourceSets.main.runtimeClasspath
+  main = 'org.coursera.courier.AndroidGenerator'
+  args = [
+      pegasusTargetDir,
+      pegasusSrcDir,
+      pdscFiles.getAsPath()] //sourceSets.test.pegasus.allSource.getAsPath
+}
+
+compileTestJava.dependsOn(generateTestClasses)

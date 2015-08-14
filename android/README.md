@@ -1,8 +1,41 @@
 Java Android Pegasus Data Binding Generator
 ============================================
 
-Development
------------
+Usage
+-----
+
+In your main build.gradle file, add:
+
+```groovy
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.coursera.courier:gradle-plugin:0.6.3'
+        classpath 'org.coursera.courier:courier-android-generator:0.6.3'
+    }
+}
+```
+
+In the build.gradle file for a project, add:
+
+```groovy
+apply plugin: 'courier'
+
+courier {
+    codeGenerator 'org.coursera.courier.AndroidGenerator'
+}
+
+dependencies {
+    compile 'com.squareup.retrofit:retrofit:1.9.0'
+    compile 'com.squareup.okhttp:okhttp:2.3.0'
+    courierCompile 'org.coursera.courier:courier-android-runtime:0.6.3'
+}
+```
+
+Development / Contributing
+--------------------------
 
 Set your JAVA_HOME to a Java 7 SDK!  Do **not** use Java 8 yet, there are a lot of
 developers still on Java 7.
@@ -39,13 +72,20 @@ To publish to a maven repository:
 ```sh
 gradle uploadArchives
 
-Code generator
---------------
+Design notes
+------------
+
+### Code generator
 
 Currently using the Rythm string template engine. Which is fairly simple and is quite fast.
 
-There are some reasonable alternatives:
+There are some reasonable alternatives that we could have used, and may switch to in the future:
 
 * https://github.com/square/javapoet
 * https://codemodel.java.net
 
+TODO
+----
+
+[ ] Add hashCode/equals support
+[ ] Add custom type support (see: https://sites.google.com/site/gson/gson-type-adapters-for-common-classes-1)

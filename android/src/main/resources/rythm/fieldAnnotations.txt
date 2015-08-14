@@ -1,6 +1,0 @@
-@args com.linkedin.pegasus.generator.spec.RecordTemplateSpec.Field field
-@import org.coursera.courier.android.JavadocEscaping
-
-@JavadocEscaping.stringToJavadoc(field.getSchemaField().getDoc(), field.getSchemaField().getProperties().get("deprecated")) @if (field.getSchemaField().getProperties().containsKey("deprecated") && !Boolean.FALSE.equals(field.getSchemaField().getProperties().get("deprecated"))) {
-@* this line left intentionally blank *@
-@@Deprecated}
