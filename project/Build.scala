@@ -84,7 +84,6 @@ object Courier extends Build with OverridablePublishSettings {
       libraryDependencies ++= Seq(
         ExternalDependencies.Pegasus.data,
         ExternalDependencies.Pegasus.generator,
-        ExternalDependencies.ScalaLogging.scalaLoggingSlf4j,
         ExternalDependencies.JUnit.junit,
         ExternalDependencies.Scalatest.scalatest,
         ExternalDependencies.Scalariform.scalariform,
