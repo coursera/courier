@@ -8,7 +8,7 @@ repositories {
 }
 
 group = "org.coursera.courier"
-archivesBaseName = "gradle-plugin"
+archivesBaseName = "courier-gradle-plugin"
 version = courierVersion
 
 dependencies {

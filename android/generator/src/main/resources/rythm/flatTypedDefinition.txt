@@ -1,0 +1,57 @@
+@args com.linkedin.pegasus.generator.spec.UnionTemplateSpec union, java.util.Map<String, String> memberKeyToTypeName
+@import com.linkedin.pegasus.generator.spec.RecordTemplateSpec
+@import com.linkedin.pegasus.generator.spec.RecordTemplateSpec.Field
+@import com.linkedin.pegasus.generator.spec.UnionTemplateSpec.Member
+@import org.coursera.courier.android.JavaSyntax
+@import com.linkedin.data.schema.DataSchema.Type
+
+@if (union.getEnclosingClass() == null) {
+  @if (union.getNamespace() != null) {package @union.getNamespace();}
+
+  import com.google.gson.annotations.JsonAdapter;
+  import javax.annotation.Generated;
+  import com.google.gson.annotations.SerializedName;
+  import org.coursera.courier.android.runtime.TypedDefinitionAdapterFactory;
+}
+
+@if (union.getTyperefClass() != null) {
+  @classAnnotations(union.getTyperefClass().getSchema())
+}
+@@JsonAdapter(@(JavaSyntax.escapeKeyword(union.getClassName())).Adapter.class)
+public interface @JavaSyntax.escapeKeyword(union.getClassName()) {
+  @for(Member member: union.getMembers()) {
+    @if (member.getClassTemplateSpec().getSchema().getType() != Type.RECORD) {
+      // flatTypedDefinition members must all be records, but found: @member.getClassTemplateSpec().getSchema().getUnionMemberKey()
+    } else {
+      public @if (union.getEnclosingClass() != null) {static} class @JavaSyntax.toUnionMemberName(member.getClassTemplateSpec()) implements @union.getClassName() {
+        private static final String TYPE_NAME = "@memberKeyToTypeName.get(member.getClassTemplateSpec().getSchema().getUnionMemberKey())";
+
+        public final String typeName = TYPE_NAME;
+
+        @for(Field field: ((RecordTemplateSpec)member.getClassTemplateSpec()).getFields()) {
+          @fieldAnnotations(field)
+          @if(!JavaSyntax.escapeKeyword(field.getSchemaField().getName()).equals(field.getSchemaField().getName())) { @@SerializedName("@field.getSchemaField().getName()") }
+          public @JavaSyntax.toType(field.getType()) @JavaSyntax.escapeKeyword(field.getSchemaField().getName());
+        }
+      }
+    }
+  }
+
+  public final class $UnknownMember implements @JavaSyntax.escapeKeyword(union.getClassName()) {
+    private $UnknownMember() { }
+  }
+
+  final class Adapter extends TypedDefinitionAdapterFactory<@JavaSyntax.escapeKeyword(union.getClassName())> {
+    Adapter() {
+      super(@(JavaSyntax.escapeKeyword(union.getClassName())).class, new TypedDefinitionAdapterFactory.Resolver<@JavaSyntax.escapeKeyword(union.getClassName())>() {
+        @@Override
+        public Class<? extends @JavaSyntax.escapeKeyword(union.getClassName())> resolve(String typeName) {
+          @for(Member member: union.getMembers()) {
+            if (typeName.equals(@(JavaSyntax.toUnionMemberName(member.getClassTemplateSpec())).TYPE_NAME)) return @(JavaSyntax.toUnionMemberName(member.getClassTemplateSpec())).class;
+          }
+          return $UnknownMember.class;
+        }
+      });
+    }
+  }
+}

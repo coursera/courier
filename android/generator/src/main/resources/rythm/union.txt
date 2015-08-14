@@ -1,0 +1,45 @@
+@args com.linkedin.pegasus.generator.spec.UnionTemplateSpec union
+@import com.linkedin.pegasus.generator.spec.UnionTemplateSpec.Member
+@import org.coursera.courier.android.JavaSyntax
+
+@if (union.getEnclosingClass() == null) {
+  @if (union.getNamespace() != null) {package @union.getNamespace();}
+
+  import com.google.gson.annotations.JsonAdapter;
+  import com.google.gson.annotations.SerializedName;
+  import javax.annotation.Generated;
+  import org.coursera.courier.android.runtime.UnionAdapterFactory;
+}
+
+@if (union.getTyperefClass() != null) {
+  @classAnnotations(union.getTyperefClass().getSchema())
+}
+@@JsonAdapter(@(JavaSyntax.escapeKeyword(union.getClassName())).Adapter.class)
+public interface @JavaSyntax.escapeKeyword(union.getClassName()) {
+  @for(Member member: union.getMembers()) {
+    public @if (union.getEnclosingClass() != null) {static} class @JavaSyntax.toUnionMemberName(member.getClassTemplateSpec()) implements @JavaSyntax.escapeKeyword(union.getClassName()) {
+      private static final String MEMBER_KEY = "@member.getClassTemplateSpec().getSchema().getUnionMemberKey()";
+
+      @@SerializedName(MEMBER_KEY)
+      public @JavaSyntax.toType(member.getClassTemplateSpec()) member;
+    }
+  }
+
+  public final class $UnknownMember implements @JavaSyntax.escapeKeyword(union.getClassName()) {
+    private $UnknownMember() { }
+  }
+
+  final class Adapter extends UnionAdapterFactory<@JavaSyntax.escapeKeyword(union.getClassName())> {
+    Adapter() {
+      super(@(JavaSyntax.escapeKeyword(union.getClassName())).class, new UnionAdapterFactory.Resolver<@JavaSyntax.escapeKeyword(union.getClassName())>() {
+        @@Override
+        public Class<? extends @JavaSyntax.escapeKeyword(union.getClassName())> resolve(String memberKey) {
+          @for(Member member: union.getMembers()) {
+            if (memberKey.equals(@(JavaSyntax.toUnionMemberName(member.getClassTemplateSpec())).MEMBER_KEY)) return @(JavaSyntax.toUnionMemberName(member.getClassTemplateSpec())).class;
+          }
+          return $UnknownMember.class;
+        }
+      });
+    }
+  }
+}
