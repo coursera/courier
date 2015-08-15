@@ -17,6 +17,10 @@
 public final class @className {
   @for(Field field: record.getFields()) {
     @{ String fieldName = JavaSyntax.escapeKeyword(field.getSchemaField().getName()) }
+
+    @if(field.getCustomInfo() != null) {
+      @@JsonAdapter(@(JavaSyntax.toType(field.getCustomInfo().getCoercerClass())).class)
+    }
     @fieldAnnotations(field)
     @if(!fieldName.equals(field.getSchemaField().getName())) { @@SerializedName("@field.getSchemaField().getName()") }
     public @JavaSyntax.toType(field.getType()) @fieldName;

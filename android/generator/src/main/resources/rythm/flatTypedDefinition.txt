@@ -27,6 +27,9 @@ public interface @className {
         public final String typeName = TYPE_NAME;
 
         @for(Field field: fields) {
+          @if(field.getCustomInfo() != null) {
+            @@JsonAdapter(@(JavaSyntax.toType(field.getCustomInfo().getCoercerClass())).class)
+          }
           @fieldAnnotations(field)
           @if(!JavaSyntax.escapeKeyword(field.getSchemaField().getName()).equals(field.getSchemaField().getName())) { @@SerializedName("@field.getSchemaField().getName()") }
           public @JavaSyntax.toType(field.getType()) @JavaSyntax.escapeKeyword(field.getSchemaField().getName());
