@@ -378,7 +378,7 @@ class CourierPlugin implements Plugin<Project> {
       String pegasusCodeGeneratorClass =
           project.courier.codeGenerator == null ? "org.coursera.courier.ScalaGenerator" : project.courier.codeGenerator
       PegasusCodeGenerator generator = Class.forName(pegasusCodeGeneratorClass).newInstance()
-      File destinationDir = new File(destinationSourceSetDir, generator.language())
+      File destinationDir = new File(destinationSourceSetDir, generator.buildLanguage())
       destinationDir.delete()
       destinationDir.mkdirs()
 
