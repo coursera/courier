@@ -245,10 +245,18 @@ are defined with a `items` type using the form:
 { "type": "array", "items": "org.example.Fortune" }
 ```
 
-This will be generated as:
+Arrays bind to the Scala Traversable type:
 
 ```scala
-class FortuneArray extends IndexedSeq[Fortune]
+Traversable[Fortune]
+```
+
+Under the hood, Courier generates a `class FortuneArray extends IndexedSeq[Fortune]` type and then
+provides an implicit conversion from `Traversable[Fortune]` so that developers can work
+directly with Scala generic collection types. E.g.:
+
+```scala
+ExampleRecord(fortunes = Seq(Fortune(...), Fortune(...)))
 ```
 
 For example, to define a field of a record containing an array, use:
@@ -264,11 +272,13 @@ For example, to define a field of a record containing an array, use:
 }
 ```
 
-This will be generated as:
+This will bind to:
 
 ```scala
-case class Fortune(arrayField: IntArray)
+case class Fortune(arrayField: Traversable[Int])
 ```
+
+and be generated as `case class Fortune(arrayField: IntArray)`.
 
 Array items may be any pegasus type.
 
@@ -284,9 +294,17 @@ Schema type                                         | Scala type
 All generated Arrays implement Scala's `IndexedSeq`, `Traversable` and `Product` traits and behave
 like a standard Scala collection type.
 
-```scala
-val array = IntArray(10, 20, 30)
+All generated Arrays implement Scala's `IndexedSeq`, `Traversable` and `Product` traits and behave
+like a standard Scala collection type. They contain an implicit converter so that a Scala `Traversable`
+can be converted to them without the need to do any explicit conversion.
 
+```scala
+// constructors
+val array = IntArray(10, 20, 30)
+val array: IntArray = Seq(10, 20, 30)
+val array: IntArray = List(10, 20, 30)
+
+// collection methods
 array(0)
 
 array.map { int => ... }
@@ -320,10 +338,18 @@ are defined with a `values` type, and an optional `keys` type, using the form:
 { "type": "map", "keys": "int", "values": "org.example.Fortune" }
 ```
 
-This will be generated as:
+Maps bind to the Scala `Map` type:
 
 ```scala
-class IntToFortuneMap extends Map[Int, Fortune]
+Map[Int, Fortune]
+```
+
+Under the hood, Courier generates a `class IntToFortuneMap extends Map[Int, Fortune]` type and then
+provides an implicit conversion from `Map[String, Int]` so that developers can work
+directly with Scala generic collection types. E.g.:
+
+```scala
+Fortune(Map("a" -> 1, "b" -> 2))
 ```
 
 If no "keys" type is specified, the key type will default to "string". For example:
@@ -332,11 +358,13 @@ If no "keys" type is specified, the key type will default to "string". For examp
 { "type": "map", "values": "org.example.Note" }
 ```
 
-will be generated as:
+will bind to:
 
 ```scala
-class NoteMap extends Map[String, Note]
+Map[String, Note]
 ```
+
+and will be generated as `class NoteMap extends Map[String, Note]`.
 
 When complex types are used for "keys", [InlineStringCodec](https://github.com/coursera/courier/blob/master/runtime/src/main/scala/org/coursera/courier/codecs/InlineStringCodec.scala#L38)
 is used to serialize/deserialize complex type keys to JSON strings.
@@ -349,16 +377,18 @@ To define a field of a record containing a map, use:
   "namespace": "org.example.fortune",
   "type": "record",
   "fields": [
-    { "name": "mapField", "type": { "type": "amp", "values": "int" } }
+    { "name": "mapField", "type": { "type": "map", "values": "int" } }
   ]
 }
 ```
 
-This will be generated as:
+This will bind to:
 
 ```scala
-case class Fortune(mapField: IntMap)
+case class Fortune(mapField: Map[String, Int])
 ```
+
+and be generated as `case class Fortune(mapField: IntMap)`.
 
 Like arrays, map values can be of any type, and the map types for all primitives
 are predefined.
@@ -370,11 +400,15 @@ Schema type                                                                     
 `{ "type": "map", "keys": "org.example.SimpleId", "values": "org.example.Record" }`| `org.example.SimpleIdToRecordMap` (generated)
 
 All generated Maps implement Scala's `Map` and `Iterable` traits and behave
-like a standard Scala collection type.
+like a standard Scala collection type. The contain an implicit converter so that a Scala `Map`
+can be converted to them without the need to do any explicit conversion.
 
 ```scala
+// constructors
 val map = IntMap("a" -> 1, "b" -> 2, "c" -> 3)
+val map: IntMap = Map("a" -> 1, "b" -> 2, "c" -> 3)
 
+// collection methods
 map.get("a")
 
 map.getOrElse("b", 0)

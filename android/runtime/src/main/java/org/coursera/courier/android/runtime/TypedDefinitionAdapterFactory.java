@@ -51,9 +51,11 @@ import java.io.IOException;
  *     Adapter() {
  *       super(AnswerFormat.class, new Resolver&lt;AnswerFormat&gt;() {
  *         public Class&lt;? extends AnswerFormat&gt; resolve(String typeName) {
- *           if (typeName.equals(AnswerFormat.TYPE_NAME)) return TextEntryMember.class;
- *           if (typeName.equals(MultipleChoice.TYPE_NAME)) return MultipleChoiceMember.class;
- *           // ...
+ *           switch(typeName) {
+ *             case AnswerFormat.TYPE_NAME: return TextEntryMember.class;
+ *             case MultipleChoice.TYPE_NAME: return MultipleChoice.class;
+ *             // ...
+ *           }
  *         }
  *       });
  *     }
@@ -90,9 +92,11 @@ import java.io.IOException;
  *     Adapter() {
  *       super(AnswerFormat.class, new Resolver&lt;AnswerFormat&gt;() {
  *         public Class&lt;? extends AnswerFormat&gt; resolve(String typeName) {
- *           if (typeName.equals(AnswerFormat.TYPE_NAME)) return TextEntryMember.class;
- *           if (typeName.equals(MultipleChoice.TYPE_NAME)) return MultipleChoiceMember.class;
- *           // ...
+ *           switch(typeName) {
+ *             case AnswerFormat.TYPE_NAME: return TextEntryMember.class;
+ *             case MultipleChoice.TYPE_NAME: return MultipleChoice.class;
+ *             // ...
+ *           }
  *         }
  *       });
  *     }

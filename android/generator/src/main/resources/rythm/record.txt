@@ -15,14 +15,17 @@ import javax.annotation.Generated;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.annotations.JsonAdapter;
 import org.coursera.courier.android.runtime.TypedDefinitionAdapterFactory;
+import java.util.Objects;
+
+@{ String className = JavaSyntax.escapeKeyword(record.getClassName()) }
 
 @classAnnotations(record.getSchema())
-public final class @JavaSyntax.escapeKeyword(record.getClassName()) {
+public final class @className {
   @for(Field field: record.getFields()) {
-
+    @{ String fieldName = JavaSyntax.escapeKeyword(field.getSchemaField().getName()) }
     @fieldAnnotations(field)
-    @if(!JavaSyntax.escapeKeyword(field.getSchemaField().getName()).equals(field.getSchemaField().getName())) { @@SerializedName("@field.getSchemaField().getName()") }
-    public @JavaSyntax.toType(field.getType()) @JavaSyntax.escapeKeyword(field.getSchemaField().getName());
+    @if(!fieldName.equals(field.getSchemaField().getName())) { @@SerializedName("@field.getSchemaField().getName()") }
+    public @JavaSyntax.toType(field.getType()) @fieldName;
   }
 
   @for(ClassTemplateSpec enclosed: ClassTemplateSpecs.directContainedTypes(record)) {
@@ -35,5 +38,22 @@ public final class @JavaSyntax.escapeKeyword(record.getClassName()) {
         @union(enclosed)
       }
     }
+  }
+
+  @@Override
+  public int hashCode() {
+    @if(record.getFields().size() == 0) {
+      return Objects.hashCode(this.getClass());
+    } else {
+      return Objects.hash(this.getClass(), @JavaSyntax.fieldList(record.getFields()));
+    }
+  }
+
+  @@Override
+  public boolean equals(Object obj) {
+    if (!(obj instanceof @className)) return false;
+    @className other = (@className)obj;
+    if (other == this) return true;
+    return @for(Field field: record.getFields()) {@{ String fieldName = JavaSyntax.escapeKeyword(field.getSchemaField().getName())} Objects.deepEquals(this.@fieldName, other.@fieldName) &&} true;
   }
 }

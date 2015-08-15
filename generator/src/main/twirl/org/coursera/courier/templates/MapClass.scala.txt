@@ -189,4 +189,8 @@ object @(map.scalaType) {
 
     InlineStringCodec.dataToString(coerceKeyDataOutput(key))
   }
+
+  implicit def wrap(map: Map[@(map.keyClass.scalaTypeFullname), @(map.valueClass.scalaTypeFullname)]): @(map.scalaType) = {
+    @(map.scalaType)(map)
+  }
 }

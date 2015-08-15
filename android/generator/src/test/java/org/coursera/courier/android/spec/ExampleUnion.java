@@ -30,9 +30,11 @@ public interface ExampleUnion {
       super(ExampleUnion.class, new Resolver<ExampleUnion>() {
         @Override
         public Class<? extends ExampleUnion> resolve(String memberKey) {
-          if (memberKey.equals(NoteMember.MEMBER_KEY)) return NoteMember.class;
-          else if (memberKey.equals(MessageMember.MEMBER_KEY)) return MessageMember.class;
-          else return $UnknownMember.class;
+          switch (memberKey) {
+            case NoteMember.MEMBER_KEY: return NoteMember.class;
+            case MessageMember.MEMBER_KEY: return MessageMember.class;
+            default: return $UnknownMember.class;
+          }
         }
       });
     }

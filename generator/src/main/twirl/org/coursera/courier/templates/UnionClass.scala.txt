@@ -125,6 +125,10 @@ object @(union.scalaType) {
 
       private[@(union.scalaType)] val memberKey = "@(member.unionMemberKey)"
     }
+
+    implicit def wrap(value: @(member.classDefinition.scalaTypeFullname)): @(member.classDefinition.memberName) = {
+      @(member.classDefinition.memberName)(value)
+    }
   }
 
   case class $UnknownMember private[@(union.scalaType)](

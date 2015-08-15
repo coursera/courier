@@ -9,35 +9,54 @@
   import com.google.gson.annotations.SerializedName;
   import javax.annotation.Generated;
   import org.coursera.courier.android.runtime.UnionAdapterFactory;
+  import java.util.Objects;
 }
+
+@{ String className = JavaSyntax.escapeKeyword(union.getClassName()) }
 
 @if (union.getTyperefClass() != null) {
   @classAnnotations(union.getTyperefClass().getSchema())
 }
-@@JsonAdapter(@(JavaSyntax.escapeKeyword(union.getClassName())).Adapter.class)
-public interface @JavaSyntax.escapeKeyword(union.getClassName()) {
+@@JsonAdapter(@(className).Adapter.class)
+public interface @className {
   @for(Member member: union.getMembers()) {
-    public @if (union.getEnclosingClass() != null) {static} class @JavaSyntax.toUnionMemberName(member.getClassTemplateSpec()) implements @JavaSyntax.escapeKeyword(union.getClassName()) {
+    @{ String unionMemberName = JavaSyntax.toUnionMemberName(member.getClassTemplateSpec()) }
+    public @if (union.getEnclosingClass() != null) {static} class @unionMemberName implements @className {
       private static final String MEMBER_KEY = "@member.getClassTemplateSpec().getSchema().getUnionMemberKey()";
 
       @@SerializedName(MEMBER_KEY)
       public @JavaSyntax.toType(member.getClassTemplateSpec()) member;
+
+      @@Override
+      public int hashCode() {
+        return Objects.hash(this.getClass(), member);
+      }
+
+      @@Override
+      public boolean equals(Object obj) {
+        if (!(obj instanceof @unionMemberName)) return false;
+        @unionMemberName other = (@unionMemberName)obj;
+        if (other == this) return true;
+        return Objects.deepEquals(this.member, other.member);
+      }
     }
   }
 
-  public final class $UnknownMember implements @JavaSyntax.escapeKeyword(union.getClassName()) {
+  public final class $UnknownMember implements @className {
     private $UnknownMember() { }
   }
 
-  final class Adapter extends UnionAdapterFactory<@JavaSyntax.escapeKeyword(union.getClassName())> {
+  final class Adapter extends UnionAdapterFactory<@className> {
     Adapter() {
-      super(@(JavaSyntax.escapeKeyword(union.getClassName())).class, new UnionAdapterFactory.Resolver<@JavaSyntax.escapeKeyword(union.getClassName())>() {
+      super(@(className).class, new UnionAdapterFactory.Resolver<@className>() {
         @@Override
-        public Class<? extends @JavaSyntax.escapeKeyword(union.getClassName())> resolve(String memberKey) {
-          @for(Member member: union.getMembers()) {
-            if (memberKey.equals(@(JavaSyntax.toUnionMemberName(member.getClassTemplateSpec())).MEMBER_KEY)) return @(JavaSyntax.toUnionMemberName(member.getClassTemplateSpec())).class;
+        public Class<? extends @className> resolve(String memberKey) {
+          switch(memberKey) {
+            @for(Member member: union.getMembers()) {
+              @{String unionMemberName = JavaSyntax.toUnionMemberName(member.getClassTemplateSpec())} case @(unionMemberName).MEMBER_KEY: return @(unionMemberName).class;
+            }
+            default: return $UnknownMember.class;
           }
-          return $UnknownMember.class;
         }
       });
     }

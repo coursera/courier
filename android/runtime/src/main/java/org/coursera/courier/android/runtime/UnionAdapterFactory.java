@@ -48,9 +48,11 @@ import java.util.Set;
  *     Adapter() {
  *       super(AnswerFormat.class, new Resolver&lt;AnswerFormat&gt;() {
  *         public Class&lt;? extends AnswerFormat&gt; resolve(String memberKey) {
- *           if (memberKey.equals(AnswerFormat.MEMBER_KEY)) return TextEntryMember.class;
- *           if (memberKey.equals(MultipleChoice.MEMBER_KEY)) return MultipleChoiceMember.class;
- *           // ...
+ *           switch(memberKey) {
+ *             case AnswerFormat.MEMBER_KEY: return TextEntryMember.class;
+ *             case MultipleChoice.MEMBER_KEY: return MultipleChoice.class;
+ *             // ...
+ *           }
  *         }
  *       });
  *     }

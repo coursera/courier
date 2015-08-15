@@ -1,65 +1,48 @@
 
 
+package org.coursera.courier.data
 
+import javax.annotation.Generated
 
+import com.linkedin.data.ByteString
+import com.linkedin.data.DataMap
+import com.linkedin.data.DataList
+import com.linkedin.data.schema.MapDataSchema
+import com.linkedin.data.schema.DataSchema
+import com.linkedin.data.template.DataTemplate
+import com.linkedin.data.template.DataTemplateUtil
+import org.coursera.courier.templates.DataTemplates
+import org.coursera.courier.templates.DataTemplates.DataConversion
+import scala.collection.generic.CanBuildFrom
+import scala.collection.immutable
+import scala.collection.mutable
+import scala.collection.JavaConverters._
+import com.linkedin.data.template.Custom
+import org.coursera.courier.codecs.InlineStringCodec
 
-
-
-
-   package org.coursera.courier.data 
-
-  import javax.annotation.Generated
-
-  import com.linkedin.data.ByteString
-  import com.linkedin.data.DataMap
-  import com.linkedin.data.DataList
-  import com.linkedin.data.schema.MapDataSchema
-  import com.linkedin.data.schema.DataSchema
-  import com.linkedin.data.template.DataTemplate
-  import com.linkedin.data.template.DataTemplateUtil
-  import org.coursera.courier.templates.DataTemplates
-  import org.coursera.courier.templates.DataTemplates.DataConversion
-  import scala.collection.generic.CanBuildFrom
-  import scala.collection.immutable
-  import scala.collection.mutable
-  import scala.collection.JavaConverters._
-  import com.linkedin.data.template.Custom
-  import org.coursera.courier.codecs.InlineStringCodec
-
-
-
-
-
-
-
- 
-@Generated(value = Array("LongToLongMap"), comments="Courier Data Template.", date = "Fri Jul 10 10:23:12 PDT 2015")
- final class LongToLongMap(private val dataMap: DataMap)
+@Generated(value = Array("LongToLongMap"), comments = "Courier Data Template.", date = "Fri Aug 14 14:51:38 PDT 2015")
+final class LongToLongMap(private val dataMap: DataMap)
   extends immutable.Iterable[(Long, Long)]
   with Map[Long, Long]
   with immutable.MapLike[Long, Long, immutable.Map[Long, Long]]
   with DataTemplate[DataMap] {
   import LongToLongMap._
 
-  
   private[this] lazy val map = dataMap.asScala.map { case (k, v) => coerceKeyInput(k) -> coerceInput(v) }.toMap
 
-  private[this] 
-  def coerceInput(any: AnyRef): Long = {
-    
-        DataTemplateUtil.coerceOutput(any, classOf[java.lang.Long])
-      
-  }
+  private[this] def coerceInput(any: AnyRef): Long = {
 
+    DataTemplateUtil.coerceOutput(any, classOf[java.lang.Long])
+
+  }
 
   private[this] def coerceKeyInput(key: String): Long = {
-    
-  def coerceKeyDataInput(any: AnyRef): Long = {
-    
-        DataTemplateUtil.coerceOutput(any, classOf[java.lang.Long])
-      
-  }
 
+    def coerceKeyDataInput(any: AnyRef): Long = {
+
+      DataTemplateUtil.coerceOutput(any, classOf[java.lang.Long])
+
+    }
 
     coerceKeyDataInput(InlineStringCodec.stringToData(key, KEY_SCHEMA))
   }
@@ -74,7 +57,7 @@
       case v: Long =>
         val copy = dataMap.copy()
         copy.put(coerceKeyOutput(key), coerceOutput(v))
-        copy.setReadOnly()
+        copy.makeReadOnly()
         new LongToLongMap(copy)
       case _: Any =>
         (iterator ++ Iterator.single(kv)).toMap
@@ -83,8 +66,8 @@
 
   override def -(key: Long): LongToLongMap = {
     val copy = dataMap.copy()
-    copy.remove(key)
-    copy.setReadOnly()
+    copy.remove(coerceKeyOutput(key))
+    copy.makeReadOnly()
     new LongToLongMap(copy)
   }
 
@@ -98,16 +81,6 @@
 object LongToLongMap {
   val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"map","values":"long","keys":"long"}""").asInstanceOf[MapDataSchema]
   val KEY_SCHEMA = DataTemplateUtil.parseSchema(""""long"""")
-
-  
-  
-
-  
-  
-
-
-
-
 
   val empty = LongToLongMap()
 
@@ -146,28 +119,29 @@ object LongToLongMap {
     }
 
     def result() = {
-      entries.setReadOnly()
+      entries.makeReadOnly()
       new LongToLongMap(entries)
     }
   }
 
-  private 
-  def coerceOutput(value: Long): AnyRef = {
-    
-        DataTemplateUtil.coerceInput(Long.box(value), classOf[java.lang.Long], classOf[java.lang.Long])
-      
-  }
+  private def coerceOutput(value: Long): AnyRef = {
 
+    DataTemplateUtil.coerceInput(Long.box(value), classOf[java.lang.Long], classOf[java.lang.Long])
+
+  }
 
   private def coerceKeyOutput(key: Long): String = {
-    
-  def coerceKeyDataOutput(value: Long): AnyRef = {
-    
-        DataTemplateUtil.coerceInput(Long.box(value), classOf[java.lang.Long], classOf[java.lang.Long])
-      
-  }
 
+    def coerceKeyDataOutput(value: Long): AnyRef = {
+
+      DataTemplateUtil.coerceInput(Long.box(value), classOf[java.lang.Long], classOf[java.lang.Long])
+
+    }
 
     InlineStringCodec.dataToString(coerceKeyDataOutput(key))
+  }
+
+  implicit def wrap(map: Map[Long, Long]): LongToLongMap = {
+    LongToLongMap(map)
   }
 }
