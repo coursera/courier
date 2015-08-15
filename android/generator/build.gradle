@@ -9,6 +9,7 @@ dependencies {
   compile externalDependency.gson
   compile externalDependency.courierGeneratorApi
   testCompile externalDependency.junit
+  testCompile externalDependency.jodaTime
 }
 
 // To test the generator, we run it on some .pdscs before executing the test tasks
