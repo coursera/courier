@@ -245,10 +245,10 @@ are defined with a `items` type using the form:
 { "type": "array", "items": "org.example.Fortune" }
 ```
 
-Arrays bind to the Scala Traversable type:
+Arrays bind to the Scala `IndexedSeq` type:
 
 ```scala
-Traversable[Fortune]
+IndexedSeq[Fortune]
 ```
 
 Under the hood, Courier generates a `class FortuneArray extends IndexedSeq[Fortune]` type and then

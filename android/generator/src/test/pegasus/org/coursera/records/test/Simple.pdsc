@@ -2,7 +2,7 @@
   "type": "record",
   "name": "Simple",
   "doc": "A simple record",
-  "namespace": "org.coursera.records",
+  "namespace": "org.coursera.records.test",
   "fields": [
     {
       "name": "message",

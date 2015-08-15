@@ -2,15 +2,7 @@
 @import com.linkedin.pegasus.generator.spec.UnionTemplateSpec.Member
 @import org.coursera.courier.android.JavaSyntax
 
-@if (union.getEnclosingClass() == null) {
-  @if (union.getNamespace() != null) {package @union.getNamespace();}
-
-  import com.google.gson.annotations.JsonAdapter;
-  import javax.annotation.Generated;
-  import com.google.gson.annotations.SerializedName;
-  import org.coursera.courier.android.runtime.TypedDefinitionAdapterFactory;
-  import java.util.Objects;
-}
+@maybePackageAndImports(union)
 
 @{ String className = JavaSyntax.escapeKeyword(union.getClassName()) }
 

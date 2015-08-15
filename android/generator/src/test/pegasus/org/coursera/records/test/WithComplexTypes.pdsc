@@ -1,0 +1,13 @@
+{
+  "type": "record",
+  "name": "WithComplexTypes",
+  "namespace": "org.coursera.records.test",
+  "fields": [
+    { "name": "record", "type": "Simple" },
+    { "name": "enum", "type": "org.coursera.enums.Fruits" },
+    { "name": "union", "type": ["int", "string", "Simple"] },
+    { "name": "array", "type": { "type": "array", "items": "int" } },
+    { "name": "map", "type": { "type": "map", "values": "int" } },
+    { "name": "custom", "type": "org.coursera.customtypes.CustomInt" }
+  ]
+}

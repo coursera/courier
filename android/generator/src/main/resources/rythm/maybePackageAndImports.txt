@@ -1,0 +1,12 @@
+@args com.linkedin.pegasus.generator.spec.ClassTemplateSpec spec
+
+@if (spec.getEnclosingClass() == null) {
+  @if (spec.getNamespace() != null && spec.getNamespace().length() > 0) {package @spec.getNamespace();}
+
+  import com.google.gson.annotations.JsonAdapter;
+  import javax.annotation.Generated;
+  import com.google.gson.annotations.SerializedName;
+  import org.coursera.courier.android.runtime.TypedDefinitionAdapterFactory;
+  import org.coursera.courier.android.runtime.UnionAdapterFactory;
+  import java.util.Objects;
+}

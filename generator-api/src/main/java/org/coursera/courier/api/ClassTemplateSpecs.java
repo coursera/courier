@@ -67,6 +67,16 @@ public class ClassTemplateSpecs {
     return results;
   }
 
+  public static Set<ClassTemplateSpec> allContainedTypes(ClassTemplateSpec spec) {
+    Set<ClassTemplateSpec> results = new HashSet<ClassTemplateSpec>();
+    for (ClassTemplateSpec nested: allReferencedTypes(spec)) {
+      if (nested.getEnclosingClass() == spec) {
+        results.add(nested);
+      }
+    }
+    return results;
+  }
+
   /**
    * Return all types directly or transitively referenced by this type.
    */

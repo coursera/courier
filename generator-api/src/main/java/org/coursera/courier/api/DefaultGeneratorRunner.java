@@ -44,7 +44,7 @@ public class DefaultGeneratorRunner implements GeneratorRunner {
       GeneratorRunnerOptions options) throws IOException {
     DataSchemaParser schemaParser = new DataSchemaParser(options.getResolverPath());
     CourierTemplateSpecGenerator specGenerator = new CourierTemplateSpecGenerator(
-        schemaParser.getSchemaResolver(), options.getDataNamespace());
+        schemaParser.getSchemaResolver(), options.getDataNamespace(), options.getCustomTypeLang());
 
     File targetDirectory = new File(options.getTargetDirectoryPath());
     targetDirectory.delete();

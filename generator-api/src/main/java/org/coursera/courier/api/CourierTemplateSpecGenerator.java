@@ -75,7 +75,7 @@ public class CourierTemplateSpecGenerator {
   private static final String CLASS_PROPERTY = "class";
 
   // For Courier, use 'scala' as the property name for custom type properties.
-  private static final String SCALA_PROPERTY = "scala";
+  //private static final String SCALA_PROPERTY = "scala";
   private final String courierPackageName = "org.coursera.courier.data";
 
   private static final String COERCER_CLASS_PROPERTY = "coercerClass";
@@ -454,45 +454,39 @@ public class CourierTemplateSpecGenerator {
   {
     CustomClasses customClasses = null;
     final Map<String, Object> properties = schema.getProperties();
-    final Object java = properties.get(SCALA_PROPERTY);
-    if (java != null)
-    {
-      if (java.getClass() != DataMap.class)
-      {
-        throw new IllegalArgumentException(schema + " has \"java\" property that is not a DataMap");
-      }
-      final DataMap map = (DataMap) java;
-      final Object custom = map.get(CLASS_PROPERTY);
-      if (custom != null)
-      {
-        if (custom.getClass() != String.class)
-        {
-          throw new IllegalArgumentException(schema + " has \"java\" property with \"class\" that is not a string");
+    if (_customTypeLanguage != null) {
+      final Object java = properties.get(_customTypeLanguage);
+      if (java != null) {
+        if (java.getClass() != DataMap.class) {
+          throw new IllegalArgumentException(schema + " has \"java\" property that is not a DataMap");
         }
-        // a custom class specification has been found
-        customClasses = new CustomClasses();
-        customClasses.customClass = new ClassTemplateSpec();
-        customClasses.customClass.setFullName((String) custom);
-        if (!allowCustomClass(schema))
-        {
-          throw new IllegalArgumentException(schema + " cannot have custom class binding");
+        final DataMap map = (DataMap) java;
+        final Object custom = map.get(CLASS_PROPERTY);
+        if (custom != null) {
+          if (custom.getClass() != String.class) {
+            throw new IllegalArgumentException(schema + " has \"java\" property with \"class\" that is not a string");
+          }
+          // a custom class specification has been found
+          customClasses = new CustomClasses();
+          customClasses.customClass = new ClassTemplateSpec();
+          customClasses.customClass.setFullName((String) custom);
+          if (!allowCustomClass(schema)) {
+            throw new IllegalArgumentException(schema + " cannot have custom class binding");
+          }
         }
-      }
-      // check for coercer class
-      final Object coercerClass = map.get(COERCER_CLASS_PROPERTY);
-      if (coercerClass != null)
-      {
-        if (coercerClass.getClass() != String.class)
-        {
-          throw new IllegalArgumentException(schema + " has \"java\" property with \"coercerClass\" that is not a string");
+        // check for coercer class
+        final Object coercerClass = map.get(COERCER_CLASS_PROPERTY);
+        if (coercerClass != null) {
+          if (coercerClass.getClass() != String.class) {
+            throw new IllegalArgumentException(schema + " has \"java\" property with \"coercerClass\" that is not a string");
+          }
+          if (customClasses == null) {
+            throw new IllegalArgumentException(schema + " has \"java\" property with \"coercerClass\" but does not have \"class\" property");
+          }
+          // a custom class specification has been found
+          customClasses.customCoercerClass = new ClassTemplateSpec();
+          customClasses.customCoercerClass.setFullName((String) coercerClass);
         }
-        if (customClasses == null)
-        {
-          throw new IllegalArgumentException(schema + " has \"java\" property with \"coercerClass\" but does not have \"class\" property");
-        }
-        // a custom class specification has been found
-        customClasses.customCoercerClass = new ClassTemplateSpec();
-        customClasses.customCoercerClass.setFullName((String) coercerClass);
       }
     }
     return customClasses;

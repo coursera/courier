@@ -25,6 +25,10 @@ idea.module {
   testSourceDirs += pegasusTargetDir
 }
 
+clean {
+  delete pegasusTargetDir
+}
+
 task generateTestClasses(type: JavaExec, dependsOn: compileJava) {
   FileTree pdscFiles = fileTree(dir: pegasusSrcDir)
   pdscFiles.include '**/*.pdsc'

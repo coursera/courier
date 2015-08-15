@@ -1,0 +1,14 @@
+{
+  "type": "record",
+  "name": "WithPrimitiveTyperefs",
+  "namespace": "org.coursera.records.test",
+  "fields": [
+    { "name": "intField", "type": { "name": "IntTyperef", "type": "typeref", "ref": "int"} },
+    { "name": "longField", "type": { "name": "LongTyperef", "type": "typeref", "ref": "long"} },
+    { "name": "floatField", "type": { "name": "FloatTyperef", "type": "typeref", "ref": "float"} },
+    { "name": "doubleField", "type": { "name": "DoubleTyperef", "type": "typeref", "ref": "double"} },
+    { "name": "booleanField", "type": { "name": "BooleanTyperef", "type": "typeref", "ref": "boolean"} },
+    { "name": "stringField", "type": { "name": "StringTyperef", "type": "typeref", "ref": "string"} },
+    { "name": "bytesField", "type": { "name": "BytesTyperef", "type": "typeref", "ref": "bytes"} }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "type": "record",
+  "name": "DeprecatedRecord",
+  "namespace": "org.coursera.deprecated",
+  "deprecated": "Use XYZ instead",
+  "fields": [
+    {
+      "name": "field1",
+      "type": "string",
+      "deprecated": true
+    },
+    {
+      "name": "field2",
+      "type": "string",
+      "deprecated": "Use XYZ instead"
+    }
+  ]
+}
