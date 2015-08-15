@@ -1,0 +1,6 @@
+{
+  "name": "IntTyperef",
+  "namespace": "org.coursera.typerefs",
+  "type": "typeref",
+  "ref": "int"
+}

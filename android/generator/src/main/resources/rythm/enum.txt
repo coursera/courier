@@ -1,7 +1,7 @@
 @args com.linkedin.pegasus.generator.spec.EnumTemplateSpec enumeration
 @import org.coursera.courier.android.JavaSyntax
 
-@if (enumeration.getNamespace() != null) {package @enumeration.getNamespace();}
+@if (enumeration.getNamespace() != null && enumeration.getNamespace().length() > 0) {package @enumeration.getNamespace();}
 
 import javax.annotation.Generated;
 

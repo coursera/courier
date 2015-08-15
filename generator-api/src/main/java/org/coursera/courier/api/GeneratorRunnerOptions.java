@@ -23,6 +23,7 @@ public class GeneratorRunnerOptions {
 
   private String defaultPackage = "";
   private String dataNamespace = "org.coursera.courier.data";
+  private String customTypeLang = null;
 
   private boolean generateImported = false;
   private boolean generateTyperefs = false;
@@ -92,5 +93,13 @@ public class GeneratorRunnerOptions {
 
   public boolean isGeneratePredef() {
     return generatePredef;
+  }
+
+  public String getCustomTypeLang() {
+    return customTypeLang;
+  }
+
+  public void setCustomTypeLang(String customTypeLang) {
+    this.customTypeLang = customTypeLang;
   }
 }

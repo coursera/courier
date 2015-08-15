@@ -9,13 +9,7 @@
 @import org.coursera.courier.api.ClassTemplateSpecs
 @import org.coursera.courier.android.TypedDefinitions
 
-@if (record.getNamespace() != null) {package @record.getNamespace();}
-
-import javax.annotation.Generated;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.annotations.JsonAdapter;
-import org.coursera.courier.android.runtime.TypedDefinitionAdapterFactory;
-import java.util.Objects;
+@maybePackageAndImports(record)
 
 @{ String className = JavaSyntax.escapeKeyword(record.getClassName()) }
 
@@ -28,7 +22,7 @@ public final class @className {
     public @JavaSyntax.toType(field.getType()) @fieldName;
   }
 
-  @for(ClassTemplateSpec enclosed: ClassTemplateSpecs.directContainedTypes(record)) {
+  @for(ClassTemplateSpec enclosed: ClassTemplateSpecs.allContainedTypes(record)) {
     @if (enclosed instanceof UnionTemplateSpec) {
       @if (TypedDefinitions.isTypedDefinition((UnionTemplateSpec)enclosed)) {
         @typedDefinition(enclosed, TypedDefinitions.getTypedDefinitionMapping((UnionTemplateSpec)enclosed, false))

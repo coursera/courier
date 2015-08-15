@@ -1,0 +1,6 @@
+{
+  "name": "ArrayTyperef",
+  "namespace": "org.coursera.typerefs",
+  "type": "typeref",
+  "ref": { "type": "array", "items": "org.coursera.records.test.Empty" }
+}

@@ -1,0 +1,8 @@
+{
+  "type": "record",
+  "name": "WithCustomIntWrapper",
+  "namespace": "org.coursera.records.test",
+  "fields": [
+    { "name": "wrapper", "type": "org.coursera.customtypes.CustomIntWrapper" }
+  ]
+}

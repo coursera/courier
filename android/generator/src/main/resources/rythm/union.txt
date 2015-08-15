@@ -2,15 +2,7 @@
 @import com.linkedin.pegasus.generator.spec.UnionTemplateSpec.Member
 @import org.coursera.courier.android.JavaSyntax
 
-@if (union.getEnclosingClass() == null) {
-  @if (union.getNamespace() != null) {package @union.getNamespace();}
-
-  import com.google.gson.annotations.JsonAdapter;
-  import com.google.gson.annotations.SerializedName;
-  import javax.annotation.Generated;
-  import org.coursera.courier.android.runtime.UnionAdapterFactory;
-  import java.util.Objects;
-}
+@maybePackageAndImports(union)
 
 @{ String className = JavaSyntax.escapeKeyword(union.getClassName()) }
 
@@ -22,22 +14,26 @@ public interface @className {
   @for(Member member: union.getMembers()) {
     @{ String unionMemberName = JavaSyntax.toUnionMemberName(member.getClassTemplateSpec()) }
     public @if (union.getEnclosingClass() != null) {static} class @unionMemberName implements @className {
-      private static final String MEMBER_KEY = "@member.getClassTemplateSpec().getSchema().getUnionMemberKey()";
+      @if(member.getClassTemplateSpec().getSchema() == null) {
+        // TODO: custom types (@JavaSyntax.toType(member.getClassTemplateSpec()))
+      } else {
+        private static final String MEMBER_KEY = "@member.getClassTemplateSpec().getSchema().getUnionMemberKey()";
 
-      @@SerializedName(MEMBER_KEY)
-      public @JavaSyntax.toType(member.getClassTemplateSpec()) member;
+        @@SerializedName(MEMBER_KEY)
+        public @JavaSyntax.toType(member.getClassTemplateSpec()) member;
 
-      @@Override
-      public int hashCode() {
-        return Objects.hash(this.getClass(), member);
-      }
+        @@Override
+        public int hashCode() {
+          return Objects.hash(this.getClass(), member);
+        }
 
-      @@Override
-      public boolean equals(Object obj) {
-        if (!(obj instanceof @unionMemberName)) return false;
-        @unionMemberName other = (@unionMemberName)obj;
-        if (other == this) return true;
-        return Objects.deepEquals(this.member, other.member);
+        @@Override
+        public boolean equals(Object obj) {
+          if (!(obj instanceof @unionMemberName)) return false;
+          @unionMemberName other = (@unionMemberName)obj;
+          if (other == this) return true;
+          return Objects.deepEquals(this.member, other.member);
+        }
       }
     }
   }

@@ -1,0 +1,8 @@
+{
+  "type": "record",
+  "name": "WithEmptyUnion",
+  "namespace": "org.coursera.unions",
+  "fields": [
+    { "name": "union", "type": [] }
+  ]
+}

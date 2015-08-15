@@ -1,0 +1,9 @@
+{
+  "type": "record",
+  "name": "WithRecordArray",
+  "namespace": "org.coursera.arrays",
+  "fields": [
+    { "name": "empties", "type": { "type": "array", "items": "org.coursera.records.test.Empty"} },
+    { "name": "fruits", "type": { "type": "array", "items": "org.coursera.enums.Fruits"} }
+  ]
+}

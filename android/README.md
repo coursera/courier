@@ -87,5 +87,8 @@ There are some reasonable alternatives that we could have used, and may switch t
 TODO
 ----
 
-[ ] Add hashCode/equals support
+[x] Add support for all base types (records, maps, arrays, unions, enums, primitives)
+[x] Add hashCode/equals support
+[ ] Add validation support
 [ ] Add custom type support (see: https://sites.google.com/site/gson/gson-type-adapters-for-common-classes-1)
+[ ] Add default support

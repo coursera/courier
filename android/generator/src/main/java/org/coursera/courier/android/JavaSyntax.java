@@ -64,6 +64,11 @@ public class JavaSyntax {
   }
 
   public static String toType(ClassTemplateSpec spec, boolean boxed) {
+
+    // TODO: support custom types properly
+    if (spec.getSchema() == null) { // custom type
+      return escapedFullname(spec);
+    }
     Type schemaType = spec.getSchema().getType();
     if (schemaType == Type.INT) {
       if (boxed) {
@@ -117,6 +122,12 @@ public class JavaSyntax {
   }
 
   public static String toUnionMemberName(ClassTemplateSpec spec) {
+
+    // TODO: support custom types properly
+    if (spec.getSchema() == null) { // custom type
+      return spec.getClassName() + "Member";
+    }
+
     Type schemaType = spec.getSchema().getType();
     if (schemaType == Type.INT) {
       return "IntMember";

@@ -1,0 +1,6 @@
+{
+  "name": "MapTyperef",
+  "namespace": "org.coursera.typerefs",
+  "type": "typeref",
+  "ref": { "type": "map", "values": "org.coursera.records.test.Empty" }
+}
