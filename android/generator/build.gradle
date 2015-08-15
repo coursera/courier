@@ -13,9 +13,6 @@ dependencies {
 }
 
 // To test the generator, we run it on some .pdscs before executing the test tasks
-configurations {
-  peagsus
-}
 
 File pegasusSrcDir = file('src/test/pegasus')
 File pegasusTargetDir = file('src/test/mainGeneratedPegasus')

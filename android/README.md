@@ -12,8 +12,8 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'org.coursera.courier:gradle-plugin:0.6.3'
-        classpath 'org.coursera.courier:courier-android-generator:0.6.3'
+        classpath 'org.coursera.courier:gradle-plugin:0.7.1'
+        classpath 'org.coursera.courier:courier-android-generator:0.7.1'
     }
 }
 ```
@@ -30,7 +30,60 @@ courier {
 dependencies {
     compile 'com.squareup.retrofit:retrofit:1.9.0'
     compile 'com.squareup.okhttp:okhttp:2.3.0'
-    courierCompile 'org.coursera.courier:courier-android-runtime:0.6.3'
+    courierCompile 'org.coursera.courier:courier-android-runtime:0.7.1'
+}
+```
+
+Then add pegasus schema files to the `src/main/pegasus` directory of your project. Java classes
+will be generated next time `gradle build` is run.
+
+### Adapters
+
+GSON Adapters can be used to bind to arbitrary Java classes.
+
+For example, to bind to `org.joda.time.DateTime`, define a typeref to a Long (for unix timestamps) or
+a String (for ISO 8601 or whatever format of string date you would like to use). E.g.:
+
+```json
+  "name": "DateTime",
+  "namespace": "org.example",
+  "type": "typeref",
+  "ref": "long",
+  "android": {
+    "class": "org.joda.time.DateTime",
+    "coercerClass": "org.example.DateTimeAdapter"
+  }}
+```
+
+And write a GSON `TypeAdapter`:
+
+```java
+
+import com.google.gson.TypeAdapter;
+// ...
+
+public class DateTimeAdapter extends TypeAdapter<DateTime> {
+
+  @Override
+  public void write(JsonWriter out, DateTime value) throws IOException {
+    out.value(value.getMillis());
+  }
+
+  @Override
+  public DateTime read(JsonReader in) throws IOException {
+    return new DateTime(in.nextLong());
+  }
+}
+```
+
+The `org.example.DateTime` pegasus type will now be bound to `org.joda.time.DateTime` in all
+generated Java code. E.g.:
+
+```java
+public final class ExampleRecord {
+
+  @JsonAdapter(DateTimeAdapter.class)
+  public DateTime time;
 }
 ```
 
@@ -71,6 +124,7 @@ To publish to a maven repository:
 
 ```sh
 gradle uploadArchives
+```
 
 Design notes
 ------------
@@ -90,5 +144,12 @@ TODO
 [x] Add support for all base types (records, maps, arrays, unions, enums, primitives)
 [x] Add hashCode/equals support
 [ ] Add validation support
-[ ] Add custom type support (see: https://sites.google.com/site/gson/gson-type-adapters-for-common-classes-1)
+      Not sure how to do this yet. Delegate the heavy lifting back to peagsus?  Just need
+      the SCHEMA and a dependency on pegasus data and it could be done that way.
+[ ] Add custom type support
+      This could be done by taking the .pdsc "coercerClass" as a adapter or adapter factory
+      (developer could choose) and using it to set a `@JsonAdapter` wherever the type is used.
+      (see: https://sites.google.com/site/gson/gson-type-adapters-for-common-classes-1)
 [ ] Add default support
+      For primitives this is trival. For complex types this is more difficult, although GSON
+      may be able to produce the default value from static JSON text ?

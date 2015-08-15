@@ -8,6 +8,7 @@
     "coercerClass": "org.coursera.coercers.common.DateTimeCoercer"
   },
   "android": {
-    "class": "org.joda.time.DateTime"
+    "class": "org.joda.time.DateTime",
+    "coercerClass": "org.coursera.courier.android.adapters.DateTimeAdapter"
   }
 }
