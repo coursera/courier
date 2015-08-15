@@ -3,7 +3,8 @@
 @import org.coursera.courier.android.JavadocEscaping
 
 @* Add any scaladoc and deprecated annotations as well as the Generated annotation.*@
+@{Map<String, Object> props = schema.getProperties() }
 
-@JavadocEscaping.stringToJavadoc(schema.getDoc(), schema.getProperties().get("deprecated"))
-@if (schema.getProperties().containsKey("deprecated") && !Boolean.FALSE.equals(schema.getProperties().get("deprecated"))) {@@Deprecated}
+@JavadocEscaping.stringToJavadoc(schema.getDoc(), props)
+@if (schema.getProperties().containsKey("deprecated") && !Boolean.FALSE.equals(props)) {@@Deprecated}
 @@Generated(value = "@schema.getName()", comments="Courier generated GSON data binding for Android", date = "@Calendar.getInstance().getTime()")

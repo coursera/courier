@@ -1,35 +1,26 @@
 
 
+package org.coursera.courier.data
 
+import javax.annotation.Generated
 
-   package org.coursera.courier.data 
+import com.linkedin.data.ByteString
+import com.linkedin.data.DataList
+import com.linkedin.data.DataMap
+import com.linkedin.data.schema.ArrayDataSchema
+import com.linkedin.data.schema.DataSchema
+import com.linkedin.data.template.DataTemplateUtil
+import com.linkedin.data.template.DataTemplate
+import org.coursera.courier.templates.DataTemplates
+import org.coursera.courier.templates.DataTemplates.DataConversion
+import scala.collection.GenTraversable
+import scala.collection.JavaConverters._
+import scala.collection.generic.CanBuildFrom
+import scala.collection.mutable
+import com.linkedin.data.template.Custom
 
-  import javax.annotation.Generated
-
-  import com.linkedin.data.ByteString
-  import com.linkedin.data.DataList
-  import com.linkedin.data.DataMap
-  import com.linkedin.data.schema.ArrayDataSchema
-  import com.linkedin.data.schema.DataSchema
-  import com.linkedin.data.template.DataTemplateUtil
-  import com.linkedin.data.template.DataTemplate
-  import org.coursera.courier.templates.DataTemplates
-  import org.coursera.courier.templates.DataTemplates.DataConversion
-  import scala.collection.GenTraversable
-  import scala.collection.JavaConverters._
-  import scala.collection.generic.CanBuildFrom
-  import scala.collection.mutable
-  import com.linkedin.data.template.Custom
-
-
-
-
-
-
-
- 
-@Generated(value = Array("BytesArray"), comments="Courier Data Template.", date = "Fri Jul 10 10:23:12 PDT 2015")
- final class BytesArray(private val dataList: DataList)
+@Generated(value = Array("BytesArray"), comments = "Courier Data Template.", date = "Fri Aug 14 14:51:38 PDT 2015")
+final class BytesArray(private val dataList: DataList)
   extends IndexedSeq[ByteString]
   with Product
   with GenTraversable[ByteString]
@@ -37,13 +28,12 @@
 
   override def length: Int = dataList.size()
 
-  
   private[this] lazy val list = dataList.asScala.map(coerceInput)
 
   private[this] def coerceInput(any: AnyRef): ByteString = {
-    
-        DataTemplateUtil.coerceOutput(any, classOf[com.linkedin.data.ByteString])
-      
+
+    DataTemplateUtil.coerceOutput(any, classOf[com.linkedin.data.ByteString])
+
   }
 
   override def apply(idx: Int): ByteString = list(idx)
@@ -59,9 +49,6 @@
 
 object BytesArray {
   val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"array","items":"bytes"}""").asInstanceOf[ArrayDataSchema]
-
-  
-  
 
   val empty = BytesArray()
 
@@ -99,15 +86,19 @@ object BytesArray {
     }
 
     def result() = {
-      elems.setReadOnly()
+      elems.makeReadOnly()
       new BytesArray(elems)
     }
   }
 
   private def coerceOutput(value: ByteString): AnyRef = {
-    
-        DataTemplateUtil.coerceInput(value, classOf[com.linkedin.data.ByteString], classOf[com.linkedin.data.ByteString])
-      
+
+    DataTemplateUtil.coerceInput(value, classOf[com.linkedin.data.ByteString], classOf[com.linkedin.data.ByteString])
+
+  }
+
+  implicit def wrap(traversable: Traversable[ByteString]): BytesArray = {
+    BytesArray(traversable)
   }
 }
 

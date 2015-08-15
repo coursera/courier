@@ -328,6 +328,32 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures {
   }
 
   @Test
+  def testImplicitCollectionWrappers(): Unit = {
+    val original = WithComplexTypes(
+      Simple(Some("message")),
+      Fruits.APPLE,
+      1,
+      Seq(1),
+      Map("a" -> 1),
+      CustomInt(1))
+    val roundTripped = WithComplexTypes(
+      roundTrip(original.data()), DataConversion.SetReadOnly)
+    val WithComplexTypes(simple, fruit, union, array, map, custom) = original
+    val reconstructed = WithComplexTypes(simple, fruit, union, array, map, custom)
+
+    assert(original === roundTripped)
+    assert(original === reconstructed)
+
+    Seq(original, roundTripped, reconstructed) foreach { records =>
+      assert(records.record === Simple(Some("message")))
+      assert(records.enum === Fruits.APPLE)
+
+      val copy = records.copy(enum = Fruits.PINEAPPLE)
+      assert(copy.enum === Fruits.PINEAPPLE)
+    }
+  }
+
+  @Test
   def testWithPrimitiveDefaults(): Unit = {
     val withDefaults = WithPrimitiveDefaults()
     assert(withDefaults.intWithDefault === 1)

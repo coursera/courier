@@ -1,35 +1,26 @@
 
 
+package org.coursera.courier.data
 
+import javax.annotation.Generated
 
-   package org.coursera.courier.data 
+import com.linkedin.data.ByteString
+import com.linkedin.data.DataList
+import com.linkedin.data.DataMap
+import com.linkedin.data.schema.ArrayDataSchema
+import com.linkedin.data.schema.DataSchema
+import com.linkedin.data.template.DataTemplateUtil
+import com.linkedin.data.template.DataTemplate
+import org.coursera.courier.templates.DataTemplates
+import org.coursera.courier.templates.DataTemplates.DataConversion
+import scala.collection.GenTraversable
+import scala.collection.JavaConverters._
+import scala.collection.generic.CanBuildFrom
+import scala.collection.mutable
+import com.linkedin.data.template.Custom
 
-  import javax.annotation.Generated
-
-  import com.linkedin.data.ByteString
-  import com.linkedin.data.DataList
-  import com.linkedin.data.DataMap
-  import com.linkedin.data.schema.ArrayDataSchema
-  import com.linkedin.data.schema.DataSchema
-  import com.linkedin.data.template.DataTemplateUtil
-  import com.linkedin.data.template.DataTemplate
-  import org.coursera.courier.templates.DataTemplates
-  import org.coursera.courier.templates.DataTemplates.DataConversion
-  import scala.collection.GenTraversable
-  import scala.collection.JavaConverters._
-  import scala.collection.generic.CanBuildFrom
-  import scala.collection.mutable
-  import com.linkedin.data.template.Custom
-
-
-
-
-
-
-
- 
-@Generated(value = Array("FloatArray"), comments="Courier Data Template.", date = "Fri Jul 10 10:23:12 PDT 2015")
- final class FloatArray(private val dataList: DataList)
+@Generated(value = Array("FloatArray"), comments = "Courier Data Template.", date = "Fri Aug 14 14:51:38 PDT 2015")
+final class FloatArray(private val dataList: DataList)
   extends IndexedSeq[Float]
   with Product
   with GenTraversable[Float]
@@ -37,13 +28,12 @@
 
   override def length: Int = dataList.size()
 
-  
   private[this] lazy val list = dataList.asScala.map(coerceInput)
 
   private[this] def coerceInput(any: AnyRef): Float = {
-    
-        DataTemplateUtil.coerceOutput(any, classOf[java.lang.Float])
-      
+
+    DataTemplateUtil.coerceOutput(any, classOf[java.lang.Float])
+
   }
 
   override def apply(idx: Int): Float = list(idx)
@@ -59,9 +49,6 @@
 
 object FloatArray {
   val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"array","items":"float"}""").asInstanceOf[ArrayDataSchema]
-
-  
-  
 
   val empty = FloatArray()
 
@@ -99,15 +86,19 @@ object FloatArray {
     }
 
     def result() = {
-      elems.setReadOnly()
+      elems.makeReadOnly()
       new FloatArray(elems)
     }
   }
 
   private def coerceOutput(value: Float): AnyRef = {
-    
-        DataTemplateUtil.coerceInput(Float.box(value), classOf[java.lang.Float], classOf[java.lang.Float])
-      
+
+    DataTemplateUtil.coerceInput(Float.box(value), classOf[java.lang.Float], classOf[java.lang.Float])
+
+  }
+
+  implicit def wrap(traversable: Traversable[Float]): FloatArray = {
+    FloatArray(traversable)
   }
 }
 

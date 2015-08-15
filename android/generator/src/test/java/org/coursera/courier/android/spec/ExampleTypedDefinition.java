@@ -27,9 +27,11 @@ public interface ExampleTypedDefinition {
       super(ExampleTypedDefinition.class, new Resolver<ExampleTypedDefinition>() {
         @Override
         public Class<? extends ExampleTypedDefinition> resolve(String typeName) {
-          if (typeName.equals(NoteMember.TYPE_NAME)) return NoteMember.class;
-          else if (typeName.equals(MessageMember.TYPE_NAME)) return MessageMember.class;
-          else return $UnknownMember.class;
+          switch (typeName) {
+            case NoteMember.TYPE_NAME: return NoteMember.class;
+            case MessageMember.TYPE_NAME: return MessageMember.class;
+            default: return $UnknownMember.class;
+          }
         }
       });
     }

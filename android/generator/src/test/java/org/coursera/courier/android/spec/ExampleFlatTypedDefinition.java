@@ -25,9 +25,11 @@ public interface ExampleFlatTypedDefinition {
       super(ExampleFlatTypedDefinition.class, new Resolver<ExampleFlatTypedDefinition>() {
         @Override
         public Class<? extends ExampleFlatTypedDefinition> resolve(String typeName) {
-          if (typeName.equals(NoteMember.TYPE_NAME)) return NoteMember.class;
-          else if (typeName.equals(MessageMember.TYPE_NAME)) return MessageMember.class;
-          else return $UnknownMember.class;
+          switch (typeName) {
+            case NoteMember.TYPE_NAME: return NoteMember.class;
+            case MessageMember.TYPE_NAME: return MessageMember.class;
+            default: return $UnknownMember.class;
+          }
         }
       });
     }

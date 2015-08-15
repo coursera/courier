@@ -144,5 +144,9 @@ object @(array.scalaType) {
       }
     }
   }
+
+  implicit def wrap(traversable: Traversable[@(array.itemClass.scalaTypeFullname)]): @(array.scalaType) = {
+    @(array.scalaType)(traversable)
+  }
 }
 

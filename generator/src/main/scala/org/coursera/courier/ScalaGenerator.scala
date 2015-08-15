@@ -110,7 +110,8 @@ class ScalaGenerator()
           throw new IllegalArgumentException(s"Unsupported schema type: ${schema.getClass}")
       }
       val namespace = definition.namespace.getOrElse("")
-      Some(ScalaGeneratedCode(code, ScalaCompilationUnit(definition.scalaType, namespace)))
+      val formattedCode = ScalaFormatter.format(code)
+      Some(ScalaGeneratedCode(formattedCode, ScalaCompilationUnit(definition.scalaType, namespace)))
     }.toSeq
   }
 

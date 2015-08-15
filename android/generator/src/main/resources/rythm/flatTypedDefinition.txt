@@ -12,44 +12,69 @@
   import javax.annotation.Generated;
   import com.google.gson.annotations.SerializedName;
   import org.coursera.courier.android.runtime.TypedDefinitionAdapterFactory;
+  import java.util.Objects;
 }
+
+@{ String className = JavaSyntax.escapeKeyword(union.getClassName()) }
 
 @if (union.getTyperefClass() != null) {
   @classAnnotations(union.getTyperefClass().getSchema())
 }
-@@JsonAdapter(@(JavaSyntax.escapeKeyword(union.getClassName())).Adapter.class)
-public interface @JavaSyntax.escapeKeyword(union.getClassName()) {
+@@JsonAdapter(@(className).Adapter.class)
+public interface @className {
   @for(Member member: union.getMembers()) {
+    @{ String memberKey = member.getClassTemplateSpec().getSchema().getUnionMemberKey() }
+    @{ String unionMemberName = JavaSyntax.toUnionMemberName(member.getClassTemplateSpec()) }
     @if (member.getClassTemplateSpec().getSchema().getType() != Type.RECORD) {
-      // flatTypedDefinition members must all be records, but found: @member.getClassTemplateSpec().getSchema().getUnionMemberKey()
+      // flatTypedDefinition members must all be records, but found: @memberKey
     } else {
-      public @if (union.getEnclosingClass() != null) {static} class @JavaSyntax.toUnionMemberName(member.getClassTemplateSpec()) implements @union.getClassName() {
-        private static final String TYPE_NAME = "@memberKeyToTypeName.get(member.getClassTemplateSpec().getSchema().getUnionMemberKey())";
+      public @if (union.getEnclosingClass() != null) {static} class @unionMemberName implements @className {
+        @{List<Field> fields = ((RecordTemplateSpec)member.getClassTemplateSpec()).getFields() }
+        private static final String TYPE_NAME = "@memberKeyToTypeName.get(memberKey)";
 
         public final String typeName = TYPE_NAME;
 
-        @for(Field field: ((RecordTemplateSpec)member.getClassTemplateSpec()).getFields()) {
+        @for(Field field: fields) {
           @fieldAnnotations(field)
           @if(!JavaSyntax.escapeKeyword(field.getSchemaField().getName()).equals(field.getSchemaField().getName())) { @@SerializedName("@field.getSchemaField().getName()") }
           public @JavaSyntax.toType(field.getType()) @JavaSyntax.escapeKeyword(field.getSchemaField().getName());
+        }
+
+        @@Override
+        public int hashCode() {
+          @if(fields.size() == 0) {
+            return Objects.hashCode(this.getClass());
+          } else {
+            return Objects.hash(this.getClass(), @JavaSyntax.fieldList(fields));
+          }
+        }
+
+        @@Override
+        public boolean equals(Object obj) {
+          if (!(obj instanceof @unionMemberName)) return false;
+          @unionMemberName other = (@unionMemberName)obj;
+          if (other == this) return true;
+          return @for(Field field: fields) {Objects.deepEquals(this.@JavaSyntax.escapeKeyword(field.getSchemaField().getName()), other.@JavaSyntax.escapeKeyword(field.getSchemaField().getName())) &&} true;
         }
       }
     }
   }
 
-  public final class $UnknownMember implements @JavaSyntax.escapeKeyword(union.getClassName()) {
+  public final class $UnknownMember implements @className {
     private $UnknownMember() { }
   }
 
-  final class Adapter extends TypedDefinitionAdapterFactory<@JavaSyntax.escapeKeyword(union.getClassName())> {
+  final class Adapter extends TypedDefinitionAdapterFactory<@className> {
     Adapter() {
-      super(@(JavaSyntax.escapeKeyword(union.getClassName())).class, new TypedDefinitionAdapterFactory.Resolver<@JavaSyntax.escapeKeyword(union.getClassName())>() {
+      super(@(className).class, new TypedDefinitionAdapterFactory.Resolver<@className>() {
         @@Override
-        public Class<? extends @JavaSyntax.escapeKeyword(union.getClassName())> resolve(String typeName) {
-          @for(Member member: union.getMembers()) {
-            if (typeName.equals(@(JavaSyntax.toUnionMemberName(member.getClassTemplateSpec())).TYPE_NAME)) return @(JavaSyntax.toUnionMemberName(member.getClassTemplateSpec())).class;
+        public Class<? extends @className> resolve(String typeName) {
+          switch (typeName) {
+            @for(Member member: union.getMembers()) {
+              @{ String unionMemberName = JavaSyntax.toUnionMemberName(member.getClassTemplateSpec()) } case @(unionMemberName).TYPE_NAME: return @(unionMemberName).class;
+            }
+            default: return $UnknownMember.class;
           }
-          return $UnknownMember.class;
         }
       });
     }

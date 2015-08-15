@@ -1,65 +1,48 @@
 
 
+package org.coursera.courier.data
 
+import javax.annotation.Generated
 
+import com.linkedin.data.ByteString
+import com.linkedin.data.DataMap
+import com.linkedin.data.DataList
+import com.linkedin.data.schema.MapDataSchema
+import com.linkedin.data.schema.DataSchema
+import com.linkedin.data.template.DataTemplate
+import com.linkedin.data.template.DataTemplateUtil
+import org.coursera.courier.templates.DataTemplates
+import org.coursera.courier.templates.DataTemplates.DataConversion
+import scala.collection.generic.CanBuildFrom
+import scala.collection.immutable
+import scala.collection.mutable
+import scala.collection.JavaConverters._
+import com.linkedin.data.template.Custom
+import org.coursera.courier.codecs.InlineStringCodec
 
-
-
-
-   package org.coursera.courier.data 
-
-  import javax.annotation.Generated
-
-  import com.linkedin.data.ByteString
-  import com.linkedin.data.DataMap
-  import com.linkedin.data.DataList
-  import com.linkedin.data.schema.MapDataSchema
-  import com.linkedin.data.schema.DataSchema
-  import com.linkedin.data.template.DataTemplate
-  import com.linkedin.data.template.DataTemplateUtil
-  import org.coursera.courier.templates.DataTemplates
-  import org.coursera.courier.templates.DataTemplates.DataConversion
-  import scala.collection.generic.CanBuildFrom
-  import scala.collection.immutable
-  import scala.collection.mutable
-  import scala.collection.JavaConverters._
-  import com.linkedin.data.template.Custom
-  import org.coursera.courier.codecs.InlineStringCodec
-
-
-
-
-
-
-
- 
-@Generated(value = Array("IntToFloatMap"), comments="Courier Data Template.", date = "Fri Jul 10 10:23:12 PDT 2015")
- final class IntToFloatMap(private val dataMap: DataMap)
+@Generated(value = Array("IntToFloatMap"), comments = "Courier Data Template.", date = "Fri Aug 14 14:51:38 PDT 2015")
+final class IntToFloatMap(private val dataMap: DataMap)
   extends immutable.Iterable[(Int, Float)]
   with Map[Int, Float]
   with immutable.MapLike[Int, Float, immutable.Map[Int, Float]]
   with DataTemplate[DataMap] {
   import IntToFloatMap._
 
-  
   private[this] lazy val map = dataMap.asScala.map { case (k, v) => coerceKeyInput(k) -> coerceInput(v) }.toMap
 
-  private[this] 
-  def coerceInput(any: AnyRef): Float = {
-    
-        DataTemplateUtil.coerceOutput(any, classOf[java.lang.Float])
-      
-  }
+  private[this] def coerceInput(any: AnyRef): Float = {
 
+    DataTemplateUtil.coerceOutput(any, classOf[java.lang.Float])
+
+  }
 
   private[this] def coerceKeyInput(key: String): Int = {
-    
-  def coerceKeyDataInput(any: AnyRef): Int = {
-    
-        DataTemplateUtil.coerceOutput(any, classOf[java.lang.Integer])
-      
-  }
 
+    def coerceKeyDataInput(any: AnyRef): Int = {
+
+      DataTemplateUtil.coerceOutput(any, classOf[java.lang.Integer])
+
+    }
 
     coerceKeyDataInput(InlineStringCodec.stringToData(key, KEY_SCHEMA))
   }
@@ -74,7 +57,7 @@
       case v: Float =>
         val copy = dataMap.copy()
         copy.put(coerceKeyOutput(key), coerceOutput(v))
-        copy.setReadOnly()
+        copy.makeReadOnly()
         new IntToFloatMap(copy)
       case _: Any =>
         (iterator ++ Iterator.single(kv)).toMap
@@ -83,8 +66,8 @@
 
   override def -(key: Int): IntToFloatMap = {
     val copy = dataMap.copy()
-    copy.remove(key)
-    copy.setReadOnly()
+    copy.remove(coerceKeyOutput(key))
+    copy.makeReadOnly()
     new IntToFloatMap(copy)
   }
 
@@ -98,16 +81,6 @@
 object IntToFloatMap {
   val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"map","values":"float","keys":"int"}""").asInstanceOf[MapDataSchema]
   val KEY_SCHEMA = DataTemplateUtil.parseSchema(""""int"""")
-
-  
-  
-
-  
-  
-
-
-
-
 
   val empty = IntToFloatMap()
 
@@ -146,28 +119,29 @@ object IntToFloatMap {
     }
 
     def result() = {
-      entries.setReadOnly()
+      entries.makeReadOnly()
       new IntToFloatMap(entries)
     }
   }
 
-  private 
-  def coerceOutput(value: Float): AnyRef = {
-    
-        DataTemplateUtil.coerceInput(Float.box(value), classOf[java.lang.Float], classOf[java.lang.Float])
-      
-  }
+  private def coerceOutput(value: Float): AnyRef = {
 
+    DataTemplateUtil.coerceInput(Float.box(value), classOf[java.lang.Float], classOf[java.lang.Float])
+
+  }
 
   private def coerceKeyOutput(key: Int): String = {
-    
-  def coerceKeyDataOutput(value: Int): AnyRef = {
-    
-        DataTemplateUtil.coerceInput(Int.box(value), classOf[java.lang.Integer], classOf[java.lang.Integer])
-      
-  }
 
+    def coerceKeyDataOutput(value: Int): AnyRef = {
+
+      DataTemplateUtil.coerceInput(Int.box(value), classOf[java.lang.Integer], classOf[java.lang.Integer])
+
+    }
 
     InlineStringCodec.dataToString(coerceKeyDataOutput(key))
+  }
+
+  implicit def wrap(map: Map[Int, Float]): IntToFloatMap = {
+    IntToFloatMap(map)
   }
 }

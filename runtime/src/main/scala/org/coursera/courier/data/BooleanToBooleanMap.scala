@@ -1,65 +1,48 @@
 
 
+package org.coursera.courier.data
 
+import javax.annotation.Generated
 
+import com.linkedin.data.ByteString
+import com.linkedin.data.DataMap
+import com.linkedin.data.DataList
+import com.linkedin.data.schema.MapDataSchema
+import com.linkedin.data.schema.DataSchema
+import com.linkedin.data.template.DataTemplate
+import com.linkedin.data.template.DataTemplateUtil
+import org.coursera.courier.templates.DataTemplates
+import org.coursera.courier.templates.DataTemplates.DataConversion
+import scala.collection.generic.CanBuildFrom
+import scala.collection.immutable
+import scala.collection.mutable
+import scala.collection.JavaConverters._
+import com.linkedin.data.template.Custom
+import org.coursera.courier.codecs.InlineStringCodec
 
-
-
-
-   package org.coursera.courier.data 
-
-  import javax.annotation.Generated
-
-  import com.linkedin.data.ByteString
-  import com.linkedin.data.DataMap
-  import com.linkedin.data.DataList
-  import com.linkedin.data.schema.MapDataSchema
-  import com.linkedin.data.schema.DataSchema
-  import com.linkedin.data.template.DataTemplate
-  import com.linkedin.data.template.DataTemplateUtil
-  import org.coursera.courier.templates.DataTemplates
-  import org.coursera.courier.templates.DataTemplates.DataConversion
-  import scala.collection.generic.CanBuildFrom
-  import scala.collection.immutable
-  import scala.collection.mutable
-  import scala.collection.JavaConverters._
-  import com.linkedin.data.template.Custom
-  import org.coursera.courier.codecs.InlineStringCodec
-
-
-
-
-
-
-
- 
-@Generated(value = Array("BooleanToBooleanMap"), comments="Courier Data Template.", date = "Fri Jul 10 10:23:12 PDT 2015")
- final class BooleanToBooleanMap(private val dataMap: DataMap)
+@Generated(value = Array("BooleanToBooleanMap"), comments = "Courier Data Template.", date = "Fri Aug 14 14:51:38 PDT 2015")
+final class BooleanToBooleanMap(private val dataMap: DataMap)
   extends immutable.Iterable[(Boolean, Boolean)]
   with Map[Boolean, Boolean]
   with immutable.MapLike[Boolean, Boolean, immutable.Map[Boolean, Boolean]]
   with DataTemplate[DataMap] {
   import BooleanToBooleanMap._
 
-  
   private[this] lazy val map = dataMap.asScala.map { case (k, v) => coerceKeyInput(k) -> coerceInput(v) }.toMap
 
-  private[this] 
-  def coerceInput(any: AnyRef): Boolean = {
-    
-        DataTemplateUtil.coerceOutput(any, classOf[java.lang.Boolean])
-      
-  }
+  private[this] def coerceInput(any: AnyRef): Boolean = {
 
+    DataTemplateUtil.coerceOutput(any, classOf[java.lang.Boolean])
+
+  }
 
   private[this] def coerceKeyInput(key: String): Boolean = {
-    
-  def coerceKeyDataInput(any: AnyRef): Boolean = {
-    
-        DataTemplateUtil.coerceOutput(any, classOf[java.lang.Boolean])
-      
-  }
 
+    def coerceKeyDataInput(any: AnyRef): Boolean = {
+
+      DataTemplateUtil.coerceOutput(any, classOf[java.lang.Boolean])
+
+    }
 
     coerceKeyDataInput(InlineStringCodec.stringToData(key, KEY_SCHEMA))
   }
@@ -74,7 +57,7 @@
       case v: Boolean =>
         val copy = dataMap.copy()
         copy.put(coerceKeyOutput(key), coerceOutput(v))
-        copy.setReadOnly()
+        copy.makeReadOnly()
         new BooleanToBooleanMap(copy)
       case _: Any =>
         (iterator ++ Iterator.single(kv)).toMap
@@ -83,8 +66,8 @@
 
   override def -(key: Boolean): BooleanToBooleanMap = {
     val copy = dataMap.copy()
-    copy.remove(key)
-    copy.setReadOnly()
+    copy.remove(coerceKeyOutput(key))
+    copy.makeReadOnly()
     new BooleanToBooleanMap(copy)
   }
 
@@ -98,16 +81,6 @@
 object BooleanToBooleanMap {
   val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"map","values":"boolean","keys":"boolean"}""").asInstanceOf[MapDataSchema]
   val KEY_SCHEMA = DataTemplateUtil.parseSchema(""""boolean"""")
-
-  
-  
-
-  
-  
-
-
-
-
 
   val empty = BooleanToBooleanMap()
 
@@ -146,28 +119,29 @@ object BooleanToBooleanMap {
     }
 
     def result() = {
-      entries.setReadOnly()
+      entries.makeReadOnly()
       new BooleanToBooleanMap(entries)
     }
   }
 
-  private 
-  def coerceOutput(value: Boolean): AnyRef = {
-    
-        DataTemplateUtil.coerceInput(Boolean.box(value), classOf[java.lang.Boolean], classOf[java.lang.Boolean])
-      
-  }
+  private def coerceOutput(value: Boolean): AnyRef = {
 
+    DataTemplateUtil.coerceInput(Boolean.box(value), classOf[java.lang.Boolean], classOf[java.lang.Boolean])
+
+  }
 
   private def coerceKeyOutput(key: Boolean): String = {
-    
-  def coerceKeyDataOutput(value: Boolean): AnyRef = {
-    
-        DataTemplateUtil.coerceInput(Boolean.box(value), classOf[java.lang.Boolean], classOf[java.lang.Boolean])
-      
-  }
 
+    def coerceKeyDataOutput(value: Boolean): AnyRef = {
+
+      DataTemplateUtil.coerceInput(Boolean.box(value), classOf[java.lang.Boolean], classOf[java.lang.Boolean])
+
+    }
 
     InlineStringCodec.dataToString(coerceKeyDataOutput(key))
+  }
+
+  implicit def wrap(map: Map[Boolean, Boolean]): BooleanToBooleanMap = {
+    BooleanToBooleanMap(map)
   }
 }

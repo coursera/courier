@@ -19,10 +19,13 @@ package org.coursera.courier.android;
 import com.linkedin.data.schema.DataSchema.Type;
 import com.linkedin.pegasus.generator.spec.ArrayTemplateSpec;
 import com.linkedin.pegasus.generator.spec.ClassTemplateSpec;
+import com.linkedin.pegasus.generator.spec.RecordTemplateSpec;
 import org.coursera.courier.api.CourierMapTemplateSpec;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 public class JavaSyntax {
@@ -142,5 +145,16 @@ public class JavaSyntax {
     } else {
       throw new IllegalArgumentException("unrecognized type: " + schemaType);
     }
+  }
+
+  public static String fieldList(List<RecordTemplateSpec.Field> fields) {
+    StringBuilder sb = new StringBuilder();
+    Iterator<RecordTemplateSpec.Field> iter = fields.iterator();
+    while(iter.hasNext()) {
+      RecordTemplateSpec.Field field = iter.next();
+      sb.append(escapeKeyword(field.getSchemaField().getName()));
+      if (iter.hasNext()) sb.append(", ");
+    }
+    return sb.toString();
   }
 }

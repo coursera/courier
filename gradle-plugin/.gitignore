@@ -1,7 +1,13 @@
-.gradle
-build
-/gradle
 /example/src/mainGeneratedCourier
 /example/schemas/src/mainGeneratedCourier
 /example/schemas2/src/mainGeneratedCourier
 /example/out
+
+.gradle
+build/
+
+# Ignore Gradle GUI config
+gradle-app.setting
+
+# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
+!gradle-wrapper.jar
