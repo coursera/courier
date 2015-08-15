@@ -3,8 +3,8 @@ project.ext.externalDependency = [
     'pegasusGenerator': 'com.linkedin.pegasus:generator:2.6.0',
     'gson': 'com.google.code.gson:gson:2.3.1',
     'courierGeneratorApi': "org.coursera.courier:courier-generator-api:$courierVersion",
-    'junit': 'junit:junit:4.12'
-
+    'junit': 'junit:junit:4.12',
+    'jodaTime': 'joda-time:joda-time:2.6'
 ]
 
 subprojects {

@@ -115,5 +115,7 @@ class ScalaGenerator()
     }.toSeq
   }
 
-  override def language() = "scala"
+  override def buildLanguage() = "scala"
+
+  override def customTypeLanguage() = "scala"
 }

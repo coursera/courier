@@ -1,0 +1,11 @@
+{
+  "name": "WithDateTime",
+  "type": "record",
+  "namespace": "org.coursera.records",
+  "fields": [
+    {
+      "name": "time",
+      "type": "org.coursera.customtypes.DateTime"
+    }
+  ]
+}

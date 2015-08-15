@@ -51,7 +51,6 @@ public class AndroidGenerator implements PegasusCodeGenerator {
 
     GeneratorRunnerOptions options =
         new GeneratorRunnerOptions(targetPath, sourcePaths, resolverPath);
-    options.setCustomTypeLang("android");
 
     new DefaultGeneratorRunner().run(new AndroidGenerator(), options);
   }
@@ -110,7 +109,12 @@ public class AndroidGenerator implements PegasusCodeGenerator {
   }
 
   @Override
-  public String language() {
+  public String buildLanguage() {
     return "java";
+  }
+
+  @Override
+  public String customTypeLanguage() {
+    return "android";
   }
 }

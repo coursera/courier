@@ -49,5 +49,10 @@ public interface PegasusCodeGenerator {
   /**
    * Used for the "src/main/{language}" paths of build systems.
    */
-  public String language();
+  public String buildLanguage();
+
+  /**
+   * Used in .pdsc files to identify the custom type properties for a languages.
+   */
+  public String customTypeLanguage();
 }
