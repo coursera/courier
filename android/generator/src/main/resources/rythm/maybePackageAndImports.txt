@@ -9,4 +9,5 @@
   import org.coursera.courier.android.runtime.TypedDefinitionAdapterFactory;
   import org.coursera.courier.android.runtime.UnionAdapterFactory;
   import java.util.Objects;
+  import java.util.Arrays;
 }

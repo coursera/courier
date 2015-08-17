@@ -16,6 +16,7 @@
 
 package org.coursera.courier.android;
 
+import com.linkedin.data.schema.ArrayDataSchema;
 import com.linkedin.data.schema.DataSchema.Type;
 import com.linkedin.pegasus.generator.spec.ArrayTemplateSpec;
 import com.linkedin.pegasus.generator.spec.ClassTemplateSpec;
@@ -164,6 +165,28 @@ public class JavaSyntax {
     while(iter.hasNext()) {
       RecordTemplateSpec.Field field = iter.next();
       sb.append(escapeKeyword(field.getSchemaField().getName()));
+      if (iter.hasNext()) sb.append(", ");
+    }
+    return sb.toString();
+  }
+
+  public static String hashCodeList(List<RecordTemplateSpec.Field> fields) {
+    StringBuilder sb = new StringBuilder();
+    Iterator<RecordTemplateSpec.Field> iter = fields.iterator();
+    while(iter.hasNext()) {
+      RecordTemplateSpec.Field field = iter.next();
+      if (field.getSchemaField().getType().getType() == Type.ARRAY) {
+        ArrayDataSchema arraySchema = (ArrayDataSchema)field.getSchemaField().getType();
+        if (arraySchema.getItems().getDereferencedDataSchema().isPrimitive()) {
+          sb.append("Arrays.hashCode(");
+        } else {
+          sb.append("Arrays.deepHashCode(");
+        }
+        sb.append(escapeKeyword(field.getSchemaField().getName()));
+        sb.append(")");
+      } else {
+        sb.append(escapeKeyword(field.getSchemaField().getName()));
+      }
       if (iter.hasNext()) sb.append(", ");
     }
     return sb.toString();
