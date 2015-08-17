@@ -141,15 +141,27 @@ There are some reasonable alternatives that we could have used, and may switch t
 TODO
 ----
 
-[x] Add support for all base types (records, maps, arrays, unions, enums, primitives)
-[x] Add hashCode/equals support
-[ ] Add validation support
-      Not sure how to do this yet. Delegate the heavy lifting back to peagsus?  Just need
-      the SCHEMA and a dependency on pegasus data and it could be done that way.
-[ ] Add custom type support
-      This could be done by taking the .pdsc "coercerClass" as a adapter or adapter factory
-      (developer could choose) and using it to set a `@JsonAdapter` wherever the type is used.
-      (see: https://sites.google.com/site/gson/gson-type-adapters-for-common-classes-1)
-[ ] Add default support
-      For primitives this is trival. For complex types this is more difficult, although GSON
-      may be able to produce the default value from static JSON text ?
+**DONE!** Add support for all base types (records, maps, arrays, unions, enums, primitives)
+**DONE!** Add hashCode/equals support
+
+### Add validation support
+
+Not sure how to do this yet. Delegate the heavy lifting back to peagsus?  Just need
+the SCHEMA and a dependency on pegasus data and it could be done that way.
+
+Alternatively, we could simply provide a "validate" method that just checks that
+all required fields are present...
+
+### Add custom type support
+This could be done by taking the .pdsc "coercerClass" as a adapter or adapter factory
+(developer could choose) and using it to set a `@JsonAdapter` wherever the type is used.
+(see: https://sites.google.com/site/gson/gson-type-adapters-for-common-classes-1)
+
+- Custom type support is partially available. Record fields of custom types work properly.
+- Custom types in arrays and maps currently to NOT work properly. (although the type adapter could
+  be added to the GSONBuilder to work around this for the time being)
+
+### Add default support
+
+For primitives this is trival. For complex types this is more difficult, although GSON
+may be able to produce the default value from static JSON text ?

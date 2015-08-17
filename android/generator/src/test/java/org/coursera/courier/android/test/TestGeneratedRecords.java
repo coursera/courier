@@ -17,13 +17,29 @@
 package org.coursera.courier.android.test;
 
 
+import org.coursera.arrays.WithCustomTypesArray;
+import org.coursera.courier.android.customtypes.CustomInt;
 import org.coursera.records.Message;
+import org.coursera.records.test.Empty;
+import org.coursera.records.test.Simple;
+import org.coursera.records.test.WithComplexTypes;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.HashMap;
+
 public class TestGeneratedRecords {
+
   @Test
-  public void testEqualsHashCode() {
+  public void testEmptyEqualsHashCode() {
+    Empty record1 = new Empty();
+    Empty record2 = new Empty();
+
+    assertEqualsHashCode(record1, record2);
+  }
+
+  @Test
+  public void testFieldEqualsHashCode() {
     Message title = new Message();
     title.title = "title";
 
@@ -46,11 +62,12 @@ public class TestGeneratedRecords {
   }
 
   private void assertEqualsHashCode(Object one, Object two) {
-    Assert.assertTrue(one.equals(two) && one.hashCode() == two.hashCode());
+    Assert.assertTrue(one.equals(two));
+    Assert.assertEquals(one.hashCode(), two.hashCode());
   }
 
   @Test
-  public void testEqualsHashCodeNotMatching() {
+  public void testFieldEqualsHashCodeNotMatching() {
     Message title = new Message();
     title.title = "title";
 
@@ -85,5 +102,50 @@ public class TestGeneratedRecords {
     Assert.assertFalse(title2Body.equals(titleBody2));
     Assert.assertFalse(title.equals(empty));
     Assert.assertFalse(empty.equals(titleBody));
+  }
+
+  @Test
+  public void testComplexTypesEqualsHashCode() {
+    WithComplexTypes record1 = createComplexType();
+    WithComplexTypes record2 = createComplexType();
+
+    assertEqualsHashCode(record1, record2);
+  }
+
+  private WithComplexTypes createComplexType() {
+    WithComplexTypes record = new WithComplexTypes();
+    record.array = new int[] { 1,2,3 };
+    record.map = new HashMap<>(1);
+    record.map.put("one", 1);
+    WithComplexTypes.Union.SimpleMember member = new WithComplexTypes.Union.SimpleMember();
+    Simple simple = new Simple();
+    simple.message = "message";
+    member.member = simple;
+    record.union = member;
+    return record;
+  }
+
+  @Test
+  public void testCustomTypesEqualsHashCode() {
+    WithCustomTypesArray record1 = createCustomTypeArrays();
+    WithCustomTypesArray record2 = createCustomTypeArrays();
+
+    assertEqualsHashCode(record1, record2);
+  }
+
+  private WithCustomTypesArray createCustomTypeArrays() {
+    WithCustomTypesArray record = new WithCustomTypesArray();
+    Simple[][] arrays = new Simple[][] { new Simple[2], new Simple[2] };
+    arrays[0][0] = new Simple();
+    arrays[0][0].message = "0-0";
+    arrays[0][1] = new Simple();
+    arrays[0][1].message = "0-1";
+    arrays[1][0] = new Simple();
+    arrays[1][0].message = "1-0";
+    arrays[1][1] = new Simple();
+    arrays[1][1].message = "1-1";
+    record.arrays = arrays;
+    record.ints = new CustomInt[] {new CustomInt(1), new CustomInt(2), new CustomInt(3)};
+    return record;
   }
 }

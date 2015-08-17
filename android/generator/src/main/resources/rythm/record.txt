@@ -43,7 +43,7 @@ public final class @className {
     @if(record.getFields().size() == 0) {
       return Objects.hashCode(this.getClass());
     } else {
-      return Objects.hash(this.getClass(), @JavaSyntax.fieldList(record.getFields()));
+      return Objects.hash(this.getClass(), @JavaSyntax.hashCodeList(record.getFields()));
     }
   }
 
