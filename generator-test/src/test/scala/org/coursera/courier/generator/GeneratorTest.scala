@@ -16,20 +16,12 @@
 
 package org.coursera.courier.generator
 
-import java.io.File
-import java.io.FileOutputStream
-import java.io.PrintStream
-
 import com.linkedin.data.DataList
 import com.linkedin.data.DataMap
 import com.linkedin.data.codec.JacksonDataCodec
 import com.linkedin.data.template.DataTemplate
 import com.linkedin.data.template.JacksonDataTemplateCodec
 import com.linkedin.data.template.PrettyPrinterJacksonDataTemplateCodec
-import com.linkedin.pegasus.generator.TemplateSpecGenerator
-import org.coursera.courier.ScalaGenerator
-import org.coursera.courier.generator.specs.Definition
-import org.scalatest.FunSuite
 import org.scalatest.junit.AssertionsForJUnit
 import org.scalatest.junit.JUnitSuite
 

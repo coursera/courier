@@ -36,6 +36,7 @@
   import com.linkedin.data.schema.ArrayDataSchema
   import scala.collection.GenTraversable
   import org.coursera.courier.codecs.InlineStringCodec
+  import org.coursera.courier.coercers.SingleElementCaseClassCoercer
 }
 
 @ClassAnnotations(record) final class @record.scalaType private (private val dataMap: DataMap)
@@ -146,12 +147,9 @@ object @(record.scalaType) {
   val SCHEMA = DataTemplateUtil.parseSchema(@("\"\"\"" + SchemaToJsonEncoder.schemaToJson(record.recordSchema, JsonBuilder.Pretty.COMPACT) + "\"\"\"")).asInstanceOf[RecordDataSchema]
 
   @* Register custom types and coercers. *@
-  @record.fields.filter(_.customInfo.isDefined).map { field =>
-    @defining(field.customInfo.get) { customInfo =>
-      Custom.initializeCustomClass(classOf[@(customInfo.customClass.scalaTypeFullname)])
-      @customInfo.coercerClass.map { coercer =>
-        @(coercer.scalaTypeFullname).registerCoercer()
-      }
+  @record.customInfosToRegister.map { case (field, customInfos) =>
+    @customInfos.map { customInfo =>
+      @registerCustomInfo(customInfo, field.dataClass.get)
     }
   }
 

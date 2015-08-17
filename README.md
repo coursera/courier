@@ -721,6 +721,37 @@ Custom Types
 [Pegasus Custom Types](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates#custom-java-class-binding-for-primitive-types)
 allow any Scala type to be bound to any pegasus primitive type.
 
+There are two ways to define custom types:
+- For simple Scala case classes with a single element, simply define a typeref and reference class.
+- For any other type, create a Coercer and define a typeref that references both the class and the coercer.
+
+
+### Custom Types for Scala Case Classes
+
+Coercers are not required for Scala case classes that have only a single element.
+
+For example, to coerce to the Scala case class:
+
+```scala
+case class SlugId(slug: String)
+```
+
+Define a Pegasus typeref schema like:
+
+```json
+{
+  "name": "SlugId",
+  "namespace": "org.example.schemas",
+  "type": "typeref",
+  "ref": "string",
+  "scala": {
+    "class": "org.example.SlugId"
+  }
+}
+```
+
+### Coercers
+
 For example, [Joda time](http://www.joda.org/joda-time/) has a convenient
 `DateTime` class. If we wish to use this class in Scala to represent date times,
 all we need to do is define a pegasus custom type that binds to it:

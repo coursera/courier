@@ -28,9 +28,11 @@ case class ArrayDefinition(override val spec: ArrayTemplateSpec) extends Definit
   def itemDataClass: Option[Definition] = Option(spec.getItemDataClass).map(Definition(_))
   def directReferencedTypes: Set[Definition] = Set(itemClass)
 
-  def customInfo: Option[CustomInfoDefinition] = {
+  def directCustomInfo: Option[CustomInfoDefinition] = {
     Option(spec.getCustomInfo).map(CustomInfoDefinition)
   }
+
+  def customInfosToRegister = directCustomInfo.toSeq.flatMap(_.customInfosToRegister)
 }
 
 object ArrayDefinition {

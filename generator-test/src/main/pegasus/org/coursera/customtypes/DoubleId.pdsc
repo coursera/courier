@@ -1,0 +1,9 @@
+{
+  "name": "DoubleId",
+  "namespace": "org.coursera.customtypes",
+  "type": "typeref",
+  "ref": "double",
+  "scala": {
+    "class": "org.coursera.courier.generator.customtypes.DoubleId"
+  }
+}

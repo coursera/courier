@@ -1,0 +1,8 @@
+@(customInfo: org.coursera.courier.generator.specs.CustomInfoDefinition, dataClass: org.coursera.courier.generator.specs.Definition)
+
+Custom.initializeCustomClass(classOf[@(customInfo.customClass.scalaTypeFullname)])
+@customInfo.coercerClass.map { coercer =>
+  @(coercer.scalaTypeFullname).registerCoercer()
+}.getOrElse {
+  SingleElementCaseClassCoercer.registerCoercer(classOf[@(customInfo.customClass.scalaTypeFullname)], classOf[@dataClass.dataType])
+}
