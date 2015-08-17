@@ -31,7 +31,7 @@ case class MapDefinition(override val spec: CourierMapTemplateSpec) extends Defi
 
   def valueClass: Definition = Definition(spec.getValueClass)
   def valueDataClass: Option[Definition] = Option(spec.getValueDataClass).map(Definition(_))
-  def customInfo: Option[CustomInfoDefinition] = {
+  def valueCustomInfo: Option[CustomInfoDefinition] = {
     Option(spec.getCustomInfo).map(CustomInfoDefinition)
   }
 
@@ -52,7 +52,9 @@ case class MapDefinition(override val spec: CourierMapTemplateSpec) extends Defi
     }
   }
 
-  def customInfos: Seq[CustomInfoDefinition] = Seq(customInfo, keyCustomInfo).flatten
+  def directCustomInfos: Seq[CustomInfoDefinition] = Seq(valueCustomInfo, keyCustomInfo).flatten
+  def keyCustomInfosToRegister = keyCustomInfo.toSeq.flatMap(_.customInfosToRegister)
+  def valueCustomInfosToRegister = valueCustomInfo.toSeq.flatMap(_.customInfosToRegister)
   def directReferencedTypes: Set[Definition] = Set(Some(valueClass), declaredKeyClass).flatten
 }
 

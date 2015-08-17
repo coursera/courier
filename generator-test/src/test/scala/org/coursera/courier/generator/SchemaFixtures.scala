@@ -19,8 +19,6 @@ package org.coursera.courier.generator
 import java.io.File
 
 import com.linkedin.data.ByteString
-import com.linkedin.data.DataList
-import com.linkedin.data.DataMap
 import com.linkedin.data.schema.BooleanDataSchema
 import com.linkedin.data.schema.BytesDataSchema
 import com.linkedin.data.schema.DataSchemaLocation
@@ -37,12 +35,7 @@ import com.linkedin.data.schema.StringDataSchemaLocation
 import com.linkedin.data.schema.resolver.DefaultDataSchemaResolver
 import com.linkedin.data.schema.resolver.FileDataSchemaLocation
 import com.linkedin.data.schema.resolver.FileDataSchemaResolver
-import com.linkedin.data.template.DataTemplate
 import com.linkedin.data.template.DataTemplateUtil
-import com.linkedin.data.template.JacksonDataTemplateCodec
-import com.linkedin.data.template.PrettyPrinterJacksonDataTemplateCodec
-import com.linkedin.data.template.RecordTemplate
-import com.linkedin.pegasus.generator.DataSchemaParser
 
 case class TestSchema(
     schema: NamedDataSchema,

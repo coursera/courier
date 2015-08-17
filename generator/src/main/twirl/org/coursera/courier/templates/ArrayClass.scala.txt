@@ -23,6 +23,7 @@
   import scala.collection.generic.CanBuildFrom
   import scala.collection.mutable
   import com.linkedin.data.template.Custom
+  import org.coursera.courier.coercers.SingleElementCaseClassCoercer
 }
 
 @ClassAnnotations(array) final class @(array.scalaType)(private val dataList: DataList)
@@ -74,11 +75,8 @@ object @(array.scalaType) {
   val SCHEMA = DataTemplateUtil.parseSchema(@("\"\"\"" + SchemaToJsonEncoder.schemaToJson(array.arraySchema, JsonBuilder.Pretty.COMPACT) + "\"\"\"")).asInstanceOf[ArrayDataSchema]
 
   @* Register custom types and coercers. *@
-  @array.customInfo.map { customInfo =>
-    Custom.initializeCustomClass(classOf[@(customInfo.customClass.scalaTypeFullname)])
-    @customInfo.coercerClass.map { coercer =>
-      @(coercer.scalaTypeFullname).registerCoercer()
-    }
+  @array.customInfosToRegister.map { customInfo =>
+    @registerCustomInfo(customInfo, array.itemDataClass.get)
   }
 
   val empty = @(array.scalaType)()

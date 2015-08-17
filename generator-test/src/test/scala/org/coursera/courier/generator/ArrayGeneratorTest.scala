@@ -21,14 +21,14 @@ import org.coursera.arrays.WithPrimitivesArray
 import org.coursera.arrays.WithRecordArray
 import org.coursera.courier.data.BooleanArray
 import org.coursera.courier.data.BytesArray
-import org.coursera.courier.templates.DataTemplates
-import DataTemplates.DataConversion
 import org.coursera.courier.data.DoubleArray
 import org.coursera.courier.data.FloatArray
 import org.coursera.courier.data.IntArray
 import org.coursera.courier.data.LongArray
 import org.coursera.courier.data.StringArray
 import org.coursera.courier.generator.customtypes.CustomInt
+import org.coursera.courier.templates.DataTemplates
+import org.coursera.courier.templates.DataTemplates.DataConversion
 import org.coursera.customtypes.CustomIntArray
 import org.coursera.enums.Fruits
 import org.coursera.enums.FruitsArray
@@ -41,7 +41,6 @@ import org.coursera.records.test.SimpleArray
 import org.coursera.records.test.SimpleArrayArray
 import org.coursera.records.test.SimpleMap
 import org.coursera.records.test.SimpleMapArray
-import org.junit.BeforeClass
 import org.junit.Test
 
 class ArrayGeneratorTest extends GeneratorTest with SchemaFixtures {

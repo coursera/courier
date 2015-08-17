@@ -16,11 +16,37 @@
 
 package org.coursera.courier.generator.specs
 
+import com.linkedin.data.schema.DataSchema
+import com.linkedin.data.schema.TyperefDataSchema
 import com.linkedin.pegasus.generator.spec.CustomInfoSpec
+import org.coursera.courier.coercers.SingleElementCaseClassCoercer
 
 case class CustomInfoDefinition(spec: CustomInfoSpec) {
   def coercerClass = Option(spec.getCoercerClass).map(ClassDefinition)
   def customClass = ClassDefinition(spec.getCustomClass)
   def customSchema = spec.getCustomSchema
   def sourceSchema = spec.getSourceSchema
+
+  /**
+   * Returns all custom infos to register to initialize this custom info.
+   *
+   * When [[SingleElementCaseClassCoercer]] is used, custom infos may depend on other custom infos.
+   *
+   * Dependent custom info are returned before custom infos that depend on them.
+   */
+  def customInfosToRegister: List[CustomInfoDefinition] = {
+    sourceSchema match {
+      case typerefSchema: TyperefDataSchema =>
+        typerefChain(typerefSchema).map(t => TyperefDefinition.customInfo(sourceSchema, t))
+          .takeWhile(_.isDefined).flatten.reverse
+      case _: AnyRef => Nil
+    }
+  }
+
+  private[this] def typerefChain(typerefSchema: TyperefDataSchema): List[TyperefDataSchema] = {
+    typerefSchema.getRef match {
+      case refTyperefSchema: TyperefDataSchema => typerefSchema :: typerefChain(refTyperefSchema)
+      case _: DataSchema => typerefSchema :: Nil
+    }
+  }
 }

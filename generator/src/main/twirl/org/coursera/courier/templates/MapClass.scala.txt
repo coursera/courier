@@ -74,6 +74,7 @@
   import scala.collection.JavaConverters._
   import com.linkedin.data.template.Custom
   import org.coursera.courier.codecs.InlineStringCodec
+  import org.coursera.courier.coercers.SingleElementCaseClassCoercer
 }
 
 @ClassAnnotations(map) final class @(map.scalaType)(private val dataMap: DataMap)
@@ -130,11 +131,11 @@ object @(map.scalaType) {
   val KEY_SCHEMA = DataTemplateUtil.parseSchema(@("\"\"\"" + SchemaToJsonEncoder.schemaToJson(map.keySchema, JsonBuilder.Pretty.COMPACT) + "\"\"\""))
 
   @* Register custom types and coercers. *@
-  @map.customInfos.map { customInfo =>
-    Custom.initializeCustomClass(classOf[@(customInfo.customClass.scalaTypeFullname)])
-    @customInfo.coercerClass.map { coercer =>
-      @(coercer.scalaTypeFullname).registerCoercer()
-    }
+  @map.keyCustomInfosToRegister.map { customInfo =>
+    @registerCustomInfo(customInfo, map.keyDataClass.get)
+  }
+  @map.valueCustomInfosToRegister.map { customInfo =>
+    @registerCustomInfo(customInfo, map.valueDataClass.get)
   }
 
   @* Generate any contained types as inner classes. *@

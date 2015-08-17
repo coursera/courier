@@ -32,6 +32,14 @@ case class RecordDefinition(override val spec: RecordTemplateSpec) extends Defin
 
   def directReferencedTypes: Set[Definition] = fields.map(_.typ).toSet
 
+  def customInfosToRegister: Seq[(RecordField, Seq[CustomInfoDefinition])] = {
+    fields.map { field =>
+      field -> field.customInfo.toSeq.flatMap { customInfo =>
+        customInfo.customInfosToRegister
+      }
+    }
+  }
+
   // parameter list rendering utilities
   def fieldParamDefs: String = {
     fields.map { field =>

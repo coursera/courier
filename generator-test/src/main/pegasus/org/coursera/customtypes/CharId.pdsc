@@ -1,0 +1,9 @@
+{
+  "name": "CharId",
+  "namespace": "org.coursera.customtypes",
+  "type": "typeref",
+  "ref": "string",
+  "scala": {
+    "class": "org.coursera.courier.generator.customtypes.CharId"
+  }
+}
