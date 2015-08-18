@@ -29,6 +29,7 @@ import org.coursera.records.test.WithComplexTypeDefaults
 import org.coursera.records.test.WithComplexTypes
 import org.coursera.records.test.WithInlineRecord
 import org.coursera.records.test.WithOptionalComplexTypeDefaults
+import org.coursera.records.test.WithOptionalComplexTypes
 import org.coursera.records.test.WithOptionalComplexTypesDefaultNone
 import org.coursera.records.test.WithOptionalPrimitiveCustomTypes
 import org.coursera.records.test.WithOptionalPrimitiveDefaultNone
@@ -419,5 +420,17 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures {
     assert(withDefaults.array === None)
     assert(withDefaults.map === None)
     assert(withDefaults.custom === None)
+  }
+
+  @Test
+  def testCopyDataTemplate(): Unit = {
+    val original = WithOptionalComplexTypesDefaultNone(
+      record = Some(Simple(
+        message = Some("message"))))
+
+    val mutableData = original.data().copy()
+    mutableData.getDataMap("record").put("message", "updated message")
+    val replacement = original.copy(mutableData, DataConversion.SetReadOnly)
+    assert(replacement.record.get.message.get === "updated message")
   }
 }

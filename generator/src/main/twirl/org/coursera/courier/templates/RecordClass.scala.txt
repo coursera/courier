@@ -141,6 +141,12 @@
       result
     }
   }
+
+  def copy(dataMap: DataMap, conversion: DataConversion): @(record.scalaType) = {
+    new @(record.scalaType)(DataTemplates.makeImmutable(dataMap, SCHEMA, conversion))
+  }
+
+  override def clone(): @(record.scalaType) = this
 }
 
 object @(record.scalaType) {
