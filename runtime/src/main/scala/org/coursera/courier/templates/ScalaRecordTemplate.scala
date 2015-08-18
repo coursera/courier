@@ -47,4 +47,6 @@ abstract class ScalaRecordTemplate(dataMap: DataMap, schema: RecordDataSchema)
   protected def obtainCustomType[T](field: RecordDataSchema.Field, valueClass: Class[T]): T = {
     obtainCustomType(field, valueClass, GetMode.STRICT)
   }
+
+  def copy(dataMap: DataMap, conversion: DataConversion): ScalaRecordTemplate
 }
