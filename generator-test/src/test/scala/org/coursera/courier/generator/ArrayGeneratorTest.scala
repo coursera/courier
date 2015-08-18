@@ -124,4 +124,14 @@ class ArrayGeneratorTest extends GeneratorTest with SchemaFixtures {
         |}""".stripMargin)
     }
   }
+
+  @Test
+  def testCopyDataTemplate(): Unit = {
+    val original = WithRecordArray(EmptyArray(Empty()), FruitsArray(Fruits.APPLE))
+
+    val mutableData = original.data().copy()
+    mutableData.getDataList("fruits").add("BANANA")
+    val replacement = original.copy(mutableData, DataConversion.SetReadOnly)
+    assert(replacement.fruits(1) === Fruits.BANANA)
+  }
 }

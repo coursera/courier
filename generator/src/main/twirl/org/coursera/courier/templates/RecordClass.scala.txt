@@ -21,6 +21,7 @@
   import org.coursera.courier.templates.DataTemplates
   import org.coursera.courier.templates.DataTemplates.DataConversion
   import org.coursera.courier.templates.ScalaRecordTemplate
+  import org.coursera.courier.templates.ScalaArrayTemplate
   import org.coursera.courier.templates.ScalaUnionTemplate
   import scala.runtime.ScalaRunTime
   import com.linkedin.data.template.DataTemplateUtil
@@ -142,7 +143,7 @@
     }
   }
 
-  def copy(dataMap: DataMap, conversion: DataConversion): @(record.scalaType) = {
+  override def copy(dataMap: DataMap, conversion: DataConversion): @(record.scalaType) = {
     new @(record.scalaType)(DataTemplates.makeImmutable(dataMap, SCHEMA, conversion))
   }
 
