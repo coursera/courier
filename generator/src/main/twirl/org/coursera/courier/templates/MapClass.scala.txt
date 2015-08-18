@@ -124,6 +124,8 @@
   override def data(): DataMap = dataMap
 
   override def copy(): DataTemplate[DataMap] = this
+
+  override def clone(): DataTemplate[DataMap] = this
 }
 
 object @(map.scalaType) {

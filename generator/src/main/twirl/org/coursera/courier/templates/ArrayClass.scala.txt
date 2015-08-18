@@ -69,6 +69,7 @@
 
   override def data(): DataList = dataList
   override def copy(): DataTemplate[DataList] = this
+  override def clone(): DataTemplate[DataList] = this
 }
 
 object @(array.scalaType) {
