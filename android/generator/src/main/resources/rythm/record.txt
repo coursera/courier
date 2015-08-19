@@ -17,73 +17,18 @@
 @classAnnotations(record.getSchema())
 public final class @className {
   @if(!mutable) {
-    public @(className)(@syntax.fieldAndTypeList(record.getFields())) {
-      @for(Field field: record.getFields()) {
-        @{ String fieldName = syntax.escapeKeyword(field.getSchemaField().getName()) }
-        @{ Type fieldType = field.getSchemaField().getType().getType() }
-        @if(fieldType == Type.ARRAY) {
-          this.@fieldName = (@fieldName == null) ? null : Collections.unmodifiableList(@fieldName);
-        } else if (fieldType == Type.MAP) {
-          this.@fieldName = (@fieldName == null) ? null : Collections.unmodifiableMap(@fieldName);
-        } else {
-          this.@fieldName = @fieldName;
-        }
-      }
-    }
+    @recordConstructor(record, syntax)
   }
 
-  @for(Field field: record.getFields()) {
-    @{ String fieldName = syntax.escapeKeyword(field.getSchemaField().getName()) }
+  @recordFields(record, syntax, mutable)
 
-    @if(field.getCustomInfo() != null) {
-      @@JsonAdapter(@(syntax.toType(field.getCustomInfo().getCoercerClass())).class)
-    }
-    @fieldAnnotations(field)
-    @if(!fieldName.equals(field.getSchemaField().getName())) { @@SerializedName("@field.getSchemaField().getName()") }
-    public @if(!mutable){final} @syntax.toType(field.getType()) @fieldName;
-  }
-
-  @for(ClassTemplateSpec enclosed: ClassTemplateSpecs.allContainedTypes(record)) {
-    @if (enclosed instanceof UnionTemplateSpec) {
-      @if (TypedDefinitions.isTypedDefinition((UnionTemplateSpec)enclosed)) {
-        @typedDefinition(enclosed, TypedDefinitions.getTypedDefinitionMapping((UnionTemplateSpec)enclosed, false), syntax, mutable)
-      } else if (TypedDefinitions.isFlatTypedDefinition((UnionTemplateSpec)enclosed)) {
-        @flatTypedDefinition(enclosed, TypedDefinitions.getTypedDefinitionMapping((UnionTemplateSpec)enclosed, true), syntax, mutable)
-      } else {
-        @union(enclosed, syntax, mutable)
-      }
-    }
-  }
+  @enclosedTypes(record, syntax, mutable)
 
   @if(!mutable) {
-    @@Override
-    public int hashCode() {
-      @if(record.getFields().size() == 0) {
-        return Objects.hashCode(this.getClass());
-      } else {
-        return Objects.hash(this.getClass(), @syntax.hashCodeList(record.getFields()));
-      }
-    }
-
-    @@Override
-    public boolean equals(Object obj) {
-      if (!(obj instanceof @className)) return false;
-      @className other = (@className)obj;
-      if (other == this) return true;
-      return @for(Field field: record.getFields()) {@{ String fieldName = syntax.escapeKeyword(field.getSchemaField().getName())} Objects.deepEquals(this.@fieldName, other.@fieldName) &&} true;
-    }
+    @recordEqualityMethods(record, syntax)
 
     public static class Builder {
-      @for(Field field: record.getFields()) {
-        @{ String fieldName = syntax.escapeKeyword(field.getSchemaField().getName()) }
-
-        @if(field.getCustomInfo() != null) {
-          @@JsonAdapter(@(syntax.toType(field.getCustomInfo().getCoercerClass())).class)
-        }
-        @fieldAnnotations(field)
-        @if(!fieldName.equals(field.getSchemaField().getName())) { @@SerializedName("@field.getSchemaField().getName()") }
-        public @syntax.toType(field.getType()) @fieldName;
-      }
+      @recordFields(record, syntax, true)
 
       public @className build() {
         return new @(className)(@syntax.fieldList(record.getFields()));

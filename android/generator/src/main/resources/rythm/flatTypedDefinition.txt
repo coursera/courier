@@ -21,46 +21,31 @@ public interface @className {
       // flatTypedDefinition members must all be records, but found: @memberKey
     } else {
       public @if (union.getEnclosingClass() != null) {static} class @unionMemberName implements @className {
-        @{List<Field> fields = ((RecordTemplateSpec)member.getClassTemplateSpec()).getFields() }
+        @{RecordTemplateSpec memberSpec = ((RecordTemplateSpec)member.getClassTemplateSpec())}
+        @{List<Field> fields = memberSpec.getFields()}
 
         @if(!mutable) {
-          public @(unionMemberName)(@syntax.fieldAndTypeList(fields)) {
-            @for(Field field: fields) {
-              @{ String fieldName = syntax.escapeKeyword(field.getSchemaField().getName()) }
-              this.@fieldName = @fieldName;
-            }
-          }
+          @recordConstructor(memberSpec, syntax)
         }
 
         private static final String TYPE_NAME = "@memberKeyToTypeName.get(memberKey)";
 
         public final String typeName = TYPE_NAME;
 
-        @for(Field field: fields) {
-          @if(field.getCustomInfo() != null) {
-            @@JsonAdapter(@(syntax.toType(field.getCustomInfo().getCoercerClass())).class)
-          }
-          @fieldAnnotations(field)
-          @if(!syntax.escapeKeyword(field.getSchemaField().getName()).equals(field.getSchemaField().getName())) { @@SerializedName("@field.getSchemaField().getName()") }
-          public @if(!mutable){final} @syntax.toType(field.getType()) @syntax.escapeKeyword(field.getSchemaField().getName());
-        }
+        @recordFields(memberSpec, syntax, mutable)
+
+        @* TODO: figure out how to enable.  This causes the generator to freeze.  Is recursion not allowed in Rythm? *@
+        @* @enclosedTypes(memberSpec, syntax, mutable) *@
 
         @if(!mutable) {
-          @@Override
-          public int hashCode() {
-            @if(fields.size() == 0) {
-              return Objects.hashCode(this.getClass());
-            } else {
-              return Objects.hash(this.getClass(), @syntax.fieldList(fields));
-            }
-          }
+          @recordEqualityMethods(memberSpec, syntax)
 
-          @@Override
-          public boolean equals(Object obj) {
-            if (!(obj instanceof @unionMemberName)) return false;
-            @unionMemberName other = (@unionMemberName)obj;
-            if (other == this) return true;
-            return @for(Field field: fields) {Objects.deepEquals(this.@syntax.escapeKeyword(field.getSchemaField().getName()), other.@syntax.escapeKeyword(field.getSchemaField().getName())) &&} true;
+          public static class Builder {
+            @recordFields(memberSpec, syntax, true)
+
+            public @unionMemberName build() {
+              return new @(className)(@syntax.fieldList(memberSpec.getFields()));
+            }
           }
         }
       }

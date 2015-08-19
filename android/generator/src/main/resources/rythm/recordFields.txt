@@ -1,0 +1,13 @@
+@args com.linkedin.pegasus.generator.spec.RecordTemplateSpec record, org.coursera.courier.android.JavaSyntax syntax, boolean mutable
+@import com.linkedin.pegasus.generator.spec.RecordTemplateSpec.Field
+
+@for(Field field: record.getFields()) {
+  @{ String fieldName = syntax.escapeKeyword(field.getSchemaField().getName()) }
+
+  @if(field.getCustomInfo() != null) {
+    @@JsonAdapter(@(syntax.toType(field.getCustomInfo().getCoercerClass())).class)
+  }
+  @fieldAnnotations(field)
+  @if(!fieldName.equals(field.getSchemaField().getName())) { @@SerializedName("@field.getSchemaField().getName()") }
+  public @if(!mutable){final} @syntax.toType(field.getType()) @fieldName;
+}

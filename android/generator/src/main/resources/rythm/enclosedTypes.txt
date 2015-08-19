@@ -1,0 +1,17 @@
+@args com.linkedin.pegasus.generator.spec.RecordTemplateSpec record, org.coursera.courier.android.JavaSyntax syntax, boolean mutable
+@import org.coursera.courier.android.TypedDefinitions
+@import com.linkedin.pegasus.generator.spec.ClassTemplateSpec
+@import org.coursera.courier.api.ClassTemplateSpecs
+@import com.linkedin.pegasus.generator.spec.UnionTemplateSpec
+
+@for(ClassTemplateSpec enclosed: ClassTemplateSpecs.allContainedTypes(record)) {
+  @if (enclosed instanceof UnionTemplateSpec) {
+    @if (TypedDefinitions.isTypedDefinition((UnionTemplateSpec)enclosed)) {
+      @typedDefinition(enclosed, TypedDefinitions.getTypedDefinitionMapping((UnionTemplateSpec)enclosed, false), syntax, mutable)
+    } else if (TypedDefinitions.isFlatTypedDefinition((UnionTemplateSpec)enclosed)) {
+      @flatTypedDefinition(enclosed, TypedDefinitions.getTypedDefinitionMapping((UnionTemplateSpec)enclosed, true), syntax, mutable)
+    } else {
+      @union(enclosed, syntax, mutable)
+    }
+  }
+}

@@ -1,0 +1,22 @@
+@args com.linkedin.pegasus.generator.spec.RecordTemplateSpec record, org.coursera.courier.android.JavaSyntax syntax
+@import com.linkedin.pegasus.generator.spec.RecordTemplateSpec.Field
+@import com.linkedin.data.schema.DataSchema.Type
+
+@{ String className = syntax.escapeKeyword(record.getClassName()) }
+
+@@Override
+public int hashCode() {
+  @if(record.getFields().size() == 0) {
+    return Objects.hashCode(this.getClass());
+  } else {
+    return Objects.hash(this.getClass(), @syntax.hashCodeList(record.getFields()));
+  }
+}
+
+@@Override
+public boolean equals(Object obj) {
+  if (!(obj instanceof @className)) return false;
+  @className other = (@className)obj;
+  if (other == this) return true;
+  return @for(Field field: record.getFields()) {@{ String fieldName = syntax.escapeKeyword(field.getSchemaField().getName())} Objects.deepEquals(this.@fieldName, other.@fieldName) &&} true;
+}
