@@ -1,7 +1,7 @@
 {
   "type": "record",
   "name": "WithOptionalComplexTypes",
-  "namespace": "org.coursera.records.test",
+  "namespace": "org.coursera.records.immutable",
   "fields": [
     { "name": "record", "type": "Simple", "optional": true },
     { "name": "enum", "type": "org.coursera.enums.Fruits", "optional": true },
@@ -9,5 +9,8 @@
     { "name": "array", "type": { "type": "array", "items": "int" }, "optional": true },
     { "name": "map", "type": { "type": "map", "values": "int" }, "optional": true },
     { "name": "custom", "type": "org.coursera.customtypes.CustomInt", "optional": true }
-  ]
+  ],
+  "android": {
+    "mutability": "IMMUTABLE"
+  }
 }

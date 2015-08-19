@@ -10,6 +10,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -85,12 +86,10 @@ public class UnionAdapterFactory<T> implements TypeAdapterFactory {
 
   @Override
   public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-    if (type.getType().equals(unionClass)) {
+    if (unionClass.equals(type.getType())) {
       return new UnionAdapter<T>(gson);
     } else {
-      throw new IllegalArgumentException(
-          "ExampleUnion.JsonAdapter may only be used with " + unionClass.getName() + ", but was used " +
-              "with: " + type.getRawType().getClass().getName());
+      return null;
     }
   }
 
@@ -102,14 +101,13 @@ public class UnionAdapterFactory<T> implements TypeAdapterFactory {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void write(JsonWriter out, T value) throws IOException {
-      // Since this adapter is intended for use only on the interfaces that identify a union, which
-      // can never themselves be directly serialized.  We don't need to implement anything here.
-      // The classes that implement the union interface type are all able to serialize themselves
-      // directly.
-      throw new UnsupportedOperationException(
-          this.getClass().getName() + " cannot be applied to concrete " +
-          "classes, only interfaces, but was applied to " + value.getClass().getName());
+      if (!unionClass.equals(value.getClass())) {
+        TypeToken<T> actualType = TypeToken.get((Class<T>)value.getClass());
+        gson.getDelegateAdapter(UnionAdapterFactory.this, actualType).write(out, value);
+      }
+      // else GSON is actually trying to serialize an abstract class, which would be a GSON bug
     }
 
     @Override
@@ -129,8 +127,8 @@ public class UnionAdapterFactory<T> implements TypeAdapterFactory {
         }
         throw new IOException(
             "JSON object for '" + unionClass.getName() + "' union must contain exactly one " +
-            "'memberKey' field, but contains: " + keys.toString() +
-            " at path " + reader.getPath());
+            "'memberKey' field but contains " +
+                (keys.length() > 0 ? keys.toString() : "no fields") +  " at path " + reader.getPath());
       }
       Map.Entry<String, JsonElement> member = entries.iterator().next();
       Class<? extends T> clazz = (Class<? extends T>) resolver.resolve(member.getKey());

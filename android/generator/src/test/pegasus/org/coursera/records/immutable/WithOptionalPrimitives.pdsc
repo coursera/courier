@@ -1,7 +1,7 @@
 {
   "type": "record",
   "name": "WithOptionalPrimitives",
-  "namespace": "org.coursera.records.test",
+  "namespace": "org.coursera.records.immutable",
   "fields": [
     { "name": "intField", "type": "int", "optional": true },
     { "name": "longField", "type": "long", "optional": true },
@@ -10,5 +10,8 @@
     { "name": "booleanField", "type": "boolean", "optional": true },
     { "name": "stringField", "type": "string", "optional": true },
     { "name": "bytesField", "type": "bytes", "optional": true }
-  ]
+  ],
+  "android": {
+    "mutability": "IMMUTABLE"
+  }
 }

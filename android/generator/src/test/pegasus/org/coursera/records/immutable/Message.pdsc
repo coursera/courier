@@ -5,8 +5,7 @@
   "fields": [
     {
       "name": "title",
-      "type": "string",
-      "optional": true
+      "type": "string"
     },
     {
       "name": "body",

@@ -1,5 +1,6 @@
 @args com.linkedin.pegasus.generator.spec.RecordTemplateSpec record, org.coursera.courier.android.JavaSyntax syntax
 @import com.linkedin.pegasus.generator.spec.RecordTemplateSpec.Field
+@import com.linkedin.data.schema.DataSchema
 @import com.linkedin.data.schema.DataSchema.Type
 
 @{ String className = syntax.escapeKeyword(record.getClassName()) }
@@ -8,11 +9,15 @@ public @(className)(@syntax.fieldAndTypeList(record.getFields())) {
   @for(Field field: record.getFields()) {
     @{ String fieldName = syntax.escapeKeyword(field.getSchemaField().getName()) }
     @{ boolean required = !field.getSchemaField().getOptional() }
+    @{ DataSchema fieldSchema = field.getSchemaField().getType() }
     @{ Type fieldType = field.getSchemaField().getType().getType() }
-    @* TODO(jbetz): Can we avoid the shallow copy here, at least for when the builder provides the collections? *@
-    @if(required) {
+
+    @* DISABLED. To support projections, we allow required fields to be absent.
+    @if(required && !field.getSchemaField().getType().isPrimitive()) {
       if (@fieldName == null) throw new IllegalArgumentException("Field @fieldName is required.");
     }
+    *@
+
     @if(fieldType == Type.ARRAY) {
       this.@fieldName = @if(!required) { (@fieldName == null) ? null :} Collections.unmodifiableList(new ArrayList<>(@fieldName));
     } else if (fieldType == Type.MAP) {

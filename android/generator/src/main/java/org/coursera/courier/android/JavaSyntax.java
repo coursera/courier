@@ -21,6 +21,8 @@ import com.linkedin.data.schema.DataSchema.Type;
 import com.linkedin.pegasus.generator.spec.ArrayTemplateSpec;
 import com.linkedin.pegasus.generator.spec.ClassTemplateSpec;
 import com.linkedin.pegasus.generator.spec.RecordTemplateSpec;
+import org.coursera.courier.android.AndroidProperties.ArrayStyle;
+import org.coursera.courier.android.AndroidProperties.PrimitiveStyle;
 import org.coursera.courier.api.CourierMapTemplateSpec;
 
 import java.util.Arrays;
@@ -31,12 +33,10 @@ import java.util.Set;
 
 public class JavaSyntax {
 
-  public enum ArrayStyle { ARRAY, LIST }
+  public final AndroidProperties androidProperties;
 
-  private final ArrayStyle arrayStyle;
-
-  public JavaSyntax(ArrayStyle arrayStyle) {
-    this.arrayStyle = arrayStyle;
+  public JavaSyntax(AndroidProperties androidProperties) {
+    this.androidProperties = androidProperties;
   }
 
   private static final Set<String> javaKeywords = new HashSet<String>(Arrays.asList(new String[]{
@@ -73,6 +73,11 @@ public class JavaSyntax {
   }
 
   public String toType(ClassTemplateSpec spec, boolean boxed) {
+    // If we're supporting projections, all fields, even required ones, may be absent.
+    // To support this, we box all primitive field types.
+    if(androidProperties.primitiveStyle == PrimitiveStyle.BOXED) {
+      boxed = true;
+    }
 
     // TODO: support custom types properly
     if (spec.getSchema() == null) { // custom type
@@ -124,10 +129,10 @@ public class JavaSyntax {
     } else if (schemaType == Type.MAP) {
       return "Map<String, " + toType(((CourierMapTemplateSpec) spec).getValueClass(), true) + ">";
     } else if (schemaType == Type.ARRAY) {
-      if (arrayStyle == ArrayStyle.ARRAY) {
+      if (androidProperties.arrayStyle == ArrayStyle.ARRAYS) {
         return toType(((ArrayTemplateSpec) spec).getItemClass()) + "[]";
-      } else if (arrayStyle == ArrayStyle.LIST) {
-	return "List<" + toType(((ArrayTemplateSpec) spec).getItemClass(), true) + ">";
+      } else if (androidProperties.arrayStyle == ArrayStyle.LISTS) {
+	      return "List<" + toType(((ArrayTemplateSpec) spec).getItemClass(), true) + ">";
       } else {
         throw new IllegalArgumentException();
       }
@@ -189,7 +194,7 @@ public class JavaSyntax {
     Iterator<RecordTemplateSpec.Field> iter = fields.iterator();
     while(iter.hasNext()) {
       RecordTemplateSpec.Field field = iter.next();
-      sb.append(toType(field.getType()));
+      sb.append(toType(field.getType(), field.getSchemaField().getOptional()));
       sb.append(" ");
       sb.append(escapeKeyword(field.getSchemaField().getName()));
       if (iter.hasNext()) sb.append(", ");
@@ -202,7 +207,7 @@ public class JavaSyntax {
     Iterator<RecordTemplateSpec.Field> iter = fields.iterator();
     while(iter.hasNext()) {
       RecordTemplateSpec.Field field = iter.next();
-      if (field.getSchemaField().getType().getType() == Type.ARRAY && arrayStyle == ArrayStyle.ARRAY) {
+      if (field.getSchemaField().getType().getType() == Type.ARRAY && androidProperties.arrayStyle == ArrayStyle.ARRAYS) {
         ArrayDataSchema arraySchema = (ArrayDataSchema) field.getSchemaField().getType();
         if (arraySchema.getItems().getDereferencedDataSchema().isPrimitive()) {
           sb.append("Arrays.hashCode(");

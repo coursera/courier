@@ -132,9 +132,7 @@ public class TypedDefinitionAdapterFactory<T> implements TypeAdapterFactory {
     if (type.getType().equals(unionClass)) {
       return new TypedDefinitionAdapter<T>(gson);
     } else {
-      throw new IllegalArgumentException(
-          "ExampleUnion.JsonAdapter may only be used with " + unionClass.getName() + ", but was used " +
-              "with: " + type.getRawType().getClass().getName());
+      return null;
     }
   }
 
@@ -145,14 +143,13 @@ public class TypedDefinitionAdapterFactory<T> implements TypeAdapterFactory {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void write(JsonWriter out, T value) throws IOException {
-      // Since this adapter is intended for use only on the interfaces that identify a
-      // typedDefinition, which can never themselves be directly serialized.  We don't need to
-      // implement anything here. The classes that implement the union interface type are all able
-      // to serialize themselves directly.
-      throw new UnsupportedOperationException(
-          "'" + this.getClass().getName() + "' cannot be applied to concrete " +
-          "classes, only interfaces, but was applied to " + value.getClass().getName());
+      if (!unionClass.equals(value.getClass())) {
+        TypeToken<T> actualType = TypeToken.get((Class<T>)value.getClass());
+        gson.getDelegateAdapter(TypedDefinitionAdapterFactory.this, actualType).write(out, value);
+      }
+      // else GSON is actually trying to serialize an abstract class, which would be a GSON bug
     }
 
     @Override

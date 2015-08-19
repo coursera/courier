@@ -32,7 +32,7 @@ public interface @className {
 
         public final String typeName = TYPE_NAME;
 
-        @recordFields(memberSpec, syntax, mutable)
+        @recordFields(memberSpec, syntax, mutable, false)
 
         @* TODO: figure out how to enable.  This causes the generator to freeze.  Is recursion not allowed in Rythm? *@
         @* @enclosedTypes(memberSpec, syntax, mutable) *@
@@ -41,7 +41,7 @@ public interface @className {
           @recordEqualityMethods(memberSpec, syntax)
 
           public static class Builder {
-            @recordFields(memberSpec, syntax, true)
+            @recordFields(memberSpec, syntax, true, false)
 
             public @unionMemberName build() {
               return new @(className)(@syntax.fieldList(memberSpec.getFields()));

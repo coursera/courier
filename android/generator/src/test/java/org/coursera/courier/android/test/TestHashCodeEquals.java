@@ -19,6 +19,7 @@ package org.coursera.courier.android.test;
 
 import org.coursera.arrays.immutable.WithCustomTypesArray;
 import org.coursera.courier.android.customtypes.CustomInt;
+import org.coursera.enums.Fruits;
 import org.coursera.records.immutable.Message;
 import org.coursera.records.immutable.Empty;
 import org.coursera.records.immutable.Simple;
@@ -92,12 +93,16 @@ public class TestHashCodeEquals {
 
   private WithComplexTypes createComplexType() {
     WithComplexTypes.Builder record = new WithComplexTypes.Builder();
-    record.array = new ArrayList<Integer>();
+    record.array = new ArrayList<>();
     record.array.add(1);
     record.array.add(2);
     record.array.add(3);
     record.map = new HashMap<>(1);
     record.map.put("one", 1);
+    record.record = new Simple("record message");
+    record.enum$ = Fruits.APPLE;
+    record.complexMap = new HashMap<>();
+    record.custom = new CustomInt(1);
 
     Simple.Builder simple = new Simple.Builder();
     simple.message = "message";
@@ -117,17 +122,19 @@ public class TestHashCodeEquals {
 
   private WithCustomTypesArray createCustomTypeArrays() {
     WithCustomTypesArray.Builder record = new WithCustomTypesArray.Builder();
-    List<List<Simple>> arrays = new ArrayList<List<Simple>>();
-    List<Simple> o1 = new ArrayList<Simple>();
+    List<List<Simple>> arrays = new ArrayList<>();
+    List<Simple> o1 = new ArrayList<>();
     o1.add(new Simple("0-0"));
     o1.add(new Simple("0-1"));
+    arrays.add(o1);
 
-    List<Simple> o2 = new ArrayList<Simple>();
+    List<Simple> o2 = new ArrayList<>();
     o2.add(new Simple("1-0"));
     o2.add(new Simple("1-1"));
+    arrays.add(o2);
 
     record.arrays = arrays;
-    record.ints = new ArrayList<CustomInt>();
+    record.ints = new ArrayList<>();
     record.ints.add(new CustomInt(1));
     record.ints.add(new CustomInt(2));
     record.ints.add(new CustomInt(3));

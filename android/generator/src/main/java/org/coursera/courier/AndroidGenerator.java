@@ -16,13 +16,13 @@
 
 package org.coursera.courier;
 
-import com.linkedin.data.DataMap;
 import com.linkedin.data.schema.DataSchema;
-import com.linkedin.data.schema.RecordDataSchema;
 import com.linkedin.pegasus.generator.spec.ClassTemplateSpec;
 import com.linkedin.pegasus.generator.spec.EnumTemplateSpec;
 import com.linkedin.pegasus.generator.spec.RecordTemplateSpec;
 import com.linkedin.pegasus.generator.spec.UnionTemplateSpec;
+import org.coursera.courier.android.AndroidProperties;
+import org.coursera.courier.android.AndroidProperties.Mutability;
 import org.coursera.courier.android.JavaSyntax;
 import org.coursera.courier.android.PoorMansJavaSourceFormatter;
 import org.coursera.courier.android.TypedDefinitions;
@@ -71,10 +71,10 @@ public class AndroidGenerator implements PegasusCodeGenerator {
   public GeneratedCode generate(ClassTemplateSpec templateSpec) {
 
     String code;
-    boolean isMutableBinding = isMutableBinding(templateSpec);
-    JavaSyntax syntax = new JavaSyntax(
-        isMutableBinding ? JavaSyntax.ArrayStyle.ARRAY : JavaSyntax.ArrayStyle.LIST);
+    AndroidProperties androidProperties = AndroidProperties.lookupAndroidProperties(templateSpec);
+    JavaSyntax syntax = new JavaSyntax(androidProperties);
 
+    boolean isMutableBinding = androidProperties.mutability == Mutability.MUTABLE;
     if (templateSpec instanceof RecordTemplateSpec) {
       code = engine.render("rythm/record.txt", templateSpec, syntax, isMutableBinding);
     } else if (templateSpec instanceof EnumTemplateSpec) {
@@ -101,29 +101,12 @@ public class AndroidGenerator implements PegasusCodeGenerator {
     } else {
       return null; // Indicates that we are declining to generate code for the type (e.g. map or array)
     }
-    JavaCompilationUnit compilationUnit = new JavaCompilationUnit(JavaSyntax.escapeKeyword(templateSpec.getClassName()), templateSpec.getNamespace());
+    JavaCompilationUnit compilationUnit =
+        new JavaCompilationUnit(
+            JavaSyntax.escapeKeyword(templateSpec.getClassName()), templateSpec.getNamespace());
     code = PoorMansJavaSourceFormatter.format(code);
 
     return new GeneratedCode(compilationUnit, code);
-  }
-
-  // TODO: switch this to false
-  private static final boolean isMutableDefault = true;
-  private boolean isMutableBinding(ClassTemplateSpec templateSpec) {
-    DataSchema schema = templateSpec.getSchema();
-    if (schema == null) {
-      return isMutableDefault;
-    } else {
-      Object android = schema.getProperties().get("android");
-      if (android == null || !(android instanceof DataMap)) {
-        return isMutableDefault;
-      }
-      String mutable = ((DataMap) android).getString("mutability");
-      if (mutable == null) {
-        return isMutableDefault;
-      }
-      return mutable.equals("MUTABLE");
-    }
   }
 
   @Override

@@ -19,11 +19,17 @@ package org.coursera.courier.android.test;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.coursera.arrays.immutable.WithCustomTypesArray;
+import org.coursera.arrays.immutable.WithPrimitivesArray;
+import org.coursera.arrays.immutable.WithRecordArray;
 import org.coursera.courier.android.adapters.CustomIntAdapter;
 import org.coursera.courier.android.adapters.DateTimeAdapter;
 import org.coursera.courier.android.customtypes.CustomInt;
+import org.coursera.maps.immutable.WithCustomTypesMap;
+import org.coursera.maps.immutable.WithPrimitivesMap;
 import org.coursera.maps.immutable.WithComplexTypesMap;
+import org.coursera.maps.immutable.WithTypedKeyMap;
 import org.coursera.records.immutable.Simple;
+import org.coursera.records.immutable.WithPrimitives;
 import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Test;
@@ -41,16 +47,15 @@ public class TestImmutable extends JsonTest {
 
   @Test
   public void testSimple() {
-    String json = "{ \"message\": \"simple message\"}";
+    String json = load("Simple.json");
 
     Simple deserialized = gson.fromJson(json, Simple.class);
 
     Assert.assertEquals(deserialized.message, "simple message");
 
-    Simple roundTripped = gson.fromJson(gson.toJson(deserialized), Simple.class);
+    String serialized = gson.toJson(deserialized);
 
-    Assert.assertEquals(roundTripped.message, "simple message");
-
+    assertJsonEquals(json, serialized);
   }
 
   @Test
@@ -62,11 +67,7 @@ public class TestImmutable extends JsonTest {
     // TODO deserialized assertions
 
     String serialized = gson.toJson(deserialized);
-    WithComplexTypesMap roundTripped = gson.fromJson(gson.toJson(deserialized), WithComplexTypesMap.class);
-
     assertJsonEquals(json, serialized);
-
-    // TODO: roundTripped assertions
   }
 
   @Test
@@ -78,10 +79,78 @@ public class TestImmutable extends JsonTest {
     // TODO deserialized assertions
 
     String serialized = gson.toJson(deserialized);
-    WithCustomTypesArray roundTripped = gson.fromJson(gson.toJson(deserialized), WithCustomTypesArray.class);
-
     assertJsonEquals(json, serialized);
+  }
 
-    // TODO: roundTripped assertions
+  @Test
+  public void testWithCustomTypesMap() {
+    String json = load("WithCustomTypesMap.json");
+
+    WithCustomTypesMap deserialized = gson.fromJson(json, WithCustomTypesMap.class);
+
+    // TODO deserialized assertions
+
+    String serialized = gson.toJson(deserialized);
+    assertJsonEquals(json, serialized);
+  }
+
+  @Test
+  public void testWithPrimitives() {
+    String json = load("WithPrimitives.json");
+
+    WithPrimitives deserialized = gson.fromJson(json, WithPrimitives.class);
+
+    // TODO deserialized assertions
+
+    String serialized = gson.toJson(deserialized);
+    assertJsonEquals(json, serialized);
+  }
+
+  @Test
+  public void testWithPrimitivesArray() {
+    String json = load("WithPrimitivesArray.json");
+
+    WithPrimitivesArray deserialized = gson.fromJson(json, WithPrimitivesArray.class);
+
+    // TODO deserialized assertions
+
+    String serialized = gson.toJson(deserialized);
+    assertJsonEquals(json, serialized);
+  }
+
+  @Test
+  public void testWithPrimitivesMap() {
+    String json = load("WithPrimitivesMap.json");
+
+    WithPrimitivesMap deserialized = gson.fromJson(json, WithPrimitivesMap.class);
+
+    // TODO deserialized assertions
+
+    String serialized = gson.toJson(deserialized);
+    assertJsonEquals(json, serialized);
+  }
+
+  @Test
+  public void testWithRecordArray() {
+    String json = load("WithRecordArray.json");
+
+    WithRecordArray deserialized = gson.fromJson(json, WithRecordArray.class);
+
+    // TODO deserialized assertions
+
+    String serialized = gson.toJson(deserialized);
+    assertJsonEquals(json, serialized);
+  }
+
+  @Test
+  public void testWithTypedKeyMap() {
+    String json = load("WithTypedKeyMap.json");
+
+    WithTypedKeyMap deserialized = gson.fromJson(json, WithTypedKeyMap.class);
+
+    // TODO deserialized assertions
+
+    String serialized = gson.toJson(deserialized);
+    assertJsonEquals(json, serialized);
   }
 }
