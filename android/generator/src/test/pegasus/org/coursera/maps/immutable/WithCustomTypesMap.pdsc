@@ -1,8 +1,11 @@
 {
   "type": "record",
   "name": "WithCustomTypesMap",
-  "namespace": "org.coursera.maps",
+  "namespace": "org.coursera.maps.immutable",
   "fields": [
     { "name": "ints", "type": { "type": "map", "values": "org.coursera.customtypes.CustomInt"} }
-  ]
+  ],
+  "android": {
+    "mutability": "IMMUTABLE"
+  }
 }

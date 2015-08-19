@@ -9,6 +9,7 @@
 @import org.coursera.courier.api.ClassTemplateSpecs
 @import org.coursera.courier.android.TypedDefinitions
 @import com.linkedin.data.schema.DataSchema.Type
+@import org.coursera.courier.android.AndroidProperties.PrimitiveStyle
 
 @maybePackageAndImports(record)
 
@@ -17,10 +18,18 @@
 @classAnnotations(record.getSchema())
 public final class @className {
   @if(!mutable) {
+    @if(record.getFields().size() > 0) {
+      @(className)() {
+        @for(Field field: record.getFields()) {
+          @(syntax.escapeKeyword(field.getSchemaField().getName())) = null;
+        }
+      }
+    }
+
     @recordConstructor(record, syntax)
   }
 
-  @recordFields(record, syntax, mutable)
+  @recordFields(record, syntax, mutable, false)
 
   @enclosedTypes(record, syntax, mutable)
 
@@ -28,7 +37,7 @@ public final class @className {
     @recordEqualityMethods(record, syntax)
 
     public static class Builder {
-      @recordFields(record, syntax, true)
+      @recordFields(record, syntax, true, true)
 
       public @className build() {
         return new @(className)(@syntax.fieldList(record.getFields()));

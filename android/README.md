@@ -38,10 +38,67 @@ Then add pegasus schema files to the `src/main/pegasus` directory of your projec
 will be generated next time `gradle build` is run.
 
 
+
+How code is generated
+---------------------
+
+**Records:**
+
+* Records are generated as a Java class with public fields.
+* Primitive optional types are boxed.  E.g. an optional "int" field in a Pegasus schema is
+  represented as a Java `Integer`.
+
+**Enums:**
+
+* Enums are represented as a Java enum.
+* TODO: an `$UNKNOWN` symbol will be in all enums to make wire compatibility issues easier to manage
+
+**Arrays:**
+
+* Arrays are represented as a Java `List`. This is primarily to enable immutable lists.
+* To ease migrations, support for generating Java arrays (`[]`) will be supported, but for mutable
+  types only.
+
+**Maps:**
+
+* Maps are represented as Java `Map`.
+
+**Unions:*
+
+* Unions are represented as an interface with a subclass for each member type.
+* A `UnknownMember` is generated for each union to make wire compatibility issues easier to manage
+
+For example, given a union "AnswerFormat" with member types "TextEntry" and "MultipleChoice", the
+Java class signatures will be:
+
+```java
+interface AnswerFormat
+
+class TextEntryMember implements AnswerFormat {
+  public final TextEntry
+}
+
+class MultipleChoiceMember implements AnswerFormat {
+  public final MultipleChoice
+}
+
+class UnknownMember
+```
+
+Projections
+-----------
+
+When a record is projected, only the requested fields are present. Even required fields may be
+absent.
+
+To support this, all fields are optional.
+
 Mutable and Immutable types
 ---------------------------
 
-For Android Java, either mutable and immutable data bindings may be generated.
+Either mutable or immutable data bindings may be generated.
+
+Immutable types should be preferred.
 
 -                     |  Mutable bindings   | Immutable bindings
 ----------------------|---------------------|-------------------------------------------------------
@@ -50,6 +107,28 @@ Constructor           | `Course()`          | `Course(Field1 field1, Field2 fiel
 Builder               | not needed          | `Course.Builder()` with `public` fields and `.build()`
 `hashCode` / `equals` | No                  | Yes, structural
 Arrays                | Java arrays (`[]`)  | `List` based
+
+#### Immutable Bindings
+
+Immutable classes are preferred when using Courier with Android.
+
+They may be constructed either using the public constructor:
+
+```java
+Course course = new Course("name", "slug", ...)
+```
+
+Or, via a builder:
+
+```java
+Course.Builder builder = new Course.Builder()
+builder.name = "name"
+builder.slug = "slug"
+Course course = builder.build() // builds an immutable type
+```
+
+The builder should be favored when constructing class instances with a large number of fields or
+where many fields are optional.
 
 #### Mutable Bindings
 
@@ -79,34 +158,11 @@ Pegasus schema:
 }
 ```
 
-
-#### Immutable Bindings
-
-Immutable classes are preferred when using Courier with Android.
-
-They may be constructed either using the public constructor:
-
-```java
-Course course = new Course("name", "slug", ...)
-```
-
-Or, via a builder:
-
-```java
-Course.Builder builder = new Course.Builder()
-builder.name = "name"
-builder.slug = "slug"
-Course course = builder.build() // builds an immutable type
-```
-
-The builder should be favored when constructing class instances with a large number of fields or
-where many fields are optional.
-
 ### hashCode/equals
 
 `hashCode` and `equals` operators on the Android generated bindings.
 
-Since it is unsafe to add the methods to mutable types, Courier will only generate them for
+Since it is unsafe to add these methods to mutable types, Courier will only generate them for
 immutable classes.
 
 
@@ -226,12 +282,12 @@ the SCHEMA and a dependency on pegasus data and it could be done that way.
 Alternatively, we could simply provide a "validate" method that just checks that
 all required fields are present...
 
-### Add custom type support
+### Improve custom type support
 This could be done by taking the .pdsc "coercerClass" as a adapter or adapter factory
 (developer could choose) and using it to set a `@JsonAdapter` wherever the type is used.
 (see: https://sites.google.com/site/gson/gson-type-adapters-for-common-classes-1)
 
-- Custom type support is partially available. Record fields of custom types work properly.
+- Custom type support is partially available. Custom types on record fields are supported.
 - Custom types in arrays and maps currently to NOT work properly. (although the type adapter could
   be added to the GSONBuilder to work around this for the time being)
 

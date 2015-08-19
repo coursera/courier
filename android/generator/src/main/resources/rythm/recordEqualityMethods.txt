@@ -4,13 +4,17 @@
 
 @{ String className = syntax.escapeKeyword(record.getClassName()) }
 
+private volatile Integer hashCode = null;
 @@Override
 public int hashCode() {
+  if (hashCode != null) return hashCode.intValue();
+
   @if(record.getFields().size() == 0) {
-    return Objects.hashCode(this.getClass());
+    hashCode = Objects.hashCode(this.getClass());
   } else {
-    return Objects.hash(this.getClass(), @syntax.hashCodeList(record.getFields()));
+    hashCode = Objects.hash(this.getClass(), @syntax.hashCodeList(record.getFields()));
   }
+  return hashCode.intValue();
 }
 
 @@Override

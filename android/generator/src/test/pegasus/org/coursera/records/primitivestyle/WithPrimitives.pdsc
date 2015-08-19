@@ -1,7 +1,7 @@
 {
   "type": "record",
   "name": "WithPrimitives",
-  "namespace": "org.coursera.records.immutable",
+  "namespace": "org.coursera.records.primitivestyle",
   "fields": [
     { "name": "intField", "type": "int" },
     { "name": "longField", "type": "long" },
@@ -12,6 +12,8 @@
     { "name": "bytesField", "type": "bytes" }
   ],
   "android": {
-    "mutability": "IMMUTABLE"
+    "mutability": "MUTABLE",
+    "primitiveStyle": "PRIMITIVES",
+    "arrayStyle": "ARRAYS"
   }
 }

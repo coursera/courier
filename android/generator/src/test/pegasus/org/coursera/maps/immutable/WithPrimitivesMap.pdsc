@@ -1,7 +1,7 @@
 {
   "type": "record",
   "name": "WithPrimitivesMap",
-  "namespace": "org.coursera.maps",
+  "namespace": "org.coursera.maps.immutable",
   "fields": [
     { "name": "ints", "type": { "type": "map", "values": "int" } },
     { "name": "longs", "type": { "type": "map", "values": "long" } },
@@ -10,5 +10,8 @@
     { "name": "booleans", "type": { "type": "map", "values": "boolean" } },
     { "name": "strings", "type": { "type": "map", "values": "string" } },
     { "name": "bytes", "type": { "type": "map", "values": "bytes" } }
-  ]
+  ],
+  "android": {
+    "mutability": "IMMUTABLE"
+  }
 }

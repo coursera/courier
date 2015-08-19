@@ -2,7 +2,7 @@
   "type": "record",
   "name": "Simple",
   "doc": "A simple record",
-  "namespace": "org.coursera.records.immutable",
+  "namespace": "org.coursera.records.primitivestyle",
   "fields": [
     {
       "name": "message",
@@ -12,6 +12,8 @@
     }
   ],
   "android": {
-    "mutability": "IMMUTABLE"
+    "mutability": "MUTABLE",
+    "primitiveStyle": "PRIMITIVES",
+    "arrayStyle": "ARRAYS"
   }
 }
