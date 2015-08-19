@@ -10,5 +10,5 @@
   }
   @fieldAnnotations(field)
   @if(!fieldName.equals(field.getSchemaField().getName())) { @@SerializedName("@field.getSchemaField().getName()") }
-  public@if(builder){ transient}@if(!mutable){ final} @syntax.toType(field.getType(), field.getSchemaField().getOptional()) @fieldName;
+  public@if(builder){ transient}@if(!mutable){ final} @syntax.toOptionalType(field.getType(), field.getSchemaField().getOptional()) @fieldName;
 }

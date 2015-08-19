@@ -12,7 +12,7 @@ public @(className)(@syntax.fieldAndTypeList(record.getFields())) {
     @{ DataSchema fieldSchema = field.getSchemaField().getType() }
     @{ Type fieldType = field.getSchemaField().getType().getType() }
 
-    @* DISABLED. To support projections, we allow required fields to be absent.
+    @* DISABLED. To support projections, we allow required fields to be absent so cannot include these preconditions.
     @if(required && !field.getSchemaField().getType().isPrimitive()) {
       if (@fieldName == null) throw new IllegalArgumentException("Field @fieldName is required.");
     }

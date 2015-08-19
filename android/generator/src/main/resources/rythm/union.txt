@@ -14,33 +14,29 @@ public interface @className {
   @for(Member member: union.getMembers()) {
     @{ String unionMemberName = syntax.toUnionMemberName(member.getClassTemplateSpec()) }
     public @if (union.getEnclosingClass() != null) {static} class @unionMemberName implements @className {
-      @if(member.getClassTemplateSpec().getSchema() == null) {
-        // TODO: custom types (@syntax.toType(member.getClassTemplateSpec()))
-      } else {
-        private static final String MEMBER_KEY = "@member.getClassTemplateSpec().getSchema().getUnionMemberKey()";
+      private static final String MEMBER_KEY = "@member.getSchema().getUnionMemberKey()";
 
-        @if(!mutable) {
-          public @(unionMemberName)(@syntax.toType(member.getClassTemplateSpec()) member) {
-            this.member = member;
-          }
+      @if(!mutable) {
+        public @(unionMemberName)(@syntax.toType(member.getClassTemplateSpec()) member) {
+          this.member = member;
+        }
+      }
+
+      @@SerializedName(MEMBER_KEY)
+      public @if(!mutable){final} @syntax.toType(member.getClassTemplateSpec()) member;
+
+      @if(!mutable) {
+        @@Override
+        public int hashCode() {
+          return Objects.hash(this.getClass(), member);
         }
 
-        @@SerializedName(MEMBER_KEY)
-        public @if(!mutable){final} @syntax.toType(member.getClassTemplateSpec()) member;
-
-        @if(!mutable) {
-          @@Override
-          public int hashCode() {
-            return Objects.hash(this.getClass(), member);
-          }
-
-          @@Override
-          public boolean equals(Object obj) {
-            if (!(obj instanceof @unionMemberName)) return false;
-            @unionMemberName other = (@unionMemberName)obj;
-            if (other == this) return true;
-            return Objects.deepEquals(this.member, other.member);
-          }
+        @@Override
+        public boolean equals(Object obj) {
+          if (!(obj instanceof @unionMemberName)) return false;
+          @unionMemberName other = (@unionMemberName)obj;
+          if (other == this) return true;
+          return Objects.deepEquals(this.member, other.member);
         }
       }
     }

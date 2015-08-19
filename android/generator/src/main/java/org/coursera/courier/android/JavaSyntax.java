@@ -31,6 +31,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Provides utilities for code generating Java source code.
+ */
 public class JavaSyntax {
 
   public final AndroidProperties androidProperties;
@@ -48,6 +51,15 @@ public class JavaSyntax {
       "try", "void", "volatile", "while"
   }));
 
+  /**
+   * Returns the escaped Pegasus symbol for use in Java source code.
+   *
+   * Pegasus symbols must be of the form [A-Za-z_], so this routine simply checks if the
+   * symbol collides with a java keyword, and if so, escapes it.
+   *
+   * (Because only fields are generated, symbols like hashCode do not collide with method names
+   * from Object and may be used).
+   */
   public static String escapeKeyword(String symbol) {
     if (javaKeywords.contains(symbol)) {
       return symbol + "$";
@@ -56,11 +68,14 @@ public class JavaSyntax {
     }
   }
 
+  /**
+   * Returns the escaped fully qualified name of a ClassTemplateSpec.
+   */
   public static String escapedFullname(ClassTemplateSpec spec) {
     return toFullname(spec.getNamespace(), escapeKeyword(spec.getClassName()));
   }
 
-  public static String toFullname(String namespace, String className) {
+  private static String toFullname(String namespace, String className) {
     if (namespace == null) {
       return className;
     } else {
@@ -68,18 +83,36 @@ public class JavaSyntax {
     }
   }
 
+  /**
+   * Returns the Java type of the given {@link ClassTemplateSpec} as a Java source code string.
+   *
+   * Primitive types are represented using the {@link PrimitiveStyle} for this instance.
+   */
   public String toType(ClassTemplateSpec spec) {
-    return toType(spec, false);
+    return toType(spec, androidProperties.primitiveStyle);
   }
 
-  public String toType(ClassTemplateSpec spec, boolean boxed) {
+  /**
+   * Returns the Java type of an optional field for the given {@link ClassTemplateSpec} as a
+   * Java source code string.
+   *
+   * If the field is optional it is always represented as a {@link PrimitiveStyle#BOXED} type
+   * else it is represented using the {@link PrimitiveStyle} for this instance.
+   */
+  public String toOptionalType(ClassTemplateSpec spec, boolean optional) {
+    return toType(spec, optional ? PrimitiveStyle.BOXED : androidProperties.primitiveStyle);
+  }
+
+  /**
+   * Returns the Java type of the given {@link ClassTemplateSpec} as a Java source code string.
+   *
+   * Primitive types are represented as specified by the provided @{link PrimitiveStyle}.
+   */
+  public String toType(ClassTemplateSpec spec, PrimitiveStyle primitiveStyle) {
     // If we're supporting projections, all fields, even required ones, may be absent.
     // To support this, we box all primitive field types.
-    if(androidProperties.primitiveStyle == PrimitiveStyle.BOXED) {
-      boxed = true;
-    }
+    boolean boxed = primitiveStyle == PrimitiveStyle.BOXED;
 
-    // TODO: support custom types properly
     if (spec.getSchema() == null) { // custom type
       return escapedFullname(spec);
     }
@@ -127,12 +160,12 @@ public class JavaSyntax {
     } else if (schemaType == Type.UNION) {
       return escapedFullname(spec);
     } else if (schemaType == Type.MAP) {
-      return "Map<String, " + toType(((CourierMapTemplateSpec) spec).getValueClass(), true) + ">";
+      return "Map<String, " + toType(((CourierMapTemplateSpec) spec).getValueClass(), PrimitiveStyle.BOXED) + ">";
     } else if (schemaType == Type.ARRAY) {
       if (androidProperties.arrayStyle == ArrayStyle.ARRAYS) {
-        return toType(((ArrayTemplateSpec) spec).getItemClass()) + "[]";
+        return toType(((ArrayTemplateSpec) spec).getItemClass(), PrimitiveStyle.BOXED) + "[]";
       } else if (androidProperties.arrayStyle == ArrayStyle.LISTS) {
-	      return "List<" + toType(((ArrayTemplateSpec) spec).getItemClass(), true) + ">";
+	      return "List<" + toType(((ArrayTemplateSpec) spec).getItemClass(), PrimitiveStyle.BOXED) + ">";
       } else {
         throw new IllegalArgumentException();
       }
@@ -141,9 +174,12 @@ public class JavaSyntax {
     }
   }
 
+  /**
+   * Returns the union member class name for the given {@link ClassTemplateSpec} as a Java
+   * source code string.
+   */
   public String toUnionMemberName(ClassTemplateSpec spec) {
 
-    // TODO: support custom types properly
     if (spec.getSchema() == null) { // custom type
       return spec.getClassName() + "Member";
     }
@@ -178,6 +214,13 @@ public class JavaSyntax {
     }
   }
 
+  /**
+   * Returns the fields as a list of parameters for inclusion in Java source.  E.g.:
+   *
+   * <code>
+   *   field1, field2, field3, field4
+   * </code>
+   */
   public String fieldList(List<RecordTemplateSpec.Field> fields) {
     StringBuilder sb = new StringBuilder();
     Iterator<RecordTemplateSpec.Field> iter = fields.iterator();
@@ -189,12 +232,19 @@ public class JavaSyntax {
     return sb.toString();
   }
 
+  /**
+   * Returns the fields as a list of parameter declarations for inclusion in Java source. E.g.:
+   *
+   * <code>
+   *   org.example.Record field1, List<Integer> field2, Map<String, Integer> field3, Integer field4
+   * </code>
+   */
   public String fieldAndTypeList(List<RecordTemplateSpec.Field> fields) {
     StringBuilder sb = new StringBuilder();
     Iterator<RecordTemplateSpec.Field> iter = fields.iterator();
     while(iter.hasNext()) {
       RecordTemplateSpec.Field field = iter.next();
-      sb.append(toType(field.getType(), field.getSchemaField().getOptional()));
+      sb.append(toOptionalType(field.getType(), field.getSchemaField().getOptional()));
       sb.append(" ");
       sb.append(escapeKeyword(field.getSchemaField().getName()));
       if (iter.hasNext()) sb.append(", ");
@@ -202,12 +252,24 @@ public class JavaSyntax {
     return sb.toString();
   }
 
+  /**
+   * Returns Java source code that computes the hashCodes of each of the fields, as a list of
+   * parameters.
+   *
+   * This is the same as {@link #fieldList} except when the fields are Java arrays, in which
+   * case they are wrapped with a utilty method to hash them correctly.  E.g.
+   *
+   * <code>
+   *   intField, stringField, mapField, Arrays.deepHashCode(javaArrayField), recordField
+   * </code>
+   */
   public String hashCodeList(List<RecordTemplateSpec.Field> fields) {
     StringBuilder sb = new StringBuilder();
     Iterator<RecordTemplateSpec.Field> iter = fields.iterator();
     while(iter.hasNext()) {
       RecordTemplateSpec.Field field = iter.next();
-      if (field.getSchemaField().getType().getType() == Type.ARRAY && androidProperties.arrayStyle == ArrayStyle.ARRAYS) {
+      Type schemaType = field.getSchemaField().getType().getType();
+      if (schemaType == Type.ARRAY && androidProperties.arrayStyle == ArrayStyle.ARRAYS) {
         ArrayDataSchema arraySchema = (ArrayDataSchema) field.getSchemaField().getType();
         if (arraySchema.getItems().getDereferencedDataSchema().isPrimitive()) {
           sb.append("Arrays.hashCode(");
