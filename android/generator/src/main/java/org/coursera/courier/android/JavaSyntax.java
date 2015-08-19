@@ -31,6 +31,14 @@ import java.util.Set;
 
 public class JavaSyntax {
 
+  public enum ArrayStyle { ARRAY, LIST }
+
+  private final ArrayStyle arrayStyle;
+
+  public JavaSyntax(ArrayStyle arrayStyle) {
+    this.arrayStyle = arrayStyle;
+  }
+
   private static final Set<String> javaKeywords = new HashSet<String>(Arrays.asList(new String[]{
       "abstract", "assert", "boolean", "break", "byte", "case", "catch", "char", "class", "const",
       "continue", "default", "do", "double", "else", "enum", "extends", "final", "finally", "float",
@@ -60,11 +68,11 @@ public class JavaSyntax {
     }
   }
 
-  public static String toType(ClassTemplateSpec spec) {
+  public String toType(ClassTemplateSpec spec) {
     return toType(spec, false);
   }
 
-  public static String toType(ClassTemplateSpec spec, boolean boxed) {
+  public String toType(ClassTemplateSpec spec, boolean boxed) {
 
     // TODO: support custom types properly
     if (spec.getSchema() == null) { // custom type
@@ -73,25 +81,25 @@ public class JavaSyntax {
     Type schemaType = spec.getSchema().getType();
     if (schemaType == Type.INT) {
       if (boxed) {
-        return "java.lang.Integer";
+        return "Integer";
       } else {
         return "int";
       }
     } else if (schemaType == Type.LONG) {
       if (boxed) {
-        return "java.lang.Long";
+        return "Long";
       } else {
         return "long";
       }
     } else if (schemaType == Type.FLOAT) {
       if (boxed) {
-        return "java.lang.Float";
+        return "Float";
       } else {
         return "float";
       }
     } else if (schemaType == Type.DOUBLE) {
       if (boxed) {
-        return "java.lang.Double";
+        return "Double";
       } else {
         return "double";
       }
@@ -99,7 +107,7 @@ public class JavaSyntax {
       return "String";
     } else if (schemaType == Type.BOOLEAN) {
       if (boxed) {
-        return "java.lang.Boolean";
+        return "Boolean";
       } else {
         return "boolean";
       }
@@ -114,15 +122,21 @@ public class JavaSyntax {
     } else if (schemaType == Type.UNION) {
       return escapedFullname(spec);
     } else if (schemaType == Type.MAP) {
-      return "java.util.Map<String, " + toType(((CourierMapTemplateSpec) spec).getValueClass(), true) + ">";
+      return "Map<String, " + toType(((CourierMapTemplateSpec) spec).getValueClass(), true) + ">";
     } else if (schemaType == Type.ARRAY) {
-      return toType(((ArrayTemplateSpec) spec).getItemClass()) + "[]";
+      if (arrayStyle == ArrayStyle.ARRAY) {
+        return toType(((ArrayTemplateSpec) spec).getItemClass()) + "[]";
+      } else if (arrayStyle == ArrayStyle.LIST) {
+	return "List<" + toType(((ArrayTemplateSpec) spec).getItemClass(), true) + ">";
+      } else {
+        throw new IllegalArgumentException();
+      }
     } else {
       throw new IllegalArgumentException("unrecognized type: " + schemaType);
     }
   }
 
-  public static String toUnionMemberName(ClassTemplateSpec spec) {
+  public String toUnionMemberName(ClassTemplateSpec spec) {
 
     // TODO: support custom types properly
     if (spec.getSchema() == null) { // custom type
@@ -159,7 +173,7 @@ public class JavaSyntax {
     }
   }
 
-  public static String fieldList(List<RecordTemplateSpec.Field> fields) {
+  public String fieldList(List<RecordTemplateSpec.Field> fields) {
     StringBuilder sb = new StringBuilder();
     Iterator<RecordTemplateSpec.Field> iter = fields.iterator();
     while(iter.hasNext()) {
@@ -170,13 +184,26 @@ public class JavaSyntax {
     return sb.toString();
   }
 
-  public static String hashCodeList(List<RecordTemplateSpec.Field> fields) {
+  public String fieldAndTypeList(List<RecordTemplateSpec.Field> fields) {
     StringBuilder sb = new StringBuilder();
     Iterator<RecordTemplateSpec.Field> iter = fields.iterator();
     while(iter.hasNext()) {
       RecordTemplateSpec.Field field = iter.next();
-      if (field.getSchemaField().getType().getType() == Type.ARRAY) {
-        ArrayDataSchema arraySchema = (ArrayDataSchema)field.getSchemaField().getType();
+      sb.append(toType(field.getType()));
+      sb.append(" ");
+      sb.append(escapeKeyword(field.getSchemaField().getName()));
+      if (iter.hasNext()) sb.append(", ");
+    }
+    return sb.toString();
+  }
+
+  public String hashCodeList(List<RecordTemplateSpec.Field> fields) {
+    StringBuilder sb = new StringBuilder();
+    Iterator<RecordTemplateSpec.Field> iter = fields.iterator();
+    while(iter.hasNext()) {
+      RecordTemplateSpec.Field field = iter.next();
+      if (field.getSchemaField().getType().getType() == Type.ARRAY && arrayStyle == ArrayStyle.ARRAY) {
+        ArrayDataSchema arraySchema = (ArrayDataSchema) field.getSchemaField().getType();
         if (arraySchema.getItems().getDereferencedDataSchema().isPrimitive()) {
           sb.append("Arrays.hashCode(");
         } else {

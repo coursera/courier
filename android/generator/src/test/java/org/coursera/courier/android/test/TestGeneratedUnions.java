@@ -28,8 +28,6 @@ import org.coursera.typerefs.TypedDefinition;
 import org.junit.Test;
 
 public class TestGeneratedUnions {
-  private Gson gson = new Gson();
-
   @Test
   public void testTypedDefinition() {
     Gson gson = new Gson();

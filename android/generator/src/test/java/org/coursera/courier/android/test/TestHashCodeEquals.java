@@ -17,18 +17,20 @@
 package org.coursera.courier.android.test;
 
 
-import org.coursera.arrays.WithCustomTypesArray;
+import org.coursera.arrays.immutable.WithCustomTypesArray;
 import org.coursera.courier.android.customtypes.CustomInt;
-import org.coursera.records.Message;
-import org.coursera.records.test.Empty;
-import org.coursera.records.test.Simple;
-import org.coursera.records.test.WithComplexTypes;
+import org.coursera.records.immutable.Message;
+import org.coursera.records.immutable.Empty;
+import org.coursera.records.immutable.Simple;
+import org.coursera.records.immutable.WithComplexTypes;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 
-public class TestGeneratedRecords {
+public class TestHashCodeEquals {
 
   @Test
   public void testEmptyEqualsHashCode() {
@@ -40,24 +42,17 @@ public class TestGeneratedRecords {
 
   @Test
   public void testFieldEqualsHashCode() {
-    Message title = new Message();
-    title.title = "title";
-
-    Message sameAsTitle = new Message();
-    sameAsTitle.title = "title";
+    Message title = new Message("title", null);
+    Message sameAsTitle = new Message("title", null);
     assertEqualsHashCode(title, sameAsTitle);
 
-    Message titleBody = new Message();
-    titleBody.title = "title";
-    titleBody.body = "body";
+    Message titleBody = new Message("title", "body");
 
-    Message sameAsTitleBody = new Message();
-    sameAsTitleBody.title = "title";
-    sameAsTitleBody.body = "body";
+    Message sameAsTitleBody = new Message("title", "body");
     assertEqualsHashCode(titleBody, sameAsTitleBody);
 
-    Message empty = new Message();
-    Message alsoEmpty = new Message();
+    Message empty = new Message.Builder().build();
+    Message alsoEmpty = new Message.Builder().build();
     assertEqualsHashCode(empty, alsoEmpty);
   }
 
@@ -68,31 +63,14 @@ public class TestGeneratedRecords {
 
   @Test
   public void testFieldEqualsHashCodeNotMatching() {
-    Message title = new Message();
-    title.title = "title";
-
-    Message title2 = new Message();
-    title2.title = "title2";
-
-    Message body = new Message();
-    body.body = "body";
-
-    Message body2 = new Message();
-    body2.body = "body2";
-
-    Message titleBody = new Message();
-    titleBody.title = "title";
-    titleBody.body = "body";
-
-    Message title2Body = new Message();
-    title2Body.title = "title2";
-    title2Body.body = "body";
-
-    Message titleBody2 = new Message();
-    titleBody2.title = "title";
-    titleBody2.body = "body2";
-
-    Message empty = new Message();
+    Message title = new Message("title", null);
+    Message title2 = new Message("title2", null);
+    Message body = new Message("body", null);
+    Message body2 = new Message("body2", null);
+    Message titleBody = new Message("title", "body");
+    Message title2Body = new Message("title1", "body");
+    Message titleBody2 = new Message("title", "body2");
+    Message empty = new Message(null, null);
 
     // Usually the hash code should be different, but that's not guaranteed.
     Assert.assertFalse(title.equals(title2));
@@ -113,16 +91,20 @@ public class TestGeneratedRecords {
   }
 
   private WithComplexTypes createComplexType() {
-    WithComplexTypes record = new WithComplexTypes();
-    record.array = new int[] { 1,2,3 };
+    WithComplexTypes.Builder record = new WithComplexTypes.Builder();
+    record.array = new ArrayList<Integer>();
+    record.array.add(1);
+    record.array.add(2);
+    record.array.add(3);
     record.map = new HashMap<>(1);
     record.map.put("one", 1);
-    WithComplexTypes.Union.SimpleMember member = new WithComplexTypes.Union.SimpleMember();
-    Simple simple = new Simple();
+
+    Simple.Builder simple = new Simple.Builder();
     simple.message = "message";
-    member.member = simple;
+    WithComplexTypes.Union.SimpleMember member =
+        new WithComplexTypes.Union.SimpleMember(simple.build());
     record.union = member;
-    return record;
+    return record.build();
   }
 
   @Test
@@ -134,18 +116,21 @@ public class TestGeneratedRecords {
   }
 
   private WithCustomTypesArray createCustomTypeArrays() {
-    WithCustomTypesArray record = new WithCustomTypesArray();
-    Simple[][] arrays = new Simple[][] { new Simple[2], new Simple[2] };
-    arrays[0][0] = new Simple();
-    arrays[0][0].message = "0-0";
-    arrays[0][1] = new Simple();
-    arrays[0][1].message = "0-1";
-    arrays[1][0] = new Simple();
-    arrays[1][0].message = "1-0";
-    arrays[1][1] = new Simple();
-    arrays[1][1].message = "1-1";
+    WithCustomTypesArray.Builder record = new WithCustomTypesArray.Builder();
+    List<List<Simple>> arrays = new ArrayList<List<Simple>>();
+    List<Simple> o1 = new ArrayList<Simple>();
+    o1.add(new Simple("0-0"));
+    o1.add(new Simple("0-1"));
+
+    List<Simple> o2 = new ArrayList<Simple>();
+    o2.add(new Simple("1-0"));
+    o2.add(new Simple("1-1"));
+
     record.arrays = arrays;
-    record.ints = new CustomInt[] {new CustomInt(1), new CustomInt(2), new CustomInt(3)};
-    return record;
+    record.ints = new ArrayList<CustomInt>();
+    record.ints.add(new CustomInt(1));
+    record.ints.add(new CustomInt(2));
+    record.ints.add(new CustomInt(3));
+    return record.build();
   }
 }

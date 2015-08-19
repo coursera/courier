@@ -1,0 +1,9 @@
+{
+  "name": "Empty",
+  "type": "record",
+  "namespace": "org.coursera.records.immutable",
+  "fields": [],
+  "android": {
+    "mutability": "IMMUTABLE"
+  }
+}

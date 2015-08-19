@@ -1,4 +1,4 @@
-@args com.linkedin.pegasus.generator.spec.UnionTemplateSpec union, java.util.Map<String, String> memberKeyToTypeName
+@args com.linkedin.pegasus.generator.spec.UnionTemplateSpec union, java.util.Map<String, String> memberKeyToTypeName, org.coursera.courier.android.JavaSyntax syntax, boolean mutable
 @import com.linkedin.pegasus.generator.spec.RecordTemplateSpec
 @import com.linkedin.pegasus.generator.spec.RecordTemplateSpec.Field
 @import com.linkedin.pegasus.generator.spec.UnionTemplateSpec.Member
@@ -7,7 +7,7 @@
 
 @maybePackageAndImports(union)
 
-@{ String className = JavaSyntax.escapeKeyword(union.getClassName()) }
+@{ String className = syntax.escapeKeyword(union.getClassName()) }
 
 @if (union.getTyperefClass() != null) {
   @classAnnotations(union.getTyperefClass().getSchema())
@@ -16,40 +16,52 @@
 public interface @className {
   @for(Member member: union.getMembers()) {
     @{ String memberKey = member.getClassTemplateSpec().getSchema().getUnionMemberKey() }
-    @{ String unionMemberName = JavaSyntax.toUnionMemberName(member.getClassTemplateSpec()) }
+    @{ String unionMemberName = syntax.toUnionMemberName(member.getClassTemplateSpec()) }
     @if (member.getClassTemplateSpec().getSchema().getType() != Type.RECORD) {
       // flatTypedDefinition members must all be records, but found: @memberKey
     } else {
       public @if (union.getEnclosingClass() != null) {static} class @unionMemberName implements @className {
         @{List<Field> fields = ((RecordTemplateSpec)member.getClassTemplateSpec()).getFields() }
+
+        @if(!mutable) {
+          public @(unionMemberName)(@syntax.fieldAndTypeList(fields)) {
+            @for(Field field: fields) {
+              @{ String fieldName = syntax.escapeKeyword(field.getSchemaField().getName()) }
+              this.@fieldName = @fieldName;
+            }
+          }
+        }
+
         private static final String TYPE_NAME = "@memberKeyToTypeName.get(memberKey)";
 
         public final String typeName = TYPE_NAME;
 
         @for(Field field: fields) {
           @if(field.getCustomInfo() != null) {
-            @@JsonAdapter(@(JavaSyntax.toType(field.getCustomInfo().getCoercerClass())).class)
+            @@JsonAdapter(@(syntax.toType(field.getCustomInfo().getCoercerClass())).class)
           }
           @fieldAnnotations(field)
-          @if(!JavaSyntax.escapeKeyword(field.getSchemaField().getName()).equals(field.getSchemaField().getName())) { @@SerializedName("@field.getSchemaField().getName()") }
-          public @JavaSyntax.toType(field.getType()) @JavaSyntax.escapeKeyword(field.getSchemaField().getName());
+          @if(!syntax.escapeKeyword(field.getSchemaField().getName()).equals(field.getSchemaField().getName())) { @@SerializedName("@field.getSchemaField().getName()") }
+          public @if(!mutable){final} @syntax.toType(field.getType()) @syntax.escapeKeyword(field.getSchemaField().getName());
         }
 
-        @@Override
-        public int hashCode() {
-          @if(fields.size() == 0) {
-            return Objects.hashCode(this.getClass());
-          } else {
-            return Objects.hash(this.getClass(), @JavaSyntax.fieldList(fields));
+        @if(!mutable) {
+          @@Override
+          public int hashCode() {
+            @if(fields.size() == 0) {
+              return Objects.hashCode(this.getClass());
+            } else {
+              return Objects.hash(this.getClass(), @syntax.fieldList(fields));
+            }
           }
-        }
 
-        @@Override
-        public boolean equals(Object obj) {
-          if (!(obj instanceof @unionMemberName)) return false;
-          @unionMemberName other = (@unionMemberName)obj;
-          if (other == this) return true;
-          return @for(Field field: fields) {Objects.deepEquals(this.@JavaSyntax.escapeKeyword(field.getSchemaField().getName()), other.@JavaSyntax.escapeKeyword(field.getSchemaField().getName())) &&} true;
+          @@Override
+          public boolean equals(Object obj) {
+            if (!(obj instanceof @unionMemberName)) return false;
+            @unionMemberName other = (@unionMemberName)obj;
+            if (other == this) return true;
+            return @for(Field field: fields) {Objects.deepEquals(this.@syntax.escapeKeyword(field.getSchemaField().getName()), other.@syntax.escapeKeyword(field.getSchemaField().getName())) &&} true;
+          }
         }
       }
     }
@@ -66,7 +78,7 @@ public interface @className {
         public Class<? extends @className> resolve(String typeName) {
           switch (typeName) {
             @for(Member member: union.getMembers()) {
-              @{ String unionMemberName = JavaSyntax.toUnionMemberName(member.getClassTemplateSpec()) } case @(unionMemberName).TYPE_NAME: return @(unionMemberName).class;
+              @{ String unionMemberName = syntax.toUnionMemberName(member.getClassTemplateSpec()) } case @(unionMemberName).TYPE_NAME: return @(unionMemberName).class;
             }
             default: return $UnknownMember.class;
           }
