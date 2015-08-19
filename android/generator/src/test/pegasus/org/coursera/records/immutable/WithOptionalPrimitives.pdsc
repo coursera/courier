@@ -1,0 +1,14 @@
+{
+  "type": "record",
+  "name": "WithOptionalPrimitives",
+  "namespace": "org.coursera.records.test",
+  "fields": [
+    { "name": "intField", "type": "int", "optional": true },
+    { "name": "longField", "type": "long", "optional": true },
+    { "name": "floatField", "type": "float", "optional": true },
+    { "name": "doubleField", "type": "double", "optional": true },
+    { "name": "booleanField", "type": "boolean", "optional": true },
+    { "name": "stringField", "type": "string", "optional": true },
+    { "name": "bytesField", "type": "bytes", "optional": true }
+  ]
+}

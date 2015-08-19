@@ -17,6 +17,7 @@
   import com.linkedin.data.template.UnionTemplate
   import org.coursera.courier.templates.DataTemplates.DataConversion
   import org.coursera.courier.templates.ScalaUnionTemplate
+  import scala.language.implicitConversions
 
   import scala.runtime.ScalaRunTime
 }

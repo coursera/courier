@@ -75,6 +75,7 @@
   import com.linkedin.data.template.Custom
   import org.coursera.courier.codecs.InlineStringCodec
   import org.coursera.courier.coercers.SingleElementCaseClassCoercer
+  import scala.language.implicitConversions
 }
 
 @ClassAnnotations(map) final class @(map.scalaType)(private val dataMap: DataMap)
