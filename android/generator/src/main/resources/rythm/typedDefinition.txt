@@ -14,7 +14,7 @@ public interface @className {
   @for(Member member: union.getMembers()) {
     @{ String unionMemberName = syntax.toUnionMemberName(member.getClassTemplateSpec()) }
     public @if (union.getEnclosingClass() != null) {static} class @unionMemberName implements @className {
-      private static final String TYPE_NAME = "@memberKeyToTypeName.get(member.getClassTemplateSpec().getSchema().getUnionMemberKey())";
+      private static final String TYPE_NAME = "@memberKeyToTypeName.get(member.getSchema().getUnionMemberKey())";
 
       @if(!mutable) {
         public @(unionMemberName)(@syntax.toType(member.getClassTemplateSpec()) definition) {

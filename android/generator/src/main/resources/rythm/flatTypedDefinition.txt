@@ -17,35 +17,28 @@ public interface @className {
   @for(Member member: union.getMembers()) {
     @{ String memberKey = member.getClassTemplateSpec().getSchema().getUnionMemberKey() }
     @{ String unionMemberName = syntax.toUnionMemberName(member.getClassTemplateSpec()) }
-    @if (member.getClassTemplateSpec().getSchema().getType() != Type.RECORD) {
-      // flatTypedDefinition members must all be records, but found: @memberKey
-    } else {
-      public @if (union.getEnclosingClass() != null) {static} class @unionMemberName implements @className {
-        @{RecordTemplateSpec memberSpec = ((RecordTemplateSpec)member.getClassTemplateSpec())}
-        @{List<Field> fields = memberSpec.getFields()}
+    public @if (union.getEnclosingClass() != null) {static} class @unionMemberName implements @className {
+      @{RecordTemplateSpec memberSpec = ((RecordTemplateSpec)member.getClassTemplateSpec())}
+      @{List<Field> fields = memberSpec.getFields()}
 
-        @if(!mutable) {
-          @recordConstructor(memberSpec, syntax)
-        }
+      @if(!mutable) {
+        @recordConstructor(memberSpec, syntax)
+      }
 
-        private static final String TYPE_NAME = "@memberKeyToTypeName.get(memberKey)";
+      private static final String TYPE_NAME = "@memberKeyToTypeName.get(memberKey)";
 
-        public final String typeName = TYPE_NAME;
+      public final String typeName = TYPE_NAME;
 
-        @recordFields(memberSpec, syntax, mutable, false)
+      @recordFields(memberSpec, syntax, mutable, false)
 
-        @* TODO: figure out how to enable.  This causes the generator to freeze.  Is recursion not allowed in Rythm? *@
-        @* @enclosedTypes(memberSpec, syntax, mutable) *@
+      @if(!mutable) {
+        @recordEqualityMethods(memberSpec, syntax)
 
-        @if(!mutable) {
-          @recordEqualityMethods(memberSpec, syntax)
+        public static class Builder {
+          @recordFields(memberSpec, syntax, true, false)
 
-          public static class Builder {
-            @recordFields(memberSpec, syntax, true, false)
-
-            public @unionMemberName build() {
-              return new @(className)(@syntax.fieldList(memberSpec.getFields()));
-            }
+          public @unionMemberName build() {
+            return new @(className)(@syntax.fieldList(memberSpec.getFields()));
           }
         }
       }

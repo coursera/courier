@@ -4,7 +4,7 @@
 
 @{ String className = syntax.escapeKeyword(record.getClassName()) }
 
-private volatile Integer hashCode = null;
+private transient volatile Integer hashCode = null;
 @@Override
 public int hashCode() {
   if (hashCode != null) return hashCode.intValue();

@@ -300,3 +300,6 @@ Also:
 
 [ ] Support $UNKNOWN for enums, this could be done with a TypeAdapter that delegates back to the
     enum adapter for recognized symbols.
+
+[ ] Disallow any attempt to serialize to JSON with a unknown union member of enum symbol. Clients
+    should identify an handle these cases since we do not provide pass-thru.

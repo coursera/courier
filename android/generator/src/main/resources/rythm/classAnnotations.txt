@@ -2,7 +2,7 @@
 @import java.util.Calendar
 @import org.coursera.courier.android.JavadocEscaping
 
-@* Add any scaladoc and deprecated annotations as well as the Generated annotation.*@
+@* Add any scaladoc and deprecated annotations as well as the Generated annotation. *@
 @{Map<String, Object> props = schema.getProperties() }
 
 @JavadocEscaping.stringToJavadoc(schema.getDoc(), props)

@@ -23,6 +23,32 @@ import com.linkedin.pegasus.generator.spec.UnionTemplateSpec;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Provides utilities to:
+ * - Identify if a type definition has been registered with a Pegasus union schema.
+ * - Extract the typed definitions mapping from the schema.
+ *
+ * Typed definitions are an alternate representation of unions. There are two main formats:
+ *
+ * TypedDefinition JSON:
+ *
+ * <code>
+ *   {
+ *     "typeName": "...",
+ *     "definition": { "field1": ..., "field2": ... }
+ *   }
+ * </code>
+ *
+ * FlatTypedDefinition JSON:
+ *
+ * <code>
+ *   {
+ *     "typeName": "...",
+ *     "field1": ...,
+ *     "field2": ...
+ *   }
+ * </code>
+ */
 public class TypedDefinitions {
 
   public static boolean isTypedDefinition(UnionTemplateSpec unionSpec) {
