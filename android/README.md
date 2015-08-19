@@ -37,6 +37,73 @@ dependencies {
 Then add pegasus schema files to the `src/main/pegasus` directory of your project. Java classes
 will be generated next time `gradle build` is run.
 
+
+Mutable and Immutable types
+---------------------------
+
+Both mutable and immutable data bindings are supported.
+
+-                     |  Mutable bindings   | Immutable bindings
+----------------------|---------------------|-------------------------------------------------------
+Field access          | `public` fields     | `public final` fields
+Constructor           | `Course()`          | `Course(Field1 field1, Field2 field2, ...)`
+Builder               | not needed          | `Course.Builder()` with `public` fields and `.build()`
+`hashCode` / `equals` | No                  | Yes, structural
+Arrays                | Java arrays (`[]`)  | `List` based
+
+#### Mutable Binding
+
+For compatibility with existing usage patterns, Courier is able to generate mutable bindings with
+public fields, e.g.:
+
+```java
+Course course = new Course()
+course.name = "name"
+course.slug = "slug"
+```
+
+#### Immutable
+
+For many use cases, immutable types are preferred.
+
+Courier will generate an immutable type where the fields may be provided in to the constructor:
+
+```java
+Course course = new Course("name", "slug", ...)
+```
+
+Or, where the fields may be provided using a builder:
+
+```java
+Course.Builder builder = new Course.Builder()
+builder.name = "name"
+builder.slug = "slug"
+Course course = builder.build() // builds an immutable type
+```
+
+The builder should be used for types with large number of fields or with many optional fields.
+
+### Configuring the generator for mutable types
+
+Generated types will be immutable by default. To generate a mutable type, do:
+
+```
+{
+  "name": "Course",
+  "type": "record",
+  "fields" [ ... ],
+  "android": {
+    "mutablity": "MUTABLE" // options: "MUTABLE", "IMMUTABLE". Defaults to "IMMUTABLE".
+  }
+}
+```
+
+### hashCode/equals
+Developers have asked for `hashCode` and `equals` operators on the Android generated bindings.
+
+Since it is unsafe to add the methods to mutable types, we will only generate them for immutable types.
+
+
 ### Adapters
 
 GSON Adapters can be used to bind to arbitrary Java classes.
@@ -142,7 +209,13 @@ TODO
 ----
 
 **DONE!** Add support for all base types (records, maps, arrays, unions, enums, primitives)
-**DONE!** Add hashCode/equals support
+
+### Add Immutable type bindings
+
+We do not allow hashCode/equals for mutable bindings.
+
+We plan to add immutable bindings. Once added, we can enable hashCode/equals support for these
+bindings.
 
 ### Add validation support
 

@@ -1,10 +1,10 @@
-@args com.linkedin.pegasus.generator.spec.UnionTemplateSpec union, java.util.Map<String, String> memberKeyToTypeName
+@args com.linkedin.pegasus.generator.spec.UnionTemplateSpec union, java.util.Map<String, String> memberKeyToTypeName, org.coursera.courier.android.JavaSyntax syntax, boolean mutable
 @import com.linkedin.pegasus.generator.spec.UnionTemplateSpec.Member
 @import org.coursera.courier.android.JavaSyntax
 
 @maybePackageAndImports(union)
 
-@{ String className = JavaSyntax.escapeKeyword(union.getClassName()) }
+@{ String className = syntax.escapeKeyword(union.getClassName()) }
 
 @if (union.getTyperefClass() != null) {
   @classAnnotations(union.getTyperefClass().getSchema())
@@ -12,24 +12,33 @@
 @@JsonAdapter(@(className).Adapter.class)
 public interface @className {
   @for(Member member: union.getMembers()) {
-    @{ String unionMemberName = JavaSyntax.toUnionMemberName(member.getClassTemplateSpec()) }
+    @{ String unionMemberName = syntax.toUnionMemberName(member.getClassTemplateSpec()) }
     public @if (union.getEnclosingClass() != null) {static} class @unionMemberName implements @className {
       private static final String TYPE_NAME = "@memberKeyToTypeName.get(member.getClassTemplateSpec().getSchema().getUnionMemberKey())";
-      public final String typeName = TYPE_NAME;
 
-      public @JavaSyntax.toType(member.getClassTemplateSpec()) definition;
-
-      @@Override
-      public int hashCode() {
-        return Objects.hash(this.getClass(), definition);
+      @if(!mutable) {
+        public @(unionMemberName)(@syntax.toType(member.getClassTemplateSpec()) definition) {
+          this.definition = definition;
+        }
       }
 
-      @@Override
-      public boolean equals(Object obj) {
-        if (!(obj instanceof @unionMemberName)) return false;
-        @unionMemberName other = (@unionMemberName)obj;
-        if (other == this) return true;
-        return Objects.deepEquals(this.definition, other.definition);
+      public final String typeName = TYPE_NAME;
+
+      public @if(!mutable){final} @syntax.toType(member.getClassTemplateSpec()) definition;
+
+      @if(!mutable) {
+        @@Override
+        public int hashCode() {
+          return Objects.hash(this.getClass(), definition);
+        }
+
+        @@Override
+        public boolean equals(Object obj) {
+          if (!(obj instanceof @unionMemberName)) return false;
+          @unionMemberName other = (@unionMemberName)obj;
+          if (other == this) return true;
+          return Objects.deepEquals(this.definition, other.definition);
+        }
       }
     }
   }
@@ -45,7 +54,7 @@ public interface @className {
         public Class<? extends @className> resolve(String typeName) {
           switch (typeName) {
             @for(Member member: union.getMembers()) {
-              @{ String unionMemberName = JavaSyntax.toUnionMemberName(member.getClassTemplateSpec()) } case @(unionMemberName).TYPE_NAME: return @(unionMemberName).class;
+              @{ String unionMemberName = syntax.toUnionMemberName(member.getClassTemplateSpec()) } case @(unionMemberName).TYPE_NAME: return @(unionMemberName).class;
             }
             default: return $UnknownMember.class;
           }

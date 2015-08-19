@@ -16,6 +16,7 @@
 
 package org.coursera.courier;
 
+import com.linkedin.data.DataMap;
 import com.linkedin.data.schema.DataSchema;
 import com.linkedin.data.schema.RecordDataSchema;
 import com.linkedin.pegasus.generator.spec.ClassTemplateSpec;
@@ -70,24 +71,32 @@ public class AndroidGenerator implements PegasusCodeGenerator {
   public GeneratedCode generate(ClassTemplateSpec templateSpec) {
 
     String code;
+    boolean isMutableBinding = isMutableBinding(templateSpec);
+    JavaSyntax syntax = new JavaSyntax(
+        isMutableBinding ? JavaSyntax.ArrayStyle.ARRAY : JavaSyntax.ArrayStyle.LIST);
+
     if (templateSpec instanceof RecordTemplateSpec) {
-      code = engine.render("rythm/record.txt", templateSpec);
+      code = engine.render("rythm/record.txt", templateSpec, syntax, isMutableBinding);
     } else if (templateSpec instanceof EnumTemplateSpec) {
-      code = engine.render("rythm/enum.txt", templateSpec);
+      code = engine.render("rythm/enum.txt", templateSpec, syntax, isMutableBinding);
     } else if (templateSpec instanceof UnionTemplateSpec) {
       UnionTemplateSpec unionSpec = (UnionTemplateSpec) templateSpec;
       if (TypedDefinitions.isTypedDefinition(unionSpec)) {
         code = engine.render(
             "rythm/typedDefinition.txt",
             templateSpec,
-            TypedDefinitions.getTypedDefinitionMapping(unionSpec, false));
+            TypedDefinitions.getTypedDefinitionMapping(unionSpec, false),
+            syntax,
+            isMutableBinding);
       } else if (TypedDefinitions.isFlatTypedDefinition(unionSpec)) {
         code = engine.render(
             "rythm/flatTypedDefinition.txt",
             templateSpec,
-            TypedDefinitions.getTypedDefinitionMapping(unionSpec, true));
+            TypedDefinitions.getTypedDefinitionMapping(unionSpec, true),
+            syntax,
+            isMutableBinding);
       } else {
-        code = engine.render("rythm/union.txt", templateSpec);
+        code = engine.render("rythm/union.txt", templateSpec, syntax, isMutableBinding);
       }
     } else {
       return null; // Indicates that we are declining to generate code for the type (e.g. map or array)
@@ -96,6 +105,25 @@ public class AndroidGenerator implements PegasusCodeGenerator {
     code = PoorMansJavaSourceFormatter.format(code);
 
     return new GeneratedCode(compilationUnit, code);
+  }
+
+  // TODO: switch this to false
+  private static final boolean isMutableDefault = true;
+  private boolean isMutableBinding(ClassTemplateSpec templateSpec) {
+    DataSchema schema = templateSpec.getSchema();
+    if (schema == null) {
+      return isMutableDefault;
+    } else {
+      Object android = schema.getProperties().get("android");
+      if (android == null || !(android instanceof DataMap)) {
+        return isMutableDefault;
+      }
+      String mutable = ((DataMap) android).getString("mutability");
+      if (mutable == null) {
+        return isMutableDefault;
+      }
+      return mutable.equals("MUTABLE");
+    }
   }
 
   @Override
