@@ -25,6 +25,7 @@
   import scala.collection.mutable
   import com.linkedin.data.template.Custom
   import org.coursera.courier.coercers.SingleElementCaseClassCoercer
+  import scala.language.implicitConversions
 }
 
 @ClassAnnotations(array) final class @(array.scalaType)(private val dataList: DataList)

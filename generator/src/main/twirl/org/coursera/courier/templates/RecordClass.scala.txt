@@ -38,6 +38,7 @@
   import scala.collection.GenTraversable
   import org.coursera.courier.codecs.InlineStringCodec
   import org.coursera.courier.coercers.SingleElementCaseClassCoercer
+  import scala.language.implicitConversions
 }
 
 @ClassAnnotations(record) final class @record.scalaType private (private val dataMap: DataMap)

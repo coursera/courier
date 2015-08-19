@@ -1,0 +1,8 @@
+{
+  "type": "record",
+  "name": "WithCustomTypesMap",
+  "namespace": "org.coursera.maps",
+  "fields": [
+    { "name": "ints", "type": { "type": "map", "values": "org.coursera.customtypes.CustomInt"} }
+  ]
+}

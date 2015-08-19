@@ -1,0 +1,17 @@
+{
+  "type": "record",
+  "name": "Simple",
+  "doc": "A simple record",
+  "namespace": "org.coursera.records.immutable",
+  "fields": [
+    {
+      "name": "message",
+      "type": "string",
+      "optional": true,
+      "doc": "A simple field"
+    }
+  ],
+  "android": {
+    "mutability": "IMMUTABLE"
+  }
+}

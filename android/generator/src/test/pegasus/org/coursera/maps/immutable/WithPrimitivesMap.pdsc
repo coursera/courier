@@ -1,0 +1,14 @@
+{
+  "type": "record",
+  "name": "WithPrimitivesMap",
+  "namespace": "org.coursera.maps",
+  "fields": [
+    { "name": "ints", "type": { "type": "map", "values": "int" } },
+    { "name": "longs", "type": { "type": "map", "values": "long" } },
+    { "name": "floats", "type": { "type": "map", "values": "float" } },
+    { "name": "doubles", "type": { "type": "map", "values": "double" } },
+    { "name": "booleans", "type": { "type": "map", "values": "boolean" } },
+    { "name": "strings", "type": { "type": "map", "values": "string" } },
+    { "name": "bytes", "type": { "type": "map", "values": "bytes" } }
+  ]
+}
