@@ -5,11 +5,13 @@
   "fields": [
     {
       "name": "title",
-      "type": "string"
+      "type": "string",
+      "optional": true
     },
     {
       "name": "body",
-      "type": "string"
+      "type": "string",
+      "optional": true
     }
   ]
 }

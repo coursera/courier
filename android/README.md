@@ -1,8 +1,8 @@
 Java Android Pegasus Data Binding Generator
 ============================================
 
-Usage
------
+Gradle Configuration
+--------------------
 
 In your main build.gradle file, add:
 
@@ -41,7 +41,7 @@ will be generated next time `gradle build` is run.
 Mutable and Immutable types
 ---------------------------
 
-Both mutable and immutable data bindings are supported.
+For Android Java, either mutable and immutable data bindings may be generated.
 
 -                     |  Mutable bindings   | Immutable bindings
 ----------------------|---------------------|-------------------------------------------------------
@@ -51,10 +51,13 @@ Builder               | not needed          | `Course.Builder()` with `public` f
 `hashCode` / `equals` | No                  | Yes, structural
 Arrays                | Java arrays (`[]`)  | `List` based
 
-#### Mutable Binding
+#### Mutable Bindings
 
-For compatibility with existing usage patterns, Courier is able to generate mutable bindings with
-public fields, e.g.:
+Where needed, Courier is able to generate mutable bindings for Android.
+
+Mutable bindings are simple Java classes with an default constructor and public fields.
+
+Example usage:
 
 ```java
 Course course = new Course()
@@ -62,30 +65,8 @@ course.name = "name"
 course.slug = "slug"
 ```
 
-#### Immutable
-
-For many use cases, immutable types are preferred.
-
-Courier will generate an immutable type where the fields may be provided in to the constructor:
-
-```java
-Course course = new Course("name", "slug", ...)
-```
-
-Or, where the fields may be provided using a builder:
-
-```java
-Course.Builder builder = new Course.Builder()
-builder.name = "name"
-builder.slug = "slug"
-Course course = builder.build() // builds an immutable type
-```
-
-The builder should be used for types with large number of fields or with many optional fields.
-
-### Configuring the generator for mutable types
-
-Generated types will be immutable by default. To generate a mutable type, do:
+To configure Courier to generate mutable bindings, set the mutability property to "MUTABLE" in the
+Pegasus schema:
 
 ```
 {
@@ -98,13 +79,38 @@ Generated types will be immutable by default. To generate a mutable type, do:
 }
 ```
 
+
+#### Immutable Bindings
+
+Immutable classes are preferred when using Courier with Android.
+
+They may be constructed either using the public constructor:
+
+```java
+Course course = new Course("name", "slug", ...)
+```
+
+Or, via a builder:
+
+```java
+Course.Builder builder = new Course.Builder()
+builder.name = "name"
+builder.slug = "slug"
+Course course = builder.build() // builds an immutable type
+```
+
+The builder should be favored when constructing class instances with a large number of fields or
+where many fields are optional.
+
 ### hashCode/equals
-Developers have asked for `hashCode` and `equals` operators on the Android generated bindings.
 
-Since it is unsafe to add the methods to mutable types, we will only generate them for immutable types.
+`hashCode` and `equals` operators on the Android generated bindings.
+
+Since it is unsafe to add the methods to mutable types, Courier will only generate them for
+immutable classes.
 
 
-### Adapters
+### Adapters / Custom Types
 
 GSON Adapters can be used to bind to arbitrary Java classes.
 
@@ -210,16 +216,11 @@ TODO
 
 **DONE!** Add support for all base types (records, maps, arrays, unions, enums, primitives)
 
-### Add Immutable type bindings
-
-We do not allow hashCode/equals for mutable bindings.
-
-We plan to add immutable bindings. Once added, we can enable hashCode/equals support for these
-bindings.
+**DONE!** Add Immutable type bindings
 
 ### Add validation support
 
-Not sure how to do this yet. Delegate the heavy lifting back to peagsus?  Just need
+Not sure how to do this yet. Delegate the heavy lifting back to Peagsus?  Just need
 the SCHEMA and a dependency on pegasus data and it could be done that way.
 
 Alternatively, we could simply provide a "validate" method that just checks that
@@ -236,5 +237,10 @@ This could be done by taking the .pdsc "coercerClass" as a adapter or adapter fa
 
 ### Add default support
 
-For primitives this is trival. For complex types this is more difficult, although GSON
+For primitives this is trivial. For complex types this is more difficult, although GSON
 may be able to produce the default value from static JSON text ?
+
+Also:
+
+[ ] Support $UNKNOWN for enums, this could be done with a TypeAdapter that delegates back to the
+    enum adapter for recognized symbols.
