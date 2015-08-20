@@ -91,7 +91,8 @@ Projections
 When a record is projected, only the requested fields are present. Even required fields may be
 absent.
 
-To support this, all fields are optional.
+To support this, all fields are nullable, so that they my be treated as optional in the generated
+data binding classes.
 
 Mutable and Immutable types
 ---------------------------
@@ -100,13 +101,14 @@ Either mutable or immutable data bindings may be generated.
 
 Immutable types should be preferred.
 
--                     |  Mutable bindings   | Immutable bindings
-----------------------|---------------------|-------------------------------------------------------
-Field access          | `public` fields     | `public final` fields
-Constructor           | `Course()`          | `Course(Field1 field1, Field2 field2, ...)`
-Builder               | not needed          | `Course.Builder()` with `public` fields and `.build()`
-`hashCode` / `equals` | No                  | Yes, structural
-Arrays                | Java arrays (`[]`)  | `List` based
+-                     |  Mutable bindings                 | Immutable bindings
+----------------------|-----------------------------------|-------------------------------------------------------
+Field access          | `public` fields                   | `public final` fields
+Constructor           | `Course()`                        | `Course(Field1 field1, Field2 field2, ...)`
+Builder               | not needed                        | `Course.Builder()` with `public` fields and `.build()`
+`hashCode` / `equals` | No                                | Yes, structural
+Arrays                | Configurable. `List` by default   | `List`
+Primitives            | Configurable. nullable by default | nullable
 
 #### Immutable Bindings
 
@@ -153,10 +155,37 @@ Pegasus schema:
   "type": "record",
   "fields" [ ... ],
   "android": {
-    "mutablity": "MUTABLE" // options: "MUTABLE", "IMMUTABLE". Defaults to "IMMUTABLE".
+    "mutablity": "MUTABLE"
   }
 }
 ```
+
+To represent Pegasus 'arrays' in Java as arrays (`[]`), set the arrayStyle property to "ARRAYS" in
+the pegasus schema:
+
+```
+{
+  ...
+  "android": {
+    "mutablity": "MUTABLE",
+    "arrayStyle": "ARRAYS"
+  }
+}
+```
+
+To represent Pegasus primitive type in Java as primitive value type, set the primitiveStyle property
+to "PRIMITIVES" in the pegasus schema:
+
+```
+{
+  ...
+  "android": {
+    "mutablity": "MUTABLE",
+    "primitiveStyle": "PRIMITIVES",
+  }
+}
+```
+
 
 ### hashCode/equals
 
@@ -255,6 +284,12 @@ To publish to a maven repository:
 gradle uploadArchives
 ```
 
+To publish to an artifactory repository:
+
+```sh
+gradle artifactoryPublish
+```
+
 Design notes
 ------------
 
@@ -303,3 +338,5 @@ Also:
 
 [ ] Disallow any attempt to serialize to JSON with a unknown union member of enum symbol. Clients
     should identify an handle these cases since we do not provide pass-thru.
+
+[ ] Emit a warning or fail the build when mutable types are referenced by immutable types.
