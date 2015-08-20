@@ -17,6 +17,7 @@
 package org.coursera.courier.android;
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.text.WordUtils;
 
 public class JavadocEscaping {
   /**
@@ -34,13 +35,29 @@ public class JavadocEscaping {
 
     if (emptyDoc && emptyDeprecated) return "";
 
-    String javadoc = (emptyDoc) ? null : escape(doc.trim()).replaceAll("\\n", "\n * ");
+    String javadoc = (emptyDoc) ? null : wrap(escape(doc)).replaceAll("\\n", "\n * ");
     String deprecatedMsg = (emptyDeprecated) ? null : (String)deprecatedProp;
     return
       "/**\n" +
       (javadoc == null ? "" : (" * " + javadoc + "\n")) +
-      (deprecatedMsg == null ? "" : (" * @deprecated " + deprecatedMsg) + "\n") +
+      (deprecatedMsg == null ? "" : (" * @deprecated " + wrap(deprecatedMsg)) + "\n") +
       " */";
+  }
+
+  private static int WRAP_HIGH_WATERMARK = 180;
+  private static int WRAP_TARGET_LINE_LENGTH = 100;
+
+  private static String wrap(String text) {
+    StringBuilder builder = new StringBuilder();
+    for (String line: text.split("\n")) {
+      if (line.length() > WRAP_HIGH_WATERMARK) {
+        builder.append(WordUtils.wrap(line, WRAP_TARGET_LINE_LENGTH));
+      } else {
+        builder.append(text);
+      }
+      builder.append("\n");
+    }
+    return builder.toString().trim();
   }
 
   private static String escape(String raw) {

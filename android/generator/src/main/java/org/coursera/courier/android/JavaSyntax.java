@@ -22,7 +22,7 @@ import com.linkedin.pegasus.generator.spec.ArrayTemplateSpec;
 import com.linkedin.pegasus.generator.spec.ClassTemplateSpec;
 import com.linkedin.pegasus.generator.spec.RecordTemplateSpec;
 import org.coursera.courier.android.AndroidProperties.ArrayStyle;
-import org.coursera.courier.android.AndroidProperties.PrimitiveStyle;
+import org.coursera.courier.android.AndroidProperties.Optionality;
 import org.coursera.courier.api.CourierMapTemplateSpec;
 
 import java.util.Arrays;
@@ -69,7 +69,7 @@ public class JavaSyntax {
   }
 
   /**
-   * Returns the escaped fully qualified name of a ClassTemplateSpec.
+   * Returns the escaped fully qualified name of a {@link ClassTemplateSpec}.
    */
   public static String escapedFullname(ClassTemplateSpec spec) {
     return toFullname(spec.getNamespace(), escapeKeyword(spec.getClassName()));
@@ -86,21 +86,25 @@ public class JavaSyntax {
   /**
    * Returns the Java type of the given {@link ClassTemplateSpec} as a Java source code string.
    *
-   * Primitive types are represented using the {@link PrimitiveStyle} for this instance.
+   * Primitive types are represented using the {@link AndroidProperties.Optionality} for this
+   * instance.
    */
   public String toType(ClassTemplateSpec spec) {
-    return toType(spec, androidProperties.primitiveStyle);
+    return toType(spec, androidProperties.optionality);
   }
 
   /**
    * Returns the Java type of an optional field for the given {@link ClassTemplateSpec} as a
    * Java source code string.
    *
-   * If the field is optional it is always represented as a {@link PrimitiveStyle#BOXED} type
-   * else it is represented using the {@link PrimitiveStyle} for this instance.
+   * If the field is optional it is always represented as a
+   * {@link AndroidProperties.Optionality#REQUIRED_FIELDS_MAY_BE_ABSENT} type else it is
+   * represented using the {@link AndroidProperties.Optionality} for this instance.
    */
   public String toOptionalType(ClassTemplateSpec spec, boolean optional) {
-    return toType(spec, optional ? PrimitiveStyle.BOXED : androidProperties.primitiveStyle);
+    return toType(
+        spec,
+        optional ? Optionality.REQUIRED_FIELDS_MAY_BE_ABSENT : androidProperties.optionality);
   }
 
   /**
@@ -108,10 +112,10 @@ public class JavaSyntax {
    *
    * Primitive types are represented as specified by the provided @{link PrimitiveStyle}.
    */
-  public String toType(ClassTemplateSpec spec, PrimitiveStyle primitiveStyle) {
+  public String toType(ClassTemplateSpec spec, Optionality optionality) {
     // If we're supporting projections, all fields, even required ones, may be absent.
     // To support this, we box all primitive field types.
-    boolean boxed = primitiveStyle == PrimitiveStyle.BOXED;
+    boolean boxed = optionality == Optionality.REQUIRED_FIELDS_MAY_BE_ABSENT;
 
     if (spec.getSchema() == null) { // custom type
       return escapedFullname(spec);
@@ -160,12 +164,12 @@ public class JavaSyntax {
     } else if (schemaType == Type.UNION) {
       return escapedFullname(spec);
     } else if (schemaType == Type.MAP) {
-      return "Map<String, " + toType(((CourierMapTemplateSpec) spec).getValueClass(), PrimitiveStyle.BOXED) + ">";
+      return "Map<String, " + toType(((CourierMapTemplateSpec) spec).getValueClass(), Optionality.REQUIRED_FIELDS_MAY_BE_ABSENT) + ">";
     } else if (schemaType == Type.ARRAY) {
       if (androidProperties.arrayStyle == ArrayStyle.ARRAYS) {
-        return toType(((ArrayTemplateSpec) spec).getItemClass(), PrimitiveStyle.BOXED) + "[]";
+        return toType(((ArrayTemplateSpec) spec).getItemClass(), Optionality.REQUIRED_FIELDS_MAY_BE_ABSENT) + "[]";
       } else if (androidProperties.arrayStyle == ArrayStyle.LISTS) {
-	      return "List<" + toType(((ArrayTemplateSpec) spec).getItemClass(), PrimitiveStyle.BOXED) + ">";
+	      return "List<" + toType(((ArrayTemplateSpec) spec).getItemClass(), Optionality.REQUIRED_FIELDS_MAY_BE_ABSENT) + ">";
       } else {
         throw new IllegalArgumentException();
       }

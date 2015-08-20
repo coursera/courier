@@ -4,20 +4,42 @@ import com.linkedin.data.DataMap;
 import com.linkedin.data.schema.DataSchema;
 import com.linkedin.pegasus.generator.spec.ClassTemplateSpec;
 
+/**
+ * Customizable properties that may be added to a Pegasus schema.
+ *
+ * Example usage:
+ *
+ * <code>
+ *   {
+ *     "name": "Fortune",
+ *     "namespace": "org.example",
+ *     "type": "record",
+ *     "fields": [ ... ],
+ *     "android": {
+ *       "mutability": "MUTABLE",
+ *       "arrayStyle": "LISTS",
+ *       "optionality": "BASIC"
+ *     }
+ *   }
+ * </code>
+ */
 public class AndroidProperties {
 
   /**
-   * The two major data binding generation modes supported by this generator.
+   * "mutability" property.
+   *
+   * Defines the two major data binding generation modes supported by this generator.
    */
   public enum Mutability {
 
     /**
-     * Generates immutable types.
+     * Generates immutable types with parameterized constructors, a mutable builder utility class,
+     * and public final fields.
      */
     IMMUTABLE,
 
     /**
-     * Provided for compatibility with basic existing GSON style data bindings.
+     * Provided for compatibility with "basic" GSON data bindings.
      *
      * Generates simple classes with a default constructor and public fields.
      */
@@ -25,57 +47,82 @@ public class AndroidProperties {
   }
 
   /**
+   * "arrayStyle" property.
+   *
    * Java representations of a Pegasus 'array' supported by this generator.
    */
   public enum ArrayStyle {
 
     /**
-     * Represent a Pegasus 'array' as a Java array.
+     * Represent a Pegasus 'array' as a {@link java.util.List} (e.g. "List&lt;Course&gt;")
      *
-     * Since all Java arrays are mutable, this may be used with 'MUTABLE' data bindings only only.
+     * For immutable data bindings, all Lists are unmodifiable.
      */
-    ARRAYS,
+    LISTS,
 
     /**
-     * Represent a Pegasus 'array' as a {@link java.util.List}.
+     * rovided for compatibility with "basic" GSON data bindings.
+     *
+     * Represent a Pegasus 'array' as a Java array (e.g. "Course[]").
+     *
+     * Since all Java arrays are mutable, this mode may be used with {@link Mutability#MUTABLE} only.
      */
-    LISTS
+    ARRAYS
   }
 
   /**
+   * "optionality" property.
+   *
    * Java representations of Pegasus primitive types supported by this generator.
    */
-  public enum PrimitiveStyle {
+  public enum Optionality {
 
-    // TODO(jbetz): Remove? This will be unsafe when used with projections.
     /**
-     * WARN: this mode is unsafe when used in conjunction with projections, as a read/modify/write
+     * Allows required fields to be absent, useful when working with projections.
+     *
+     * "null" is used to represent un-projected fields (required or optional) as well as absent
+     * optional fields.
+     *
+     * Pegasus primitives are represented as Java boxed primitive types.
+     * E.g. {@link java.lang.Integer} such that they are nullable.
+     */
+    REQUIRED_FIELDS_MAY_BE_ABSENT,
+
+    // TODO(jbetz): Remove as soon as we've migrated away from this usage pattern.
+    /**
+     * WARNING: this mode is unsafe when used in conjunction with projections, as a read/modify/write
      * pattern on a projection could result in the default value of primitives (e.g. 0 for ints)
      * to be accidentally written.
      *
-     * Pegasus primitives are represented as Java primitives.
+     * Provided for compatibility with "basic" GSON data bindings.
+     *
+     * Required primitive fields are represented as Java primitives and must be present. If not
+     * explicitly set, they will default to the Java defined default value for the particular
+     * primitive type (e.g. 0 for int).
+     *
+     * Also, when reading JSON, if a required primitive field is absent, the field in data binding
+     * will default to the Java defined default value of the primitive type.
+     *
+     * When writing JSON, all required primitive fields will be written, even if they are the
+     * Java defined default value of the primitive type.
+     *
+     * Optional primitive fields are represented as nullable Java boxed primitive types.
      */
-    PRIMITIVES,
-
-    /**
-     * Pegasus primitives are represented as Java boxed primitive types.
-     * E.g. {@link java.lang.Integer}.
-     */
-    BOXED
+    BASIC
   }
 
   public final ArrayStyle arrayStyle;
   public final Mutability mutability;
-  public final PrimitiveStyle primitiveStyle;
+  public final Optionality optionality;
 
   public static final AndroidProperties DEFAULT =
-      new AndroidProperties(ArrayStyle.LISTS, Mutability.IMMUTABLE, PrimitiveStyle.BOXED);
+      new AndroidProperties(ArrayStyle.LISTS, Mutability.IMMUTABLE, Optionality.REQUIRED_FIELDS_MAY_BE_ABSENT);
 
   public AndroidProperties(
-      ArrayStyle arrayStyle, Mutability mutability, PrimitiveStyle primitiveStyle) {
+      ArrayStyle arrayStyle, Mutability mutability, Optionality optionality) {
     this.arrayStyle = arrayStyle;
     this.mutability = mutability;
-    this.primitiveStyle = primitiveStyle;
+    this.optionality = optionality;
   }
 
   public static AndroidProperties lookupAndroidProperties(ClassTemplateSpec templateSpec) {
@@ -97,8 +144,8 @@ public class AndroidProperties {
           arrayStyleStr == null ? DEFAULT.arrayStyle : ArrayStyle.valueOf(arrayStyleStr);
       Mutability mutability =
           mutabilityStr == null ? DEFAULT.mutability : Mutability.valueOf(mutabilityStr);
-      PrimitiveStyle primitiveStyle =
-          primitiveStyleStr == null ? DEFAULT.primitiveStyle : PrimitiveStyle.valueOf(primitiveStyleStr);
+      Optionality optionality =
+          primitiveStyleStr == null ? DEFAULT.optionality : Optionality.valueOf(primitiveStyleStr);
 
       if (mutability == Mutability.IMMUTABLE) {
         if (arrayStyle == ArrayStyle.ARRAYS) {
@@ -107,14 +154,14 @@ public class AndroidProperties {
             "to guarantee immutablity, 'arrayStyle': '" + ArrayStyle.ARRAYS + "' may not be used " +
             "with 'mutability': '" + Mutability.IMMUTABLE + "'. Use " + ArrayStyle.LISTS + " instead.");
         }
-        if (primitiveStyle == PrimitiveStyle.PRIMITIVES) {
+        if (optionality == Optionality.BASIC) {
           throw new IllegalArgumentException(
             "In pegasus schema '" + templateSpec.getFullName() + "', " +
-            "to support projections, 'primitiveStyle': '" + PrimitiveStyle.PRIMITIVES + "' may not " +
-            "be used with 'mutability': '" + Mutability.IMMUTABLE + "'. Use " + PrimitiveStyle.BOXED + " instead.");
+            "to support projections, 'optionality': '" + Optionality.BASIC + "' may not " +
+            "be used with 'mutability': '" + Mutability.IMMUTABLE + "'. Use " + Optionality.REQUIRED_FIELDS_MAY_BE_ABSENT + " instead.");
         }
       }
-      return new AndroidProperties(arrayStyle, mutability, primitiveStyle);
+      return new AndroidProperties(arrayStyle, mutability, optionality);
     }
   }
 }

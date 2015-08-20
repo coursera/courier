@@ -23,20 +23,19 @@ import org.apache.commons.lang3.StringUtils;
  *
  * Ideally, we would use a grammar aware formatter for Java (I found Jalopy, but it old,
  * unmaintained, and depends on old versions of libraries like log4j that are incompatible with
- * other dependencies we need). Until we find something good, we'll use this.
+ * other dependencies we need). Until we find something good, we'll use these basic heuristics:
  *
- * What it does:
- * - To sanitize whitespace, collapses consecutive empty lines to a single empty line.
- * - To keep javadoc and annotations directly above class and field definitions, collapses any
+ * - To sanitize whitespace, collapse consecutive empty lines to a single empty line.
+ * - To keep javadoc and annotations directly above class and field definitions, collapse any
  *   empty lines after a line starting with '*' or '@'.
- * - Auto-indents '{', '}' delimited code blocks correctly so long as '{' is always the last and '}'
+ * - Auto-indent '{', '}' delimited code blocks correctly so long as '{' is always the last and '}'
  *   is always the first non-whitespace char on a line.
  * - Removes any tailing whitespace from the ends of lines.
- * - Treats all lines starting with a '*' as a continuation of a Javadoc comment and indents them
+ * - Treat all lines starting with a '*' as a continuation of a Javadoc comment and indents them
  *   one additional space.
  *
  * This routine only modifies whitespace that is either on an empty line or that precedes or trails
- * the code on any particular line. The code from the fist non-whitespace char to the last on
+ * the code on any particular line. The code from the fist non-whitespace character to the last on
  * each line of code is left unmodified.
  *
  */
