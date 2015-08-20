@@ -1,5 +1,5 @@
-Java Android Pegasus Data Binding Generator
-============================================
+Courier Data Binding Generator for Android
+==========================================
 
 Gradle Configuration
 --------------------
@@ -28,8 +28,7 @@ courier {
 }
 
 dependencies {
-    compile 'com.squareup.retrofit:retrofit:1.9.0'
-    compile 'com.squareup.okhttp:okhttp:2.3.0'
+    compile 'com.google.code.gson:gson:2.3.1'
     courierCompile 'org.coursera.courier:courier-android-runtime:0.7.1'
 }
 ```
@@ -331,10 +330,10 @@ This could be done by taking the .pdsc "coercerClass" as a adapter or adapter fa
 For primitives this is trivial. For complex types this is more difficult, although GSON
 may be able to produce the default value from static JSON text ?
 
-Also:
+### Other improvements
 
 [ ] Support $UNKNOWN for enums, this could be done with a TypeAdapter that delegates back to the
-    enum adapter for recognized symbols.
+    enum adapter for recognized symbols? To ease backward compatible changes we need this.
 
 [ ] Disallow any attempt to serialize to JSON with a unknown union member of enum symbol. Clients
     should identify an handle these cases since we do not provide pass-thru.

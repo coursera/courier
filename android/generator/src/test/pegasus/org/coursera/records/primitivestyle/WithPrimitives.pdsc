@@ -13,7 +13,7 @@
   ],
   "android": {
     "mutability": "MUTABLE",
-    "primitiveStyle": "PRIMITIVES",
+    "optionality": "BASIC",
     "arrayStyle": "ARRAYS"
   }
 }

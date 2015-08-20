@@ -37,6 +37,9 @@ import org.rythmengine.resource.ClasspathResourceLoader;
 import java.util.Collection;
 import java.util.Collections;
 
+/**
+ * Courier code generator for Android Java.
+ */
 public class AndroidGenerator implements PegasusCodeGenerator {
   private final RythmEngine engine;
 
@@ -67,6 +70,9 @@ public class AndroidGenerator implements PegasusCodeGenerator {
     }
   }
 
+  /**
+   * See {@link org.coursera.courier.android.AndroidProperties} for customization options.
+   */
   @Override
   public GeneratedCode generate(ClassTemplateSpec templateSpec) {
 
