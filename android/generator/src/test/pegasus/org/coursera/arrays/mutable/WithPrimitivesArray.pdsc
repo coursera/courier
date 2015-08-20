@@ -1,7 +1,7 @@
 {
   "type": "record",
   "name": "WithPrimitivesArray",
-  "namespace": "org.coursera.arrays.immutable",
+  "namespace": "org.coursera.arrays.mutable",
   "fields": [
     { "name": "ints", "type": { "type": "array", "items": "int"} },
     { "name": "longs", "type": { "type": "array", "items": "long"} },
@@ -12,6 +12,6 @@
     { "name": "bytes", "type": { "type": "array", "items": "bytes"} }
   ],
   "android": {
-    "mutability": "IMMUTABLE"
+    "mutability": "MUTABLE"
   }
 }

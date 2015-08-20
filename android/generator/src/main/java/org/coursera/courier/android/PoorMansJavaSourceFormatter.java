@@ -53,14 +53,14 @@ public class PoorMansJavaSourceFormatter {
       line = line.trim();
 
       boolean isEmpty = (line.length() == 0);
-      if (isEmpty && (isPreviousLineEmpty || isPreviousLinePreamble)) continue; // skip it
+      if (isEmpty && (isPreviousLineEmpty || isPreviousLinePreamble)) continue;
 
       if (line.startsWith("}")) {
         indentLevel--;
       }
       result.append(StringUtils.repeat("  ", indentLevel));
-      if (line.startsWith("*")) { // align javadoc
-        result.append(" ");
+      if (line.startsWith("*")) {
+        result.append(" "); // align javadoc continuation
       }
       result.append(line);
       result.append('\n');

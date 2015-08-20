@@ -17,13 +17,13 @@
 package org.coursera.courier.android.test;
 
 
-import org.coursera.arrays.immutable.WithCustomTypesArray;
+import org.coursera.arrays.WithCustomTypesArray;
 import org.coursera.courier.android.customtypes.CustomInt;
 import org.coursera.enums.Fruits;
-import org.coursera.records.immutable.Message;
-import org.coursera.records.immutable.Empty;
-import org.coursera.records.immutable.Simple;
-import org.coursera.records.immutable.WithComplexTypes;
+import org.coursera.records.Message;
+import org.coursera.records.test.Empty;
+import org.coursera.records.test.Simple;
+import org.coursera.records.test.WithComplexTypes;
 import org.junit.Assert;
 import org.junit.Test;
 

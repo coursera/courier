@@ -1,0 +1,16 @@
+{
+  "type": "record",
+  "name": "WithComplexTypesMap",
+  "namespace": "org.coursera.maps.mutable",
+  "fields": [
+    { "name": "empties", "type": { "type": "map", "values": "org.coursera.records.mutable.Empty"} },
+    { "name": "fruits", "type": { "type": "map", "values": "org.coursera.enums.Fruits"} },
+    { "name": "arrays", "type": { "type": "map", "values": { "type": "array", "items": "org.coursera.records.mutable.Simple" } } },
+    { "name": "maps", "type": { "type": "map", "values": { "type": "map", "values": "org.coursera.records.mutable.Simple" } } },
+    { "name": "unions", "type": { "type": "map", "values": ["int", "string", "org.coursera.records.mutable.Simple"] } },
+    { "name": "fixed", "type": { "type": "map", "values": "org.coursera.fixed.Fixed8"} }
+  ],
+  "android": {
+    "mutability": "MUTABLE"
+  }
+}

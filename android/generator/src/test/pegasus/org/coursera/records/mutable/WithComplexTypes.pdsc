@@ -1,7 +1,7 @@
 {
   "name": "WithComplexTypes",
   "type": "record",
-  "namespace": "org.coursera.records.immutable",
+  "namespace": "org.coursera.records.mutable",
   "fields": [
     { "name": "record", "type": "Simple" },
     { "name": "enum", "type": "org.coursera.enums.Fruits" },
@@ -12,6 +12,6 @@
     { "name": "custom", "type": "org.coursera.customtypes.CustomInt" }
   ],
   "android": {
-    "mutability": "IMMUTABLE"
+    "mutability": "MUTABLE"
   }
 }

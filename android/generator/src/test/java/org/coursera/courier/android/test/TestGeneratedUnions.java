@@ -47,10 +47,7 @@ public class TestGeneratedUnions {
     Assert.assertEquals(member.definition.title, "title");
     Assert.assertEquals(member.definition.body, "Hello, GSON.");
 
-    TypedDefinition.NoteMember noteMember = new TypedDefinition.NoteMember();
-    Note note = new Note();
-    note.text = "text";
-    noteMember.definition = note;
+    TypedDefinition.NoteMember noteMember = new TypedDefinition.NoteMember(new Note("text"));
 
     String serialized = gson.toJson(noteMember);
     TypedDefinition roundTripped = gson.fromJson(serialized, TypedDefinition.class);
@@ -75,10 +72,7 @@ public class TestGeneratedUnions {
     Assert.assertEquals(member.title, "title");
     Assert.assertEquals(member.body, "Hello, GSON.");
 
-    FlatTypedDefinition.NoteMember noteMember = new FlatTypedDefinition.NoteMember();
-    Note note = new Note();
-    note.text = "text";
-    noteMember.text = note.text;
+    FlatTypedDefinition.NoteMember noteMember = new FlatTypedDefinition.NoteMember("text");
     String serialized = gson.toJson(noteMember);
     FlatTypedDefinition roundTripped = gson.fromJson(serialized, FlatTypedDefinition.class);
     FlatTypedDefinition.NoteMember roundTrippedMember = (FlatTypedDefinition.NoteMember)roundTripped;
@@ -104,10 +98,7 @@ public class TestGeneratedUnions {
     Assert.assertEquals(member.member.body, "Hello, GSON.");
 
 
-    Union.NoteMember Member1 = new Union.NoteMember();
-    Note note = new Note();
-    note.text = "text";
-    Member1.member = note;
+    Union.NoteMember Member1 = new Union.NoteMember(new Note("text"));
 
     String serialized = gson.toJson(Member1);
     Union roundTripped = gson.fromJson(serialized, Union.class);

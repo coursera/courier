@@ -1,7 +1,7 @@
 {
   "type": "record",
   "name": "WithTypedKeyMap",
-  "namespace": "org.coursera.maps.immutable",
+  "namespace": "org.coursera.maps.mutable",
   "fields": [
     { "name": "ints", "type": { "type": "map", "keys": "int", "values": "string" } },
     { "name": "longs", "type": { "type": "map", "keys": "long", "values": "string" } },
@@ -10,7 +10,7 @@
     { "name": "booleans", "type": { "type": "map", "keys": "boolean", "values": "string" } },
     { "name": "strings", "type": { "type": "map", "keys": "string", "values": "string" } },
     { "name": "bytes", "type": { "type": "map", "keys": "bytes", "values": "string" } },
-    { "name": "record", "type": { "type": "map", "keys": "org.coursera.records.immutable.Simple", "values": "string" } },
+    { "name": "record", "type": { "type": "map", "keys": "org.coursera.records.mutable.Simple", "values": "string" } },
     { "name": "array", "type": { "type": "map", "keys": { "type": "array", "items": "int" }, "values": "string" } },
     { "name": "enum", "type": { "type": "map", "keys": "org.coursera.enums.Fruits", "values": "string" } },
     { "name": "custom", "type": { "type": "map", "keys": "org.coursera.customtypes.CustomInt", "values": "string" } },
@@ -19,7 +19,7 @@
         "type": "map", "keys": {
           "type": "record",
           "name": "RecordKey",
-          "namespace": "org.coursera.maps.immutable",
+          "namespace": "org.coursera.maps.mutable",
           "fields": [
             {
               "name": "x",
@@ -37,6 +37,6 @@
 
   ],
   "android": {
-    "mutability": "IMMUTABLE"
+    "mutability": "MUTABLE"
   }
 }

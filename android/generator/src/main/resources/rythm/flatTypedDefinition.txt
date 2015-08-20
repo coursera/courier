@@ -22,7 +22,7 @@ public interface @className {
       @{List<Field> fields = memberSpec.getFields()}
 
       @if(!mutable) {
-        @recordConstructor(memberSpec, syntax)
+        @recordConstructor(unionMemberName, memberSpec, syntax)
       }
 
       private static final String TYPE_NAME = "@memberKeyToTypeName.get(memberKey)";
@@ -32,13 +32,13 @@ public interface @className {
       @recordFields(memberSpec, syntax, mutable, false)
 
       @if(!mutable) {
-        @recordEqualityMethods(memberSpec, syntax)
+        @recordEqualityMethods(unionMemberName, memberSpec, syntax)
 
         public static class Builder {
           @recordFields(memberSpec, syntax, true, false)
 
           public @unionMemberName build() {
-            return new @(className)(@syntax.fieldList(memberSpec.getFields()));
+            return new @(unionMemberName)(@syntax.fieldList(memberSpec.getFields()));
           }
         }
       }
