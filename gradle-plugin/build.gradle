@@ -1,6 +1,22 @@
+buildscript {
+  repositories {
+    jcenter()
+  }
+  dependencies {
+    classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:2.2.5'
+  }
+}
+
 apply plugin: 'groovy'
 apply plugin: 'maven'
 apply plugin: 'signing'
+apply plugin: 'artifactory'
+
+tasks.withType(Javadoc) {
+  if (JavaVersion.current().isJava8Compatible()) {
+    options.addStringOption('Xdoclint:none', '-quiet')
+  }
+}
 
 repositories {
   mavenCentral()
@@ -32,6 +48,27 @@ artifacts {
 
 signing {
     sign configurations.archives
+}
+
+artifactoryPublish {
+  contextUrl = artifactoryUrl
+
+  publish {
+    repository {
+      repoKey = artifactoryPublishRepoKey
+      username = artifactoryUsername
+      password = artifactoryPassword
+      maven = true
+    }
+  }
+  resolve {
+    repository {
+      repoKey = artifactoryResolverRepoKey
+      username = artifactoryUsername
+      password = artifactoryPassword
+      maven = true
+    }
+  }
 }
 
 uploadArchives {

@@ -1,3 +1,12 @@
+buildscript {
+  repositories {
+    jcenter()
+  }
+  dependencies {
+    classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:2.2.5'
+  }
+}
+
 project.ext.externalDependency = [
     'rythm': 'org.rythmengine:rythm-engine:1.0.1',
     'pegasusGenerator': 'com.linkedin.pegasus:generator:2.6.0',
@@ -7,11 +16,21 @@ project.ext.externalDependency = [
     'jodaTime': 'joda-time:joda-time:2.6'
 ]
 
+allprojects {
+
+  tasks.withType(Javadoc) {
+    if (JavaVersion.current().isJava8Compatible()) {
+      options.addStringOption('Xdoclint:none', '-quiet')
+    }
+  }
+}
+
 subprojects {
   apply plugin: 'java'
   apply plugin: 'maven'
   apply plugin: 'signing'
   apply plugin: 'idea'
+  apply plugin: 'artifactory'
 
   repositories {
     mavenCentral()
@@ -38,6 +57,27 @@ subprojects {
   signing {
     required = { gradle.taskGraph.hasTask("uploadArchives") }
     sign configurations.archives
+  }
+
+  artifactoryPublish {
+    contextUrl = artifactoryUrl
+
+    publish {
+      repository {
+        repoKey = artifactoryPublishRepoKey
+        username = artifactoryUsername
+        password = artifactoryPassword
+        maven = true
+      }
+    }
+    resolve {
+      repository {
+        repoKey = artifactoryResolverRepoKey
+        username = artifactoryUsername
+        password = artifactoryPassword
+        maven = true
+      }
+    }
   }
 
   uploadArchives {
