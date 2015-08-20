@@ -5,7 +5,7 @@
   "unions": [
     { "int": 1 },
     { "string": "str" },
-    { "org.coursera.records.immutable.Simple": { "message": "u1" }}
+    { "org.coursera.records.mutable.Simple": { "message": "u1" }}
   ],
   "fixed": [ "\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007" ]
 }

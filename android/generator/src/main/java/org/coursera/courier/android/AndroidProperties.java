@@ -68,9 +68,8 @@ public class AndroidProperties {
   public final Mutability mutability;
   public final PrimitiveStyle primitiveStyle;
 
-  // TODO: set default to immutable
   public static final AndroidProperties DEFAULT =
-      new AndroidProperties(ArrayStyle.LISTS, Mutability.MUTABLE, PrimitiveStyle.BOXED);
+      new AndroidProperties(ArrayStyle.LISTS, Mutability.IMMUTABLE, PrimitiveStyle.BOXED);
 
   public AndroidProperties(
       ArrayStyle arrayStyle, Mutability mutability, PrimitiveStyle primitiveStyle) {

@@ -1,8 +1,6 @@
-@args com.linkedin.pegasus.generator.spec.RecordTemplateSpec record, org.coursera.courier.android.JavaSyntax syntax
+@args String className, com.linkedin.pegasus.generator.spec.RecordTemplateSpec record, org.coursera.courier.android.JavaSyntax syntax
 @import com.linkedin.pegasus.generator.spec.RecordTemplateSpec.Field
 @import com.linkedin.data.schema.DataSchema.Type
-
-@{ String className = syntax.escapeKeyword(record.getClassName()) }
 
 private transient volatile Integer hashCode = null;
 @@Override

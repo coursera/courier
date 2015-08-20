@@ -26,7 +26,7 @@ public final class @className {
       }
     }
 
-    @recordConstructor(record, syntax)
+    @recordConstructor(className, record, syntax)
   }
 
   @recordFields(record, syntax, mutable, false)
@@ -34,7 +34,7 @@ public final class @className {
   @enclosedTypes(record, syntax, mutable)
 
   @if(!mutable) {
-    @recordEqualityMethods(record, syntax)
+    @recordEqualityMethods(className, record, syntax)
 
     public static class Builder {
       @recordFields(record, syntax, true, true)
