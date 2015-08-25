@@ -1,0 +1,10 @@
+{
+  "name": "FlatTypedDefinition",
+  "namespace": "org.coursera.typerefs.mutable",
+  "type": "typeref",
+  "ref": ["org.coursera.records.mutable.Note", "org.coursera.records.mutable.Message"],
+  "flatTypedDefinition": {
+    "org.coursera.records.mutable.Note": "note",
+    "org.coursera.records.mutable.Message": "message"
+  }
+}

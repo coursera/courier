@@ -1,0 +1,14 @@
+{
+  "name": "WithUnion",
+  "type": "record",
+  "namespace": "org.coursera.records.mutable",
+  "fields": [
+    {
+      "name": "value",
+      "type": "org.coursera.typerefs.mutable.Union"
+    }
+  ],
+  "android": {
+    "mutability": "MUTABLE"
+  }
+}

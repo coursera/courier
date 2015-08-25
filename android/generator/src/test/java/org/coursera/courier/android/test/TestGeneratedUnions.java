@@ -27,20 +27,11 @@ import org.coursera.records.Note;
 import org.coursera.typerefs.TypedDefinition;
 import org.junit.Test;
 
-public class TestGeneratedUnions {
+public class TestGeneratedUnions extends JsonTest {
   @Test
   public void testTypedDefinition() {
     Gson gson = new Gson();
-    String json =
-        "{" +
-            "  \"value\": { " +
-            "    \"typeName\": \"message\", " +
-            "    \"definition\": { " +
-            "      \"title\": \"title\"," +
-            "      \"body\": \"Hello, GSON.\"" +
-            "    }" +
-            "  }" +
-            "}";
+    String json = load("WithTypedDefinition.json");
     WithTypedDefinition record = gson.fromJson(json, WithTypedDefinition.class);
     TypedDefinition TypedDefinition = record.value;
     TypedDefinition.MessageMember member = (TypedDefinition.MessageMember) TypedDefinition;
@@ -58,14 +49,7 @@ public class TestGeneratedUnions {
   @Test
   public void testFlatTypedDefinition() {
     Gson gson = new Gson();
-    String json =
-        "{" +
-            "  \"value\": { " +
-            "    \"typeName\": \"message\", " +
-            "      \"title\": \"title\"," +
-            "      \"body\": \"Hello, GSON.\"" +
-            "  }" +
-            "}";
+    String json = load("WithFlatTypedDefinition.json");
     WithFlatTypedDefinition record = gson.fromJson(json, WithFlatTypedDefinition.class);
     FlatTypedDefinition TypedDefinition = record.value;
     FlatTypedDefinition.MessageMember member = (FlatTypedDefinition.MessageMember) TypedDefinition;
@@ -82,15 +66,7 @@ public class TestGeneratedUnions {
   @Test
   public void testUnion() {
     Gson gson = new Gson();
-    String json =
-        "{" +
-            "  \"value\": {" +
-            "    \"org.coursera.records.Message\": { " +
-            "      \"title\": \"title\"," +
-            "      \"body\": \"Hello, GSON.\"" +
-            "    }" +
-            "  }" +
-            "}";
+    String json = load("WithUnion.json");
     WithUnion record = gson.fromJson(json, WithUnion.class);
     Union Union = record.value;
     Union.MessageMember member = (Union.MessageMember) Union;
