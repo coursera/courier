@@ -1,0 +1,11 @@
+{
+  "name": "Note",
+  "type": "record",
+  "namespace": "org.coursera.records.mutable",
+  "fields": [
+    {
+      "name": "text",
+      "type": "string"
+    }
+  ]
+}

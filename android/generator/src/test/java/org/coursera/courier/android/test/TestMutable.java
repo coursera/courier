@@ -72,7 +72,7 @@ public class TestMutable extends JsonTest {
 
   @Test
   public void testWithCustomTypesArray() {
-    String json = load("WithCustomTypesArray.json");
+    String json = load("WithCustomTypesArrayMutable.json");
 
     WithCustomTypesArray deserialized = gson.fromJson(json, WithCustomTypesArray.class);
 

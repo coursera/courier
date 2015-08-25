@@ -1,6 +1,5 @@
 package org.coursera.courier.android.test;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import org.junit.Assert;
 
@@ -14,8 +13,6 @@ abstract class JsonTest {
 
   protected void assertJsonEquals(String expected, String actual) {
     JsonParser parser = new JsonParser();
-    JsonElement o1 = parser.parse("{a : {a : 2}, b : 2}");
-    JsonElement o2 = parser.parse("{b : 2, a : {a : 2}}");
-    Assert.assertEquals(o1, o2);
+    Assert.assertEquals(parser.parse(expected), parser.parse(actual));
   }
 }
