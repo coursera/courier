@@ -32,6 +32,17 @@ public final class @className {
 
   @enclosedTypes(record, syntax, mutable)
 
+  @* TODO: define a result type *@
+  public void validate() {
+    @for(Field field: record.getFields()) {
+      @if(!field.getSchemaField().getOptional()) {
+        if(@(syntax.escapeKeyword(field.getSchemaField().getName())) == null) {
+          @* TODO: add to list of missing required fields *@
+        }
+      }
+    }
+  }
+
   @if(!mutable) {
     @recordEqualityMethods(className, record, syntax)
 

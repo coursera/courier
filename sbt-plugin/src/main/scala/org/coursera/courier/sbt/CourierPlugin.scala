@@ -66,7 +66,7 @@ object CourierPlugin extends Plugin {
    * files located in the project.
    */
   val courierSettings: Seq[Def.Setting[_]] =
-    courierSettings(Compile) ++ courierSettings(Test) ++ Seq(
+    courierSettings(Compile) ++ courierSettings(Test) ++ pegasusArtifacts(Compile) ++ Seq(
 
     courierPrefix := Some("scala"),
 
@@ -225,9 +225,9 @@ object CourierPlugin extends Plugin {
   }
 
   // Returns settings that can be applied to a project to cause it to package the Pegasus artifacts.
-  private[this] def pegasusArtifacts: Seq[Def.Setting[_]] = {
+  private[this] def pegasusArtifacts(conf: Configuration): Seq[Def.Setting[_]] = {
     def packageDataModelMappings: Def.Initialize[Task[Seq[(File, String)]]] =
-      courierSourceDirectory.map { (dir) =>
+      (courierSourceDirectory in conf).map { (dir) =>
         pegasusMappings(dir, "*.pdsc")
       }
 
@@ -238,14 +238,14 @@ object CourierPlugin extends Plugin {
       "Configuration for default artifacts.")
 
     val dataTemplateConfig = new Configuration(
-      name = "dataTemplate",
-      description = "pegasus data templates",
+      name = "courier",
+      description = "Courier generated data templates.",
       isPublic = true,
       extendsConfigs = List(Compile),
       transitive = true)
 
     Defaults.packageTaskSettings(packageDataModel, packageDataModelMappings) ++
-      restliArtifactSettings(packageDataModel)("dataModel") ++
+      restliArtifactSettings(packageDataModel)("pegasus") ++
       Seq(
         packagedArtifacts <++= Classpaths.packaged(Seq(packageDataModel)),
         artifacts <++= Classpaths.artifactDefs(Seq(packageDataModel)),
