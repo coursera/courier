@@ -117,7 +117,6 @@ object Courier extends Build with OverridablePublishSettings {
     .settings(forkedVmCourierGeneratorSettings: _*)
     .settings(
       libraryDependencies ++= Seq(
-        ExternalDependencies.ScalaLogging.scalaLoggingSlf4j,
         ExternalDependencies.JUnit.junit,
         ExternalDependencies.Scalatest.scalatest))
 
