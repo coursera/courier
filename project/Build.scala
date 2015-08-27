@@ -185,11 +185,6 @@ object Courier extends Build with OverridablePublishSettings {
       }
     }
 
-    object ScalaLogging {
-      val version = "2.1.2"
-      val scalaLoggingSlf4j = "com.typesafe.scala-logging" %% "scala-logging-slf4j" % version
-    }
-
     object JUnit {
       val version = "4.11"
       val junit = "junit" % "junit" % version % "test"
