@@ -18,6 +18,7 @@ package org.coursera.courier.generator.specs
 
 import com.linkedin.data.schema.DataSchema
 import com.linkedin.data.schema.TyperefDataSchema
+import com.linkedin.pegasus.generator.spec.ClassTemplateSpec
 import com.linkedin.pegasus.generator.spec.CustomInfoSpec
 import org.coursera.courier.coercers.SingleElementCaseClassCoercer
 
@@ -26,6 +27,10 @@ case class CustomInfoDefinition(spec: CustomInfoSpec) {
   def customClass = ClassDefinition(spec.getCustomClass)
   def customSchema = spec.getCustomSchema
   def sourceSchema = spec.getSourceSchema
+
+  def dereferencedType = {
+    Definition(ClassTemplateSpec.createFromDataSchema(sourceSchema.getDereferencedDataSchema))
+  }
 
   /**
    * Returns all custom infos to register to initialize this custom info.

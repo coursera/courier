@@ -16,8 +16,10 @@
 
 package org.coursera.courier.generator.specs
 
+import com.linkedin.data.DataMap
 import com.linkedin.data.schema.UnionDataSchema
 import com.linkedin.pegasus.generator.spec.UnionTemplateSpec
+
 import scala.collection.JavaConverters._
 
 /**
@@ -32,12 +34,22 @@ case class UnionDefinition(override val spec: UnionTemplateSpec) extends Definit
   def unionSchema: UnionDataSchema = spec.getSchema
   def schema: Option[UnionDataSchema] = Option(unionSchema)
 
+  override def rawDataType = classOf[DataMap].getSimpleName
+
   def scalaDoc: Option[String] = None
+
+  def customInfosToRegister: Seq[(UnionMemberDefinition, Seq[CustomInfoDefinition])] = {
+    members.map { member =>
+      member -> member.customInfo.toSeq.flatMap { customInfo =>
+        customInfo.customInfosToRegister
+      }
+    }
+  }
 
   /**
    * The union member types.
    */
   def members: Seq[UnionMemberDefinition] = spec.getMembers.asScala.map(UnionMemberDefinition)
 
-  def directReferencedTypes: Set[Definition] = members.map(_.classDefinition).toSet
+  def directReferencedTypes: Set[Definition] = members.map(_.memberType).toSet
 }

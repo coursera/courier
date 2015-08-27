@@ -170,10 +170,6 @@ class UnionGeneratorTest extends GeneratorTest with SchemaFixtures {
 
   @Test
   def testWithPrimitiveCustomTypesUnion(): Unit = {
-
-    // TODO(jbetz): Register coercers correctly for unions
-    CustomIntCoercer.registerCoercer()
-
     val original = WithPrimitiveCustomTypesUnion(
         WithPrimitiveCustomTypesUnion.Union.CustomIntMember(
           CustomInt(1)))

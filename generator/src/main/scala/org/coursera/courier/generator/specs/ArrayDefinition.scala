@@ -16,6 +16,7 @@
 
 package org.coursera.courier.generator.specs
 
+import com.linkedin.data.DataList
 import com.linkedin.data.schema.ArrayDataSchema
 import com.linkedin.pegasus.generator.spec.ArrayTemplateSpec
 
@@ -24,8 +25,17 @@ case class ArrayDefinition(override val spec: ArrayTemplateSpec) extends Definit
   def schema: Option[ArrayDataSchema] = Some(arraySchema)
   def scalaDoc: Option[String] = None
 
+  override def rawDataType = classOf[DataList].getSimpleName
+
   def itemClass: Definition = Definition(spec.getItemClass)
-  def itemDataClass: Option[Definition] = Option(spec.getItemDataClass).map(Definition(_))
+  def itemDataClass: Definition = {
+    directCustomInfo.map(_.dereferencedType)
+      .orElse {
+        Option(spec.getItemDataClass).map(Definition(_))
+      }.getOrElse {
+        itemClass
+      }
+  }
   def directReferencedTypes: Set[Definition] = Set(itemClass)
 
   def directCustomInfo: Option[CustomInfoDefinition] = {

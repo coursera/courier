@@ -84,7 +84,7 @@ object @(array.scalaType) {
 
   @* Register custom types and coercers. *@
   @array.customInfosToRegister.map { customInfo =>
-    @registerCustomInfo(customInfo, array.itemDataClass.get)
+    @registerCustomInfo(customInfo, array.itemDataClass)
   }
 
   val empty = @(array.scalaType)()
@@ -146,7 +146,7 @@ object @(array.scalaType) {
         value.toString
       }
       case customItem: ClassDefinition => {
-        DataTemplateUtil.coerceInput(value, classOf[@(array.itemClass.scalaTypeFullname)], classOf[@(array.itemDataClass.get.scalaTypeFullname)])
+        DataTemplateUtil.coerceInput(value, classOf[@(array.itemClass.scalaTypeFullname)], classOf[@(array.itemDataClass.rawDataType)])
       }
     }
   }

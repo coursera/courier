@@ -1,0 +1,11 @@
+{
+  "type": "record",
+  "name": "WithRecordCustomTypeUnion",
+  "namespace": "org.coursera.unions",
+  "fields": [
+    {
+      "name": "union",
+      "type": [ "org.coursera.customtypes.CustomRecord" ]
+    }
+  ]
+}

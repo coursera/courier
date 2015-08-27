@@ -26,6 +26,8 @@ case class EnumDefinition(override val spec: EnumTemplateSpec) extends Definitio
   val enumSchema: EnumDataSchema = spec.getSchema
   def schema: Option[EnumDataSchema] = Some(enumSchema)
 
+  override def rawDataType = classOf[String].getSimpleName
+
   /**
    * The enumeration's type.
    *

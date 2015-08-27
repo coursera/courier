@@ -28,6 +28,8 @@ case class RecordDefinition(override val spec: RecordTemplateSpec) extends Defin
   def recordSchema: RecordDataSchema = spec.getSchema
   def schema: Option[RecordDataSchema] = Some(recordSchema)
 
+  override def rawDataType = classOf[DataMap].getSimpleName
+
   def fields: Seq[RecordField] = spec.getFields.asScala.map(RecordField).toSeq
 
   def directReferencedTypes: Set[Definition] = fields.map(_.typ).toSet

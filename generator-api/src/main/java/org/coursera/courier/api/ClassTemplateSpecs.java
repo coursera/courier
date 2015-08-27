@@ -16,8 +16,12 @@
 
 package org.coursera.courier.api;
 
+import com.linkedin.data.schema.DataSchema;
+import com.linkedin.data.schema.NamedDataSchema;
+import com.linkedin.data.schema.TyperefDataSchema;
 import com.linkedin.pegasus.generator.spec.ArrayTemplateSpec;
 import com.linkedin.pegasus.generator.spec.ClassTemplateSpec;
+import com.linkedin.pegasus.generator.spec.CustomInfoSpec;
 import com.linkedin.pegasus.generator.spec.MapTemplateSpec;
 import com.linkedin.pegasus.generator.spec.RecordTemplateSpec;
 import com.linkedin.pegasus.generator.spec.TyperefTemplateSpec;
@@ -55,6 +59,32 @@ public class ClassTemplateSpecs {
       results.add(arraySpec.getItemClass());
     }
     return results;
+  }
+
+  public static CustomInfoSpec getImmediateCustomInfo(DataSchema schema, String customTypeLanguage)
+  {
+    CustomInfoSpec immediate = null;
+    for (DataSchema current = schema; current != null; current = dereferenceIfTyperef(current))
+    {
+      final CourierTemplateSpecGenerator.CustomClasses customClasses =
+          CourierTemplateSpecGenerator.getCustomClasses(current, customTypeLanguage);
+      if (customClasses != null)
+      {
+        immediate = new CustomInfoSpec(
+            (NamedDataSchema) schema,
+            (NamedDataSchema) current,
+            customClasses.customClass,
+            customClasses.customCoercerClass);
+        break;
+      }
+    }
+    return immediate;
+  }
+
+  private static DataSchema dereferenceIfTyperef(DataSchema schema)
+  {
+    final DataSchema.Type type = schema.getType();
+    return type == DataSchema.Type.TYPEREF ? ((TyperefDataSchema) schema).getRef() : null;
   }
 
   public static Set<ClassTemplateSpec> directContainedTypes(ClassTemplateSpec spec) {

@@ -452,10 +452,15 @@ public class CourierTemplateSpecGenerator {
    */
   private CustomClasses getCustomClasses(DataSchema schema)
   {
+    return getCustomClasses(schema, _customTypeLanguage);
+  }
+
+  public static CustomClasses getCustomClasses(DataSchema schema, String customTypeLanguage)
+  {
     CustomClasses customClasses = null;
     final Map<String, Object> properties = schema.getProperties();
-    if (_customTypeLanguage != null) {
-      final Object java = properties.get(_customTypeLanguage);
+    if (customTypeLanguage != null) {
+      final Object java = properties.get(customTypeLanguage);
       if (java != null) {
         if (java.getClass() != DataMap.class) {
           throw new IllegalArgumentException(schema + " has \"java\" property that is not a DataMap");
@@ -1030,10 +1035,10 @@ public class CourierTemplateSpecGenerator {
     }
   }
 
-  private static class CustomClasses
+  public static class CustomClasses
   {
-    private ClassTemplateSpec customClass;
-    private ClassTemplateSpec customCoercerClass;
+    public ClassTemplateSpec customClass;
+    public ClassTemplateSpec customCoercerClass;
   }
 
   private static class ClassInfo
