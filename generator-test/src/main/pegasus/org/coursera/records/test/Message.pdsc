@@ -1,0 +1,15 @@
+{
+  "type": "record",
+  "name": "Message",
+  "namespace": "org.coursera.records.test",
+  "fields": [
+    {
+      "name": "title",
+      "type": "string"
+    },
+    {
+      "name": "body",
+      "type": "string"
+    }
+  ]
+}

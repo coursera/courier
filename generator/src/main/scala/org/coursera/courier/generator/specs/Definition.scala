@@ -88,6 +88,17 @@ abstract class Definition(val spec: ClassTemplateSpec) extends Deprecatable {
   def dataType: String = scalaType
 
   /**
+   * The raw pegasus "data" type that is stored in the underlying DataMap or DataList.
+   *
+   * For custom types, this is the raw type of fully dereferenced type.
+   *
+   * For primitives, this is the java boxed type, e.g. `java.lang.Integer`.
+   *
+   * For complex types, this is the raw, type, e.g. DataMap for records, DataList for arrays.
+   */
+  def rawDataType: String
+
+  /**
    * Includes the opening and closing scaladoc comment tags.
    */
   def scalaDoc: Option[String]

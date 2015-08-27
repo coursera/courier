@@ -29,7 +29,7 @@
   }
 }
 
-@outputCoercer(methodName: String, outputClass: Definition, outputDataClass: Option[Definition]) = {
+@outputCoercer(methodName: String, outputClass: Definition, outputDataClass: Definition) = {
   def @(methodName)(value: @(outputClass.scalaTypeFullname)): AnyRef = {
     @outputClass match {
       case _: RecordDefinition | _: MapDefinition | _: UnionDefinition => {
@@ -48,7 +48,7 @@
         value.toString
       }
       case customItem: ClassDefinition => {
-        DataTemplateUtil.coerceInput(value, classOf[@(outputClass.scalaTypeFullname)], classOf[@(outputDataClass.get.scalaTypeFullname)])
+        DataTemplateUtil.coerceInput(value, classOf[@(outputClass.scalaTypeFullname)], classOf[@(outputDataClass.rawDataType)])
       }
     }
   }
@@ -135,10 +135,10 @@ object @(map.scalaType) {
 
   @* Register custom types and coercers. *@
   @map.keyCustomInfosToRegister.map { customInfo =>
-    @registerCustomInfo(customInfo, map.keyDataClass.get)
+    @registerCustomInfo(customInfo, map.keyDataClass)
   }
   @map.valueCustomInfosToRegister.map { customInfo =>
-    @registerCustomInfo(customInfo, map.valueDataClass.get)
+    @registerCustomInfo(customInfo, map.valueDataClass)
   }
 
   @* Generate any contained types as inner classes. *@

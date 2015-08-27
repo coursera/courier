@@ -39,6 +39,13 @@
 object @(union.scalaType) {
   val SCHEMA = DataTemplateUtil.parseSchema(@("\"\"\"" + SchemaToJsonEncoder.schemaToJson(union.unionSchema, JsonBuilder.Pretty.COMPACT) + "\"\"\"")).asInstanceOf[UnionDataSchema]
 
+  @* Register custom types and coercers. *@
+  @union.customInfosToRegister.map { case (member, customInfos) =>
+    @customInfos.map { customInfo =>
+      @registerCustomInfo(customInfo, member.dataClass)
+    }
+  }
+
   @union.members.map { member =>
     @member.classDefinition match {
       case primitiveMember: PrimitiveDefinition => {
@@ -100,7 +107,7 @@ object @(union.scalaType) {
             selectDirect(@(member.classDefinition.memberName)Schema, classOf[@(primitiveMember.dataType)], memberKey, @primitiveMember.maybeBox{value})
           }
           case customMember: ClassDefinition => {
-            selectDirect(@(member.classDefinition.memberName)Schema, classOf[@(customMember.scalaTypeFullname)], classOf[@(member.dataClass.dataType)], memberKey, value)
+            selectDirect(@(member.classDefinition.memberName)Schema, classOf[@(customMember.scalaTypeFullname)], classOf[@(member.dataClass.rawDataType)], memberKey, value)
           }
           case enumMember: EnumDefinition => {
             selectDirect(@(member.classDefinition.memberName)Schema, classOf[String], memberKey, value.toString)

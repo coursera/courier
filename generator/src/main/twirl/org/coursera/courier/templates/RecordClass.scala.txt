@@ -104,7 +104,7 @@
           @field.applyIfOption(field.name) { value => putDirect(@(record.scalaType).Fields.@(field.name), classOf[String], @(value).toString)}
         }
         case customField: ClassDefinition => {
-          @field.applyIfOption(field.name) { value => putCustomType(@(record.scalaType).Fields.@(field.name), classOf[@(customField.scalaTypeFullname)], classOf[@(field.dataClass.get.dataType)], @customField.maybeBox{@value})}
+          @field.applyIfOption(field.name) { value => putCustomType(@(record.scalaType).Fields.@(field.name), classOf[@(customField.scalaTypeFullname)], classOf[@(field.dataClass.rawDataType)], @customField.maybeBox{@value})}
         }
         case fixedField: FixedDefinition => {
           @field.applyIfOption(field.name) { value => putWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(fixedField.scalaTypeFullname)], @value)}
@@ -157,7 +157,7 @@ object @(record.scalaType) {
   @* Register custom types and coercers. *@
   @record.customInfosToRegister.map { case (field, customInfos) =>
     @customInfos.map { customInfo =>
-      @registerCustomInfo(customInfo, field.dataClass.get)
+      @registerCustomInfo(customInfo, field.dataClass)
     }
   }
 

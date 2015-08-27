@@ -16,6 +16,7 @@
 
 package org.coursera.courier.generator.specs
 
+import com.linkedin.data.ByteString
 import com.linkedin.data.schema.FixedDataSchema
 import com.linkedin.pegasus.generator.spec.FixedTemplateSpec
 import org.coursera.courier.generator.ScaladocEscaping
@@ -23,6 +24,8 @@ import org.coursera.courier.generator.ScaladocEscaping
 case class FixedDefinition(override val spec: FixedTemplateSpec) extends Definition(spec) {
   def fixedSchema: FixedDataSchema = spec.getSchema
   def schema: Option[FixedDataSchema] = Some(fixedSchema)
+
+  override def rawDataType = classOf[ByteString].getSimpleName
 
   def scalaDoc: Option[String] = {
     Option(fixedSchema.getDoc).flatMap(ScaladocEscaping.stringToScaladoc)

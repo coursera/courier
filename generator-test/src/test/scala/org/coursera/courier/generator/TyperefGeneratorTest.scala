@@ -18,14 +18,20 @@ package org.coursera.courier.generator
 
 import org.coursera.courier.generator.customtypes.CustomInt
 import org.coursera.courier.generator.customtypes.CustomIntWrapper
+import org.coursera.courier.generator.customtypes.CustomRecord
+import org.coursera.courier.generator.customtypes.CustomRecordCoercer
 import org.coursera.courier.templates.DataTemplates.DataConversion
+import org.coursera.customtypes.CustomRecordArray
+import org.coursera.customtypes.CustomRecordToCustomRecordMap
 import org.coursera.enums.Fruits
 import org.coursera.records.test.Empty
 import org.coursera.records.test.EmptyArray
 import org.coursera.records.test.EmptyMap
 import org.coursera.records.test.WithComplexTyperefs
 import org.coursera.records.test.WithCustomIntWrapper
+import org.coursera.records.test.WithCustomRecord
 import org.coursera.typerefs.UnionTyperef
+import org.coursera.unions.WithRecordCustomTypeUnion
 import org.junit.Test
 
 class TyperefGeneratorTest extends GeneratorTest with SchemaFixtures {
@@ -56,6 +62,45 @@ class TyperefGeneratorTest extends GeneratorTest with SchemaFixtures {
   def testCustomTypeOfCustomType(): Unit = {
     val original = WithCustomIntWrapper(CustomIntWrapper(CustomInt(10)))
     val roundTripped = WithCustomIntWrapper(roundTrip(original.data()), DataConversion.SetReadOnly)
+    assert(original === roundTripped)
+  }
+
+  @Test
+  def testCustomTypeOfRecord(): Unit = {
+    val original = WithCustomRecord(
+      custom = CustomRecord("title", "body"),
+      customArray = CustomRecordArray(CustomRecord("itemtitle", "itembody")),
+      customMap = CustomRecordToCustomRecordMap(
+        CustomRecord("keytitle", "keybody") -> CustomRecord("valuetitle", "valuebody")))
+
+    assert(original.custom.title === "title")
+    assert(original.custom.body === "body")
+    assert(original.customArray.head.title === "itemtitle")
+    assert(original.customArray.head.body === "itembody")
+    assert(original.customMap.head._1.title === "keytitle")
+    assert(original.customMap.head._1.body === "keybody")
+    assert(original.customMap.head._2.title === "valuetitle")
+    assert(original.customMap.head._2.body === "valuebody")
+
+    val roundTripped = WithCustomRecord(roundTrip(original.data()), DataConversion.SetReadOnly)
+    assert(original === roundTripped)
+  }
+
+  @Test
+  def testCustomTypeOfRecordDefault(): Unit = {
+    val original = WithCustomRecord()
+    assert(original.custom.title === "defaultTitle")
+    assert(original.custom.body === "defaultBody")
+  }
+
+  @Test
+  def testCustomTypeRecordInUnion(): Unit = {
+    val original =
+      WithRecordCustomTypeUnion(
+        WithRecordCustomTypeUnion.Union.CustomRecordMember(
+          CustomRecord("title", "body")))
+    val roundTripped =
+      WithRecordCustomTypeUnion(roundTrip(original.data()), DataConversion.SetReadOnly)
     assert(original === roundTripped)
   }
 }

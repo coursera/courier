@@ -22,19 +22,18 @@ import com.linkedin.pegasus.generator.spec.ClassTemplateSpec
 import org.coursera.courier.generator.TypeConversions
 
 /**
- * A "raw" class definition.
+ * A language specific class definition.
  *
- * Purely a reference to a type. The type should already exist and should not be generated.
+ * Purely a reference to a class. The class must already exist and will not be generated.
  *
  * May refer to a primitive type.
  *
- * Main Uses:
- *   A custom class
- *   A coercer for a custom class
- *   ???
- *
+ * Usages:
+ * - A custom class
+ * - A coercer for a custom class
  */
-case class ClassDefinition(override val spec: ClassTemplateSpec) extends Definition(spec) with MaybeBoxable {
+case class ClassDefinition(override val spec: ClassTemplateSpec)
+  extends Definition(spec) with MaybeBoxable {
   def schema: Option[DataSchema] = Option(spec.getSchema)
 
   override def scalaType = schema.collect {
@@ -44,6 +43,11 @@ case class ClassDefinition(override val spec: ClassTemplateSpec) extends Definit
   override def dataType = schema.collect {
     case p: PrimitiveDataSchema => TypeConversions.lookupJavaClass(p).getName
   }.getOrElse(spec.getClassName)
+
+  override def rawDataType = {
+    throw new UnsupportedOperationException(
+      s"ClassDefinitions do not have a raw Pegasus type: ${spec.getClassName}")
+  }
 
   override def namespace = Option(spec.getNamespace)
   def scalaDoc = None

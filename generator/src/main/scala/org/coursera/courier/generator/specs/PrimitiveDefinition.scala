@@ -39,6 +39,8 @@ case class PrimitiveDefinition(override val spec: PrimitiveTemplateSpec)
    * Pegasus always uses java boxed primitive classes.
    */
   override def dataType: String = TypeConversions.lookupJavaClass(spec.getSchema).getName
+  override def rawDataType = dataType
+
   def scalaDoc: Option[String] = None
 
   /**

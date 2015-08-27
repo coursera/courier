@@ -30,6 +30,11 @@ case class TyperefDefinition(override val spec: TyperefTemplateSpec) extends Def
   def typerefSchema: TyperefDataSchema = spec.getSchema
   def schema: Option[TyperefDataSchema] = Some(typerefSchema)
 
+  def dereferencedType = {
+    Definition(ClassTemplateSpec.createFromDataSchema(typerefSchema.getDereferencedDataSchema))
+  }
+  override def rawDataType = dereferencedType.rawDataType
+
   def scalaDoc: Option[String] = {
     Option(typerefSchema.getDoc).flatMap(ScaladocEscaping.stringToScaladoc)
   }

@@ -22,6 +22,7 @@ import org.coursera.courier.generator.ScalaEscaping
 import org.coursera.courier.generator.ScaladocEscaping
 import org.coursera.courier.generator.TypeConversions
 import play.twirl.api.Txt
+
 import scala.collection.JavaConverters._
 
 trait FieldDefault
@@ -52,7 +53,14 @@ case class RecordField(field: Field) extends Deprecatable {
    * For the put and obtain methods in RecordTemplate (be it direct, wrapped or customType),
    * this is the type that RecordTemplate expects for the "dataClass".
    */
-  def dataClass: Option[Definition] = Option(field.getDataClass).map(Definition(_))
+  def dataClass: Definition = {
+    customInfo.map(_.dereferencedType)
+      .orElse {
+        Option(field.getDataClass).map(Definition(_))
+      }.getOrElse {
+        typ
+      }
+  }
 
   /**
    * If the field type is enclosed in another type, the enclosing class.

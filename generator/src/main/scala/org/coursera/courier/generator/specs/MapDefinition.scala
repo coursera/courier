@@ -16,6 +16,7 @@
 
 package org.coursera.courier.generator.specs
 
+import com.linkedin.data.DataMap
 import com.linkedin.data.schema.DataSchema
 import com.linkedin.data.schema.DataSchemaConstants
 import com.linkedin.data.schema.MapDataSchema
@@ -29,16 +30,31 @@ case class MapDefinition(override val spec: CourierMapTemplateSpec) extends Defi
   def schema: Option[MapDataSchema] = Some(mapSchema)
   def scalaDoc: Option[String] = None
 
+  override def rawDataType = classOf[DataMap].getSimpleName
+
   def valueClass: Definition = Definition(spec.getValueClass)
-  def valueDataClass: Option[Definition] = Option(spec.getValueDataClass).map(Definition(_))
+  def valueDataClass: Definition = {
+    valueCustomInfo.map(_.dereferencedType)
+      .orElse {
+        Option(spec.getValueDataClass).map(Definition(_))
+      }.getOrElse {
+        valueClass
+      }
+  }
   def valueCustomInfo: Option[CustomInfoDefinition] = {
     Option(spec.getCustomInfo).map(CustomInfoDefinition)
   }
 
   private def declaredKeyClass: Option[Definition] = Option(spec.getKeyClass).map(Definition(_))
   def keyClass: Definition = declaredKeyClass.getOrElse(stringDef)
-  def keyDataClass: Option[Definition] = Option(spec.getKeyDataClass).map(Definition(_))
-
+  def keyDataClass: Definition = {
+    keyCustomInfo.map(_.dereferencedType)
+      .orElse {
+        Option(spec.getKeyDataClass).map(Definition(_))
+      }.getOrElse {
+        keyClass
+      }
+  }
   def keyCustomInfo: Option[CustomInfoDefinition] = {
     Option(spec.getKeyCustomInfo).map(CustomInfoDefinition)
   }
