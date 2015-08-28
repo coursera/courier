@@ -82,8 +82,10 @@ To learn more, see: [Pegasus](https://github.com/linkedin/rest.li/wiki/DATA-Data
 Getting Started
 ---------------
 
-Here we setup a simple SBT project with Courier. If you use Gradle instead of SBT, see the
-[Gradle Plugin](https://github.com/coursera/courier/tree/master/gradle-plugin) documentation.
+### Gradle
+See [Gradle Plugin](https://github.com/coursera/courier/tree/master/gradle-plugin).
+
+### SBT
 
 Add the generator dependencies to your SBT plugins:
 
@@ -93,7 +95,7 @@ Add the generator dependencies to your SBT plugins:
 addSbtPlugin("org.coursera.courier" % "courier-sbt-plugin" % "0.4.1")
 ```
 
-Enable the generator to SBT build:
+Next, add `courierSettings` to your SBT project to enable the generator:
 
 `project/Build.scala`:
 
@@ -117,7 +119,9 @@ object Example extends Build {
 }
 ```
 
-Add `.pdsc` files to the `src/main/pegasus` directory of your project. For example:
+Your project can now generate Courier data bindings.
+
+To tryi it out, add `.pdsc` files to the `src/main/pegasus` directory of your project. For example:
 
 `schemas/src/main/pegasus/org/example/fortune/Fortune.pdsc`:
 
