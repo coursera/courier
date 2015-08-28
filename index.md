@@ -25,7 +25,7 @@ Schema driven data modeling makes this easier:
 
 * Languages share a common understanding of the structure of the data they read and write.
 * Binding generators eliminate the tedious and error prone process of manually writing serializers/deserializers and transcribing type information from one language to another.
-* Schemas make it trivial to validate data and provide easy to understand error messages when validation fails.
+* Schemas promote consistency in data modeling, often resulting in JSON data that is easier to understand and work with.
 
 How schema driven data modeling works
 -------------------------------------
