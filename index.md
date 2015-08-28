@@ -5,9 +5,9 @@ layout: page
 Overview
 --------
 
-Courier is a language binding for Scala for the
+Courier is a Scala data binding generator for the
 [Pegasus](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates) schema and data
-system, part of the [Rest.li](http://rest.li) umbrella project.
+system.
 
 Pegasus contains an expressive schema language for JSON structured data that is based on the Avro
 schema language, but adds optional fields a few other conveniences to make it easy to define the
