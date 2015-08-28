@@ -24,7 +24,7 @@ Internet applications often involve multiple languages communicating via JSON or
 Schema driven data modeling makes this easier:
 
 * Languages share a common understanding of the structure of the data they read and write.
-* Binding generators eliminate the tedious and error prone process of manually writing serializers/deserializers and transcribing type information from one language to another.
+* Binding generators eliminate the tedious and error prone process of manually writing serializers and transcribing type information from one language to another.
 * Schemas promote consistency in data modeling, often resulting in JSON data that is easier to understand and work with.
 
 How schema driven data modeling works
