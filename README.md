@@ -5,6 +5,12 @@ Courier
 
 Courier generates Scala idiomatic data bindings from schemas. Courier generated bindings work with multiple data formats including JSON and [Avro](http://avro.apache.org/).
 
+<br>
+<div>
+  <img src="https://github.com/coursera/courier/raw/gh-pages/images/courier-flow.png"/>
+</div>
+<br>
+
 <p align="center"><a href="http://coursera.github.io/courier/#getting-started">Getting Started</a> | <a href="http://coursera.github.io/courier/#documentation">Documentation</a> | <a href="https://groups.google.com/d/forum/courier">Discussion Group</a></p>
 
 Features
