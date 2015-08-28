@@ -66,7 +66,9 @@ object CourierPlugin extends Plugin {
    * files located in the project.
    */
   val courierSettings: Seq[Def.Setting[_]] =
-    courierSettings(Compile) ++ courierSettings(Test) ++ pegasusArtifacts(Compile) ++ Seq(
+    // TODO(jbetz): The below addition of pegasusArtifacts results in SBT projects that
+    // fail to build correctly. This needs to be fixed and tested carefully before re-enabling.
+    courierSettings(Compile) ++ courierSettings(Test)/* ++ pegasusArtifacts(Compile)*/ ++ Seq(
 
     courierPrefix := Some("scala"),
 
