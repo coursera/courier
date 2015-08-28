@@ -16,8 +16,8 @@ Courier generates Scala idiomatic data bindings from schemas. Courier generated 
 Features
 --------
 
-* Generates "Scala Idiomatic" data bindings
-* Produce natural looking JSON
+* Generates "Scala Idiomatic" data bindings (case classes, pattern matching, Scala collections...)
+* Bindings read/write natural looking JSON
 * Robust type system: Records, Arrays, Maps, Unions, Enums, Primitives, ...
 * Integrated with popular build systems: SBT and Gradle
 * Binary protocol support
