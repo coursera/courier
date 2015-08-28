@@ -5,11 +5,16 @@ layout: page
 Overview
 --------
 
-Courier is a Scala data binding generator for the
-[Pegasus](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates) schema and data
-system.
+Courier is a Scala data binding generator for the [Pegasus](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates)
+schema language.
 
-Pegasus contains an expressive schema language for JSON structured data that is based on the Avro
+<br>
+<div>
+  <img src="images/courier-flow.png"/>
+</div>
+<br>
+
+Pegasus is an expressive schema language for JSON structured data that is based on the Avro
 schema language, but adds optional fields a few other conveniences to make it easy to define the
 structure of natural looking JSON. Pegasus also has a rich feature set including schema
 based validation, data translation between multiple data formats, schema compatibility with
@@ -17,6 +22,8 @@ Avro, and generated Java data bindings.
 
 By using Courier, all the features of Pegasus can be leveraged by Scala developers but with
 Scala idiomatic data bindings that look and feel natural to a Scala developer.
+
+
 
 Features
 --------
