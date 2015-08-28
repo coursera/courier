@@ -24,7 +24,7 @@ Building internet applications requires messaging structured data between server
 How schema driven data modeling helps:
 
 * Makes it easier for all these languages to share a common understanding of the structure of the data they read and write.
-* Eliminates the tedious and error prone process of manually transcribing type information from one language to another.
+* Eliminates the tedious and error prone process of manually writing serializers/deserializers and transcribing type information from one language to another.
 * Makes it trivial to validate data and provide easy to understand error messages when validation fails.
 
 How schema driven data modeling works
