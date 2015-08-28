@@ -27,8 +27,8 @@ How schema driven data modeling helps:
 * Eliminates the tedious and error prone process of manually transcribing type information from one language to another.
 * Makes it trivial to validate data and provide easy to understand error messages when validation fails.
 
-How Schema drive data modeling works
-------------------------------------
+How schema driven data modeling works
+-------------------------------------
 
 In schema driven data modeling, data bindings are generated from schemas for each language. Developers then code against those data bindings and get a strong guarentee that the JSON that those bindings read and write are compatible with all the other languages doing the same thing. 
 
