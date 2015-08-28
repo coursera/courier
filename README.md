@@ -16,10 +16,10 @@ Features
 * Produce natural looking JSON
 * Binary protocol support: Avro Binary, PSON (JSON Equivalent binary format), BSON (Another JSON Equivalent binary format)
 * Language support:
-** Scala (via Courier)
-** Java ([Pegasus](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates))
-** Swift (in development)
-** Android specific Java bindings (via [Courier android](https://github.com/coursera/courier/tree/master/android))
+ * Scala (via Courier)
+ * Java ([Pegasus](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates))
+ * Swift (in development)
+ * Android specific Java bindings (via [Courier android](https://github.com/coursera/courier/tree/master/android))
 
 Website
 -------
