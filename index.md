@@ -67,14 +67,16 @@ Compatibility:
 * Fully Compatible with [Pegasus](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates)
 * Fully Compatible with [Avro](http://avro.apache.org/)
 
-What is Pegasus
----------------
+The Pegasus Schema Language
+---------------------------
 
 Pegasus is an expressive schema language for JSON structured data. that is based on the Avro
 schema language, but adds optional fields a few other conveniences to make it easy to define the
 structure of natural looking JSON. Pegasus also has a rich feature set including schema
 based validation, data translation between multiple data formats, schema compatibility with
 Avro, and generated Java data bindings.
+
+To learn more, see: [Pegasus](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates)
 
 Getting Started
 ---------------
