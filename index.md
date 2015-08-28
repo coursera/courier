@@ -49,20 +49,19 @@ Build Systems:
 * [SBT Plugin](https://github.com/coursera/courier#getting-started)
 * [Gradle Plugin](https://github.com/coursera/courier/tree/master/gradle-plugin)
 
-Codecs:
+Supported Protocols:
 
 * JSON
 * Avro Binary
 * PSON (JSON Equivalent binary format)
 * BSON (Another JSON Equivalent binary format)
 
-Schema languages:
+Schema language:
 
-* Uses [Pegasus](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates)
+* [Pegasus](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates)
 * Also fully Compatible with [Avro](http://avro.apache.org/) schemas
 
-Other languages with Pegasus bindings
--------------------------------------
+Compatible with other languages that use Pegasus bindings:
 
 * Java ([Pegasus](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates))
 * Swift (in development)
