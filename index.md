@@ -44,6 +44,11 @@ Scala Generator:
 * Deeply integrate with Scala language, with support for default parameters, pattern matching, Scala collections and more.
 * Integrated with popular build systems
 
+Build Systems:
+
+* [SBT Plugin](https://github.com/coursera/courier#getting-started)
+* [Gradle Plugin](https://github.com/coursera/courier/tree/master/gradle-plugin)
+
 Codecs:
 
 * JSON
@@ -51,22 +56,17 @@ Codecs:
 * PSON (JSON Equivalent binary format)
 * BSON (Another JSON Equivalent binary format)
 
-Languages:
+Compatible with Pegasus language binding for:
 
-* Scala (via Courier)
 * Java ([Pegasus](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates))
 * Swift (in development)
 * Android specific Java bindings (via [Courier android](https://github.com/coursera/courier/tree/master/android))
+* (and, of course, Scala via Courier)
 
-Supported Build Systems:
+Schema languages:
 
-* [SBT Plugin](https://github.com/coursera/courier#getting-started)
-* [Gradle Plugin](https://github.com/coursera/courier/tree/master/gradle-plugin)
-
-Compatibility:
-
-* Fully Compatible with [Pegasus](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates)
-* Fully Compatible with [Avro](http://avro.apache.org/)
+* Uses [Pegasus](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates)
+* Also fully Compatible with [Avro](http://avro.apache.org/) schemas
 
 The Pegasus Schema Language
 ---------------------------
