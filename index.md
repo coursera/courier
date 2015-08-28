@@ -56,17 +56,18 @@ Codecs:
 * PSON (JSON Equivalent binary format)
 * BSON (Another JSON Equivalent binary format)
 
-Compatible with Pegasus language binding for:
+Schema languages:
+
+* Uses [Pegasus](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates)
+* Also fully Compatible with [Avro](http://avro.apache.org/) schemas
+
+Other languages with Pegasus bindings
+-------------------------------------
 
 * Java ([Pegasus](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates))
 * Swift (in development)
 * Android specific Java bindings (via [Courier android](https://github.com/coursera/courier/tree/master/android))
 * (and, of course, Scala via Courier)
-
-Schema languages:
-
-* Uses [Pegasus](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates)
-* Also fully Compatible with [Avro](http://avro.apache.org/) schemas
 
 The Pegasus Schema Language
 ---------------------------
