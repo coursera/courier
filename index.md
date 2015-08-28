@@ -1,16 +1,6 @@
 ---
 layout: page
-
 ---
-
-Courier generates Scala idiomatic data bindings from schemas.
-
-Courier generated bindings work with multiple data formats including JSON and
-[Avro](http://avro.apache.org/).
-
-* [Website](http://coursera.github.io/courier/)
-* [Source](http://github.com/coursera/courier)
-* [Discussion Group](https://groups.google.com/d/forum/courier)
 
 Overview
 --------
