@@ -39,9 +39,8 @@ Features
 
 Scala Generator:
 
-* Generate Scala Idiomatic Data Bindings
-* Supports all schema types: Records, Arrays, Maps, Unions, Enums, Int, Long, Float, Double, String, Boolean, Bytes...
-* Deeply integrate with Scala language, with support for default parameters, pattern matching, Scala collections and more.
+* Generates "Scala Idiomatic" data bindings (case classes, pattern matching, Scala collections...)
+* Supports all Pegasus schema types: Records, Arrays, Maps, Primitives, ...
 * Integrated with popular build systems
 
 Build Systems:
