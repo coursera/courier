@@ -37,20 +37,21 @@ Courier provides the Scala data binding generator for the Pegasus schema languag
 Features
 --------
 
-Generator:
+Scala Generator:
 
 * Generate Scala Idiomatic Data Bindings
-* Robust type system: Records, Arrays, Maps, Unions, Enums, Int, Long, Float, Double, String, Boolean, Bytes...
+* Supports all schema types: Records, Arrays, Maps, Unions, Enums, Int, Long, Float, Double, String, Boolean, Bytes...
+* Deeply integrate with Scala language, with support for default parameters, pattern matching, Scala collections and more.
 * Integrated with popular build systems
 
-Supported Codecs:
+Codecs:
 
 * JSON
 * Avro Binary
 * PSON (JSON Equivalent binary format)
 * BSON (Another JSON Equivalent binary format)
 
-Ecosystem:
+Languages:
 
 * Scala (via Courier)
 * Java ([Pegasus](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates))
