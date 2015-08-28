@@ -11,11 +11,14 @@ Features
 --------
 
 * Generate Scala Idiomatic Data Bindings
-* Robust type system: Records, Arrays, Maps, Unions, Enums, Int, Long, Float, Double, String, Boolean, Bytes...
-* Integrated with popular build systems: SBT and Gradle
 * Produce natural looking JSON
-* Binary protocol support: Avro Binary, PSON (JSON Equivalent binary format), BSON (Another JSON Equivalent binary format)
-* Language support:
+* Robust type system: Records, Arrays, Maps, Unions, Enums, Primitives, ...
+* Integrated with popular build systems: SBT and Gradle
+* Binary protocol support
+ * Avro Binary
+ * PSON (JSON Equivalent binary format)
+ * BSON (Another JSON Equivalent binary format)
+* Integrates multiple languages:
  * Scala (via Courier)
  * Java ([Pegasus](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates))
  * Swift (in development)
