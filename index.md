@@ -19,7 +19,7 @@ Why
 
 **Seamless Data bindings**
 
-Courier goes to great lengths to produce data bindings that look and feel natural Scala developers. Courier carefully uses Scala case classes, `Option` types, default parameters, pattern matching, sealed traits, collections and enumerations to produce ADT style bindings that behave exactly how Scala developer expect, while still providing efficient serialization/deserialization to multiple data protocols.
+Courier goes to great lengths to produce data bindings that look and feel natural Scala developers. Courier carefully uses Scala case classes, `Option` types, default parameters, pattern matching, sealed traits, Scala collections and Scala enumerations to produce ADT style bindings that behave exactly how Scala developer expect, while still providing efficient serialization/deserialization to multiple data protocols.
 
 **Language interoperability**
 
