@@ -19,7 +19,7 @@ Why
 
 **Seamless Data bindings**
 
-Courier goes to great lengths to produce data bindings that look and feel natural Scala developers. Courier carefully uses Scala case classes, `Option`, default parameters, pattern matching, sealed traits, Scala collections and Scala enumerations to produce ADT style bindings that behave exactly how Scala developer expect, while still providing efficient serialization/deserialization to multiple data protocols.
+Courier goes to great lengths to produce data bindings that look and feel natural to Scala developers. Courier generates immutable Scala case classes, `Option`, default parameters, pattern matching, sealed traits, Scala collections and Scala enumerations to produce ADT style bindings that look and behave how Scala developers expect.
 
 **Language interoperability**
 
@@ -30,7 +30,7 @@ Courier goes to great lengths to produce data bindings that look and feel natura
 <img src="images/android-icon.png" width="64" />
 </center>
 
-Courier is part of a suite of language bindings for the Pegasus schema language. Bindings for all these languages can be generated from the same schema files.
+Courier is part of a suite of language bindings for the Pegasus schema language. Bindings for all these languages are generated from the same Pegasus schema files.
 
 Using Pegasus language bindings to build applications enables:
 
@@ -53,8 +53,6 @@ This means developers have more flexibility to match data protocols to their nee
 * Provide simple RESTful JSON APIs to mobile and web developers
 * Persist data using compact binary protocol such as Avro
 * Message data efficiently between backend services in a "JSON equivalent" binary protocol such as PSON
-
-And this can all be done without writing any additional code.
 
 How development with Courier works
 ----------------------------------
