@@ -5,7 +5,7 @@ layout: page
 Overview
 --------
 
-Courier is a Scala data binding generator for JSON and the [Pegasus](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates)
+Courier is a Scala data binding generator for the [Pegasus](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates)
 schema language.
 
 <br>
