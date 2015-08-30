@@ -19,7 +19,7 @@ Why
 
 **Seamless Data bindings**
 
-Courier goes to great lengths to produce data bindings that look and feel natural Scala developers. Courier carefully uses Scala case classes, `Option` types, default parameters, pattern matching, sealed traits, Scala collections and Scala enumerations to produce ADT style bindings that behave exactly how Scala developer expect, while still providing efficient serialization/deserialization to multiple data protocols.
+Courier goes to great lengths to produce data bindings that look and feel natural Scala developers. Courier carefully uses Scala case classes, `Option`, default parameters, pattern matching, sealed traits, Scala collections and Scala enumerations to produce ADT style bindings that behave exactly how Scala developer expect, while still providing efficient serialization/deserialization to multiple data protocols.
 
 **Language interoperability**
 
@@ -30,11 +30,13 @@ Courier goes to great lengths to produce data bindings that look and feel natura
 <img src="images/android-icon.png" width="64" />
 </center>
 
-Courier is part of a suite of language bindings for the Pegasus schema language. Bindings for all these languages can be generated from the same schema files. When multiple language bindings are used to build applications:
+Courier is part of a suite of language bindings for the Pegasus schema language. Bindings for all these languages can be generated from the same schema files.
 
-* These languages share a common understanding of the structure of the data they read and write.
-* The language binding generators eliminate the tedious and error prone process of manually writing serializers and transcribing type information from one language to another.
-* The schemas promote consistency in data modeling, often resulting in JSON data that is easier to understand and work with.
+Using Pegasus language bindings to build applications enables:
+
+* Languages share a common understanding of the structure of the data they read and write.
+* Language binding generators eliminate the tedious and error prone process of manually writing serializers and transcribing type information from one language to another.
+* Consistency in data modeling, often resulting in JSON data that is easier to understand and work with.
 
 **Multiple data protocols**
 
