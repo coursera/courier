@@ -27,8 +27,8 @@ With schemas:
 * Binding generators eliminate the tedious and error prone process of manually writing serializers and transcribing type information from one language to another.
 * The schemas promote consistency in data modeling, often resulting in JSON data that is easier to understand and work with.
 
-How schema driven messaging works
----------------------------------
+How development with Courier works
+----------------------------------
 
 Data bindings are generated from schemas for each language. Developers then code against those data bindings and get a strong guarentee that the JSON that those bindings read and write are compatible with all the other languages doing the same thing. 
 
