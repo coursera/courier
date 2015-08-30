@@ -35,6 +35,10 @@ Courier is part of a suite of language bindings for the Pegasus schema language.
 
 **Multiple data protocols**
 
+<img src="images/json-logo.png" width="100"/>
+<img src="images/avro-logo.png" width="100"/>
+<img src="images/bson-logo.png" width="100"/>
+
 | JSON | Avro Binary | PSON | BSON | ... |
 |------|-------------|------|------|-----|
 
