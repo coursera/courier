@@ -17,7 +17,7 @@ schema language.
 Why
 ---
 
-**Language interop**
+**Language interoperability**
 
 <img src="images/scala-icon.png" width="64"/>
 <img src="images/java-icon.jpg" width="64"/>
