@@ -22,10 +22,10 @@ Why
 | Scala | Java | Android Java | Swift | ... |
 |-------|------|--------------|-------|-----|
 
-Courier is part of a suite of language bindings for the Pegasus schema language. When Pegasus is used both with backend Scala development and with Mobile development on iOS or Android:
+Courier is part of a suite of language bindings for the Pegasus schema language. Bindings for all these languages can be generated from the same schema files. When multiple language bindings are used to build applications:
 
-* Languages share a common understanding of the structure of the data they read and write.
-* Binding generators eliminate the tedious and error prone process of manually writing serializers and transcribing type information from one language to another.
+* These languages share a common understanding of the structure of the data they read and write.
+* The language binding generators eliminate the tedious and error prone process of manually writing serializers and transcribing type information from one language to another.
 * The schemas promote consistency in data modeling, often resulting in JSON data that is easier to understand and work with.
 
 **Multiple data protocols**
