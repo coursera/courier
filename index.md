@@ -19,6 +19,11 @@ Why
 
 **Language interop**
 
+<img src="images/scala-icon.png" width="64"/>
+<img src="images/java-icon.jpg" width="64"/>
+<img src="images/swift-icon.png" width="64"/>
+<img src="images/android-icon.png" width="64" />
+
 | Scala | Java | Android Java | Swift | ... |
 |-------|------|--------------|-------|-----|
 
