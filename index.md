@@ -35,8 +35,8 @@ Courier is part of a suite of language bindings for the Pegasus schema language.
 When using Pegasus language bindings to build applications:
 
 * Languages share a common understanding of the structure of the data they read and write.
-* Language binding generators eliminate the tedious and error prone process of manually writing serializers and transcribing type information from one language to another.
-* Consistency in data modeling it promoted, often resulting in JSON data that is easier to understand and work with.
+* Language binding generators eliminate the tedious and error prone process of manually writing serializers.
+* Consistent data modeling is promoted, often resulting in JSON data that is easier to understand and work with.
 
 **Multiple data protocols**
 
