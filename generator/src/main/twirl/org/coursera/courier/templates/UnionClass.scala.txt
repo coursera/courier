@@ -131,6 +131,10 @@ object @(union.scalaType) {
         new @(member.classDefinition.memberName)(dataMap)
       }
 
+      def unapply(member: @(member.classDefinition.memberName)): Option[@(member.classDefinition.scalaTypeFullname)] = {
+        Some(member.value)
+      }
+
       private[@(union.scalaType)] val memberKey = "@(member.unionMemberKey)"
     }
 
