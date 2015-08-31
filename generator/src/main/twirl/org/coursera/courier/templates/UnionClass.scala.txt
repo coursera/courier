@@ -24,6 +24,7 @@
 
 @ClassAnnotations(union) sealed abstract class @(union.scalaType) protected(private val value: DataMap)
   extends ScalaUnionTemplate(value, @(union.scalaType).SCHEMA) with Product {
+  @(union.scalaType) // force static initialization
   import @(union.scalaType)._
 
   // reset UnionTemplate overrides

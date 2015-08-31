@@ -1,0 +1,15 @@
+{
+  "type": "record",
+  "name": "WithCustomMapTestIds",
+  "namespace": "org.coursera.maps",
+  "fields": [
+    {
+      "name": "map",
+      "type": {
+        "type": "map",
+        "keys": "org.coursera.customtypes.CustomMapTestKeyId",
+        "values": "org.coursera.customtypes.CustomMapTestValueId"
+      }
+    }
+  ]
+}

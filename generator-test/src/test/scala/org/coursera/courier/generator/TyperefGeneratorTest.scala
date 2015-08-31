@@ -16,21 +16,33 @@
 
 package org.coursera.courier.generator
 
+import com.linkedin.data.template.DataTemplateUtil
+import org.coursera.arrays.WithCustomArrayTestId
+import org.coursera.courier.generator.customtypes.CustomArrayTestId
 import org.coursera.courier.generator.customtypes.CustomInt
 import org.coursera.courier.generator.customtypes.CustomIntWrapper
+import org.coursera.courier.generator.customtypes.CustomMapTestKeyId
+import org.coursera.courier.generator.customtypes.CustomMapTestValueId
 import org.coursera.courier.generator.customtypes.CustomRecord
 import org.coursera.courier.generator.customtypes.CustomRecordCoercer
+import org.coursera.courier.generator.customtypes.CustomRecordTestId
+import org.coursera.courier.generator.customtypes.CustomUnionTestId
+import org.coursera.courier.templates.DataTemplates
 import org.coursera.courier.templates.DataTemplates.DataConversion
 import org.coursera.customtypes.CustomRecordArray
 import org.coursera.customtypes.CustomRecordToCustomRecordMap
 import org.coursera.enums.Fruits
+import org.coursera.maps.WithCustomMapTestIds
 import org.coursera.records.test.Empty
 import org.coursera.records.test.EmptyArray
 import org.coursera.records.test.EmptyMap
 import org.coursera.records.test.WithComplexTyperefs
 import org.coursera.records.test.WithCustomIntWrapper
 import org.coursera.records.test.WithCustomRecord
+import org.coursera.records.test.WithCustomRecordTestId
 import org.coursera.typerefs.UnionTyperef
+import org.coursera.unions.WithCustomUnionTestId
+import org.coursera.unions.WithCustomUnionTestId.Union.CustomUnionTestIdMember
 import org.coursera.unions.WithRecordCustomTypeUnion
 import org.junit.Test
 
@@ -102,5 +114,38 @@ class TyperefGeneratorTest extends GeneratorTest with SchemaFixtures {
     val roundTripped =
       WithRecordCustomTypeUnion(roundTrip(original.data()), DataConversion.SetReadOnly)
     assert(original === roundTripped)
+  }
+
+  @Test
+  def testRegisterCoercerOnReadRecord(): Unit = {
+    val json = """{ "id": 1 }"""
+    val dataMap = DataTemplates.readDataMap(json)
+    val wrapped = DataTemplateUtil.wrap(dataMap, classOf[WithCustomRecordTestId])
+    assert(wrapped.id === CustomRecordTestId(1))
+  }
+
+  @Test
+  def testRegisterCoercerOnReadArray(): Unit = {
+    val json = """{ "array": [1, 2, 3] }"""
+    val dataMap = DataTemplates.readDataMap(json)
+    val wrapped = DataTemplateUtil.wrap(dataMap, classOf[WithCustomArrayTestId])
+    assert(wrapped.array(0) === CustomArrayTestId(1))
+  }
+
+  @Test
+  def testRegisterCoercerOnReadMap(): Unit = {
+    val json = """{ "map": { "1": 100, "2": 200 } }"""
+    val dataMap = DataTemplates.readDataMap(json)
+    val wrapped = DataTemplateUtil.wrap(dataMap, classOf[WithCustomMapTestIds])
+    assert(wrapped.map(CustomMapTestKeyId(1)) === CustomMapTestValueId(100))
+    assert(wrapped.map(CustomMapTestKeyId(2)) === CustomMapTestValueId(200))
+  }
+
+  @Test
+  def testRegisterCoercerOnReadUnion(): Unit = {
+    val json = """{ "union": { "int": 1 } }"""
+    val dataMap = DataTemplates.readDataMap(json)
+    val wrapped = DataTemplateUtil.wrap(dataMap, classOf[WithCustomUnionTestId])
+    assert(wrapped.union === CustomUnionTestIdMember(CustomUnionTestId(1)))
   }
 }

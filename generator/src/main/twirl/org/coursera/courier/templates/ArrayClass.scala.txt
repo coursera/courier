@@ -34,6 +34,9 @@
   with GenTraversable[@(array.itemClass.scalaTypeFullname)]
   with ScalaArrayTemplate {
 
+  @(array.scalaType) // force static initialization
+  import @(array.scalaType)._
+
   override def length: Int = dataList.size()
 
   @* TODO(jbetz): Caching the whole list when we first access it may not be performant, need to benchmark. *@

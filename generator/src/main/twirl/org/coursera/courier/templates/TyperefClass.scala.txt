@@ -16,7 +16,7 @@
 }
 
 @ClassAnnotations(typeref) final class @(typeref.scalaType)() extends TyperefInfo(@(typeref.scalaType).SCHEMA) {
-
+  @(typeref.scalaType) // force static initialization
 }
 
 object @(typeref.scalaType) {

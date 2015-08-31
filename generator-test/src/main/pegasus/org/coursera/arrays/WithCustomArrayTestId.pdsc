@@ -1,0 +1,8 @@
+{
+  "type": "record",
+  "name": "WithCustomArrayTestId",
+  "namespace": "org.coursera.arrays",
+  "fields": [
+    { "name": "array", "type": { "type": "array", "items": "org.coursera.customtypes.CustomArrayTestId"} }
+  ]
+}

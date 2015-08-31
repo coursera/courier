@@ -83,6 +83,8 @@
   with Map[@(map.keyClass.scalaTypeFullname), @(map.valueClass.scalaTypeFullname)]
   with immutable.MapLike[@(map.keyClass.scalaTypeFullname), @(map.valueClass.scalaTypeFullname), immutable.Map[@(map.keyClass.scalaTypeFullname), @(map.valueClass.scalaTypeFullname)]]
   with DataTemplate[DataMap] {
+
+  @(map.scalaType) // force static initialization
   import @(map.scalaType)._
 
   @* TODO(jbetz): Caching the whole map when we first access it may not be performant, need to benchmark. *@
