@@ -26,9 +26,7 @@ Why
 <img src="images/android-icon.png" width="64" />
 </center>
 
-Courier is part of a suite of language bindings for the Pegasus schema language. Bindings for all these languages are generated from the same Pegasus schema files.
-
-When using Pegasus language bindings to build applications:
+Courier is one of a number of language bindings that exist for Pegasus schemas. When using Pegasus language bindings to build applications:
 
 * Languages share a common understanding of the structure of the data they read and write.
 * Language binding generators eliminate the tedious and error prone process of manually writing serializers.
