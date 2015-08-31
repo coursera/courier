@@ -43,6 +43,7 @@
 
 @ClassAnnotations(record) final class @record.scalaType private (private val dataMap: DataMap)
   extends ScalaRecordTemplate(dataMap, @(record.scalaType).SCHEMA) with Product {
+  @(record.scalaType) // force static initialization
   import @(record.scalaType)._
 
   @* Provide read access to all fields. *@

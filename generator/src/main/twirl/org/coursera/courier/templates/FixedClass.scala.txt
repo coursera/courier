@@ -18,7 +18,8 @@
 }
 
 @ClassAnnotations(fixed) final class @(fixed.scalaType)(data: AnyRef) extends FixedTemplate(data, @(fixed.scalaType).SCHEMA) {
-
+  @(fixed.scalaType) // force static initialization
+  import @(fixed.scalaType)._
 }
 
 object @(fixed.scalaType) {
