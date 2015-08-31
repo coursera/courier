@@ -14,8 +14,8 @@ schema language.
 </div>
 <br>
 
-Why
----
+Why use Courier?
+----------------
 
 **Language interoperability**
 
