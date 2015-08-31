@@ -54,6 +54,14 @@ class UnionGeneratorTest extends GeneratorTest with SchemaFixtures {
       val WithComplexTypesUnion(unionMember) = original
       val reconstructed = WithComplexTypesUnion(unionMember)
 
+      memberLiteral match {
+        case Union.EmptyMember(empty) => assert(empty === recordMember.value)
+        case Union.FruitsMember(fruit) => assert(fruit === enumMember.value)
+        case Union.SimpleMapMember(map) => assert(map === mapMember.value)
+        case Union.SimpleArrayMember(array) => assert(array === arrayMember.value)
+        case _ => fail(s"Failed to pattern match union $memberLiteral")
+      }
+
       assert(original === roundTripped)
       assert(original === reconstructed)
     }
