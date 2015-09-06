@@ -6,7 +6,7 @@ Overview
 --------
 
 Courier is a Scala data binding generator for the [Pegasus](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates)
-schema language.
+schema language. The generated data bindings efficiently serialize to JSON and a variety of binary protocols.
 
 <br>
 <div>
