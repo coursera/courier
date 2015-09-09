@@ -41,6 +41,7 @@ import scalariform.formatter.ScalaFormatter
 import scalariform.formatter.preferences.CompactControlReadability
 import scalariform.formatter.preferences.DoubleIndentClassDeclaration
 import scalariform.formatter.preferences.FormattingPreferences
+import scalariform.parser.ScalaParserException
 
 /**
  * Generates Scala files using the Twirl string template engine.
@@ -81,7 +82,11 @@ class ScalaGenerator()
         //  s"for ${topLevelSpec.scalaTypeFullname}")
     }
     maybeCode.map { code =>
-      val formattedCode = ScalaFormatter.format(code)
+      val formattedCode = try {
+        ScalaFormatter.format(code)
+      } catch {
+        case _: ScalaParserException => code
+      }
       val namespace = topLevelSpec.namespace.getOrElse("")
       ScalaGeneratedCode(formattedCode, ScalaCompilationUnit(topLevelSpec.scalaType, namespace))
     }

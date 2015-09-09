@@ -154,8 +154,17 @@ object @(array.scalaType) {
     }
   }
 
-  implicit def wrap(traversable: Traversable[@(array.itemClass.scalaTypeFullname)]): @(array.scalaType) = {
-    @(array.scalaType)(traversable)
+  @array.itemClass match {
+    case _: ArrayDefinition | _: MapDefinition => {
+      implicit def wrap(traversable: @(array.scalaGenericCollectionType)): @(array.scalaType) = {
+        @(array.scalaType)(traversable.map(@(array.itemClass.scalaTypeFullname).wrap))
+      }
+    }
+    case _ => {
+      implicit def wrap(traversable:@(array.scalaGenericCollectionType)): @(array.scalaType) = {
+        @(array.scalaType)(traversable)
+      }
+    }
   }
 }
 

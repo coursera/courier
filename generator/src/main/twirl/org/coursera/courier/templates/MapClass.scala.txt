@@ -196,7 +196,16 @@ object @(map.scalaType) {
     InlineStringCodec.dataToString(coerceKeyDataOutput(key))
   }
 
-  implicit def wrap(map: Map[@(map.keyClass.scalaTypeFullname), @(map.valueClass.scalaTypeFullname)]): @(map.scalaType) = {
-    @(map.scalaType)(map)
+  @map.valueClass match {
+    case _: ArrayDefinition | _: MapDefinition => {
+      implicit def wrap(map: @(map.scalaGenericCollectionType)): @(map.scalaType) = {
+        @(map.scalaType)(map.mapValues(@(map.valueClass.scalaTypeFullname).wrap))
+      }
+    }
+    case _ => {
+      implicit def wrap(map: @(map.scalaGenericCollectionType)): @(map.scalaType) = {
+        @(map.scalaType)(map)
+      }
+    }
   }
 }
