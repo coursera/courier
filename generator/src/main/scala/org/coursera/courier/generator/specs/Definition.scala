@@ -99,6 +99,13 @@ abstract class Definition(val spec: ClassTemplateSpec) extends Deprecatable {
   def rawDataType: String
 
   /**
+   * The scala Generic collection type that corresponds to the type.  This is the same as
+   * scalaTypeFullname for all types except maps and arrays, which are represented by
+   * `Map[K, V]` and `Traversable[I]` instead of by their pegasus generated binding types.
+   */
+  def scalaGenericCollectionType: String = scalaTypeFullname
+
+  /**
    * Includes the opening and closing scaladoc comment tags.
    */
   def scalaDoc: Option[String]

@@ -32,6 +32,12 @@ case class MapDefinition(override val spec: CourierMapTemplateSpec) extends Defi
 
   override def rawDataType = classOf[DataMap].getSimpleName
 
+  override def scalaGenericCollectionType: String = {
+    // We only use generics to represent map value types, keys are kept as pegasus binding
+    // types.
+    s"Map[${keyClass.scalaTypeFullname}, ${valueClass.scalaGenericCollectionType}]"
+  }
+
   def valueClass: Definition = Definition(spec.getValueClass)
   def valueDataClass: Definition = {
     valueCustomInfo.map(_.dereferencedType)

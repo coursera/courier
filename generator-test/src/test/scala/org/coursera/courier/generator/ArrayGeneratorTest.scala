@@ -134,4 +134,20 @@ class ArrayGeneratorTest extends GeneratorTest with SchemaFixtures {
     val replacement = original.copy(mutableData, DataConversion.SetReadOnly)
     assert(replacement.fruits(1) === Fruits.BANANA)
   }
+
+  @Test
+  def testWrapImplicitsArrayArray(): Unit = {
+    val original: SimpleArrayArray = Seq(Seq(Simple(Some("a"))), Seq(Simple(Some("b"))))
+    val roundTripped = SimpleArrayArray(roundTrip(original.data()), DataConversion.SetReadOnly)
+    assert(original === roundTripped)
+  }
+
+  @Test
+  def testWrapImplicitsMapArray(): Unit = {
+    val original: SimpleMapArray = Seq(
+      Map("k1" -> Simple(Some("a"))),
+      Map("k2" -> Simple(Some("b"))))
+    val roundTripped = SimpleMapArray(roundTrip(original.data()), DataConversion.SetReadOnly)
+    assert(original === roundTripped)
+  }
 }

@@ -54,6 +54,7 @@ import org.coursera.records.test.Simple
 import org.coursera.records.test.SimpleArray
 import org.coursera.records.test.SimpleArrayMap
 import org.coursera.records.test.SimpleMap
+import org.coursera.records.test.SimpleMapArray
 import org.coursera.records.test.SimpleMapMap
 import org.coursera.records.test.SimpleToStringMap
 import org.junit.Test
@@ -231,5 +232,23 @@ class MapGeneratorTest extends GeneratorTest with SchemaFixtures {
     assert((customMap - CustomInt(100)).size === 0)
     assert((customMap + (CustomInt(101) -> "custom2")).size === 2)
     assert(customMap.iterator.toSeq == Seq(CustomInt(100) -> "custom"))
+  }
+
+  @Test
+  def testWrapImplicitsArrayMap(): Unit = {
+    val original: SimpleArrayMap = Map(
+      "k1" -> Seq(Simple(Some("a"))),
+      "k2" -> Seq(Simple(Some("b"))))
+    val roundTripped = SimpleArrayMap(roundTrip(original.data()), DataConversion.SetReadOnly)
+    assert(original === roundTripped)
+  }
+
+  @Test
+  def testWrapImplicitsMapMap(): Unit = {
+    val original: SimpleMapMap = Map(
+      "k1" -> Map("kk1" -> Simple(Some("a"))),
+      "k2" -> Map("kk2" -> Simple(Some("b"))))
+    val roundTripped = SimpleMapMap(roundTrip(original.data()), DataConversion.SetReadOnly)
+    assert(original === roundTripped)
   }
 }
