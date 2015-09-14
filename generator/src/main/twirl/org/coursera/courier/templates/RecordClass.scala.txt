@@ -137,11 +137,11 @@
 
   @if(record.fields.nonEmpty) {
     def copy(@(record.copyFieldParamDefs)): @(record.scalaType) = {
-      val dataMap = new DataMap
-      val result = new @(record.scalaType)(dataMap)
-      result.setFields(@(record.fieldsAsParams))
-      dataMap.makeReadOnly()
-      result
+      val $dataMap = new DataMap
+      val $result = new @(record.scalaType)($dataMap)
+      $result.setFields(@(record.fieldsAsParams))
+      $dataMap.makeReadOnly()
+      $result
     }
   }
 
@@ -172,11 +172,11 @@ object @(record.scalaType) {
 
   @* TODO(jbetz): Include defaults, if field is optional, provide way to default it to either none or a value. *@
   def apply(@(record.fieldParamDefs)): @(record.scalaType) = {
-    val dataMap = new DataMap
-    val result = new @(record.scalaType)(dataMap)
-    result.setFields(@(record.fieldsAsParams))
-    dataMap.makeReadOnly()
-    result
+    val $dataMap = new DataMap
+    val $result = new @(record.scalaType)($dataMap)
+    $result.setFields(@(record.fieldsAsParams))
+    $dataMap.makeReadOnly()
+    $result
   }
 
   def apply(dataMap: DataMap, conversion: DataConversion): @(record.scalaType) = {

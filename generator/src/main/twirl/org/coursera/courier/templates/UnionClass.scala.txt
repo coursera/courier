@@ -120,11 +120,11 @@ object @(union.scalaType) {
 
     object @(member.classDefinition.memberName) {
       def apply(value: @(member.classDefinition.scalaTypeFullname)): @(member.classDefinition.memberName) = {
-        val dataMap = new DataMap
-        val result = new @(member.classDefinition.memberName)(dataMap)
-        result.setFields(value)
-        dataMap.makeReadOnly()
-        result
+        val $dataMap = new DataMap
+        val $result = new @(member.classDefinition.memberName)($dataMap)
+        $result.setFields(value)
+        $dataMap.makeReadOnly()
+        $result
       }
 
       def apply(dataMap: DataMap): @(member.classDefinition.memberName) = {

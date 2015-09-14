@@ -23,6 +23,7 @@ import com.linkedin.pegasus.generator.DataSchemaParser;
 import com.linkedin.pegasus.generator.DefaultGeneratorResult;
 import com.linkedin.pegasus.generator.GeneratorResult;
 import com.linkedin.pegasus.generator.spec.ClassTemplateSpec;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -49,13 +50,21 @@ public class DefaultGeneratorRunner implements GeneratorRunner {
         generator.customTypeLanguage());
 
     File targetDirectory = new File(options.getTargetDirectoryPath());
-    targetDirectory.delete();
-    targetDirectory.mkdirs();
 
-    if (!targetDirectory.exists() || !targetDirectory.isDirectory()) {
-      throw new IllegalArgumentException(
-          "unable to create directory, or directory path exists but is not a directory: " +
-              targetDirectory.getAbsolutePath());
+    try {
+      FileUtils.forceMkdir(targetDirectory);
+    } catch (IOException e) {
+      throw new IOException(
+          "Unable to create targetDirectory, or directory path exists but is not a directory: " +
+              targetDirectory.getAbsolutePath(), e);
+    }
+
+    try {
+      FileUtils.cleanDirectory(targetDirectory);
+    } catch (IOException e) {
+      throw new IOException(
+          "Unable to clean targetDirectory: " +
+              targetDirectory.getAbsolutePath(), e);
     }
 
     for (DataSchema defined: generator.definedSchemas()) {
