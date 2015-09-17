@@ -98,7 +98,13 @@ public class DefaultGeneratorRunner implements GeneratorRunner {
     }
 
     // Delete any unrecognized files from target directory.
-    deleteUnrecognizedFiles(targetDirectory, targetFiles);
+    try {
+      deleteUnrecognizedFiles(targetDirectory, targetFiles);
+    } catch (IOException e) {
+      throw new IOException(
+          "Unexpected error while clearing unused files from targetDirectory:" +
+              targetDirectory.getAbsolutePath(), e);
+    }
 
 
     // CourierPlugin.prepareCacheUpdate checks if the generator needs to run using an SBT utility,
