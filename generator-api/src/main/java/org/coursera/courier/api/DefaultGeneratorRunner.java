@@ -59,14 +59,6 @@ public class DefaultGeneratorRunner implements GeneratorRunner {
               targetDirectory.getAbsolutePath(), e);
     }
 
-    try {
-      FileUtils.cleanDirectory(targetDirectory);
-    } catch (IOException e) {
-      throw new IOException(
-          "Unable to clean targetDirectory: " +
-              targetDirectory.getAbsolutePath(), e);
-    }
-
     for (DataSchema defined: generator.definedSchemas()) {
       specGenerator.registerDefinedSchema(defined);
     }
@@ -105,6 +97,10 @@ public class DefaultGeneratorRunner implements GeneratorRunner {
       targetFiles.add(writeCode(targetDirectory, result));
     }
 
+    // Delete any unrecognized files from target directory.
+    deleteUnrecognizedFiles(targetDirectory, targetFiles);
+
+
     // CourierPlugin.prepareCacheUpdate checks if the generator needs to run using an SBT utility,
     // so if we get here we know we should unconditionally run the generator. As a result, the
     // modifiedFiles are always the same as the target files. (if we instead, used
@@ -116,6 +112,19 @@ public class DefaultGeneratorRunner implements GeneratorRunner {
         parseResult.getSourceFiles(),
         targetFiles,
         modifiedFiles);
+  }
+
+  @SuppressWarnings("unchecked")
+  private void deleteUnrecognizedFiles(
+      File targetDirectory, Collection<File> targetFiles) throws IOException {
+    Collection<File> existingFiles =
+        (Collection<File>)FileUtils.listFiles(targetDirectory, null, true);
+
+    for (File existingFile : existingFiles) {
+      if (!targetFiles.contains(existingFile)) {
+        FileUtils.forceDelete(existingFile);
+      }
+    }
   }
 
 
