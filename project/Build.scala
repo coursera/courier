@@ -76,6 +76,16 @@ object Courier extends Build with OverridablePublishSettings {
   //
   // Projects
   //
+  lazy val graphql = Project(id = "courier-graphql", base = file("graphql"))
+    .settings(generatorVersionSettings)
+    .settings(
+      libraryDependencies ++= Seq(
+        ExternalDependencies.JUnit.junit,
+        ExternalDependencies.Scalatest.scalatest))
+      .settings(
+          libraryDependencies ++=
+        ExternalDependencies.ScalaParserCombinators.dependencies(scalaVersion.value))
+
   lazy val generator = Project(id = "courier-generator", base = file("generator"))
     .dependsOn(runtime, generatorApi)
     .settings(generatorVersionSettings)
