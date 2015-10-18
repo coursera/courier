@@ -1,0 +1,13 @@
+{
+  "type": "record",
+  "name": "WithComplexTyperefs",
+  "namespace": "org.coursera.records.test",
+  "fields": [
+    { "name": "enum", "type": "org.coursera.typerefs.EnumTyperef" },
+    { "name": "record", "type": "org.coursera.typerefs.RecordTyperef" },
+    { "name": "map", "type": "org.coursera.typerefs.MapTyperef" },
+    { "name": "array", "type": "org.coursera.typerefs.ArrayTyperef" },
+    { "name": "union", "type": "org.coursera.typerefs.UnionTyperef" }
+
+  ]
+}

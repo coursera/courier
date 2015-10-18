@@ -1,0 +1,14 @@
+{
+  "name": "Note",
+  "type": "record",
+  "namespace": "org.coursera.records",
+  "fields": [
+    {
+      "name": "text",
+      "type": "string"
+    }
+  ],
+  "swift": {
+    "equatable": true
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "Message",
+  "type": "record",
+  "namespace": "org.coursera.records",
+  "fields": [
+    {
+      "name": "title",
+      "type": "string",
+      "optional": true
+    },
+    {
+      "name": "body",
+      "type": "string",
+      "optional": true
+    }
+  ],
+  "swift": {
+    "equatable": true
+  }
+}

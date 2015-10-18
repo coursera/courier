@@ -1,0 +1,8 @@
+{
+  "type": "record",
+  "name": "WithPrimitiveTyperefsUnion",
+  "namespace": "org.coursera.unions",
+  "fields": [
+    { "name": "union", "type": [ { "name": "IntTyperef", "type": "typeref", "ref": "int"} ] }
+  ]
+}

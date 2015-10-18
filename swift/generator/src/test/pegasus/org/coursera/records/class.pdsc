@@ -1,0 +1,11 @@
+{
+  "name": "class",
+  "type": "record",
+  "namespace": "org.coursera.records",
+  "fields": [
+    {
+      "name": "private",
+      "type": "string"
+    }
+  ]
+}

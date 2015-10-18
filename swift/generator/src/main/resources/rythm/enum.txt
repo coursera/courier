@@ -1,0 +1,69 @@
+@args com.linkedin.pegasus.generator.spec.EnumTemplateSpec enumeration
+@import org.coursera.courier.swift.SwiftSyntax
+@import org.coursera.courier.swift.DocEscaping
+
+@maybePackageAndImports(enumeration)
+
+@{ String className = SwiftSyntax.escapeKeyword(enumeration.getClassName()) }
+
+@classAnnotations(enumeration.getSchema())
+enum @className: Equatable {
+  @{Map<String, String> symbolDocs = enumeration.getSchema().getSymbolDocs()}
+  @for(String symbol: enumeration.getSchema().getSymbols()) {
+    @{String symbolDoc = symbolDocs.get(symbol)}
+    @if(symbolDoc != null) {
+      @* TODO: Add deprecated support *@
+      @DocEscaping.stringToDocComment(symbolDoc)
+    }
+
+    case @SwiftSyntax.escapeKeyword(symbol)
+  }
+  case UNKNOWN$(String)
+
+  private struct Strings {
+    @for(String symbol: enumeration.getSchema().getSymbols()) {
+      static let @(SwiftSyntax.escapeKeyword(symbol)) = "@(SwiftSyntax.escapeKeyword(symbol))"
+    }
+  }
+
+  static func read(symbol: String) -> @className {
+    switch symbol {
+      @for(String symbol: enumeration.getSchema().getSymbols()) {
+        case @(className).Strings.@(SwiftSyntax.escapeKeyword(symbol)):
+          return .@(SwiftSyntax.escapeKeyword(symbol))
+      }
+      default:
+        return .UNKNOWN$(symbol)
+    }
+  }
+
+  func write() -> String {
+    switch self {
+      @for(String symbol: enumeration.getSchema().getSymbols()) {
+        case .@(SwiftSyntax.escapeKeyword(symbol)):
+          return @(className).Strings.@(SwiftSyntax.escapeKeyword(symbol))
+      }
+      case .UNKNOWN$(let symbol):
+        return symbol
+    }
+  }
+
+  @* TODO: implement
+  var hashValue: Int {
+    return write().hashValue
+  }
+  *@
+}
+
+func ==(lhs: @className, rhs: @className) -> Bool {
+    switch (lhs, rhs) {
+      @for(String symbol: enumeration.getSchema().getSymbols()) {
+        case (.@(SwiftSyntax.escapeKeyword(symbol)), .@(SwiftSyntax.escapeKeyword(symbol))):
+          return true
+      }
+      case (let .UNKNOWN$(lhs), let .UNKNOWN$(rhs)):
+          return lhs == rhs
+      default:
+          return false
+    }
+}

@@ -1,0 +1,21 @@
+@args com.linkedin.pegasus.generator.spec.UnionTemplateSpec union, String path, org.coursera.courier.swift.SwiftSyntax syntax, org.coursera.courier.swift.SwiftyJSON swifty
+@import com.linkedin.pegasus.generator.spec.UnionTemplateSpec.Member
+
+@{ String className = ((path == null || path.trim().length() == 0) ? "" : (path + ".")) + syntax.escapeKeyword(union.getClassName()) }
+
+@if (syntax.isEquatable(union.getTyperefClass())) {
+  func ==(lhs: @className, rhs: @className) -> Bool {
+    switch (lhs, rhs) {
+      @for(Member member: union.getMembers()) {
+        @{ String unionMemberName = syntax.toUnionMemberName(member.getClassTemplateSpec()) }
+
+        case (let .@(unionMemberName)(lhs), let .@(unionMemberName)(rhs)):
+          return lhs == rhs
+      }
+      case (let .UNKNOWN$(lhs), let .UNKNOWN$(rhs)):
+          return lhs == rhs
+      default:
+          return false
+    }
+  }
+}

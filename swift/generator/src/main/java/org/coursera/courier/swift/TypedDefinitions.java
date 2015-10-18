@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.coursera.courier.android;
+package org.coursera.courier.swift;
 
 import com.linkedin.data.DataMap;
 import com.linkedin.pegasus.generator.spec.TyperefTemplateSpec;

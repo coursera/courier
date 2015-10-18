@@ -1,0 +1,14 @@
+{
+  "name": "WithFlatTypedDefinition",
+  "type": "record",
+  "namespace": "org.coursera.records",
+  "fields": [
+    {
+      "name": "value",
+      "type": "org.coursera.typerefs.FlatTypedDefinition"
+    }
+  ],
+  "swift": {
+    "equatable": true
+  }
+}

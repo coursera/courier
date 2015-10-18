@@ -1,0 +1,14 @@
+{
+  "name": "CustomInt",
+  "namespace": "org.coursera.customtypes",
+  "type": "typeref",
+  "ref": "int",
+  "scala": {
+    "class": "org.coursera.courier.generator.customtypes.CustomInt",
+    "coercerClass": "org.coursera.courier.generator.customtypes.CustomIntCoercer"
+  },
+  "android": {
+    "class": "org.coursera.courier.android.customtypes.CustomInt",
+    "coercerClass": "org.coursera.courier.android.adapters.CustomIntAdapter"
+  }
+}

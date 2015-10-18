@@ -1,0 +1,7 @@
+{
+  "value": {
+    "typeName": "message",
+    "title": "title",
+    "body": "Hello, Swift."
+  }
+}

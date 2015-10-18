@@ -1,0 +1,6 @@
+platform :osx, '10.10'
+use_frameworks!
+
+target 'testsuite' do
+  pod 'SwiftyJSON', :git => 'https://github.com/SwiftyJSON/SwiftyJSON.git'
+end
