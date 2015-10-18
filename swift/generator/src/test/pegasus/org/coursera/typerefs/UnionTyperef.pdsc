@@ -1,0 +1,6 @@
+{
+  "name": "UnionTyperef",
+  "namespace": "org.coursera.typerefs",
+  "type": "typeref",
+  "ref": ["string", "int"]
+}

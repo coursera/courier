@@ -1,0 +1,44 @@
+apply plugin: 'java'
+
+archivesBaseName = "courier-swift-generator"
+
+dependencies {
+  compile externalDependency.rythm
+  compile externalDependency.pegasusGenerator
+  compile externalDependency.courierGeneratorApi
+  testCompile externalDependency.junit
+}
+
+// To test the generator, we run it on some .pdscs before executing the test tasks
+
+File pegasusSrcDir = file('src/test/pegasus')
+//File pegasusTargetDir = file('src/test/mainGeneratedPegasus')
+File pegasusTargetDir = file('../testsuite/testsuiteTests/generated')
+
+clean {
+  delete pegasusTargetDir
+}
+
+task generateTestClasses(type: JavaExec, dependsOn: compileJava) {
+  FileTree pdscFiles = fileTree(dir: pegasusSrcDir)
+  pdscFiles.include '**/*.pdsc'
+
+  classpath = sourceSets.main.runtimeClasspath
+  main = 'org.coursera.courier.SwiftGenerator'
+  args = [
+      pegasusTargetDir,
+      pegasusSrcDir,
+      pdscFiles.getAsPath()] //sourceSets.test.pegasus.allSource.getAsPath
+}
+
+// Build a Fat Jar (aka Uber Jar)
+jar {
+  from {
+    (configurations.runtime).collect {
+      it.isDirectory() ? it : zipTree(it)
+    }
+  }
+  manifest {
+    attributes("Main-Class": "org.coursera.courier.SwiftGenerator" )
+  }
+}

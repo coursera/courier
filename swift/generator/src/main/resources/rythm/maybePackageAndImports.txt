@@ -1,0 +1,6 @@
+@args com.linkedin.pegasus.generator.spec.ClassTemplateSpec spec
+
+@if (spec.getEnclosingClass() == null) {
+  import Foundation
+  import SwiftyJSON
+}

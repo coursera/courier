@@ -1,0 +1,29 @@
+{
+  "type": "record",
+  "name": "WithComplexTypesMap",
+  "namespace": "org.coursera.maps",
+  "fields": [
+    { "name": "empties", "type": { "type": "map", "values": "org.coursera.records.test.Empty"} },
+    { "name": "fruits", "type": { "type": "map", "values": "org.coursera.enums.Fruits"} },
+    { "name": "arrays", "type": { "type": "map", "values": { "type": "array", "items": "org.coursera.records.test.Simple" } } },
+    { "name": "maps", "type": { "type": "map", "values": { "type": "map", "values": "org.coursera.records.test.Simple" } } },
+    { "name": "unions", "type":
+      {
+        "type": "map",
+        "values": {
+          "name": "WithComplexTypesMapUnion",
+          "namespace": "org.coursera.maps",
+          "type": "typeref",
+          "ref": ["int", "string", "org.coursera.records.test.Simple"],
+          "swift": {
+            "equatable": true
+          }
+        }
+      }
+    },
+    { "name": "fixed", "type": { "type": "map", "values": "org.coursera.fixed.Fixed8"} }
+  ],
+  "swift": {
+    "equatable": true
+  }
+}

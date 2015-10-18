@@ -1,0 +1,73 @@
+@args com.linkedin.pegasus.generator.spec.RecordTemplateSpec record, org.coursera.courier.swift.SwiftSyntax syntax, org.coursera.courier.swift.SwiftyJSON swifty
+@import com.linkedin.pegasus.generator.spec.ClassTemplateSpec
+@import com.linkedin.pegasus.generator.spec.RecordTemplateSpec.Field
+@import com.linkedin.pegasus.generator.spec.PrimitiveTemplateSpec
+@import com.linkedin.pegasus.generator.spec.MapTemplateSpec
+@import com.linkedin.pegasus.generator.spec.UnionTemplateSpec
+@import com.linkedin.pegasus.generator.spec.ArrayTemplateSpec
+@import org.coursera.courier.api.ClassTemplateSpecs
+@import org.coursera.courier.swift.TypedDefinitions
+@import com.linkedin.data.schema.DataSchema.Type
+
+@maybePackageAndImports(record)
+
+@{ String className = syntax.escapeKeyword(record.getClassName()) }
+
+@classAnnotations(record.getSchema())
+struct @className @if (syntax.isEquatable()) {: Equatable} {
+  @for(Field field: record.getFields()) {
+    @{ String fieldName = syntax.escapeKeyword(field.getSchemaField().getName()) }
+    @fieldAnnotations(field)
+    let @fieldName: @syntax.toType(field.getType(), syntax.isOptional(field))
+  }
+
+  init(@syntax.toInitArgs(record.getFields())) {
+    @for(Field field: record.getFields()) {
+      @{ String fieldName = syntax.escapeKeyword(field.getSchemaField().getName()) }
+      self.@fieldName = @fieldName
+    }
+  }
+
+  @enclosedTypes(record, syntax)
+
+  static func read(json: JSON) -> @className {
+    return @(className)(
+      @swifty.toGetAccessors(record.getFields()))
+  }
+
+  func write() -> [String : JSON] {
+    @if(record.getFields().size() == 0) {
+      return [:]
+    } else {
+      var json: [String : JSON] = [:]
+
+      @for(Field field: record.getFields()) {
+        @swifty.toSetAccessor(field)
+      }
+
+      return json
+    }
+  }
+
+  @* TODO: implement
+  var hashValue: Int {
+    var hash = 1
+    @for(Field field: record.getFields()) {
+    @{ String fieldName = syntax.escapeKeyword(field.getSchemaField().getName()) }
+      hash = hash * 17 + hashOf(self.@fieldName)
+    }
+    return hash
+  }
+  *@
+}
+
+@if (syntax.isEquatable()) {
+func ==(lhs: @className, rhs: @className) -> Bool {
+    return (
+      @for(Field field: record.getFields()) { @{ String fieldName = syntax.escapeKeyword(field.getSchemaField().getName()) }
+        @if (syntax.isOptional(field)) {(lhs.@fieldName == nil ? (rhs.@fieldName == nil) : lhs.@fieldName! == rhs.@fieldName!)} else {lhs.@fieldName == rhs.@fieldName} &&
+      } true)
+}
+}
+
+@enclosedTypeGlobals(record, className, syntax)

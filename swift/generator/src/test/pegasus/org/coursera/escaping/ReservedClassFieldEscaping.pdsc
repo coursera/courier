@@ -1,0 +1,10 @@
+{
+  "type": "record",
+  "name": "ReservedClassFieldEscaping",
+  "namespace": "org.coursera.escaping",
+  "fields": [
+    { "name": "json", "type": "string" },
+    { "name": "read", "type": "string" },
+    { "name": "write", "type": "string" }
+  ]
+}

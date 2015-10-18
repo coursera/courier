@@ -1,5 +1,6 @@
 @args com.linkedin.pegasus.generator.spec.EnumTemplateSpec enumeration
 @import org.coursera.courier.android.JavaSyntax
+@import org.coursera.courier.android.JavadocEscaping
 
 @if (enumeration.getNamespace() != null && enumeration.getNamespace().length() > 0) {package @enumeration.getNamespace();}
 
@@ -13,7 +14,13 @@ import javax.annotation.Generated;
  *@
 @classAnnotations(enumeration.getSchema())
 public enum @className {
+  @{Map<String, String> symbolDocs = enumeration.getSchema().getSymbolDocs()}
   @for(String symbol: enumeration.getSchema().getSymbols()) {
+    @{String symbolDoc = symbolDocs.get(symbol)}
+    @if(symbolDoc != null) {
+      @* TODO: Add deprecated support *@
+      @JavadocEscaping.stringToJavadoc(symbolDoc, null)
+    }
     @JavaSyntax.escapeKeyword(symbol),
   }
 }

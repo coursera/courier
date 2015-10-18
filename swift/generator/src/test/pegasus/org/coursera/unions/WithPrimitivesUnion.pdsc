@@ -1,0 +1,8 @@
+{
+  "type": "record",
+  "name": "WithPrimitivesUnion",
+  "namespace": "org.coursera.unions",
+  "fields": [
+    { "name": "union", "type": ["int", "long", "float", "double", "boolean", "string", "bytes"] }
+  ]
+}

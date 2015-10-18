@@ -1,0 +1,269 @@
+{
+  "version" : "1.0.1",
+  "name" : "android",
+  "number" : "1442513079056",
+  "type" : "GRADLE",
+  "buildAgent" : {
+    "name" : "Gradle",
+    "version" : "2.5"
+  },
+  "agent" : {
+    "name" : "Gradle",
+    "version" : "2.5"
+  },
+  "started" : "2015-09-17T11:04:38.160-0700",
+  "durationMillis" : 12084,
+  "principal" : "jbetz",
+  "artifactoryPrincipal" : "jbetz",
+  "licenseControl" : {
+    "runChecks" : false,
+    "includePublishedArtifacts" : false,
+    "autoDiscover" : false,
+    "scopesList" : "",
+    "licenseViolationsRecipientsList" : ""
+  },
+  "buildRetention" : {
+    "count" : -1,
+    "deleteBuildArtifacts" : true,
+    "buildNumbersNotToBeDiscarded" : [ ]
+  },
+  "modules" : [ {
+    "id" : "org.coursera.courier:generator:0.12.3",
+    "artifacts" : [ {
+      "type" : "jar.asc",
+      "sha1" : "b12e2be43c4114713495dbe950a28199adcbd761",
+      "md5" : "06f52f77379f1e1d78eecbd9cadab855",
+      "name" : "courier-android-generator-0.12.3-sources.asc"
+    }, {
+      "type" : "jar.asc",
+      "sha1" : "40c3fb7d730e45e9162e5fbdd060dd57fc41a9db",
+      "md5" : "95fffb1f7f20772de8dd229dced2a990",
+      "name" : "courier-android-generator-0.12.3-javadoc.asc"
+    }, {
+      "type" : "jar.asc",
+      "sha1" : "4dff26e7b434ca04265a37a562de9eb83b944f4f",
+      "md5" : "8e9537d8191a430f22613899f4262959",
+      "name" : "courier-android-generator-0.12.3.asc"
+    }, {
+      "type" : "sources-jar",
+      "sha1" : "e0547300d4b1ab1aeb97463aecfb52c036c60911",
+      "md5" : "ae4816073b513da5d580188531569d06",
+      "name" : "courier-android-generator-0.12.3-sources.jar"
+    }, {
+      "type" : "jar",
+      "sha1" : "69e3d411236ba2b6c9cc2020793322922fa3b738",
+      "md5" : "200d8a2cf39e6f17a40ec2a1395c4a2f",
+      "name" : "courier-android-generator-0.12.3.jar"
+    }, {
+      "type" : "javadoc-jar",
+      "sha1" : "9aa0423079ac1b2ab61024e43283e89cc20a0a38",
+      "md5" : "af920ffd43fb2fe8415dbda0779e9ae2",
+      "name" : "courier-android-generator-0.12.3-javadoc.jar"
+    }, {
+      "type" : "pom",
+      "sha1" : "270d34e41746ede9b563372db571640a064e3215",
+      "md5" : "f3742480198ac84f1d55b4556528958c",
+      "name" : "courier-android-generator-0.12.3.pom"
+    } ],
+    "excludedArtifacts" : [ ],
+    "dependencies" : [ {
+      "type" : "jar",
+      "sha1" : "e6cb541461c2834bdea3eb920f1884d1eb508b50",
+      "md5" : "8ae38e87cd4f86059c0294a8fe3e0b18",
+      "id" : "javax.activation:activation:1.1",
+      "scopes" : [ "compile" ]
+    }, {
+      "type" : "jar",
+      "sha1" : "65079d7e351a244b4a342be32c8f18e97e08eacc",
+      "md5" : "aa3ab2de495822d47686b02e16813480",
+      "id" : "org.coursera.courier:runtime:0.12.3",
+      "scopes" : [ "compile" ]
+    }, {
+      "type" : "jar",
+      "sha1" : "6a384fddb4e997aaab68d4a91b9e0ce229a9c7ba",
+      "md5" : "5e0e9886619e49e0e32b1a1750e5f50f",
+      "id" : "org.rythmengine:rythm-engine:1.0.1",
+      "scopes" : [ "compile" ]
+    }, {
+      "type" : "jar",
+      "sha1" : "6a3f1052f5fa3c022f143dbe599545f63bd6bb3d",
+      "md5" : "10881556a556747f3e79e0893b0e59ae",
+      "id" : "com.linkedin.pegasus:generator:2.6.0",
+      "scopes" : [ "compile" ]
+    }, {
+      "type" : "jar",
+      "sha1" : "ecb6e1f8e4b0e84c4b886c2f14a1500caf309757",
+      "md5" : "e16b1b8fca0980263f764f633ec91dd6",
+      "id" : "com.google.code.gson:gson:2.3.1",
+      "scopes" : [ "compile" ]
+    }, {
+      "type" : "jar",
+      "sha1" : "e44fd9b699dd40daf287fc570724b01bf4c863c8",
+      "md5" : "498c74c3eb396edd41d7399c053d080f",
+      "id" : "org.coursera.courier:courier-generator-api:0.12.3",
+      "scopes" : [ "compile" ]
+    }, {
+      "type" : "jar",
+      "sha1" : "21582b0e662b9e54fc6f0f2721d36f753ce7c58c",
+      "md5" : "6595e56809c03a2702b952a0963124bb",
+      "id" : "org.eclipse.jdt.core.compiler:ecj:4.3.1",
+      "scopes" : [ "compile" ]
+    }, {
+      "type" : "jar",
+      "sha1" : "c4ca27840da7ffc6ed46ec34454683a6c1c2b2f8",
+      "md5" : "ea29652508de18c710048079c91ff85f",
+      "id" : "org.iq80.snappy:snappy:0.3",
+      "scopes" : [ "compile" ]
+    }, {
+      "type" : "jar",
+      "sha1" : "443839ae3daa2dde91825c050725dff737a71701",
+      "md5" : "5d4e64016ebb62d4627928c0013ce409",
+      "id" : "org.apache.mina:mina-core:1.1.7",
+      "scopes" : [ "compile" ]
+    }, {
+      "type" : "jar",
+      "sha1" : "4b96b36954e8f86023dd64ff24fa211d8bb16a98",
+      "md5" : "413db026b4cd5c50dfbf2ab0cee386a4",
+      "id" : "com.stevesoft.pat:pat:1.5.3",
+      "scopes" : [ "compile" ]
+    }, {
+      "type" : "jar",
+      "sha1" : "6bf0ebb7efd993e222fc1112377b5e92a13b38dd",
+      "md5" : "3ef236ac4c24850cd54abff60be25f35",
+      "id" : "javax.servlet:javax.servlet-api:3.0.1",
+      "scopes" : [ "compile" ]
+    }, {
+      "type" : "jar",
+      "sha1" : "45b5ec6a16d73d98fe370cfc2e8253bddc6a297e",
+      "md5" : "4c1e62c9ce0d2f9bd5770ca3c1d83339",
+      "id" : "org.apache.commons:commons-compress:1.2",
+      "scopes" : [ "compile" ]
+    }, {
+      "type" : "jar",
+      "sha1" : "8b7bc69010655425dabf091b51d1e90b4de36715",
+      "md5" : "584010e5e62f4fa4b8ccfdf35a2c3a8a",
+      "id" : "javax.mail:mail:1.4.1",
+      "scopes" : [ "compile" ]
+    }, {
+      "type" : "jar",
+      "sha1" : "90a3822c38ec8c996e84c16a3477ef632cbc87a3",
+      "md5" : "3128bf75a2549ebe38663401191bacab",
+      "id" : "org.apache.commons:commons-lang3:3.3.2",
+      "scopes" : [ "compile" ]
+    }, {
+      "type" : "jar",
+      "sha1" : "16313e02a793435009f1e458fa4af5d879f6fb11",
+      "md5" : "237a8e845441bad2e535c57d985c8204",
+      "id" : "commons-lang:commons-lang:2.4",
+      "scopes" : [ "compile" ]
+    }, {
+      "type" : "jar",
+      "sha1" : "4d002c8b49ff59d6272a8d0a0057d1548d3895ac",
+      "md5" : "5b517f70e997643b5dbe7f1227a294cd",
+      "id" : "com.alibaba:fastjson:1.1.39",
+      "scopes" : [ "compile" ]
+    }, {
+      "type" : "jar",
+      "sha1" : "703c9570c0d048d506f5581e8c40e891ffa5d8ff",
+      "md5" : "60b2f59af9a89bebd12b534a410be473",
+      "id" : "org.mvel:mvel2:2.1.5.Final",
+      "scopes" : [ "compile" ]
+    }, {
+      "type" : "jar",
+      "sha1" : "8619e95939167fb37245b5670135e4feb0ec7d50",
+      "md5" : "460fb0e89a539ab76d9b88ca3abe0d52",
+      "id" : "org.slf4j:slf4j-api:1.6.2",
+      "scopes" : [ "compile" ]
+    }, {
+      "type" : "jar",
+      "sha1" : "b45fd80636d13199c37e66493abc540364c834a3",
+      "md5" : "ab5b6aaa139a6a0b4d57b71f6734818b",
+      "id" : "com.linkedin.pegasus:pegasus-common:2.6.0",
+      "scopes" : [ "compile" ]
+    }, {
+      "type" : "jar",
+      "sha1" : "25b5c4d42c5a392453de135195b07826f1076b7a",
+      "md5" : "ed577c63fc07f2251d312d126fc842a1",
+      "id" : "com.linkedin.pegasus:data:2.6.0",
+      "scopes" : [ "compile" ]
+    }, {
+      "type" : "jar",
+      "sha1" : "220bdce6bf4571c42b9a5cd272503df168cbdb60",
+      "md5" : "37c03658318379539854c1659c199ed5",
+      "id" : "com.sun.codemodel:codemodel:2.2",
+      "scopes" : [ "compile" ]
+    }, {
+      "type" : "jar",
+      "sha1" : "a8762d07e76cfde2395257a5da47ba7c1dbd3dce",
+      "md5" : "b6a50c8a15ece8753e37cbe5700bf84f",
+      "id" : "commons-io:commons-io:1.4",
+      "scopes" : [ "compile" ]
+    }, {
+      "type" : "jar",
+      "sha1" : "a74bb9de53f45726d32b215d314a2e2198087575",
+      "md5" : "2249a7cafcc2594c82ea230a71518b2b",
+      "id" : "com.linkedin.pegasus:r2-core:2.6.0",
+      "scopes" : [ "compile" ]
+    }, {
+      "type" : "jar",
+      "sha1" : "4cb3dbb0c2f75b51aa7543c53252989785a0c609",
+      "md5" : "750ef3d86f04fe0d6d14d6ae904a6d2d",
+      "id" : "com.fasterxml.jackson.core:jackson-core:2.4.3",
+      "scopes" : [ "compile" ]
+    } ]
+  }, {
+    "id" : "org.coursera.courier:runtime:0.12.3",
+    "artifacts" : [ {
+      "type" : "pom",
+      "sha1" : "2be336667ee869fc7e488953bbb51a3456a0374e",
+      "md5" : "69d41830ec539d7d53572d440b0e8700",
+      "name" : "courier-android-runtime-0.12.3.pom"
+    }, {
+      "type" : "jar.asc",
+      "sha1" : "c72dfb8a40f011f48004a7f5536c97f602e29510",
+      "md5" : "67c431ea65e93603bc3b5f7ee0f918aa",
+      "name" : "courier-android-runtime-0.12.3-javadoc.asc"
+    }, {
+      "type" : "jar.asc",
+      "sha1" : "5adeb65a58eb3d4dd7625b42c197fd16dba37050",
+      "md5" : "7438fa98d2aea4272014f9de490e2d3a",
+      "name" : "courier-android-runtime-0.12.3.asc"
+    }, {
+      "type" : "javadoc-jar",
+      "sha1" : "934a90181e715a98040a89816677d07041ef9115",
+      "md5" : "deba035565b9929dc547c750ffed32d0",
+      "name" : "courier-android-runtime-0.12.3-javadoc.jar"
+    }, {
+      "type" : "jar.asc",
+      "sha1" : "6ed5a01bd07dfa64ef773048d52d9a9c93f63cca",
+      "md5" : "2ac23d2bf324f1699830a883884220ad",
+      "name" : "courier-android-runtime-0.12.3-sources.asc"
+    }, {
+      "type" : "jar",
+      "sha1" : "65079d7e351a244b4a342be32c8f18e97e08eacc",
+      "md5" : "aa3ab2de495822d47686b02e16813480",
+      "name" : "courier-android-runtime-0.12.3.jar"
+    }, {
+      "type" : "sources-jar",
+      "sha1" : "eacab057a1d796bedd6b690db67244fcbc0b95f0",
+      "md5" : "9adc1734df69f0bc3d00ce98a54977aa",
+      "name" : "courier-android-runtime-0.12.3-sources.jar"
+    } ],
+    "excludedArtifacts" : [ ],
+    "dependencies" : [ {
+      "type" : "jar",
+      "sha1" : "ecb6e1f8e4b0e84c4b886c2f14a1500caf309757",
+      "md5" : "e16b1b8fca0980263f764f633ec91dd6",
+      "id" : "com.google.code.gson:gson:2.3.1",
+      "scopes" : [ "compile" ]
+    } ]
+  } ],
+  "governance" : {
+    "blackDuckProperties" : {
+      "runChecks" : false,
+      "includePublishedArtifacts" : false,
+      "autoCreateMissingComponentRequests" : false,
+      "autoDiscardStaleComponentRequests" : false
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "Union",
+  "namespace": "org.coursera.typerefs",
+  "type": "typeref",
+  "ref": ["org.coursera.records.Note", "org.coursera.records.Message"],
+  "swift": {
+    "equatable": true
+  }
+}

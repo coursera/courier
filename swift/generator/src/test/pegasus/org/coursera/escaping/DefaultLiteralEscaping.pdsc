@@ -1,0 +1,12 @@
+{
+  "type": "record",
+  "name": "DefaultLiteralEscaping",
+  "namespace": "org.coursera.escaping",
+  "fields": [
+    {
+      "name": "stringField",
+      "type": "string",
+      "default": "tripleQuote: \"\"\" "
+    }
+  ]
+}

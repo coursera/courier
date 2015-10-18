@@ -1,0 +1,61 @@
+@args com.linkedin.pegasus.generator.spec.UnionTemplateSpec union, org.coursera.courier.swift.SwiftSyntax syntax, org.coursera.courier.swift.SwiftyJSON swifty
+@import com.linkedin.pegasus.generator.spec.UnionTemplateSpec.Member
+
+@maybePackageAndImports(union)
+
+@{ String className = syntax.escapeKeyword(union.getClassName()) }
+
+@if (union.getTyperefClass() != null) {
+  @classAnnotations(union.getTyperefClass().getSchema())
+}
+
+enum @className @if (syntax.isEquatable(union.getTyperefClass())) {: Equatable} {
+  @for(Member member: union.getMembers()) {
+    @{ String unionMemberName = syntax.toUnionMemberName(member.getClassTemplateSpec()) }
+    case @(unionMemberName)(@syntax.toType(member.getClassTemplateSpec(), false))
+  }
+  case UNKNOWN$([String : JSON])
+
+  static func read(json: JSON) -> @className {
+    let dictionary = json.dictionaryValue
+    @for(Member member: union.getMembers()) {
+    @{ String unionMemberName = syntax.toUnionMemberName(member.getClassTemplateSpec()) }
+      if let member = dictionary["@(member.getSchema().getUnionMemberKey())"] {
+        return .@(unionMemberName)(@swifty.toGetAccessor("member", member))
+      }
+    }
+
+    return .UNKNOWN$(dictionary)
+  }
+
+  func write() -> [String : JSON] {
+    switch self {
+      @for(Member member: union.getMembers()) {
+      @{ String unionMemberName = syntax.toUnionMemberName(member.getClassTemplateSpec()) }
+        case .@(unionMemberName)(let member):
+          return ["@(member.getSchema().getUnionMemberKey())": @swifty.toSetAccessor(member)];
+      }
+
+      case .UNKNOWN$(let dictionary):
+        return dictionary
+      }
+  }
+
+  @* TODO: implement
+  var hashValue: Int {
+    switch self {
+      @for(Member member: union.getMembers()) {
+        @{ String unionMemberName = syntax.toUnionMemberName(member.getClassTemplateSpec()) }
+        case .@(unionMemberName)(let member):
+          return hashOf(member)
+      }
+      case .UNKNOWN$(let dictionary):
+        return hashOf(dictionary)
+    }
+  }
+  *@
+}
+
+@if (union.getEnclosingClass() == null) {
+  @unionGlobals(union, null, syntax)
+}

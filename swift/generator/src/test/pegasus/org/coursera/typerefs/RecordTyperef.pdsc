@@ -1,0 +1,6 @@
+{
+  "name": "RecordTyperef",
+  "namespace": "org.coursera.typerefs",
+  "type": "typeref",
+  "ref": "org.coursera.records.test.Empty"
+}

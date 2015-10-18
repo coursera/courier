@@ -1,0 +1,66 @@
+@args com.linkedin.pegasus.generator.spec.UnionTemplateSpec union, java.util.Map<String, String> memberKeyToTypeName, org.coursera.courier.swift.SwiftSyntax syntax, org.coursera.courier.swift.SwiftyJSON swifty
+@import com.linkedin.pegasus.generator.spec.UnionTemplateSpec.Member
+
+@maybePackageAndImports(union)
+
+@{ String className = syntax.escapeKeyword(union.getClassName()) }
+
+@if (union.getTyperefClass() != null) {
+  @classAnnotations(union.getTyperefClass().getSchema())
+}
+
+enum @className @if (syntax.isEquatable(union.getTyperefClass())) {: Equatable} {
+  @for(Member member: union.getMembers()) {
+    @{ String unionMemberName = syntax.toUnionMemberName(member.getClassTemplateSpec()) }
+    case @(unionMemberName)(@syntax.toType(member.getClassTemplateSpec(), false))
+  }
+  case UNKNOWN$([String : JSON])
+
+  static func read(json: JSON) -> @className {
+    let dictionary = json.dictionaryValue
+    switch json["typeName"].stringValue {
+      @for(Member member: union.getMembers()) {
+        @{ String unionMemberName = syntax.toUnionMemberName(member.getClassTemplateSpec()) }
+        case "@(memberKeyToTypeName.get(member.getSchema().getUnionMemberKey()))":
+          return .@(unionMemberName)(@swifty.toGetAccessor("json", member))
+        }
+
+        default:
+          return .UNKNOWN$(dictionary)
+      }
+  }
+
+  func write() -> [String : JSON] {
+    switch self {
+      @for(Member member: union.getMembers()) {
+      @{ String unionMemberName = syntax.toUnionMemberName(member.getClassTemplateSpec()) }
+        case .@(unionMemberName)(let member):
+          var json = @swifty.toSetAccessor(member)
+          json["typeName"] = "@(memberKeyToTypeName.get(member.getSchema().getUnionMemberKey()))"
+          return json.dictionaryValue
+
+      }
+
+      case .UNKNOWN$(let json):
+        return json
+      }
+  }
+
+  @* TODO: implement
+  var hashValue: Int {
+    switch self {
+      @for(Member member: union.getMembers()) {
+        @{ String unionMemberName = syntax.toUnionMemberName(member.getClassTemplateSpec()) }
+        case .@(unionMemberName)(let member):
+          return hashOf(member)
+      }
+      case .UNKNOWN$(let dictionary):
+        return hashOf(dictionary)
+    }
+  }
+  *@
+}
+
+@if (union.getEnclosingClass() == null) {
+  @unionGlobals(union, null, syntax)
+}
