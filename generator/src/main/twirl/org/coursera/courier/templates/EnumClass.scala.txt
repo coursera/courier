@@ -30,7 +30,7 @@
 
   /**
    * Converts a string to an enumeration value. If the string does not match
-   * any of the enumeration values, returns the $UKNOWN enumeration value.
+   * any of the enumeration values, returns the \$UNKNOWN enumeration value.
    */
   def fromString(s: String): Value = {
     values.find(_.toString == s).getOrElse($UNKNOWN)
