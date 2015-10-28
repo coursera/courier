@@ -9,7 +9,7 @@
   @classAnnotations(union.getTyperefClass().getSchema())
 }
 
-enum @className @if (syntax.isEquatable(union.getTyperefClass())) {: Equatable} {
+enum @className @if (syntax.isEquatable()) {: Equatable} {
   @for(Member member: union.getMembers()) {
     @{ String unionMemberName = syntax.toUnionMemberName(member.getClassTemplateSpec()) }
     case @(unionMemberName)(@syntax.toType(member.getClassTemplateSpec(), false))

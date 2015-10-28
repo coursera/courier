@@ -178,6 +178,7 @@ TODO
 * [x] Fix default literal escaping (problem cases are somewhat pathological)
 * [ ] Implement namespace handling strategy (details below)
 * [ ] Automate distribution of the Fat Jar, and generally make the distribution sane
+* [ ] Publish Fat Jar to remote repos
 * [ ] Automate inclusion of CourierRuntime.swift in generated classes (or as a proper module?)
 * [ ] Generate scala style copy() methods?
 * [ ] Dig deeper into Equatable, Hashable (how to support arrays and maps?  Deep check?)
