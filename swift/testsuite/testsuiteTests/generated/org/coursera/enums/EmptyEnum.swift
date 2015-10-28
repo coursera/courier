@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-enum EmptyEnum: Equatable {
+enum EmptyEnum: Equatable, Hashable {
     case UNKNOWN$(String)
     private struct Strings {
     }
@@ -16,6 +16,9 @@ enum EmptyEnum: Equatable {
         case .UNKNOWN$(let symbol):
             return symbol
         }
+    }
+    var hashValue: Int {
+        return write().hashValue
     }
 }
 func ==(lhs: EmptyEnum, rhs: EmptyEnum) -> Bool {
