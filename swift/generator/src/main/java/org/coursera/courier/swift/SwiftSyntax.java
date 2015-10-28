@@ -36,6 +36,7 @@ import com.linkedin.pegasus.generator.spec.ArrayTemplateSpec;
 import com.linkedin.pegasus.generator.spec.ClassTemplateSpec;
 import com.linkedin.pegasus.generator.spec.RecordTemplateSpec;
 import com.linkedin.pegasus.generator.spec.TyperefTemplateSpec;
+import com.linkedin.pegasus.generator.spec.UnionTemplateSpec;
 import org.coursera.courier.api.CourierMapTemplateSpec;
 import org.coursera.courier.swift.SwiftProperties.Optionality;
 
@@ -51,9 +52,11 @@ import java.util.Set;
  */
 public class SwiftSyntax {
 
+  private final ClassTemplateSpec classSpec;
   public final SwiftProperties swiftProperties;
 
-  public SwiftSyntax(SwiftProperties swiftProperties) {
+  public SwiftSyntax(ClassTemplateSpec classSpec, SwiftProperties swiftProperties) {
+    this.classSpec = classSpec;
     this.swiftProperties = swiftProperties;
   }
 
@@ -140,12 +143,14 @@ public class SwiftSyntax {
   }
 
   public boolean isEquatable() {
-    return swiftProperties.equatable;
-  }
-
-  public boolean isEquatable(TyperefTemplateSpec typerefSpec) {
-    if (typerefSpec == null) return SwiftProperties.DEFAULT.equatable;
-    return SwiftProperties.lookupSwiftProperties(typerefSpec).equatable;
+    if (classSpec instanceof UnionTemplateSpec) {
+      UnionTemplateSpec unionSpec = (UnionTemplateSpec)classSpec;
+      TyperefTemplateSpec typerefSpec = unionSpec.getTyperefClass();
+      if (typerefSpec == null) return SwiftProperties.DEFAULT.equatable;
+      return SwiftProperties.lookupSwiftProperties(typerefSpec).equatable;
+    } else {
+      return swiftProperties.equatable;
+    }
   }
 
   // emit string representing type

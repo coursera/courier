@@ -3,7 +3,7 @@
 
 @{ String className = ((path == null || path.trim().length() == 0) ? "" : (path + ".")) + syntax.escapeKeyword(union.getClassName()) }
 
-@if (syntax.isEquatable(union.getTyperefClass())) {
+@if (syntax.isEquatable()) {
   func ==(lhs: @className, rhs: @className) -> Bool {
     switch (lhs, rhs) {
       @for(Member member: union.getMembers()) {

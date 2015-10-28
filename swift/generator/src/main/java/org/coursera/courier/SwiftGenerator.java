@@ -78,7 +78,7 @@ public class SwiftGenerator implements PegasusCodeGenerator {
 
     String code;
     SwiftProperties swiftProperties = SwiftProperties.lookupSwiftProperties(templateSpec);
-    SwiftSyntax syntax = new SwiftSyntax(swiftProperties);
+    SwiftSyntax syntax = new SwiftSyntax(templateSpec, swiftProperties);
     SwiftyJSON swifty = new SwiftyJSON(syntax);
 
     if (templateSpec instanceof RecordTemplateSpec) {
@@ -109,7 +109,7 @@ public class SwiftGenerator implements PegasusCodeGenerator {
     }
     SwiftCompilationUnit compilationUnit =
         new SwiftCompilationUnit(
-            SwiftSyntax.escapeKeyword(templateSpec.getClassName()), templateSpec.getNamespace());
+            templateSpec.getClassName(), templateSpec.getNamespace());
     code = PoorMansSwiftSourceFormatter.format(code);
 
     return new GeneratedCode(compilationUnit, code);
