@@ -26,8 +26,6 @@ import com.linkedin.data.schema.BytesDataSchema;
 import com.linkedin.data.schema.DataSchema;
 import com.linkedin.data.schema.DataSchema.Type;
 import com.linkedin.data.schema.EnumDataSchema;
-import com.linkedin.data.schema.IntegerDataSchema;
-import com.linkedin.data.schema.LongDataSchema;
 import com.linkedin.data.schema.MapDataSchema;
 import com.linkedin.data.schema.NullDataSchema;
 import com.linkedin.data.schema.PrimitiveDataSchema;
@@ -36,11 +34,8 @@ import com.linkedin.data.schema.StringDataSchema;
 import com.linkedin.data.schema.UnionDataSchema;
 import com.linkedin.pegasus.generator.spec.ArrayTemplateSpec;
 import com.linkedin.pegasus.generator.spec.ClassTemplateSpec;
-import com.linkedin.pegasus.generator.spec.MapTemplateSpec;
 import com.linkedin.pegasus.generator.spec.RecordTemplateSpec;
-
 import com.linkedin.pegasus.generator.spec.TyperefTemplateSpec;
-import org.coursera.courier.api.ClassTemplateSpecs;
 import org.coursera.courier.api.CourierMapTemplateSpec;
 import org.coursera.courier.swift.SwiftProperties.Optionality;
 
@@ -106,7 +101,7 @@ public class SwiftSyntax {
   }
 
   public static String escapeString(String value) {
-    return value.replace("\"", "\\\""); // TODO: add proper string escaping
+    return SwiftStringEscaper.escape(value);
   }
 
   /**

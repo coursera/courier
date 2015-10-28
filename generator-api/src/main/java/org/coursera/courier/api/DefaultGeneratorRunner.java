@@ -43,6 +43,8 @@ public class DefaultGeneratorRunner implements GeneratorRunner {
   public GeneratorResult run(
       PegasusCodeGenerator generator,
       GeneratorRunnerOptions options) throws IOException {
+
+    // TODO: make schema parser pluggable so we can integrate .courier file format
     DataSchemaParser schemaParser = new DataSchemaParser(options.getResolverPath());
     CourierTemplateSpecGenerator specGenerator = new CourierTemplateSpecGenerator(
         schemaParser.getSchemaResolver(),

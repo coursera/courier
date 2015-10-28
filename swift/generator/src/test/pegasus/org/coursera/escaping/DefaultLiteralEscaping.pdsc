@@ -6,7 +6,7 @@
     {
       "name": "stringField",
       "type": "string",
-      "default": "tripleQuote: \"\"\" "
+      "default": "quote: \", backslash: \\ slash: \/ backspace: \b formfeed: \f newline: \n carrage return: \r tab: \t unicode-of-ascii: \u0042 unicode-out-of-range: \u2713"
     }
   ]
 }
