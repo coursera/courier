@@ -16,6 +16,7 @@ import com.linkedin.pegasus.generator.spec.ClassTemplateSpec;
  *     "type": "record",
  *     "fields": [ ... ],
  *     "swift": {
+ *       "optionality": "BASIC"
  *     }
  *   }
  * </code>
@@ -85,10 +86,10 @@ public class SwiftProperties {
       }
       DataMap properties = ((DataMap) swift);
 
-      String primitiveStyleStr = properties.getString("primitiveStyle");
+      String optionalityString = properties.getString("optionality");
 
       Optionality optionality =
-          primitiveStyleStr == null ? DEFAULT.optionality : Optionality.valueOf(primitiveStyleStr);
+          optionalityString == null ? DEFAULT.optionality : Optionality.valueOf(optionalityString);
 
       Boolean maybeEquatable = properties.getBoolean("equatable");
       boolean equatable =  maybeEquatable == null ? DEFAULT.equatable : maybeEquatable;

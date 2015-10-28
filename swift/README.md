@@ -175,6 +175,7 @@ TODO
 ----
 * [x] Flesh out unit tests
 * [x] Disable Equatable by default, only enable for tests
+* [x] Fix default literal escaping (problem cases are somewhat pathological)
 * [ ] Implement namespace handling strategy (details below)
 * [ ] Automate distribution of the Fat Jar, and generally make the distribution sane
 * [ ] Automate inclusion of CourierRuntime.swift in generated classes (or as a proper module?)
@@ -184,7 +185,6 @@ TODO
 * [ ] Move Poor Mans Source formatter into shared lib
 * [ ] Move TypedDefinitions class into shared lib
 * [ ] Add typed map key support (requires Equatable/Hashable)
-* [ ] Fix default literal escaping (problem cases are somewhat pathological)
 * [ ] Support recursively defined types (RecursivelyDefinedRecord.swift does not compile)
 * [ ] typerefs (anything left to do?)
 * [ ] custom types (what to do?)
