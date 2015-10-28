@@ -6,4 +6,4 @@
 @{Map<String, Object> props = schema.getProperties() }
 
 @DocEscaping.stringToDocComment(schema.getDoc())
-@* DISABLED: @DocEscaping.deprecatedToString(schema.getProperties()) *@
+@DocEscaping.deprecatedToString(props.get("deprecated"))

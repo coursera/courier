@@ -5,5 +5,8 @@
   "symbols" : [ "APPLE", "BANANA", "ORANGE", "PINEAPPLE" ],
   "symbolDocs": {
     "APPLE": "An Apple."
+  },
+  "deprecatedSymbols": {
+    "PINEAPPLE": "No more pineapples."
   }
 }

@@ -177,6 +177,7 @@ TODO
 * [x] Disable Equatable by default, only enable for tests
 * [x] Fix default literal escaping (problem cases are somewhat pathological)
 * [x] consolidate union/typed/flatTyped into a single rythm file
+* [x] Add deprecated annotations to enum symbols
 * [ ] Implement namespace handling strategy (details below)
 * [ ] Automate distribution of the Fat Jar, and generally make the distribution sane
 * [ ] Publish Fat Jar to remote repos
@@ -189,4 +190,3 @@ TODO
 * [ ] Support recursively defined types (RecursivelyDefinedRecord.swift does not compile)
 * [ ] typerefs (anything left to do?)
 * [ ] custom types (what to do?)
-* [ ] Add deprecated annotations to enum symbols
