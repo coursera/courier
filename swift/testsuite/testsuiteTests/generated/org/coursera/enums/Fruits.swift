@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-enum Fruits: Equatable {
+enum Fruits: Equatable, Hashable {
     
     /**
      * An Apple.
@@ -47,6 +47,9 @@ enum Fruits: Equatable {
         case .UNKNOWN$(let symbol):
             return symbol
         }
+    }
+    var hashValue: Int {
+        return write().hashValue
     }
 }
 func ==(lhs: Fruits, rhs: Fruits) -> Bool {
