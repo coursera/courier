@@ -1,6 +1,7 @@
 import Foundation
 import SwiftyJSON
 
+@available(*, deprecated, message="Use XYZ instead")
 struct DeprecatedRecord {
     
     @available(*, deprecated)

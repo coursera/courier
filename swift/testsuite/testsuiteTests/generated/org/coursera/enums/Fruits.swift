@@ -12,6 +12,7 @@ enum Fruits: Equatable, Hashable {
     
     case ORANGE
     
+    @available(*, deprecated, message="No more pineapples.")
     case PINEAPPLE
     case UNKNOWN$(String)
     private struct Strings {
