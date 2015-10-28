@@ -7,6 +7,7 @@ enum FlatTypedDefinition: Equatable {
     
     case MessageMember(Message)
     case UNKNOWN$([String : JSON])
+    
     static func read(json: JSON) -> FlatTypedDefinition {
         let dictionary = json.dictionaryValue
         switch json["typeName"].stringValue {
@@ -16,7 +17,6 @@ enum FlatTypedDefinition: Equatable {
             
         case "message":
             return .MessageMember(Message.read(json.jsonValue))
-            
         default:
             return .UNKNOWN$(dictionary)
         }
@@ -33,7 +33,6 @@ enum FlatTypedDefinition: Equatable {
             var json = JSON(member.write())
             json["typeName"] = "message"
             return json.dictionaryValue
-            
         case .UNKNOWN$(let json):
             return json
         }

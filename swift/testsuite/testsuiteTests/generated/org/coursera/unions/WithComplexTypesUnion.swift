@@ -22,6 +22,7 @@ struct WithComplexTypesUnion {
         
         case FixedMember(String)
         case UNKNOWN$([String : JSON])
+        
         static func read(json: JSON) -> Union {
             let dictionary = json.dictionaryValue
             
@@ -44,7 +45,6 @@ struct WithComplexTypesUnion {
             if let member = dictionary["org.coursera.fixed.Fixed8"] {
                 return .FixedMember(member.stringValue)
             }
-            
             return .UNKNOWN$(dictionary)
         }
         func write() -> [String : JSON] {
@@ -64,7 +64,6 @@ struct WithComplexTypesUnion {
                 
             case .FixedMember(let member):
                 return ["org.coursera.fixed.Fixed8": JSON(member)];
-                
             case .UNKNOWN$(let dictionary):
                 return dictionary
             }

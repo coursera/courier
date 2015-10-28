@@ -7,6 +7,7 @@ enum TypedDefinition: Equatable {
     
     case MessageMember(Message)
     case UNKNOWN$([String : JSON])
+    
     static func read(json: JSON) -> TypedDefinition {
         switch json["typeName"].stringValue {
             
@@ -27,7 +28,6 @@ enum TypedDefinition: Equatable {
             
         case .MessageMember(let member):
             return ["typeName": "message", "definition": JSON(member.write())];
-            
         case .UNKNOWN$(let json):
             return json
         }

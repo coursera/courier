@@ -7,6 +7,7 @@ enum Union: Equatable {
     
     case MessageMember(Message)
     case UNKNOWN$([String : JSON])
+    
     static func read(json: JSON) -> Union {
         let dictionary = json.dictionaryValue
         
@@ -17,7 +18,6 @@ enum Union: Equatable {
         if let member = dictionary["org.coursera.records.Message"] {
             return .MessageMember(Message.read(member.jsonValue))
         }
-        
         return .UNKNOWN$(dictionary)
     }
     func write() -> [String : JSON] {
@@ -28,7 +28,6 @@ enum Union: Equatable {
             
         case .MessageMember(let member):
             return ["org.coursera.records.Message": JSON(member.write())];
-            
         case .UNKNOWN$(let dictionary):
             return dictionary
         }

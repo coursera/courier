@@ -1,0 +1,31 @@
+@args com.linkedin.pegasus.generator.spec.UnionTemplateSpec union, java.util.Map<String, String> memberKeyToTypeName, org.coursera.courier.swift.SwiftSyntax syntax, org.coursera.courier.swift.SwiftyJSON swifty
+@import com.linkedin.pegasus.generator.spec.UnionTemplateSpec.Member
+
+@{ String className = syntax.escapeKeyword(union.getClassName()) }
+
+static func read(json: JSON) -> @className {
+  let dictionary = json.dictionaryValue
+  switch json["typeName"].stringValue {
+    @for(Member member: union.getMembers()) {
+      @{ String unionMemberName = syntax.toUnionMemberName(member.getClassTemplateSpec()) }
+      case "@(memberKeyToTypeName.get(member.getSchema().getUnionMemberKey()))":
+        return .@(unionMemberName)(@swifty.toGetAccessor("json", member))
+      }
+      default:
+        return .UNKNOWN$(dictionary)
+    }
+}
+
+func write() -> [String : JSON] {
+  switch self {
+    @for(Member member: union.getMembers()) {
+    @{ String unionMemberName = syntax.toUnionMemberName(member.getClassTemplateSpec()) }
+      case .@(unionMemberName)(let member):
+        var json = @swifty.toSetAccessor(member)
+        json["typeName"] = "@(memberKeyToTypeName.get(member.getSchema().getUnionMemberKey()))"
+        return json.dictionaryValue
+    }
+    case .UNKNOWN$(let json):
+      return json
+  }
+}

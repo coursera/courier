@@ -12,14 +12,13 @@ struct WithEmptyUnion {
     
     enum Union {
         case UNKNOWN$([String : JSON])
+        
         static func read(json: JSON) -> Union {
             let dictionary = json.dictionaryValue
-            
             return .UNKNOWN$(dictionary)
         }
         func write() -> [String : JSON] {
             switch self {
-                
             case .UNKNOWN$(let dictionary):
                 return dictionary
             }
