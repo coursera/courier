@@ -9,6 +9,7 @@ enum WithComplexTypesMapUnion: Equatable {
     
     case SimpleMember(Simple)
     case UNKNOWN$([String : JSON])
+    
     static func read(json: JSON) -> WithComplexTypesMapUnion {
         let dictionary = json.dictionaryValue
         
@@ -23,7 +24,6 @@ enum WithComplexTypesMapUnion: Equatable {
         if let member = dictionary["org.coursera.records.test.Simple"] {
             return .SimpleMember(Simple.read(member.jsonValue))
         }
-        
         return .UNKNOWN$(dictionary)
     }
     func write() -> [String : JSON] {
@@ -37,7 +37,6 @@ enum WithComplexTypesMapUnion: Equatable {
             
         case .SimpleMember(let member):
             return ["org.coursera.records.test.Simple": JSON(member.write())];
-            
         case .UNKNOWN$(let dictionary):
             return dictionary
         }

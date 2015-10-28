@@ -26,6 +26,7 @@ struct WithPrimitivesUnion {
         
         case BytesMember(String)
         case UNKNOWN$([String : JSON])
+        
         static func read(json: JSON) -> Union {
             let dictionary = json.dictionaryValue
             
@@ -56,7 +57,6 @@ struct WithPrimitivesUnion {
             if let member = dictionary["bytes"] {
                 return .BytesMember(member.stringValue)
             }
-            
             return .UNKNOWN$(dictionary)
         }
         func write() -> [String : JSON] {
@@ -82,7 +82,6 @@ struct WithPrimitivesUnion {
                 
             case .BytesMember(let member):
                 return ["bytes": JSON(member)];
-                
             case .UNKNOWN$(let dictionary):
                 return dictionary
             }

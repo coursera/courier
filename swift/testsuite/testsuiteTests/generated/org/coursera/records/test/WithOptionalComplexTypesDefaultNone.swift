@@ -38,6 +38,7 @@ struct WithOptionalComplexTypesDefaultNone {
         
         case SimpleMember(Simple)
         case UNKNOWN$([String : JSON])
+        
         static func read(json: JSON) -> Union {
             let dictionary = json.dictionaryValue
             
@@ -52,7 +53,6 @@ struct WithOptionalComplexTypesDefaultNone {
             if let member = dictionary["org.coursera.records.test.Simple"] {
                 return .SimpleMember(Simple.read(member.jsonValue))
             }
-            
             return .UNKNOWN$(dictionary)
         }
         func write() -> [String : JSON] {
@@ -66,7 +66,6 @@ struct WithOptionalComplexTypesDefaultNone {
                 
             case .SimpleMember(let member):
                 return ["org.coursera.records.test.Simple": JSON(member.write())];
-                
             case .UNKNOWN$(let dictionary):
                 return dictionary
             }

@@ -6,12 +6,6 @@
 
 @for(ClassTemplateSpec enclosed: ClassTemplateSpecs.allContainedTypes(record)) {
   @if (enclosed instanceof UnionTemplateSpec) {
-    @if (TypedDefinitions.isTypedDefinition((UnionTemplateSpec)enclosed)) {
-      @typedDefinition(enclosed, TypedDefinitions.getTypedDefinitionMapping((UnionTemplateSpec)enclosed, false), syntax)
-    } else if (TypedDefinitions.isFlatTypedDefinition((UnionTemplateSpec)enclosed)) {
-      @flatTypedDefinition(enclosed, TypedDefinitions.getTypedDefinitionMapping((UnionTemplateSpec)enclosed, true), syntax)
-    } else {
-      @union(enclosed, syntax)
-    }
+    @union(enclosed, syntax)
   }
 }

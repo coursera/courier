@@ -176,13 +176,13 @@ TODO
 * [x] Flesh out unit tests
 * [x] Disable Equatable by default, only enable for tests
 * [x] Fix default literal escaping (problem cases are somewhat pathological)
+* [x] consolidate union/typed/flatTyped into a single rythm file
 * [ ] Implement namespace handling strategy (details below)
 * [ ] Automate distribution of the Fat Jar, and generally make the distribution sane
 * [ ] Publish Fat Jar to remote repos
 * [ ] Automate inclusion of CourierRuntime.swift in generated classes (or as a proper module?)
 * [ ] Generate scala style copy() methods?
 * [ ] Dig deeper into Equatable, Hashable (how to support arrays and maps?  Deep check?)
-* [ ] consolidate union/typed/flatTyped into a single rythm file
 * [ ] Move Poor Mans Source formatter into shared lib
 * [ ] Move TypedDefinitions class into shared lib
 * [ ] Add typed map key support (requires Equatable/Hashable)

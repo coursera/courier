@@ -7,6 +7,7 @@ enum UnionTyperef {
     
     case IntMember(Int)
     case UNKNOWN$([String : JSON])
+    
     static func read(json: JSON) -> UnionTyperef {
         let dictionary = json.dictionaryValue
         
@@ -17,7 +18,6 @@ enum UnionTyperef {
         if let member = dictionary["int"] {
             return .IntMember(member.intValue)
         }
-        
         return .UNKNOWN$(dictionary)
     }
     func write() -> [String : JSON] {
@@ -28,7 +28,6 @@ enum UnionTyperef {
             
         case .IntMember(let member):
             return ["int": JSON(member)];
-            
         case .UNKNOWN$(let dictionary):
             return dictionary
         }

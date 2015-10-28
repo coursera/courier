@@ -1,5 +1,6 @@
 @args com.linkedin.pegasus.generator.spec.UnionTemplateSpec union, org.coursera.courier.swift.SwiftSyntax syntax, org.coursera.courier.swift.SwiftyJSON swifty
 @import com.linkedin.pegasus.generator.spec.UnionTemplateSpec.Member
+@import org.coursera.courier.swift.TypedDefinitions
 
 @maybePackageAndImports(union)
 
@@ -16,29 +17,12 @@ enum @className @if (syntax.isEquatable()) {: Equatable} {
   }
   case UNKNOWN$([String : JSON])
 
-  static func read(json: JSON) -> @className {
-    let dictionary = json.dictionaryValue
-    @for(Member member: union.getMembers()) {
-    @{ String unionMemberName = syntax.toUnionMemberName(member.getClassTemplateSpec()) }
-      if let member = dictionary["@(member.getSchema().getUnionMemberKey())"] {
-        return .@(unionMemberName)(@swifty.toGetAccessor("member", member))
-      }
-    }
-
-    return .UNKNOWN$(dictionary)
-  }
-
-  func write() -> [String : JSON] {
-    switch self {
-      @for(Member member: union.getMembers()) {
-      @{ String unionMemberName = syntax.toUnionMemberName(member.getClassTemplateSpec()) }
-        case .@(unionMemberName)(let member):
-          return ["@(member.getSchema().getUnionMemberKey())": @swifty.toSetAccessor(member)];
-      }
-
-      case .UNKNOWN$(let dictionary):
-        return dictionary
-      }
+  @if (TypedDefinitions.isTypedDefinition(union)) {
+    @typedDefinitionSerializers(union, TypedDefinitions.getTypedDefinitionMapping(union, false), syntax, swifty)
+  } else if (TypedDefinitions.isFlatTypedDefinition(union)) {
+    @flatTypedDefinitionSerializers(union, TypedDefinitions.getTypedDefinitionMapping(union, true), syntax, swifty)
+  } else {
+    @unionSerializers(union, syntax, swifty)
   }
 
   @* TODO: implement
