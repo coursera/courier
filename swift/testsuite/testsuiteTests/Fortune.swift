@@ -12,7 +12,7 @@ import SwiftyJSON
 /**
  * A fortune
  */
-struct Fortune : Equatable {
+struct Fortune: JSONSerializable, Equatable {
     
     /**
      * The fortune telling.
@@ -33,11 +33,11 @@ struct Fortune : Equatable {
             createdAt: json["createdAt"].stringValue)
     }
     
-    func write() -> [String : JSON] {
+    func write() -> JSON {
         var json: [String : JSON] = [:]
-        json["telling"] = JSON(self.telling.write())
+        json["telling"] = self.telling.write()
         json["createdAt"] = JSON(self.createdAt)
-        return json
+        return JSON(json)
     }
     
     /* TODO: figure out how to properly implement

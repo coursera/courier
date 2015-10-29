@@ -12,7 +12,7 @@ import SwiftyJSON
 /**
 A fortune cookie.
 */
-struct FortuneCookie: Equatable {
+struct FortuneCookie: JSONSerializable, Equatable {
     
     /**
     A fortune cookie message.
@@ -48,7 +48,7 @@ struct FortuneCookie: Equatable {
             arrayArray: json["arrayArray"].array.map { $0.map { $0.arrayValue.map { $0.intValue }}})
     }
     
-    func write() -> [String : JSON] {
+    func write() -> JSON {
         var json: [String : JSON] = [:]
         json["message"] = JSON(message)
         if let opt$ = certainty {
@@ -57,16 +57,16 @@ struct FortuneCookie: Equatable {
         json["luckyNumbers"] = JSON(luckyNumbers)
         json["map"] = JSON(map)
         if let opt$ = simpleArray {
-            json["simpleArray"] = JSON(opt$.map { JSON($0.write()) })
+            json["simpleArray"] = JSON(opt$.map { $0.write() })
         }
         if let opt$ = simpleMap {
-            json["simpleMap"] = JSON(opt$.mapValues { JSON($0.write()) })
+            json["simpleMap"] = JSON(opt$.mapValues { $0.write() })
         }
-        json["simple"] = JSON(simple.write())
+        json["simple"] = simple.write()
         if let opt$ = arrayArray {
             json["arrayArray"] = JSON(opt$.map { JSON($0.map { JSON($0) })})
         }
-        return json
+        return JSON(json)
     }
     
     /* TODO: figure out how to properly implement

@@ -47,7 +47,9 @@ public class PoorMansSwiftSourceFormatter {
     ROOT,
     UNCATEGORIZED,
     SWITCH,
-    COMMENT
+    COMMENT,
+    PARAMS,
+    BLOCK
   }
 
   public static String format(String code) {
@@ -64,12 +66,15 @@ public class PoorMansSwiftSourceFormatter {
       line = line.trim();
 
       boolean isEmpty = (line.length() == 0);
-      if (isEmpty && (isPreviousLineEmpty || isPreviousLinePreamble)) continue;
+      if (isEmpty && ((isPreviousLineEmpty || isPreviousLinePreamble) || scope.size() > 2)) continue;
 
-      if (line.startsWith("}")) {
+      if ((scope.peek() == Scope.BLOCK || scope.peek() == Scope.SWITCH) && line.startsWith("}")) {
         scope.pop();
         indentLevel--;
-      } else if (line.startsWith("*/")) {
+      } else if (scope.peek() == Scope.PARAMS && line.startsWith(")")) {
+        scope.pop();
+        indentLevel--;
+      } else if (scope.peek() == Scope.COMMENT && line.startsWith("*/")) {
         scope.pop();
         indentLevel--;
       }
@@ -87,8 +92,11 @@ public class PoorMansSwiftSourceFormatter {
         if (line.startsWith("switch ")) {
           scope.push(Scope.SWITCH);
         } else {
-          scope.push(Scope.UNCATEGORIZED);
+          scope.push(Scope.BLOCK);
         }
+      } else if (line.endsWith("(")) {
+        indentLevel++;
+        scope.push(Scope.PARAMS);
       } else if (line.startsWith("/**")) {
         scope.push(Scope.COMMENT);
         indentLevel++;

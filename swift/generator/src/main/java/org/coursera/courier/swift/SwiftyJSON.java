@@ -113,8 +113,10 @@ public class SwiftyJSON {
 
   public String toSetAccessor(String anchor, ClassTemplateSpec spec) {
     DataSchema.Type schemaType = spec.getSchema().getType();
-    if (EnumSet.of(DataSchema.Type.ENUM, DataSchema.Type.RECORD, DataSchema.Type.UNION).contains(schemaType)) {
+    if (schemaType == DataSchema.Type.ENUM) {
       return "JSON(" + anchor + ".write())";
+    } else if (EnumSet.of(DataSchema.Type.RECORD, DataSchema.Type.UNION).contains(schemaType)) {
+      return anchor + ".write()";
     } else if (schemaType == DataSchema.Type.MAP) {
       CourierMapTemplateSpec mapSpec = (CourierMapTemplateSpec)spec;
       if (mapSpec.getValueClass().getSchema().isPrimitive()) {

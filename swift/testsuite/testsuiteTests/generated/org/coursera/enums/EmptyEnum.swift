@@ -23,9 +23,7 @@ enum EmptyEnum: Equatable, Hashable {
 }
 func ==(lhs: EmptyEnum, rhs: EmptyEnum) -> Bool {
     switch (lhs, rhs) {
-        
     case (let .UNKNOWN$(lhs), let .UNKNOWN$(rhs)):
         return lhs == rhs
-        
     }
 }
