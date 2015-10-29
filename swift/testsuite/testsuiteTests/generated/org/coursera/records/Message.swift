@@ -16,14 +16,19 @@ struct Message: Equatable {
     
     static func read(json: JSON) -> Message {
         return Message(
-        title: json["title"].string,
-        body: json["body"].string)
+        title:
+        json["title"].string,
+        body:
+        json["body"].string
+        )
     }
     func write() -> [String : JSON] {
         var json: [String : JSON] = [:]
+        
         if let title = self.title {
             json["title"] = JSON(title)
         }
+        
         if let body = self.body {
             json["body"] = JSON(body)
         }

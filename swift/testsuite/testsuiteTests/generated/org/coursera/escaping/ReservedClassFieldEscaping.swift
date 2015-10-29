@@ -20,18 +20,25 @@ struct ReservedClassFieldEscaping {
     
     static func read(json: JSON) -> ReservedClassFieldEscaping {
         return ReservedClassFieldEscaping(
-        json$: json["json"].string,
-        read$: json["read"].string,
-        write$: json["write"].string)
+        json$:
+        json["json"].string,
+        read$:
+        json["read"].string,
+        write$:
+        json["write"].string
+        )
     }
     func write() -> [String : JSON] {
         var json: [String : JSON] = [:]
+        
         if let json$ = self.json$ {
             json["json"] = JSON(json$)
         }
+        
         if let read$ = self.read$ {
             json["read"] = JSON(read$)
         }
+        
         if let write$ = self.write$ {
             json["write"] = JSON(write$)
         }

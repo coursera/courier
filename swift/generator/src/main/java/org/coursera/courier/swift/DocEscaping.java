@@ -33,7 +33,7 @@ public class DocEscaping {
     String escaped = wrap(escape(doc)).replaceAll("\\n", "\n * ");
     return
       "/**\n" +
-      (escaped == null ? "" : (" * " + escaped + "\n")) +
+      (escaped == null ? "" : (escaped + "\n")) +
       " */";
   }
 

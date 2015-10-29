@@ -12,10 +12,13 @@ struct WithFixed8 {
     
     static func read(json: JSON) -> WithFixed8 {
         return WithFixed8(
-        fixed: json["fixed"].string)
+        fixed:
+        json["fixed"].string
+        )
     }
     func write() -> [String : JSON] {
         var json: [String : JSON] = [:]
+        
         if let fixed = self.fixed {
             json["fixed"] = JSON(fixed)
         }

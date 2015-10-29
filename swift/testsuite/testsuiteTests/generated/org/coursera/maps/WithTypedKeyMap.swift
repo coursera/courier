@@ -60,58 +60,85 @@ struct WithTypedKeyMap: Equatable {
     
     static func read(json: JSON) -> WithTypedKeyMap {
         return WithTypedKeyMap(
-        ints: json["ints"].dictionary.map { $0.mapValues { $0.stringValue } },
-        longs: json["longs"].dictionary.map { $0.mapValues { $0.stringValue } },
-        floats: json["floats"].dictionary.map { $0.mapValues { $0.stringValue } },
-        doubles: json["doubles"].dictionary.map { $0.mapValues { $0.stringValue } },
-        booleans: json["booleans"].dictionary.map { $0.mapValues { $0.stringValue } },
-        strings: json["strings"].dictionary.map { $0.mapValues { $0.stringValue } },
-        bytes: json["bytes"].dictionary.map { $0.mapValues { $0.stringValue } },
-        record: json["record"].dictionary.map { $0.mapValues { $0.stringValue } },
-        array: json["array"].dictionary.map { $0.mapValues { $0.stringValue } },
-        `enum`: json["enum"].dictionary.map { $0.mapValues { $0.stringValue } },
-        custom: json["custom"].dictionary.map { $0.mapValues { $0.stringValue } },
-        fixed: json["fixed"].dictionary.map { $0.mapValues { $0.stringValue } },
-        inlineRecord: json["inlineRecord"].dictionary.map { $0.mapValues { $0.stringValue } })
+        ints:
+        json["ints"].dictionary.map { $0.mapValues { $0.stringValue } },
+        longs:
+        json["longs"].dictionary.map { $0.mapValues { $0.stringValue } },
+        floats:
+        json["floats"].dictionary.map { $0.mapValues { $0.stringValue } },
+        doubles:
+        json["doubles"].dictionary.map { $0.mapValues { $0.stringValue } },
+        booleans:
+        json["booleans"].dictionary.map { $0.mapValues { $0.stringValue } },
+        strings:
+        json["strings"].dictionary.map { $0.mapValues { $0.stringValue } },
+        bytes:
+        json["bytes"].dictionary.map { $0.mapValues { $0.stringValue } },
+        record:
+        json["record"].dictionary.map { $0.mapValues { $0.stringValue } },
+        array:
+        json["array"].dictionary.map { $0.mapValues { $0.stringValue } },
+        `enum`:
+        json["enum"].dictionary.map { $0.mapValues { $0.stringValue } },
+        custom:
+        json["custom"].dictionary.map { $0.mapValues { $0.stringValue } },
+        fixed:
+        json["fixed"].dictionary.map { $0.mapValues { $0.stringValue } },
+        inlineRecord:
+        json["inlineRecord"].dictionary.map { $0.mapValues { $0.stringValue } }
+        )
     }
     func write() -> [String : JSON] {
         var json: [String : JSON] = [:]
+        
         if let ints = self.ints {
             json["ints"] = JSON(ints)
         }
+        
         if let longs = self.longs {
             json["longs"] = JSON(longs)
         }
+        
         if let floats = self.floats {
             json["floats"] = JSON(floats)
         }
+        
         if let doubles = self.doubles {
             json["doubles"] = JSON(doubles)
         }
+        
         if let booleans = self.booleans {
             json["booleans"] = JSON(booleans)
         }
+        
         if let strings = self.strings {
             json["strings"] = JSON(strings)
         }
+        
         if let bytes = self.bytes {
             json["bytes"] = JSON(bytes)
         }
+        
         if let record = self.record {
             json["record"] = JSON(record)
         }
+        
         if let array = self.array {
             json["array"] = JSON(array)
         }
+        
         if let `enum` = self.`enum` {
             json["enum"] = JSON(`enum`)
         }
+        
         if let custom = self.custom {
             json["custom"] = JSON(custom)
         }
+        
         if let fixed = self.fixed {
             json["fixed"] = JSON(fixed)
         }
+        
         if let inlineRecord = self.inlineRecord {
             json["inlineRecord"] = JSON(inlineRecord)
         }

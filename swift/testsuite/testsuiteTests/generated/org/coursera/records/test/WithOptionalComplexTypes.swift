@@ -74,30 +74,43 @@ struct WithOptionalComplexTypes {
     
     static func read(json: JSON) -> WithOptionalComplexTypes {
         return WithOptionalComplexTypes(
-        record: json["record"].json.map { Simple.read($0) },
-        `enum`: json["enum"].string.map { Fruits.read($0) },
-        union: json["union"].json.map { Union.read($0) },
-        array: json["array"].array.map { $0.map { $0.intValue } },
-        map: json["map"].dictionary.map { $0.mapValues { $0.intValue } },
-        custom: json["custom"].int)
+        record:
+        json["record"].json.map { Simple.read($0) },
+        `enum`:
+        json["enum"].string.map { Fruits.read($0) },
+        union:
+        json["union"].json.map { Union.read($0) },
+        array:
+        json["array"].array.map { $0.map { $0.intValue } },
+        map:
+        json["map"].dictionary.map { $0.mapValues { $0.intValue } },
+        custom:
+        json["custom"].int
+        )
     }
     func write() -> [String : JSON] {
         var json: [String : JSON] = [:]
+        
         if let record = self.record {
             json["record"] = JSON(record.write())
         }
+        
         if let `enum` = self.`enum` {
             json["enum"] = JSON(`enum`.write())
         }
+        
         if let union = self.union {
             json["union"] = JSON(union.write())
         }
+        
         if let array = self.array {
             json["array"] = JSON(array)
         }
+        
         if let map = self.map {
             json["map"] = JSON(map)
         }
+        
         if let custom = self.custom {
             json["custom"] = JSON(custom)
         }

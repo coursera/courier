@@ -12,10 +12,13 @@ struct KeywordEscaping {
     
     static func read(json: JSON) -> KeywordEscaping {
         return KeywordEscaping(
-        `default`: json["default"].string)
+        `default`:
+        json["default"].string
+        )
     }
     func write() -> [String : JSON] {
         var json: [String : JSON] = [:]
+        
         if let `default` = self.`default` {
             json["default"] = JSON(`default`)
         }

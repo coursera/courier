@@ -12,10 +12,13 @@ struct WithoutNamespace {
     
     static func read(json: JSON) -> WithoutNamespace {
         return WithoutNamespace(
-        field1: json["field1"].string)
+        field1:
+        json["field1"].string
+        )
     }
     func write() -> [String : JSON] {
         var json: [String : JSON] = [:]
+        
         if let field1 = self.field1 {
             json["field1"] = JSON(field1)
         }

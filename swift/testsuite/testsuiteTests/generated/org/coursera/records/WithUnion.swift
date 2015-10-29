@@ -12,10 +12,13 @@ struct WithUnion: Equatable {
     
     static func read(json: JSON) -> WithUnion {
         return WithUnion(
-        value: json["value"].json.map { Union.read($0) })
+        value:
+        json["value"].json.map { Union.read($0) }
+        )
     }
     func write() -> [String : JSON] {
         var json: [String : JSON] = [:]
+        
         if let value = self.value {
             json["value"] = JSON(value.write())
         }

@@ -32,7 +32,10 @@ struct @className @if (syntax.isEquatable()) {: Equatable} {
 
   static func read(json: JSON) -> @className {
     return @(className)(
-      @swifty.toGetAccessors(record.getFields()))
+      @for(Field field: record.getFields()) {
+        @(syntax.escapeKeyword(field.getSchemaField().getName())):
+          @(swifty.toGetAccessor("json[\"" + field.getSchemaField().getName() + "\"]", field.getType(), syntax.isOptional(field)))@if(!field_isLast){,}
+      })
   }
 
   func write() -> [String : JSON] {
@@ -42,7 +45,14 @@ struct @className @if (syntax.isEquatable()) {: Equatable} {
       var json: [String : JSON] = [:]
 
       @for(Field field: record.getFields()) {
-        @swifty.toSetAccessor(field)
+        @{String fieldName = syntax.escapeKeyword(field.getSchemaField().getName())}
+        @if(syntax.isOptional(field)) {
+          if let @fieldName = self.@(fieldName) {
+            json["@(field.getSchemaField().getName())"] = @swifty.toSetAccessor(fieldName, field.getType())
+          }
+        } else {
+          json["@(field.getSchemaField().getName())"] = @swifty.toSetAccessor(fieldName, field.getType())
+        }
       }
 
       return json

@@ -90,10 +90,13 @@ struct WithPrimitivesUnion {
     
     static func read(json: JSON) -> WithPrimitivesUnion {
         return WithPrimitivesUnion(
-        union: json["union"].json.map { Union.read($0) })
+        union:
+        json["union"].json.map { Union.read($0) }
+        )
     }
     func write() -> [String : JSON] {
         var json: [String : JSON] = [:]
+        
         if let union = self.union {
             json["union"] = JSON(union.write())
         }

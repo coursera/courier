@@ -8,10 +8,29 @@ import com.linkedin.pegasus.generator.spec.RecordTemplateSpec;
 import com.linkedin.pegasus.generator.spec.UnionTemplateSpec;
 import org.coursera.courier.api.CourierMapTemplateSpec;
 
-import java.util.Iterator;
-import java.util.List;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SwiftyJSON {
+
+  private static final Map<DataSchema.Type, String> schemaTypeToSwiftyType;
+  static {
+    schemaTypeToSwiftyType = new HashMap<DataSchema.Type, String>();
+    schemaTypeToSwiftyType.put(DataSchema.Type.INT, "int"); // TODO(jbetz): just use Int32 here? (On a 64-bit platform, Int is the same size as Int64.)
+    schemaTypeToSwiftyType.put(DataSchema.Type.LONG, "int"); // TODO(jbetz): just use Int64 here? (On a 32-bit platform, Int is the same size as Int32.)
+    schemaTypeToSwiftyType.put(DataSchema.Type.FLOAT, "float");
+    schemaTypeToSwiftyType.put(DataSchema.Type.DOUBLE, "double");
+    schemaTypeToSwiftyType.put(DataSchema.Type.STRING, "string");
+    schemaTypeToSwiftyType.put(DataSchema.Type.BOOLEAN, "bool");
+    schemaTypeToSwiftyType.put(DataSchema.Type.BYTES, "string"); // TODO(jbetz): provide an adapter for converting pegasus byte strings to swift byte[]
+    schemaTypeToSwiftyType.put(DataSchema.Type.FIXED, "string"); // TODO(jbetz): provide an adapter for converting pegasus byte strings to swift byte[]
+    schemaTypeToSwiftyType.put(DataSchema.Type.ENUM, "string");
+    schemaTypeToSwiftyType.put(DataSchema.Type.RECORD, "json");
+    schemaTypeToSwiftyType.put(DataSchema.Type.UNION, "json");
+    schemaTypeToSwiftyType.put(DataSchema.Type.MAP, "dictionary");
+    schemaTypeToSwiftyType.put(DataSchema.Type.ARRAY, "array");
+  }
 
   private SwiftSyntax syntax;
 
@@ -19,28 +38,8 @@ public class SwiftyJSON {
     this.syntax = syntax;
   }
 
-  public String toGetAccessors(List<RecordTemplateSpec.Field> fields) {
-    Iterator<RecordTemplateSpec.Field> iter = fields.iterator();
-    StringBuilder sb = new StringBuilder();
-    while (iter.hasNext()) {
-      RecordTemplateSpec.Field field = iter.next();
-      sb.append(SwiftSyntax.escapeKeyword(field.getSchemaField().getName()));
-      sb.append(": ");
-      sb.append(toGetAccessor(field));
-      if (iter.hasNext()) {
-        sb.append(", ");
-        sb.append(System.lineSeparator());
-      }
-    }
-    return sb.toString();
-  }
-
   // Assumes the fields are contained in json$.
   // Creates a Swift source string that evaluates to Swifty's JSON type.
-  public String toGetAccessor(RecordTemplateSpec.Field field) {
-    boolean isOpt = syntax.isOptional(field);
-    return toGetAccessor("json[\"" + field.getSchemaField().getName() + "\"]", field.getType(), isOpt);
-  }
 
   public String toGetAccessor(String anchor, UnionTemplateSpec.Member member) {
     ClassTemplateSpec type = member.getClassTemplateSpec();
@@ -87,36 +86,16 @@ public class SwiftyJSON {
   }
 
   public String toAccessor(String anchor, ClassTemplateSpec spec, boolean isOptional) {
+    return anchor + "." + maybeDirectOptional(swiftyType(spec), isOptional);
+  }
+
+  public String swiftyType(ClassTemplateSpec spec) {
     DataSchema.Type schemaType = spec.getSchema().getType();
-    if (schemaType == DataSchema.Type.INT) {
-      return anchor + "." + maybeDirectOptional("int", isOptional); // TODO: just use Int32 here? (On a 32-bit platform, Int is the same size as Int32.)
-    } else if (schemaType == DataSchema.Type.LONG) {
-      return anchor + "." + maybeDirectOptional("int", isOptional); // TODO: just use Int32 here? (On a 64-bit platform, Int is the same size as Int64.)
-    } else if (schemaType == DataSchema.Type.FLOAT) {
-      return anchor + "." + maybeDirectOptional("float", isOptional);
-    } else if (schemaType == DataSchema.Type.DOUBLE) {
-      return anchor + "." + maybeDirectOptional("double", isOptional);
-    } else if (schemaType == DataSchema.Type.STRING) {
-      return anchor + "." + maybeDirectOptional("string", isOptional);
-    } else if (schemaType == DataSchema.Type.BOOLEAN) {
-      return anchor + "." + maybeDirectOptional("bool", isOptional);
-    } else if (schemaType == DataSchema.Type.BYTES) {
-      return anchor + "." + maybeDirectOptional("string", isOptional); // TODO(jbetz): provide an adapter for converting pegasus byte strings to swift byte[]
-    } else if (schemaType == DataSchema.Type.FIXED) {
-      return anchor + "." + maybeDirectOptional("string", isOptional); // TODO(jbetz): provide an adapter for converting pegasus byte strings to swift byte[]
-    } else if (schemaType == DataSchema.Type.ENUM) {
-      return anchor + "." + maybeDirectOptional("string", isOptional);
-    } else if (schemaType == DataSchema.Type.RECORD) {
-      return anchor + "." + maybeDirectOptional("json", isOptional);
-    } else if (schemaType == DataSchema.Type.UNION) {
-      return anchor + "." + maybeDirectOptional("json", isOptional);
-    } else if (schemaType == DataSchema.Type.MAP) {
-      return anchor + "." + maybeDirectOptional("dictionary", isOptional);
-    } else if (schemaType == DataSchema.Type.ARRAY) {
-      return anchor + "." + maybeDirectOptional("array", isOptional);
-    } else {
+    String swiftyType = schemaTypeToSwiftyType.get(schemaType);
+    if (swiftyType == null) {
       throw new IllegalArgumentException("unrecognized type: " + schemaType);
     }
+    return swiftyType;
   }
 
   private String maybeDirectOptional(String type, boolean isOptional) {
@@ -127,62 +106,31 @@ public class SwiftyJSON {
     }
   }
 
-  public String toSetAccessor(RecordTemplateSpec.Field field) {
-    if (syntax.isOptional(field)) {
-      String fieldName = SwiftSyntax.escapeKeyword(field.getSchemaField().getName());
-      return
-          "if let " + fieldName + " = self." + fieldName + " {" + System.lineSeparator() +
-          "json[\"" + field.getSchemaField().getName() + "\"] = " +
-              toSetAccessor("" + fieldName, field.getType(), false) + "\n" +
-          "}";
-    } else {
-      return
-          "json[\"" + field.getSchemaField().getName() + "\"] = " +
-          toSetAccessor(SwiftSyntax.escapeKeyword(field.getSchemaField().getName()), field.getType(), false);
-    }
-  }
-
   public String toSetAccessor(UnionTemplateSpec.Member member) {
     ClassTemplateSpec type = member.getClassTemplateSpec();
-    return toSetAccessor("member", type, false);
+    return toSetAccessor("member", type);
   }
 
-  public String toSetAccessor(String anchor, ClassTemplateSpec spec, boolean isOptional) {
-    if (spec.getSchema().isPrimitive() || spec.getSchema().getType() == DataSchema.Type.FIXED) {
-      return toDirectSetAccessor(anchor, spec, isOptional);
-    } else {
-      return toWrappedSetAccessor(anchor, spec, isOptional);
-    }
-  }
-
-  public String toDirectSetAccessor(String anchor, ClassTemplateSpec spec, boolean isOptional) {
-    return "JSON(" + anchor + ")";
-  }
-
-  public String toWrappedSetAccessor(String anchor, ClassTemplateSpec spec, boolean isOptional) {
+  public String toSetAccessor(String anchor, ClassTemplateSpec spec) {
     DataSchema.Type schemaType = spec.getSchema().getType();
-    if (schemaType == DataSchema.Type.ENUM) {
-      return "JSON(" + anchor + ".write())";
-    } else if (schemaType == DataSchema.Type.RECORD) {
-      return "JSON(" + anchor + ".write())";
-    } else if (schemaType == DataSchema.Type.UNION) {
+    if (EnumSet.of(DataSchema.Type.ENUM, DataSchema.Type.RECORD, DataSchema.Type.UNION).contains(schemaType)) {
       return "JSON(" + anchor + ".write())";
     } else if (schemaType == DataSchema.Type.MAP) {
       CourierMapTemplateSpec mapSpec = (CourierMapTemplateSpec)spec;
       if (mapSpec.getValueClass().getSchema().isPrimitive()) {
         return "JSON(" + anchor + ")";
       } else {
-        return "JSON(" + anchor + ".mapValues { " + toSetAccessor("$0", mapSpec.getValueClass(), false) + " })";
+        return "JSON(" + anchor + ".mapValues { " + toSetAccessor("$0", mapSpec.getValueClass()) + " })";
       }
     } else if (schemaType == DataSchema.Type.ARRAY) {
       ArrayTemplateSpec arraySpec = (ArrayTemplateSpec)spec;
       if (arraySpec.getItemClass().getSchema().isPrimitive()) {
         return "JSON(" + anchor + ")";
       } else {
-        return "JSON(" + anchor + ".map { " + toSetAccessor("$0", arraySpec.getItemClass(), false) + " })";
+        return "JSON(" + anchor + ".map { " + toSetAccessor("$0", arraySpec.getItemClass()) + " })";
       }
     } else {
-      throw new IllegalArgumentException("unrecognized type: " + schemaType);
+      return "JSON(" + anchor + ")";
     }
   }
 }

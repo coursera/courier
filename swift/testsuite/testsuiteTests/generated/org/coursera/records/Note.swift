@@ -12,10 +12,13 @@ struct Note: Equatable {
     
     static func read(json: JSON) -> Note {
         return Note(
-        text: json["text"].string)
+        text:
+        json["text"].string
+        )
     }
     func write() -> [String : JSON] {
         var json: [String : JSON] = [:]
+        
         if let text = self.text {
             json["text"] = JSON(text)
         }

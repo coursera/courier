@@ -12,10 +12,13 @@ struct WithCustomTypesMap: Equatable {
     
     static func read(json: JSON) -> WithCustomTypesMap {
         return WithCustomTypesMap(
-        ints: json["ints"].dictionary.map { $0.mapValues { $0.intValue } })
+        ints:
+        json["ints"].dictionary.map { $0.mapValues { $0.intValue } }
+        )
     }
     func write() -> [String : JSON] {
         var json: [String : JSON] = [:]
+        
         if let ints = self.ints {
             json["ints"] = JSON(ints)
         }

@@ -16,14 +16,19 @@ struct WithRecordArray: Equatable {
     
     static func read(json: JSON) -> WithRecordArray {
         return WithRecordArray(
-        empties: json["empties"].array.map { $0.map { Empty.read($0.jsonValue) } },
-        fruits: json["fruits"].array.map { $0.map { Fruits.read($0.stringValue) } })
+        empties:
+        json["empties"].array.map { $0.map { Empty.read($0.jsonValue) } },
+        fruits:
+        json["fruits"].array.map { $0.map { Fruits.read($0.stringValue) } }
+        )
     }
     func write() -> [String : JSON] {
         var json: [String : JSON] = [:]
+        
         if let empties = self.empties {
             json["empties"] = JSON(empties.map { JSON($0.write()) })
         }
+        
         if let fruits = self.fruits {
             json["fruits"] = JSON(fruits.map { JSON($0.write()) })
         }
