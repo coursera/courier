@@ -55,6 +55,11 @@ extension JSON {
     }
 }
 
+protocol JSONSerializable {
+    static func read(json: JSON) -> Self
+    func write() -> JSON
+}
+
 /* TODO: figure out how to properly hash arrays and maps, the below is no good
 func hashOf<T: Hashable>(array: [T]) -> Int {
     var hash = 1

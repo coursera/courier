@@ -14,14 +14,18 @@
 @{ String className = syntax.escapeKeyword(record.getClassName()) }
 
 @classAnnotations(record.getSchema())
-struct @className @if (syntax.isEquatable()) {: Equatable} {
+struct @className: JSONSerializable@if (syntax.isEquatable()) {, Equatable} {
   @for(Field field: record.getFields()) {
     @{ String fieldName = syntax.escapeKeyword(field.getSchemaField().getName()) }
     @fieldAnnotations(field)
     let @fieldName: @syntax.toType(field.getType(), syntax.isOptional(field))
   }
 
-  init(@syntax.toInitArgs(record.getFields())) {
+  init(@for(Field field: record.getFields()) {
+    @{String fieldName = syntax.escapeKeyword(field.getSchemaField().getName())}
+    @{String defaultLiteral = syntax.defaultToLiteral(field)}
+    @(fieldName): @(syntax.toType(field.getType(), syntax.isOptional(field)))@if(defaultLiteral != null){ = @defaultLiteral}@if(!field_isLast){,}
+  }) {
     @for(Field field: record.getFields()) {
       @{ String fieldName = syntax.escapeKeyword(field.getSchemaField().getName()) }
       self.@fieldName = @fieldName
@@ -33,12 +37,11 @@ struct @className @if (syntax.isEquatable()) {: Equatable} {
   static func read(json: JSON) -> @className {
     return @(className)(
       @for(Field field: record.getFields()) {
-        @(syntax.escapeKeyword(field.getSchemaField().getName())):
-          @(swifty.toGetAccessor("json[\"" + field.getSchemaField().getName() + "\"]", field.getType(), syntax.isOptional(field)))@if(!field_isLast){,}
+      @(syntax.escapeKeyword(field.getSchemaField().getName())): @(swifty.toGetAccessor("json[\"" + field.getSchemaField().getName() + "\"]", field.getType(), syntax.isOptional(field)))@if(!field_isLast){,}
       })
   }
 
-  func write() -> [String : JSON] {
+  func write() -> JSON {
     @if(record.getFields().size() == 0) {
       return [:]
     } else {
@@ -55,7 +58,7 @@ struct @className @if (syntax.isEquatable()) {: Equatable} {
         }
       }
 
-      return json
+      return JSON(json)
     }
   }
 
@@ -76,7 +79,8 @@ func ==(lhs: @className, rhs: @className) -> Bool {
     return (
       @for(Field field: record.getFields()) { @{ String fieldName = syntax.escapeKeyword(field.getSchemaField().getName()) }
         @if (syntax.isOptional(field)) {(lhs.@fieldName == nil ? (rhs.@fieldName == nil) : lhs.@fieldName! == rhs.@fieldName!)} else {lhs.@fieldName == rhs.@fieldName} &&
-      } true)
+      } true
+    )
 }
 }
 

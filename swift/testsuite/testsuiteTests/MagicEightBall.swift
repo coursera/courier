@@ -9,7 +9,7 @@
 import Foundation
 import SwiftyJSON
 
-struct MagicEightBall: Equatable {
+struct MagicEightBall: JSONSerializable, Equatable {
     
     let question: String
     let answer: MagicEightBallAnswer
@@ -25,11 +25,11 @@ struct MagicEightBall: Equatable {
             answer: MagicEightBallAnswer.read(json["answer"].stringValue))
     }
     
-    func write() -> [String : JSON] {
+    func write() -> JSON {
         var json: [String : JSON] = [:]
         json["question"] = JSON(self.question)
         json["answer"] = JSON(self.answer.write())
-        return json
+        return JSON(json)
     }
     
     /* TODO: figure out how to properly implement

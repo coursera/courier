@@ -16,16 +16,16 @@ static func read(json: JSON) -> @className {
     }
 }
 
-func write() -> [String : JSON] {
+func write() -> JSON {
   switch self {
     @for(Member member: union.getMembers()) {
     @{ String unionMemberName = syntax.toUnionMemberName(member.getClassTemplateSpec()) }
       case .@(unionMemberName)(let member):
         var json = @swifty.toSetAccessor(member)
         json["typeName"] = "@(memberKeyToTypeName.get(member.getSchema().getUnionMemberKey()))"
-        return json.dictionaryValue
+        return json
     }
     case .UNKNOWN$(let json):
-      return json
+      return JSON(json)
   }
 }

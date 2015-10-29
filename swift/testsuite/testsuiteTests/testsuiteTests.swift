@@ -20,27 +20,27 @@ class testsuiteTests: XCTestCase {
         let deserialized = Simple.read(json);
         let serialized = deserialized.write();
         
-        XCTAssertEqual(json, JSON(serialized))
+        XCTAssertEqual(json, serialized)
     }
     
     func testFortuneCookie() {
         let json = try! jsonFile("FortuneCookie.json");
         let deserialized = FortuneCookie.read(json);
-        let serialized = JSON(deserialized.write());
+        let serialized = deserialized.write();
         assertSameJsObject(json.rawString()!, actual: serialized.rawString()!)
     }
     
     func testFortune_MagicEightBall() {
         let json = try! jsonFile("Fortune_MagicEightBall.json");
         let deserialized = Fortune.read(json);
-        let serialized = JSON(deserialized.write());
+        let serialized = deserialized.write();
         assertSameJsObject(json.rawString()!, actual: serialized.rawString()!)
     }
     
     func testFortune_FortuneCookie() {
         let json = try! jsonFile("Fortune_FortuneCookie.json");
         let deserialized = Fortune.read(json);
-        let serialized = JSON(deserialized.write());
+        let serialized = deserialized.write();
         assertSameJsObject(json.rawString()!, actual: serialized.rawString()!)
     }
     
@@ -59,7 +59,7 @@ class testsuiteTests: XCTestCase {
         
         XCTAssertEqual(deserialized, expected)
         
-        let serialized = JSON(deserialized.write());
+        let serialized = deserialized.write();
         assertSameJsObject(json.rawString()!, actual: serialized.rawString()!)
     }
     
@@ -76,7 +76,7 @@ class testsuiteTests: XCTestCase {
         
         XCTAssertEqual(deserialized, expected)
         
-        let serialized = JSON(deserialized.write());
+        let serialized = deserialized.write();
         assertSameJsObject(json.rawString()!, actual: serialized.rawString()!)
     }
     
@@ -88,7 +88,7 @@ class testsuiteTests: XCTestCase {
         
         XCTAssertEqual(deserialized, expected)
         
-        let serialized = JSON(deserialized.write());
+        let serialized = deserialized.write();
         assertSameJsObject(json.rawString()!, actual: serialized.rawString()!)
     }
     
@@ -101,7 +101,7 @@ class testsuiteTests: XCTestCase {
         
         XCTAssertEqual(deserialized, expected)
         
-        let serialized = JSON(deserialized.write());
+        let serialized = deserialized.write();
         assertSameJsObject(json.rawString()!, actual: serialized.rawString()!)
     }
     
@@ -112,7 +112,7 @@ class testsuiteTests: XCTestCase {
         let expected = WithPrimitives(intField: 1, longField: 2, floatField: 3.3, doubleField: 4.4, booleanField: true, stringField: "str", bytesField: "\u{0000}\u{0001}\u{0002}")
         XCTAssertEqual(deserialized, expected)
         
-        let serialized = JSON(deserialized.write());
+        let serialized = deserialized.write();
         assertSameJsObject(json.rawString()!, actual: serialized.rawString()!)
     }
     
@@ -130,7 +130,7 @@ class testsuiteTests: XCTestCase {
             bytes: ["\u{0000}\u{0001}\u{0002}", "\u{0003}\u{0004}\u{0005}"])
         XCTAssertEqual(deserialized, expected)
         
-        let serialized = JSON(deserialized.write());
+        let serialized = deserialized.write();
         assertSameJsObject(json.rawString()!, actual: serialized.rawString()!)
     }
     
@@ -148,7 +148,7 @@ class testsuiteTests: XCTestCase {
             bytes: ["a": "\u{0000}\u{0001}\u{0002}", "b": "\u{0003}\u{0004}\u{0005}", "c": "\u{0006}\u{0007}\u{8}"])
         XCTAssertEqual(deserialized, expected)
         
-        let serialized = JSON(deserialized.write());
+        let serialized = deserialized.write();
         assertSameJsObject(json.rawString()!, actual: serialized.rawString()!)
     }
     
@@ -161,7 +161,7 @@ class testsuiteTests: XCTestCase {
             fruits: [Fruits.APPLE, Fruits.BANANA, Fruits.ORANGE])
         XCTAssertEqual(deserialized, expected)
         
-        let serialized = JSON(deserialized.write());
+        let serialized = deserialized.write();
         assertSameJsObject(json.rawString()!, actual: serialized.rawString()!)
     }
     
@@ -173,7 +173,7 @@ class testsuiteTests: XCTestCase {
             value: .MessageMember(Message(title: "title", body: "Hello, Swift.")))
         XCTAssertEqual(deserialized, expected)
         
-        let serialized = JSON(deserialized.write());
+        let serialized = deserialized.write();
         assertSameJsObject(json.rawString()!, actual: serialized.rawString()!)
     }
     
@@ -183,7 +183,7 @@ class testsuiteTests: XCTestCase {
         
         // TODO: implement once we have typed key maps
         
-        let serialized = JSON(deserialized.write());
+        let serialized = deserialized.write();
         assertSameJsObject(json.rawString()!, actual: serialized.rawString()!)
     }
     
@@ -194,7 +194,7 @@ class testsuiteTests: XCTestCase {
         let expected = WithUnion(value: .MessageMember(Message(title: "title", body: "Hello, Swift.")))
         XCTAssertEqual(deserialized, expected)
         
-        let serialized = JSON(deserialized.write());
+        let serialized = deserialized.write();
         assertSameJsObject(json.rawString()!, actual: serialized.rawString()!)
     }
 

@@ -1,16 +1,17 @@
 import Foundation
 import SwiftyJSON
 
-struct `class` {
+struct `class`: JSONSerializable {
     
-    init() {
+    init(
+    ) {
     }
     
     static func read(json: JSON) -> `class` {
         return `class`(
         )
     }
-    func write() -> [String : JSON] {
+    func write() -> JSON {
         return [:]
     }
 }

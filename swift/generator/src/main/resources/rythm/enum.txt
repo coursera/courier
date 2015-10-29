@@ -61,7 +61,7 @@ enum @className: Equatable, Hashable {
 func ==(lhs: @className, rhs: @className) -> Bool {
     switch (lhs, rhs) {
       @if(enumeration.getSchema().getSymbols().size() > 0) {
-        case @for(String symbol: enumeration.getSchema().getSymbols()) { (.@(SwiftSyntax.escapeKeyword(symbol)), .@(SwiftSyntax.escapeKeyword(symbol))) @if(!symbol_isLast){,} }:
+        case @for(String symbol: enumeration.getSchema().getSymbols()).join(", ") {(.@(SwiftSyntax.escapeKeyword(symbol)), .@(SwiftSyntax.escapeKeyword(symbol)))}:
           return true
       }
       case (let .UNKNOWN$(lhs), let .UNKNOWN$(rhs)):

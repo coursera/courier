@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-enum UnionTyperef {
+enum UnionTyperef: JSONSerializable {
     
     case StringMember(String)
     
@@ -10,26 +10,22 @@ enum UnionTyperef {
     
     static func read(json: JSON) -> UnionTyperef {
         let dictionary = json.dictionaryValue
-        
         if let member = dictionary["string"] {
             return .StringMember(member.stringValue)
         }
-        
         if let member = dictionary["int"] {
             return .IntMember(member.intValue)
         }
         return .UNKNOWN$(dictionary)
     }
-    func write() -> [String : JSON] {
+    func write() -> JSON {
         switch self {
-            
         case .StringMember(let member):
-            return ["string": JSON(member)];
-            
+            return JSON(["string": JSON(member)]);
         case .IntMember(let member):
-            return ["int": JSON(member)];
+            return JSON(["int": JSON(member)]);
         case .UNKNOWN$(let dictionary):
-            return dictionary
+            return JSON(dictionary)
         }
     }
 }

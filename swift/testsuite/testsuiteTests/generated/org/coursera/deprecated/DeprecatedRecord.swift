@@ -2,7 +2,7 @@ import Foundation
 import SwiftyJSON
 
 @available(*, deprecated, message="Use XYZ instead")
-struct DeprecatedRecord {
+struct DeprecatedRecord: JSONSerializable {
     
     @available(*, deprecated)
     let field1: String?
@@ -10,32 +10,28 @@ struct DeprecatedRecord {
     @available(*, deprecated, message="Use XYZ instead")
     let field2: String?
     
-    init(field1: String?, field2: String?) {
-        
+    init(
+        field1: String?,
+        field2: String?
+    ) {
         self.field1 = field1
-        
         self.field2 = field2
     }
     
     static func read(json: JSON) -> DeprecatedRecord {
         return DeprecatedRecord(
-        field1:
-        json["field1"].string,
-        field2:
-        json["field2"].string
+            field1: json["field1"].string,
+            field2: json["field2"].string
         )
     }
-    func write() -> [String : JSON] {
+    func write() -> JSON {
         var json: [String : JSON] = [:]
-        
         if let field1 = self.field1 {
             json["field1"] = JSON(field1)
         }
-        
         if let field2 = self.field2 {
             json["field2"] = JSON(field2)
         }
-        
-        return json
+        return JSON(json)
     }
 }

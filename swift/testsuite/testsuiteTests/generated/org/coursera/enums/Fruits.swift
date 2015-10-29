@@ -55,7 +55,7 @@ enum Fruits: Equatable, Hashable {
 }
 func ==(lhs: Fruits, rhs: Fruits) -> Bool {
     switch (lhs, rhs) {
-    case  (.APPLE, .APPLE) , (.BANANA, .BANANA) , (.ORANGE, .ORANGE) , (.PINEAPPLE, .PINEAPPLE) :
+    case (.APPLE, .APPLE), (.BANANA, .BANANA), (.ORANGE, .ORANGE), (.PINEAPPLE, .PINEAPPLE):
         return true
     case (let .UNKNOWN$(lhs), let .UNKNOWN$(rhs)):
         return lhs == rhs

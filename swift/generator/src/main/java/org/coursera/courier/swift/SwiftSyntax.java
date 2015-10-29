@@ -232,27 +232,6 @@ public class SwiftSyntax {
     }
   }
 
-  public String toInitArgs(List<RecordTemplateSpec.Field> fields) {
-    Iterator<RecordTemplateSpec.Field> iter = fields.iterator();
-    StringBuilder sb = new StringBuilder();
-    while (iter.hasNext()) {
-      RecordTemplateSpec.Field field = iter.next();
-      sb.append(escapeKeyword(field.getSchemaField().getName()));
-      sb.append(": ");
-      sb.append(toType(field.getType(), isOptional(field)));
-
-      String defaultLiteral = defaultToLiteral(field);
-      if (defaultLiteral != null) {
-        sb.append(" = ");
-        sb.append(defaultLiteral);
-      }
-      if (iter.hasNext()) {
-        sb.append(", ");
-      }
-    }
-    return sb.toString();
-  }
-
   /**
    * @return A swift source code string representing the literal value of the field default, or null
    * if the field does not have a default.
