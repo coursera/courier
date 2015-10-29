@@ -46,7 +46,8 @@ public class PoorMansSwiftSourceFormatter {
   private enum Scope {
     ROOT,
     UNCATEGORIZED,
-    SWITCH
+    SWITCH,
+    COMMENT
   }
 
   public static String format(String code) {
@@ -68,6 +69,9 @@ public class PoorMansSwiftSourceFormatter {
       if (line.startsWith("}")) {
         scope.pop();
         indentLevel--;
+      } else if (line.startsWith("*/")) {
+        scope.pop();
+        indentLevel--;
       }
 
       boolean isCaseStmt = scope.peek() == Scope.SWITCH &&
@@ -75,9 +79,6 @@ public class PoorMansSwiftSourceFormatter {
 
       result.append(StringUtils.repeat(INDENT, indentLevel - (isCaseStmt ? 1 : 0)));
 
-      if (line.startsWith("*")) {
-        result.append(" "); // align javadoc continuation
-      }
       result.append(line);
       result.append('\n');
 
@@ -88,6 +89,9 @@ public class PoorMansSwiftSourceFormatter {
         } else {
           scope.push(Scope.UNCATEGORIZED);
         }
+      } else if (line.startsWith("/**")) {
+        scope.push(Scope.COMMENT);
+        indentLevel++;
       }
 
       isPreviousLinePreamble = (line.startsWith("@") || line.startsWith("*"));

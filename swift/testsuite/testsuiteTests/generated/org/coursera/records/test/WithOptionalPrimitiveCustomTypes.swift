@@ -12,10 +12,13 @@ struct WithOptionalPrimitiveCustomTypes {
     
     static func read(json: JSON) -> WithOptionalPrimitiveCustomTypes {
         return WithOptionalPrimitiveCustomTypes(
-        intField: json["intField"].int)
+        intField:
+        json["intField"].int
+        )
     }
     func write() -> [String : JSON] {
         var json: [String : JSON] = [:]
+        
         if let intField = self.intField {
             json["intField"] = JSON(intField)
         }

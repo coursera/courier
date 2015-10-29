@@ -19,14 +19,19 @@ struct DeprecatedRecord {
     
     static func read(json: JSON) -> DeprecatedRecord {
         return DeprecatedRecord(
-        field1: json["field1"].string,
-        field2: json["field2"].string)
+        field1:
+        json["field1"].string,
+        field2:
+        json["field2"].string
+        )
     }
     func write() -> [String : JSON] {
         var json: [String : JSON] = [:]
+        
         if let field1 = self.field1 {
             json["field1"] = JSON(field1)
         }
+        
         if let field2 = self.field2 {
             json["field2"] = JSON(field2)
         }

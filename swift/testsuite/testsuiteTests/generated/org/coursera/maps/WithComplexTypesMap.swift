@@ -32,30 +32,43 @@ struct WithComplexTypesMap: Equatable {
     
     static func read(json: JSON) -> WithComplexTypesMap {
         return WithComplexTypesMap(
-        empties: json["empties"].dictionary.map { $0.mapValues { Empty.read($0.jsonValue) } },
-        fruits: json["fruits"].dictionary.map { $0.mapValues { Fruits.read($0.stringValue) } },
-        arrays: json["arrays"].dictionary.map { $0.mapValues { $0.arrayValue.map { Simple.read($0.jsonValue) } } },
-        maps: json["maps"].dictionary.map { $0.mapValues { $0.dictionaryValue.mapValues { Simple.read($0.jsonValue) } } },
-        unions: json["unions"].dictionary.map { $0.mapValues { WithComplexTypesMapUnion.read($0.jsonValue) } },
-        fixed: json["fixed"].dictionary.map { $0.mapValues { $0.stringValue } })
+        empties:
+        json["empties"].dictionary.map { $0.mapValues { Empty.read($0.jsonValue) } },
+        fruits:
+        json["fruits"].dictionary.map { $0.mapValues { Fruits.read($0.stringValue) } },
+        arrays:
+        json["arrays"].dictionary.map { $0.mapValues { $0.arrayValue.map { Simple.read($0.jsonValue) } } },
+        maps:
+        json["maps"].dictionary.map { $0.mapValues { $0.dictionaryValue.mapValues { Simple.read($0.jsonValue) } } },
+        unions:
+        json["unions"].dictionary.map { $0.mapValues { WithComplexTypesMapUnion.read($0.jsonValue) } },
+        fixed:
+        json["fixed"].dictionary.map { $0.mapValues { $0.stringValue } }
+        )
     }
     func write() -> [String : JSON] {
         var json: [String : JSON] = [:]
+        
         if let empties = self.empties {
             json["empties"] = JSON(empties.mapValues { JSON($0.write()) })
         }
+        
         if let fruits = self.fruits {
             json["fruits"] = JSON(fruits.mapValues { JSON($0.write()) })
         }
+        
         if let arrays = self.arrays {
             json["arrays"] = JSON(arrays.mapValues { JSON($0.map { JSON($0.write()) }) })
         }
+        
         if let maps = self.maps {
             json["maps"] = JSON(maps.mapValues { JSON($0.mapValues { JSON($0.write()) }) })
         }
+        
         if let unions = self.unions {
             json["unions"] = JSON(unions.mapValues { JSON($0.write()) })
         }
+        
         if let fixed = self.fixed {
             json["fixed"] = JSON(fixed.mapValues { JSON($0) })
         }

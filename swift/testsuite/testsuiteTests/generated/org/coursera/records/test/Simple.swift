@@ -2,13 +2,13 @@ import Foundation
 import SwiftyJSON
 
 /**
- * A simple record
- */
+    A simple record
+*/
 struct Simple: Equatable {
     
     /**
-     * A simple field
-     */
+        A simple field
+    */
     let message: String?
     
     init(message: String?) {
@@ -18,10 +18,13 @@ struct Simple: Equatable {
     
     static func read(json: JSON) -> Simple {
         return Simple(
-        message: json["message"].string)
+        message:
+        json["message"].string
+        )
     }
     func write() -> [String : JSON] {
         var json: [String : JSON] = [:]
+        
         if let message = self.message {
             json["message"] = JSON(message)
         }

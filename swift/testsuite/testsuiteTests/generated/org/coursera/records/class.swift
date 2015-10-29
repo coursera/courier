@@ -12,10 +12,13 @@ struct `class` {
     
     static func read(json: JSON) -> `class` {
         return `class`(
-        `private`: json["private"].string)
+        `private`:
+        json["private"].string
+        )
     }
     func write() -> [String : JSON] {
         var json: [String : JSON] = [:]
+        
         if let `private` = self.`private` {
             json["private"] = JSON(`private`)
         }

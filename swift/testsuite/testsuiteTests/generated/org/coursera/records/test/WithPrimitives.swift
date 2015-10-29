@@ -36,34 +36,49 @@ struct WithPrimitives: Equatable {
     
     static func read(json: JSON) -> WithPrimitives {
         return WithPrimitives(
-        intField: json["intField"].int,
-        longField: json["longField"].int,
-        floatField: json["floatField"].float,
-        doubleField: json["doubleField"].double,
-        booleanField: json["booleanField"].bool,
-        stringField: json["stringField"].string,
-        bytesField: json["bytesField"].string)
+        intField:
+        json["intField"].int,
+        longField:
+        json["longField"].int,
+        floatField:
+        json["floatField"].float,
+        doubleField:
+        json["doubleField"].double,
+        booleanField:
+        json["booleanField"].bool,
+        stringField:
+        json["stringField"].string,
+        bytesField:
+        json["bytesField"].string
+        )
     }
     func write() -> [String : JSON] {
         var json: [String : JSON] = [:]
+        
         if let intField = self.intField {
             json["intField"] = JSON(intField)
         }
+        
         if let longField = self.longField {
             json["longField"] = JSON(longField)
         }
+        
         if let floatField = self.floatField {
             json["floatField"] = JSON(floatField)
         }
+        
         if let doubleField = self.doubleField {
             json["doubleField"] = JSON(doubleField)
         }
+        
         if let booleanField = self.booleanField {
             json["booleanField"] = JSON(booleanField)
         }
+        
         if let stringField = self.stringField {
             json["stringField"] = JSON(stringField)
         }
+        
         if let bytesField = self.bytesField {
             json["bytesField"] = JSON(bytesField)
         }

@@ -16,14 +16,19 @@ struct RecordKey {
     
     static func read(json: JSON) -> RecordKey {
         return RecordKey(
-        x: json["x"].int,
-        y: json["y"].bool)
+        x:
+        json["x"].int,
+        y:
+        json["y"].bool
+        )
     }
     func write() -> [String : JSON] {
         var json: [String : JSON] = [:]
+        
         if let x = self.x {
             json["x"] = JSON(x)
         }
+        
         if let y = self.y {
             json["y"] = JSON(y)
         }

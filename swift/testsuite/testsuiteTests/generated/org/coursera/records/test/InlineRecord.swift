@@ -12,10 +12,13 @@ struct InlineRecord {
     
     static func read(json: JSON) -> InlineRecord {
         return InlineRecord(
-        value: json["value"].int)
+        value:
+        json["value"].int
+        )
     }
     func write() -> [String : JSON] {
         var json: [String : JSON] = [:]
+        
         if let value = self.value {
             json["value"] = JSON(value)
         }

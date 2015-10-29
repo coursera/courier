@@ -4,8 +4,8 @@ import SwiftyJSON
 enum Fruits: Equatable, Hashable {
     
     /**
-     * An Apple.
-     */
+        An Apple.
+    */
     case APPLE
     
     case BANANA
@@ -55,13 +55,7 @@ enum Fruits: Equatable, Hashable {
 }
 func ==(lhs: Fruits, rhs: Fruits) -> Bool {
     switch (lhs, rhs) {
-    case (.APPLE, .APPLE):
-        return true
-    case (.BANANA, .BANANA):
-        return true
-    case (.ORANGE, .ORANGE):
-        return true
-    case (.PINEAPPLE, .PINEAPPLE):
+    case  (.APPLE, .APPLE) , (.BANANA, .BANANA) , (.ORANGE, .ORANGE) , (.PINEAPPLE, .PINEAPPLE) :
         return true
     case (let .UNKNOWN$(lhs), let .UNKNOWN$(rhs)):
         return lhs == rhs

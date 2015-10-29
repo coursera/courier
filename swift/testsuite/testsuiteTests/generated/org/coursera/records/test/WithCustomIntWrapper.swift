@@ -12,10 +12,13 @@ struct WithCustomIntWrapper {
     
     static func read(json: JSON) -> WithCustomIntWrapper {
         return WithCustomIntWrapper(
-        wrapper: json["wrapper"].int)
+        wrapper:
+        json["wrapper"].int
+        )
     }
     func write() -> [String : JSON] {
         var json: [String : JSON] = [:]
+        
         if let wrapper = self.wrapper {
             json["wrapper"] = JSON(wrapper)
         }

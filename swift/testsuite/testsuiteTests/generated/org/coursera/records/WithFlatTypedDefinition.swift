@@ -12,10 +12,13 @@ struct WithFlatTypedDefinition: Equatable {
     
     static func read(json: JSON) -> WithFlatTypedDefinition {
         return WithFlatTypedDefinition(
-        value: json["value"].json.map { FlatTypedDefinition.read($0) })
+        value:
+        json["value"].json.map { FlatTypedDefinition.read($0) }
+        )
     }
     func write() -> [String : JSON] {
         var json: [String : JSON] = [:]
+        
         if let value = self.value {
             json["value"] = JSON(value.write())
         }
