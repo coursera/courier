@@ -14,14 +14,14 @@
 @{ String className = syntax.escapeKeyword(record.getClassName()) }
 
 @classAnnotations(record.getSchema())
-struct @className: JSONSerializable@if (syntax.isEquatable()) {, Equatable} {
+public struct @className: JSONSerializable@if (syntax.isEquatable()) {, Equatable} {
   @for(Field field: record.getFields()) {
     @{ String fieldName = syntax.escapeKeyword(field.getSchemaField().getName()) }
     @fieldAnnotations(field)
-    let @fieldName: @syntax.toType(field.getType(), syntax.isOptional(field))
+    public let @fieldName: @syntax.toType(field.getType(), syntax.isOptional(field))
   }
 
-  init(@for(Field field: record.getFields()) {
+  public init(@for(Field field: record.getFields()) {
     @{String fieldName = syntax.escapeKeyword(field.getSchemaField().getName())}
     @{String defaultLiteral = syntax.defaultToLiteral(field)}
     @(fieldName): @(syntax.toType(field.getType(), syntax.isOptional(field)))@if(defaultLiteral != null){ = @defaultLiteral}@if(!field_isLast){,}
@@ -34,14 +34,14 @@ struct @className: JSONSerializable@if (syntax.isEquatable()) {, Equatable} {
 
   @enclosedTypes(record, syntax)
 
-  static func read(json: JSON) -> @className {
+  public static func read(json: JSON) -> @className {
     return @(className)(
       @for(Field field: record.getFields()) {
       @(syntax.escapeKeyword(field.getSchemaField().getName())): @(swifty.toGetAccessor("json[\"" + field.getSchemaField().getName() + "\"]", field.getType(), syntax.isOptional(field)))@if(!field_isLast){,}
       })
   }
 
-  func write() -> JSON {
+  public func write() -> JSON {
     @if(record.getFields().size() == 0) {
       return [:]
     } else {
@@ -63,7 +63,7 @@ struct @className: JSONSerializable@if (syntax.isEquatable()) {, Equatable} {
   }
 
   @* TODO: implement
-  var hashValue: Int {
+  public var hashValue: Int {
     var hash = 1
     @for(Field field: record.getFields()) {
     @{ String fieldName = syntax.escapeKeyword(field.getSchemaField().getName()) }
@@ -75,7 +75,7 @@ struct @className: JSONSerializable@if (syntax.isEquatable()) {, Equatable} {
 }
 
 @if (syntax.isEquatable()) {
-func ==(lhs: @className, rhs: @className) -> Bool {
+public func ==(lhs: @className, rhs: @className) -> Bool {
     return (
       @for(Field field: record.getFields()) { @{ String fieldName = syntax.escapeKeyword(field.getSchemaField().getName()) }
         @if (syntax.isOptional(field)) {(lhs.@fieldName == nil ? (rhs.@fieldName == nil) : lhs.@fieldName! == rhs.@fieldName!)} else {lhs.@fieldName == rhs.@fieldName} &&

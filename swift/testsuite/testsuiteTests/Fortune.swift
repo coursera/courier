@@ -12,28 +12,28 @@ import SwiftyJSON
 /**
  * A fortune
  */
-struct Fortune: JSONSerializable, Equatable {
+public struct Fortune: JSONSerializable, Equatable {
     
     /**
      * The fortune telling.
      */
-    let telling: Telling
+    public let telling: Telling
     
-    let createdAt: DateTime
+    public let createdAt: DateTime
     
     // Example of a default:
-    init(telling: Telling, createdAt: DateTime = "2015-01-01T00:00:00.000Z") {
+    public init(telling: Telling, createdAt: DateTime = "2015-01-01T00:00:00.000Z") {
         self.telling = telling
         self.createdAt = createdAt
     }
     
-    static func read(json: JSON) -> Fortune {
+    public static func read(json: JSON) -> Fortune {
         return Fortune(
             telling: Telling.read(json["telling"].jsonValue),
             createdAt: json["createdAt"].stringValue)
     }
     
-    func write() -> JSON {
+    public func write() -> JSON {
         var json: [String : JSON] = [:]
         json["telling"] = self.telling.write()
         json["createdAt"] = JSON(self.createdAt)
@@ -50,7 +50,7 @@ struct Fortune: JSONSerializable, Equatable {
     */
 }
 
-func ==(lhs: Fortune, rhs: Fortune) -> Bool {
+public func ==(lhs: Fortune, rhs: Fortune) -> Bool {
     return
         lhs.telling == rhs.telling &&
         lhs.createdAt == rhs.createdAt

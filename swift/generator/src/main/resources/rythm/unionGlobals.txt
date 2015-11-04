@@ -4,7 +4,7 @@
 @{ String className = ((path == null || path.trim().length() == 0) ? "" : (path + ".")) + syntax.escapeKeyword(union.getClassName()) }
 
 @if (syntax.isEquatable()) {
-  func ==(lhs: @className, rhs: @className) -> Bool {
+  public func ==(lhs: @className, rhs: @className) -> Bool {
     switch (lhs, rhs) {
       @for(Member member: union.getMembers()) {
         @{ String unionMemberName = syntax.toUnionMemberName(member.getClassTemplateSpec()) }

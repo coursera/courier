@@ -1,17 +1,17 @@
 import Foundation
 import SwiftyJSON
 
-struct WithPrimitivesUnion: JSONSerializable {
+public struct WithPrimitivesUnion: JSONSerializable {
     
-    let union: Union?
+    public let union: Union?
     
-    init(
+    public init(
         union: Union?
     ) {
         self.union = union
     }
     
-    enum Union: JSONSerializable {
+    public enum Union: JSONSerializable {
         case IntMember(Int)
         case LongMember(Int)
         case FloatMember(Float)
@@ -20,7 +20,7 @@ struct WithPrimitivesUnion: JSONSerializable {
         case StringMember(String)
         case BytesMember(String)
         case UNKNOWN$([String : JSON])
-        static func read(json: JSON) -> Union {
+        public static func read(json: JSON) -> Union {
             let dictionary = json.dictionaryValue
             if let member = dictionary["int"] {
                 return .IntMember(member.intValue)
@@ -45,7 +45,7 @@ struct WithPrimitivesUnion: JSONSerializable {
             }
             return .UNKNOWN$(dictionary)
         }
-        func write() -> JSON {
+        public func write() -> JSON {
             switch self {
             case .IntMember(let member):
                 return JSON(["int": JSON(member)]);
@@ -67,12 +67,12 @@ struct WithPrimitivesUnion: JSONSerializable {
         }
     }
     
-    static func read(json: JSON) -> WithPrimitivesUnion {
+    public static func read(json: JSON) -> WithPrimitivesUnion {
         return WithPrimitivesUnion(
             union: json["union"].json.map { Union.read($0) }
         )
     }
-    func write() -> JSON {
+    public func write() -> JSON {
         var json: [String : JSON] = [:]
         if let union = self.union {
             json["union"] = union.write()

@@ -1,21 +1,21 @@
 import Foundation
 import SwiftyJSON
 
-struct Empty: JSONSerializable, Equatable {
+public struct Empty: JSONSerializable, Equatable {
     
-    init(
+    public init(
     ) {
     }
     
-    static func read(json: JSON) -> Empty {
+    public static func read(json: JSON) -> Empty {
         return Empty(
         )
     }
-    func write() -> JSON {
+    public func write() -> JSON {
         return [:]
     }
 }
-func ==(lhs: Empty, rhs: Empty) -> Bool {
+public func ==(lhs: Empty, rhs: Empty) -> Bool {
     return (
         true
     )

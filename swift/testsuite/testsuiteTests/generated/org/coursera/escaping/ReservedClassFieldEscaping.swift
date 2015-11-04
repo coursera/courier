@@ -1,15 +1,15 @@
 import Foundation
 import SwiftyJSON
 
-struct ReservedClassFieldEscaping: JSONSerializable {
+public struct ReservedClassFieldEscaping: JSONSerializable {
     
-    let json$: String?
+    public let json$: String?
     
-    let read$: String?
+    public let read$: String?
     
-    let write$: String?
+    public let write$: String?
     
-    init(
+    public init(
         json$: String?,
         read$: String?,
         write$: String?
@@ -19,14 +19,14 @@ struct ReservedClassFieldEscaping: JSONSerializable {
         self.write$ = write$
     }
     
-    static func read(json: JSON) -> ReservedClassFieldEscaping {
+    public static func read(json: JSON) -> ReservedClassFieldEscaping {
         return ReservedClassFieldEscaping(
             json$: json["json"].string,
             read$: json["read"].string,
             write$: json["write"].string
         )
     }
-    func write() -> JSON {
+    public func write() -> JSON {
         var json: [String : JSON] = [:]
         if let json$ = self.json$ {
             json["json"] = JSON(json$)

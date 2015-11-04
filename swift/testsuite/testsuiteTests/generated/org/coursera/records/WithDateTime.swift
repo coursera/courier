@@ -1,22 +1,22 @@
 import Foundation
 import SwiftyJSON
 
-struct WithDateTime: JSONSerializable {
+public struct WithDateTime: JSONSerializable {
     
-    let time: Int?
+    public let time: Int?
     
-    init(
+    public init(
         time: Int?
     ) {
         self.time = time
     }
     
-    static func read(json: JSON) -> WithDateTime {
+    public static func read(json: JSON) -> WithDateTime {
         return WithDateTime(
             time: json["time"].int
         )
     }
-    func write() -> JSON {
+    public func write() -> JSON {
         var json: [String : JSON] = [:]
         if let time = self.time {
             json["time"] = JSON(time)

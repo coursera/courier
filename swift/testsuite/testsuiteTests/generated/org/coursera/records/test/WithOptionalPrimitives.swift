@@ -1,23 +1,23 @@
 import Foundation
 import SwiftyJSON
 
-struct WithOptionalPrimitives: JSONSerializable {
+public struct WithOptionalPrimitives: JSONSerializable {
     
-    let intField: Int?
+    public let intField: Int?
     
-    let longField: Int?
+    public let longField: Int?
     
-    let floatField: Float?
+    public let floatField: Float?
     
-    let doubleField: Double?
+    public let doubleField: Double?
     
-    let booleanField: Bool?
+    public let booleanField: Bool?
     
-    let stringField: String?
+    public let stringField: String?
     
-    let bytesField: String?
+    public let bytesField: String?
     
-    init(
+    public init(
         intField: Int?,
         longField: Int?,
         floatField: Float?,
@@ -35,7 +35,7 @@ struct WithOptionalPrimitives: JSONSerializable {
         self.bytesField = bytesField
     }
     
-    static func read(json: JSON) -> WithOptionalPrimitives {
+    public static func read(json: JSON) -> WithOptionalPrimitives {
         return WithOptionalPrimitives(
             intField: json["intField"].int,
             longField: json["longField"].int,
@@ -46,7 +46,7 @@ struct WithOptionalPrimitives: JSONSerializable {
             bytesField: json["bytesField"].string
         )
     }
-    func write() -> JSON {
+    public func write() -> JSON {
         var json: [String : JSON] = [:]
         if let intField = self.intField {
             json["intField"] = JSON(intField)

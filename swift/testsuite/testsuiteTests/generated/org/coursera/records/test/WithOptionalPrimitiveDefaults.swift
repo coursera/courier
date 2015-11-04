@@ -1,25 +1,25 @@
 import Foundation
 import SwiftyJSON
 
-struct WithOptionalPrimitiveDefaults: JSONSerializable {
+public struct WithOptionalPrimitiveDefaults: JSONSerializable {
     
-    let intWithDefault: Int?
+    public let intWithDefault: Int?
     
-    let longWithDefault: Int?
+    public let longWithDefault: Int?
     
-    let floatWithDefault: Float?
+    public let floatWithDefault: Float?
     
-    let doubleWithDefault: Double?
+    public let doubleWithDefault: Double?
     
-    let booleanWithDefault: Bool?
+    public let booleanWithDefault: Bool?
     
-    let stringWithDefault: String?
+    public let stringWithDefault: String?
     
-    let bytesWithDefault: String?
+    public let bytesWithDefault: String?
     
-    let enumWithDefault: Fruits?
+    public let enumWithDefault: Fruits?
     
-    init(
+    public init(
         intWithDefault: Int? = 1,
         longWithDefault: Int? = 2,
         floatWithDefault: Float? = 3.3,
@@ -39,7 +39,7 @@ struct WithOptionalPrimitiveDefaults: JSONSerializable {
         self.enumWithDefault = enumWithDefault
     }
     
-    static func read(json: JSON) -> WithOptionalPrimitiveDefaults {
+    public static func read(json: JSON) -> WithOptionalPrimitiveDefaults {
         return WithOptionalPrimitiveDefaults(
             intWithDefault: json["intWithDefault"].int,
             longWithDefault: json["longWithDefault"].int,
@@ -51,7 +51,7 @@ struct WithOptionalPrimitiveDefaults: JSONSerializable {
             enumWithDefault: json["enumWithDefault"].string.map { Fruits.read($0) }
         )
     }
-    func write() -> JSON {
+    public func write() -> JSON {
         var json: [String : JSON] = [:]
         if let intWithDefault = self.intWithDefault {
             json["intWithDefault"] = JSON(intWithDefault)

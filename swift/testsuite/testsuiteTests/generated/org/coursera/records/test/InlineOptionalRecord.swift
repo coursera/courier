@@ -1,22 +1,22 @@
 import Foundation
 import SwiftyJSON
 
-struct InlineOptionalRecord: JSONSerializable {
+public struct InlineOptionalRecord: JSONSerializable {
     
-    let value: String?
+    public let value: String?
     
-    init(
+    public init(
         value: String?
     ) {
         self.value = value
     }
     
-    static func read(json: JSON) -> InlineOptionalRecord {
+    public static func read(json: JSON) -> InlineOptionalRecord {
         return InlineOptionalRecord(
             value: json["value"].string
         )
     }
-    func write() -> JSON {
+    public func write() -> JSON {
         var json: [String : JSON] = [:]
         if let value = self.value {
             json["value"] = JSON(value)

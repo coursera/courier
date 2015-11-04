@@ -1,35 +1,35 @@
 import Foundation
 import SwiftyJSON
 
-struct WithTypedKeyMap: JSONSerializable, Equatable {
+public struct WithTypedKeyMap: JSONSerializable, Equatable {
     
-    let ints: [String: String]?
+    public let ints: [String: String]?
     
-    let longs: [String: String]?
+    public let longs: [String: String]?
     
-    let floats: [String: String]?
+    public let floats: [String: String]?
     
-    let doubles: [String: String]?
+    public let doubles: [String: String]?
     
-    let booleans: [String: String]?
+    public let booleans: [String: String]?
     
-    let strings: [String: String]?
+    public let strings: [String: String]?
     
-    let bytes: [String: String]?
+    public let bytes: [String: String]?
     
-    let record: [String: String]?
+    public let record: [String: String]?
     
-    let array: [String: String]?
+    public let array: [String: String]?
     
-    let `enum`: [String: String]?
+    public let `enum`: [String: String]?
     
-    let custom: [String: String]?
+    public let custom: [String: String]?
     
-    let fixed: [String: String]?
+    public let fixed: [String: String]?
     
-    let inlineRecord: [String: String]?
+    public let inlineRecord: [String: String]?
     
-    init(
+    public init(
         ints: [String: String]?,
         longs: [String: String]?,
         floats: [String: String]?,
@@ -59,7 +59,7 @@ struct WithTypedKeyMap: JSONSerializable, Equatable {
         self.inlineRecord = inlineRecord
     }
     
-    static func read(json: JSON) -> WithTypedKeyMap {
+    public static func read(json: JSON) -> WithTypedKeyMap {
         return WithTypedKeyMap(
             ints: json["ints"].dictionary.map { $0.mapValues { $0.stringValue } },
             longs: json["longs"].dictionary.map { $0.mapValues { $0.stringValue } },
@@ -76,7 +76,7 @@ struct WithTypedKeyMap: JSONSerializable, Equatable {
             inlineRecord: json["inlineRecord"].dictionary.map { $0.mapValues { $0.stringValue } }
         )
     }
-    func write() -> JSON {
+    public func write() -> JSON {
         var json: [String : JSON] = [:]
         if let ints = self.ints {
             json["ints"] = JSON(ints)
@@ -120,7 +120,7 @@ struct WithTypedKeyMap: JSONSerializable, Equatable {
         return JSON(json)
     }
 }
-func ==(lhs: WithTypedKeyMap, rhs: WithTypedKeyMap) -> Bool {
+public func ==(lhs: WithTypedKeyMap, rhs: WithTypedKeyMap) -> Bool {
     return (
         (lhs.ints == nil ? (rhs.ints == nil) : lhs.ints! == rhs.ints!) &&
         (lhs.longs == nil ? (rhs.longs == nil) : lhs.longs! == rhs.longs!) &&

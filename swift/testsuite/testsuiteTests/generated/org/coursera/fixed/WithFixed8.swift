@@ -1,22 +1,22 @@
 import Foundation
 import SwiftyJSON
 
-struct WithFixed8: JSONSerializable {
+public struct WithFixed8: JSONSerializable {
     
-    let fixed: String?
+    public let fixed: String?
     
-    init(
+    public init(
         fixed: String?
     ) {
         self.fixed = fixed
     }
     
-    static func read(json: JSON) -> WithFixed8 {
+    public static func read(json: JSON) -> WithFixed8 {
         return WithFixed8(
             fixed: json["fixed"].string
         )
     }
-    func write() -> JSON {
+    public func write() -> JSON {
         var json: [String : JSON] = [:]
         if let fixed = self.fixed {
             json["fixed"] = JSON(fixed)

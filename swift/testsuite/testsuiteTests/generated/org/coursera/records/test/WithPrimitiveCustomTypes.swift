@@ -1,22 +1,22 @@
 import Foundation
 import SwiftyJSON
 
-struct WithPrimitiveCustomTypes: JSONSerializable {
+public struct WithPrimitiveCustomTypes: JSONSerializable {
     
-    let intField: Int?
+    public let intField: Int?
     
-    init(
+    public init(
         intField: Int?
     ) {
         self.intField = intField
     }
     
-    static func read(json: JSON) -> WithPrimitiveCustomTypes {
+    public static func read(json: JSON) -> WithPrimitiveCustomTypes {
         return WithPrimitiveCustomTypes(
             intField: json["intField"].int
         )
     }
-    func write() -> JSON {
+    public func write() -> JSON {
         var json: [String : JSON] = [:]
         if let intField = self.intField {
             json["intField"] = JSON(intField)

@@ -3,7 +3,7 @@
 
 @{ String className = syntax.escapeKeyword(union.getClassName()) }
 
-static func read(json: JSON) -> @className {
+public static func read(json: JSON) -> @className {
   switch json["typeName"].stringValue {
     @for(Member member: union.getMembers()) {
     @{ String unionMemberName = syntax.toUnionMemberName(member.getClassTemplateSpec()) }
@@ -15,7 +15,7 @@ static func read(json: JSON) -> @className {
   }
 }
 
-func write() -> JSON {
+public func write() -> JSON {
   switch self {
     @for(Member member: union.getMembers()) {
     @{ String unionMemberName = syntax.toUnionMemberName(member.getClassTemplateSpec()) }

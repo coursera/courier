@@ -1,22 +1,22 @@
 import Foundation
 import SwiftyJSON
 
-struct WithFlatTypedDefinition: JSONSerializable, Equatable {
+public struct WithFlatTypedDefinition: JSONSerializable, Equatable {
     
-    let value: FlatTypedDefinition?
+    public let value: FlatTypedDefinition?
     
-    init(
+    public init(
         value: FlatTypedDefinition?
     ) {
         self.value = value
     }
     
-    static func read(json: JSON) -> WithFlatTypedDefinition {
+    public static func read(json: JSON) -> WithFlatTypedDefinition {
         return WithFlatTypedDefinition(
             value: json["value"].json.map { FlatTypedDefinition.read($0) }
         )
     }
-    func write() -> JSON {
+    public func write() -> JSON {
         var json: [String : JSON] = [:]
         if let value = self.value {
             json["value"] = value.write()
@@ -24,7 +24,7 @@ struct WithFlatTypedDefinition: JSONSerializable, Equatable {
         return JSON(json)
     }
 }
-func ==(lhs: WithFlatTypedDefinition, rhs: WithFlatTypedDefinition) -> Bool {
+public func ==(lhs: WithFlatTypedDefinition, rhs: WithFlatTypedDefinition) -> Bool {
     return (
         (lhs.value == nil ? (rhs.value == nil) : lhs.value! == rhs.value!) &&
         true

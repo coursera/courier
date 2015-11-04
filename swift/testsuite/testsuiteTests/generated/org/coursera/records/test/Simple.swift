@@ -4,25 +4,25 @@ import SwiftyJSON
 /**
     A simple record
 */
-struct Simple: JSONSerializable, Equatable {
+public struct Simple: JSONSerializable, Equatable {
     
     /**
         A simple field
     */
-    let message: String?
+    public let message: String?
     
-    init(
+    public init(
         message: String?
     ) {
         self.message = message
     }
     
-    static func read(json: JSON) -> Simple {
+    public static func read(json: JSON) -> Simple {
         return Simple(
             message: json["message"].string
         )
     }
-    func write() -> JSON {
+    public func write() -> JSON {
         var json: [String : JSON] = [:]
         if let message = self.message {
             json["message"] = JSON(message)
@@ -30,7 +30,7 @@ struct Simple: JSONSerializable, Equatable {
         return JSON(json)
     }
 }
-func ==(lhs: Simple, rhs: Simple) -> Bool {
+public func ==(lhs: Simple, rhs: Simple) -> Bool {
     return (
         (lhs.message == nil ? (rhs.message == nil) : lhs.message! == rhs.message!) &&
         true

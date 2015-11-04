@@ -1,14 +1,14 @@
 import Foundation
 import SwiftyJSON
 
-enum TypedDefinition: JSONSerializable, Equatable {
+public enum TypedDefinition: JSONSerializable, Equatable {
     
     case NoteMember(Note)
     
     case MessageMember(Message)
     case UNKNOWN$([String : JSON])
     
-    static func read(json: JSON) -> TypedDefinition {
+    public static func read(json: JSON) -> TypedDefinition {
         switch json["typeName"].stringValue {
         case "note":
             return .NoteMember(Note.read(json["definition"].jsonValue))
@@ -18,7 +18,7 @@ enum TypedDefinition: JSONSerializable, Equatable {
             return .UNKNOWN$(json.dictionaryValue)
         }
     }
-    func write() -> JSON {
+    public func write() -> JSON {
         switch self {
         case .NoteMember(let member):
             return JSON(["typeName": "note", "definition": member.write()]);
@@ -30,7 +30,7 @@ enum TypedDefinition: JSONSerializable, Equatable {
     }
 }
 
-func ==(lhs: TypedDefinition, rhs: TypedDefinition) -> Bool {
+public func ==(lhs: TypedDefinition, rhs: TypedDefinition) -> Bool {
     switch (lhs, rhs) {
     case (let .NoteMember(lhs), let .NoteMember(rhs)):
         return lhs == rhs

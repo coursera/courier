@@ -1,19 +1,19 @@
 import Foundation
 import SwiftyJSON
 
-struct WithComplexTyperefs: JSONSerializable {
+public struct WithComplexTyperefs: JSONSerializable {
     
-    let `enum`: Fruits?
+    public let `enum`: Fruits?
     
-    let record: Empty?
+    public let record: Empty?
     
-    let map: [String: Empty]?
+    public let map: [String: Empty]?
     
-    let array: [Empty]?
+    public let array: [Empty]?
     
-    let union: UnionTyperef?
+    public let union: UnionTyperef?
     
-    init(
+    public init(
         `enum`: Fruits?,
         record: Empty?,
         map: [String: Empty]?,
@@ -27,7 +27,7 @@ struct WithComplexTyperefs: JSONSerializable {
         self.union = union
     }
     
-    static func read(json: JSON) -> WithComplexTyperefs {
+    public static func read(json: JSON) -> WithComplexTyperefs {
         return WithComplexTyperefs(
             `enum`: json["enum"].string.map { Fruits.read($0) },
             record: json["record"].json.map { Empty.read($0) },
@@ -36,7 +36,7 @@ struct WithComplexTyperefs: JSONSerializable {
             union: json["union"].json.map { UnionTyperef.read($0) }
         )
     }
-    func write() -> JSON {
+    public func write() -> JSON {
         var json: [String : JSON] = [:]
         if let `enum` = self.`enum` {
             json["enum"] = JSON(`enum`.write())

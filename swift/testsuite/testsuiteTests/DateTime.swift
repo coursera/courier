@@ -11,4 +11,4 @@ import Foundation
 /**
 IOS 8601 date-time
 */
-typealias DateTime = String
+public typealias DateTime = String

@@ -9,7 +9,7 @@
 import Foundation
 import SwiftyJSON
 
-enum MagicEightBallAnswer: Equatable {
+public enum MagicEightBallAnswer: Equatable {
     
     case IT_IS_CERTAIN
     
@@ -28,7 +28,7 @@ enum MagicEightBallAnswer: Equatable {
         static let OUTLOOK_NOT_SO_GOOD = "OUTLOOK_NOT_SO_GOOD"
     }
     
-    static func read(symbol: String) -> MagicEightBallAnswer {
+    public static func read(symbol: String) -> MagicEightBallAnswer {
         switch symbol {
         case MagicEightBallAnswer.Strings.IT_IS_CERTAIN:
             return .IT_IS_CERTAIN
@@ -41,7 +41,7 @@ enum MagicEightBallAnswer: Equatable {
         }
     }
     
-    func write() -> String {
+    public func write() -> String {
         switch self {
         case .IT_IS_CERTAIN:
             return MagicEightBallAnswer.Strings.IT_IS_CERTAIN
@@ -61,7 +61,7 @@ enum MagicEightBallAnswer: Equatable {
     */
 }
 
-func ==(lhs: MagicEightBallAnswer, rhs: MagicEightBallAnswer) -> Bool {
+public func ==(lhs: MagicEightBallAnswer, rhs: MagicEightBallAnswer) -> Bool {
     switch (lhs, rhs) {
     case (.IT_IS_CERTAIN, .IT_IS_CERTAIN):
         return true

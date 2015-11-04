@@ -1,24 +1,24 @@
 import Foundation
 import SwiftyJSON
 
-struct WithComplexTypesUnion: JSONSerializable {
+public struct WithComplexTypesUnion: JSONSerializable {
     
-    let union: Union?
+    public let union: Union?
     
-    init(
+    public init(
         union: Union?
     ) {
         self.union = union
     }
     
-    enum Union: JSONSerializable {
+    public enum Union: JSONSerializable {
         case EmptyMember(Empty)
         case FruitsMember(Fruits)
         case ArrayMember([Simple])
         case MapMember([String: Simple])
         case FixedMember(String)
         case UNKNOWN$([String : JSON])
-        static func read(json: JSON) -> Union {
+        public static func read(json: JSON) -> Union {
             let dictionary = json.dictionaryValue
             if let member = dictionary["org.coursera.records.test.Empty"] {
                 return .EmptyMember(Empty.read(member.jsonValue))
@@ -37,7 +37,7 @@ struct WithComplexTypesUnion: JSONSerializable {
             }
             return .UNKNOWN$(dictionary)
         }
-        func write() -> JSON {
+        public func write() -> JSON {
             switch self {
             case .EmptyMember(let member):
                 return JSON(["org.coursera.records.test.Empty": member.write()]);
@@ -55,12 +55,12 @@ struct WithComplexTypesUnion: JSONSerializable {
         }
     }
     
-    static func read(json: JSON) -> WithComplexTypesUnion {
+    public static func read(json: JSON) -> WithComplexTypesUnion {
         return WithComplexTypesUnion(
             union: json["union"].json.map { Union.read($0) }
         )
     }
-    func write() -> JSON {
+    public func write() -> JSON {
         var json: [String : JSON] = [:]
         if let union = self.union {
             json["union"] = union.write()

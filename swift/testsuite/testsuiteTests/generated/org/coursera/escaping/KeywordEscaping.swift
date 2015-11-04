@@ -1,22 +1,22 @@
 import Foundation
 import SwiftyJSON
 
-struct KeywordEscaping: JSONSerializable {
+public struct KeywordEscaping: JSONSerializable {
     
-    let `default`: String?
+    public let `default`: String?
     
-    init(
+    public init(
         `default`: String?
     ) {
         self.`default` = `default`
     }
     
-    static func read(json: JSON) -> KeywordEscaping {
+    public static func read(json: JSON) -> KeywordEscaping {
         return KeywordEscaping(
             `default`: json["default"].string
         )
     }
-    func write() -> JSON {
+    public func write() -> JSON {
         var json: [String : JSON] = [:]
         if let `default` = self.`default` {
             json["default"] = JSON(`default`)

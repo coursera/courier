@@ -10,7 +10,7 @@
   @classAnnotations(union.getTyperefClass().getSchema())
 }
 
-enum @className: JSONSerializable@if (syntax.isEquatable()) {, Equatable} {
+public enum @className: JSONSerializable@if (syntax.isEquatable()) {, Equatable} {
   @for(Member member: union.getMembers()) {
     @{ String unionMemberName = syntax.toUnionMemberName(member.getClassTemplateSpec()) }
     case @(unionMemberName)(@syntax.toType(member.getClassTemplateSpec(), false))
@@ -26,7 +26,7 @@ enum @className: JSONSerializable@if (syntax.isEquatable()) {, Equatable} {
   }
 
   @* TODO: implement
-  var hashValue: Int {
+  public var hashValue: Int {
     switch self {
       @for(Member member: union.getMembers()) {
         @{ String unionMemberName = syntax.toUnionMemberName(member.getClassTemplateSpec()) }

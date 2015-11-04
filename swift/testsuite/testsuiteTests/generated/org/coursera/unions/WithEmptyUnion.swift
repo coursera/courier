@@ -1,23 +1,23 @@
 import Foundation
 import SwiftyJSON
 
-struct WithEmptyUnion: JSONSerializable {
+public struct WithEmptyUnion: JSONSerializable {
     
-    let union: Union?
+    public let union: Union?
     
-    init(
+    public init(
         union: Union?
     ) {
         self.union = union
     }
     
-    enum Union: JSONSerializable {
+    public enum Union: JSONSerializable {
         case UNKNOWN$([String : JSON])
-        static func read(json: JSON) -> Union {
+        public static func read(json: JSON) -> Union {
             let dictionary = json.dictionaryValue
             return .UNKNOWN$(dictionary)
         }
-        func write() -> JSON {
+        public func write() -> JSON {
             switch self {
             case .UNKNOWN$(let dictionary):
                 return JSON(dictionary)
@@ -25,12 +25,12 @@ struct WithEmptyUnion: JSONSerializable {
         }
     }
     
-    static func read(json: JSON) -> WithEmptyUnion {
+    public static func read(json: JSON) -> WithEmptyUnion {
         return WithEmptyUnion(
             union: json["union"].json.map { Union.read($0) }
         )
     }
-    func write() -> JSON {
+    public func write() -> JSON {
         var json: [String : JSON] = [:]
         if let union = self.union {
             json["union"] = union.write()

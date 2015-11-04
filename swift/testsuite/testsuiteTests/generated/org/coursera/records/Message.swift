@@ -1,13 +1,13 @@
 import Foundation
 import SwiftyJSON
 
-struct Message: JSONSerializable, Equatable {
+public struct Message: JSONSerializable, Equatable {
     
-    let title: String?
+    public let title: String?
     
-    let body: String?
+    public let body: String?
     
-    init(
+    public init(
         title: String?,
         body: String?
     ) {
@@ -15,13 +15,13 @@ struct Message: JSONSerializable, Equatable {
         self.body = body
     }
     
-    static func read(json: JSON) -> Message {
+    public static func read(json: JSON) -> Message {
         return Message(
             title: json["title"].string,
             body: json["body"].string
         )
     }
-    func write() -> JSON {
+    public func write() -> JSON {
         var json: [String : JSON] = [:]
         if let title = self.title {
             json["title"] = JSON(title)
@@ -32,7 +32,7 @@ struct Message: JSONSerializable, Equatable {
         return JSON(json)
     }
 }
-func ==(lhs: Message, rhs: Message) -> Bool {
+public func ==(lhs: Message, rhs: Message) -> Bool {
     return (
         (lhs.title == nil ? (rhs.title == nil) : lhs.title! == rhs.title!) &&
         (lhs.body == nil ? (rhs.body == nil) : lhs.body! == rhs.body!) &&

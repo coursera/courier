@@ -12,30 +12,30 @@ import SwiftyJSON
 /**
 A fortune cookie.
 */
-struct FortuneCookie: JSONSerializable, Equatable {
+public struct FortuneCookie: JSONSerializable, Equatable {
     
     /**
     A fortune cookie message.
     */
-    let message: String
+    public let message: String
     
-    let certainty: Float?
+    public let certainty: Float?
     
-    let luckyNumbers: [Int]
+    public let luckyNumbers: [Int]
     
-    let map: [String: Int]
+    public let map: [String: Int]
     
-    let simpleArray: [Simple]?
+    public let simpleArray: [Simple]?
     
-    let simpleMap: [String: Simple]?
+    public let simpleMap: [String: Simple]?
     
-    let simple: Simple
+    public let simple: Simple
     
-    let simpleOpt: Simple?
+    public let simpleOpt: Simple?
     
-    let arrayArray: [[Int]]?
+    public let arrayArray: [[Int]]?
     
-    static func read(json: JSON) -> FortuneCookie {
+    public static func read(json: JSON) -> FortuneCookie {
         return FortuneCookie(
             message: json["message"].stringValue,
             certainty: json["certainty"].float,
@@ -48,7 +48,7 @@ struct FortuneCookie: JSONSerializable, Equatable {
             arrayArray: json["arrayArray"].array.map { $0.map { $0.arrayValue.map { $0.intValue }}})
     }
     
-    func write() -> JSON {
+    public func write() -> JSON {
         var json: [String : JSON] = [:]
         json["message"] = JSON(message)
         if let opt$ = certainty {
@@ -100,7 +100,7 @@ func ==(lhs: Simple, rhs: Simple) -> Bool {
     return lhs.message == rhs.message
 }*/
 
-func ==(lhs: FortuneCookie, rhs: FortuneCookie) -> Bool {
+public func ==(lhs: FortuneCookie, rhs: FortuneCookie) -> Bool {
     return
       lhs.message == rhs.message &&
       (lhs.certainty == nil ? (rhs.certainty == nil) : lhs.certainty! == rhs.certainty!) &&

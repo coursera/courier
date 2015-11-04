@@ -1,23 +1,23 @@
 import Foundation
 import SwiftyJSON
 
-struct WithComplexTypes: JSONSerializable {
+public struct WithComplexTypes: JSONSerializable {
     
-    let record: Simple?
+    public let record: Simple?
     
-    let `enum`: Fruits?
+    public let `enum`: Fruits?
     
-    let union: Union?
+    public let union: Union?
     
-    let array: [Int]?
+    public let array: [Int]?
     
-    let map: [String: Int]?
+    public let map: [String: Int]?
     
-    let complexMap: [String: Simple]?
+    public let complexMap: [String: Simple]?
     
-    let custom: Int?
+    public let custom: Int?
     
-    init(
+    public init(
         record: Simple?,
         `enum`: Fruits?,
         union: Union?,
@@ -35,12 +35,12 @@ struct WithComplexTypes: JSONSerializable {
         self.custom = custom
     }
     
-    enum Union: JSONSerializable {
+    public enum Union: JSONSerializable {
         case IntMember(Int)
         case StringMember(String)
         case SimpleMember(Simple)
         case UNKNOWN$([String : JSON])
-        static func read(json: JSON) -> Union {
+        public static func read(json: JSON) -> Union {
             let dictionary = json.dictionaryValue
             if let member = dictionary["int"] {
                 return .IntMember(member.intValue)
@@ -53,7 +53,7 @@ struct WithComplexTypes: JSONSerializable {
             }
             return .UNKNOWN$(dictionary)
         }
-        func write() -> JSON {
+        public func write() -> JSON {
             switch self {
             case .IntMember(let member):
                 return JSON(["int": JSON(member)]);
@@ -67,7 +67,7 @@ struct WithComplexTypes: JSONSerializable {
         }
     }
     
-    static func read(json: JSON) -> WithComplexTypes {
+    public static func read(json: JSON) -> WithComplexTypes {
         return WithComplexTypes(
             record: json["record"].json.map { Simple.read($0) },
             `enum`: json["enum"].string.map { Fruits.read($0) },
@@ -78,7 +78,7 @@ struct WithComplexTypes: JSONSerializable {
             custom: json["custom"].int
         )
     }
-    func write() -> JSON {
+    public func write() -> JSON {
         var json: [String : JSON] = [:]
         if let record = self.record {
             json["record"] = record.write()

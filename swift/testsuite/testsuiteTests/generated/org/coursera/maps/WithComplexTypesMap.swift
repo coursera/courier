@@ -1,21 +1,21 @@
 import Foundation
 import SwiftyJSON
 
-struct WithComplexTypesMap: JSONSerializable, Equatable {
+public struct WithComplexTypesMap: JSONSerializable, Equatable {
     
-    let empties: [String: Empty]?
+    public let empties: [String: Empty]?
     
-    let fruits: [String: Fruits]?
+    public let fruits: [String: Fruits]?
     
-    let arrays: [String: [Simple]]?
+    public let arrays: [String: [Simple]]?
     
-    let maps: [String: [String: Simple]]?
+    public let maps: [String: [String: Simple]]?
     
-    let unions: [String: WithComplexTypesMapUnion]?
+    public let unions: [String: WithComplexTypesMapUnion]?
     
-    let fixed: [String: String]?
+    public let fixed: [String: String]?
     
-    init(
+    public init(
         empties: [String: Empty]?,
         fruits: [String: Fruits]?,
         arrays: [String: [Simple]]?,
@@ -31,7 +31,7 @@ struct WithComplexTypesMap: JSONSerializable, Equatable {
         self.fixed = fixed
     }
     
-    static func read(json: JSON) -> WithComplexTypesMap {
+    public static func read(json: JSON) -> WithComplexTypesMap {
         return WithComplexTypesMap(
             empties: json["empties"].dictionary.map { $0.mapValues { Empty.read($0.jsonValue) } },
             fruits: json["fruits"].dictionary.map { $0.mapValues { Fruits.read($0.stringValue) } },
@@ -41,7 +41,7 @@ struct WithComplexTypesMap: JSONSerializable, Equatable {
             fixed: json["fixed"].dictionary.map { $0.mapValues { $0.stringValue } }
         )
     }
-    func write() -> JSON {
+    public func write() -> JSON {
         var json: [String : JSON] = [:]
         if let empties = self.empties {
             json["empties"] = JSON(empties.mapValues { $0.write() })
@@ -64,7 +64,7 @@ struct WithComplexTypesMap: JSONSerializable, Equatable {
         return JSON(json)
     }
 }
-func ==(lhs: WithComplexTypesMap, rhs: WithComplexTypesMap) -> Bool {
+public func ==(lhs: WithComplexTypesMap, rhs: WithComplexTypesMap) -> Bool {
     return (
         (lhs.empties == nil ? (rhs.empties == nil) : lhs.empties! == rhs.empties!) &&
         (lhs.fruits == nil ? (rhs.fruits == nil) : lhs.fruits! == rhs.fruits!) &&

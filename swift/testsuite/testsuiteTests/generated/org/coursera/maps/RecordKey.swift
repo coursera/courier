@@ -1,13 +1,13 @@
 import Foundation
 import SwiftyJSON
 
-struct RecordKey: JSONSerializable {
+public struct RecordKey: JSONSerializable {
     
-    let x: Int?
+    public let x: Int?
     
-    let y: Bool?
+    public let y: Bool?
     
-    init(
+    public init(
         x: Int?,
         y: Bool?
     ) {
@@ -15,13 +15,13 @@ struct RecordKey: JSONSerializable {
         self.y = y
     }
     
-    static func read(json: JSON) -> RecordKey {
+    public static func read(json: JSON) -> RecordKey {
         return RecordKey(
             x: json["x"].int,
             y: json["y"].bool
         )
     }
-    func write() -> JSON {
+    public func write() -> JSON {
         var json: [String : JSON] = [:]
         if let x = self.x {
             json["x"] = JSON(x)

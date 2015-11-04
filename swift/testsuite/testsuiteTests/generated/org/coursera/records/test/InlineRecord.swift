@@ -1,22 +1,22 @@
 import Foundation
 import SwiftyJSON
 
-struct InlineRecord: JSONSerializable {
+public struct InlineRecord: JSONSerializable {
     
-    let value: Int?
+    public let value: Int?
     
-    init(
+    public init(
         value: Int?
     ) {
         self.value = value
     }
     
-    static func read(json: JSON) -> InlineRecord {
+    public static func read(json: JSON) -> InlineRecord {
         return InlineRecord(
             value: json["value"].int
         )
     }
-    func write() -> JSON {
+    public func write() -> JSON {
         var json: [String : JSON] = [:]
         if let value = self.value {
             json["value"] = JSON(value)

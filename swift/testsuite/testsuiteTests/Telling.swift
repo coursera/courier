@@ -9,13 +9,13 @@
 import Foundation
 import SwiftyJSON
 
-enum Telling: JSONSerializable, Equatable {
+public enum Telling: JSONSerializable, Equatable {
     case FortuneCookieType(FortuneCookie)
     case MagicEightBallType(MagicEightBall)
     case StringType(String)
     case UNKNOWN$([String : JSON])
     
-    static func read(json: JSON) -> Telling {
+    public static func read(json: JSON) -> Telling {
         let dictionary = json.dictionaryValue
         if let member = dictionary["org.example.FortuneCookie"] {
             return .FortuneCookieType(FortuneCookie.read(member.jsonValue))
@@ -29,7 +29,7 @@ enum Telling: JSONSerializable, Equatable {
         return .UNKNOWN$(dictionary)
     }
     
-    func write() -> JSON {
+    public func write() -> JSON {
         switch self {
         case .FortuneCookieType(let member):
             return JSON(["org.example.FortuneCookie": member.write()])
@@ -58,7 +58,7 @@ enum Telling: JSONSerializable, Equatable {
     */
 }
 
-func ==(lhs: Telling, rhs: Telling) -> Bool {
+public func ==(lhs: Telling, rhs: Telling) -> Bool {
     switch (lhs, rhs) {
     case (let .FortuneCookieType(lhs), let .FortuneCookieType(rhs)):
         return lhs == rhs
