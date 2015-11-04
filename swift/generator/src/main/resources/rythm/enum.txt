@@ -8,7 +8,7 @@
 @{ String className = SwiftSyntax.escapeKeyword(enumeration.getClassName()) }
 
 @classAnnotations(enumeration.getSchema())
-enum @className: Equatable, Hashable {
+public enum @className: Equatable, Hashable {
   @{Map<String, String> symbolDocs = enumeration.getSchema().getSymbolDocs()}
   @{Map<String, Object> props = enumeration.getSchema().getProperties()}
   @{DataMap deprecatedSymbols = (DataMap)props.get("deprecatedSymbols")}
@@ -31,7 +31,7 @@ enum @className: Equatable, Hashable {
     }
   }
 
-  static func read(symbol: String) -> @className {
+  public static func read(symbol: String) -> @className {
     switch symbol {
       @for(String symbol: enumeration.getSchema().getSymbols()) {
         case @(className).Strings.@(SwiftSyntax.escapeKeyword(symbol)):
@@ -42,7 +42,7 @@ enum @className: Equatable, Hashable {
     }
   }
 
-  func write() -> String {
+  public func write() -> String {
     switch self {
       @for(String symbol: enumeration.getSchema().getSymbols()) {
         case .@(SwiftSyntax.escapeKeyword(symbol)):
@@ -53,12 +53,12 @@ enum @className: Equatable, Hashable {
     }
   }
 
-  var hashValue: Int {
+  public var hashValue: Int {
     return write().hashValue
   }
 }
 
-func ==(lhs: @className, rhs: @className) -> Bool {
+public func ==(lhs: @className, rhs: @className) -> Bool {
     switch (lhs, rhs) {
       @if(enumeration.getSchema().getSymbols().size() > 0) {
         case @for(String symbol: enumeration.getSchema().getSymbols()).join(", ") {(.@(SwiftSyntax.escapeKeyword(symbol)), .@(SwiftSyntax.escapeKeyword(symbol)))}:

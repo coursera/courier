@@ -60,61 +60,6 @@ protocol JSONSerializable {
     func write() -> JSON
 }
 
-/* TODO: figure out how to properly hash arrays and maps, the below is no good
-func hashOf<T: Hashable>(array: [T]) -> Int {
-    var hash = 1
-    for e in array {
-        hash = hash * 17 + e.hashValue
-    }
-    return hash
-}
-
-func hashOf<T: Hashable>(array: [T]?) -> Int {
-    if let array = array {
-        return hashOf(array)
-    } else {
-        return 0
-    }
-}
-
-func hashOf<K: Hashable, V: Hashable>(dictionary: [K: V]) -> Int {
-    var hash = 1
-    for (k, v) in dictionary {
-        hash = hash * 17 + k.hashValue
-        hash = hash * 17 + v.hashValue
-    }
-    return hash
-}
-
-func hashOf<K: Hashable, V: Hashable>(dictionary: [K: V]?) -> Int {
-    if let dictionary = dictionary {
-        return hashOf(dictionary)
-    } else {
-        return 0
-    }
-}
-
-func hashOf<E: Hashable>(value: E?) -> Int {
-    if let value = value {
-       return hashOf(value)
-    } else {
-        return 0
-    }
-}
-
-func hashOf<E: Hashable>(value: E) -> Int {
-    return value.hashValue
-}
-
-func hashOf(dictionary: [String: JSON]) -> Int {
-    var hash = 1
-    for (k, v) in dictionary {
-        hash = hash * 17 + k.hashValue
-        hash = hash * 17 + v.object.hashValue
-    }
-    return hash
-}
-*/
 
 // arrays of arrays
 func ==<T: Equatable>(lhs: [[T]], rhs: [[T]]) -> Bool {

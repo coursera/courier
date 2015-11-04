@@ -1,14 +1,14 @@
 import Foundation
 import SwiftyJSON
 
-enum Union: JSONSerializable, Equatable {
+public enum Union: JSONSerializable, Equatable {
     
     case NoteMember(Note)
     
     case MessageMember(Message)
     case UNKNOWN$([String : JSON])
     
-    static func read(json: JSON) -> Union {
+    public static func read(json: JSON) -> Union {
         let dictionary = json.dictionaryValue
         if let member = dictionary["org.coursera.records.Note"] {
             return .NoteMember(Note.read(member.jsonValue))
@@ -18,7 +18,7 @@ enum Union: JSONSerializable, Equatable {
         }
         return .UNKNOWN$(dictionary)
     }
-    func write() -> JSON {
+    public func write() -> JSON {
         switch self {
         case .NoteMember(let member):
             return JSON(["org.coursera.records.Note": member.write()]);
@@ -30,7 +30,7 @@ enum Union: JSONSerializable, Equatable {
     }
 }
 
-func ==(lhs: Union, rhs: Union) -> Bool {
+public func ==(lhs: Union, rhs: Union) -> Bool {
     switch (lhs, rhs) {
     case (let .NoteMember(lhs), let .NoteMember(rhs)):
         return lhs == rhs

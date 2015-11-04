@@ -1,23 +1,23 @@
 import Foundation
 import SwiftyJSON
 
-struct WithPrimitivesArray: JSONSerializable, Equatable {
+public struct WithPrimitivesArray: JSONSerializable, Equatable {
     
-    let ints: [Int]?
+    public let ints: [Int]?
     
-    let longs: [Int]?
+    public let longs: [Int]?
     
-    let floats: [Float]?
+    public let floats: [Float]?
     
-    let doubles: [Double]?
+    public let doubles: [Double]?
     
-    let booleans: [Bool]?
+    public let booleans: [Bool]?
     
-    let strings: [String]?
+    public let strings: [String]?
     
-    let bytes: [String]?
+    public let bytes: [String]?
     
-    init(
+    public init(
         ints: [Int]?,
         longs: [Int]?,
         floats: [Float]?,
@@ -35,7 +35,7 @@ struct WithPrimitivesArray: JSONSerializable, Equatable {
         self.bytes = bytes
     }
     
-    static func read(json: JSON) -> WithPrimitivesArray {
+    public static func read(json: JSON) -> WithPrimitivesArray {
         return WithPrimitivesArray(
             ints: json["ints"].array.map { $0.map { $0.intValue } },
             longs: json["longs"].array.map { $0.map { $0.intValue } },
@@ -46,7 +46,7 @@ struct WithPrimitivesArray: JSONSerializable, Equatable {
             bytes: json["bytes"].array.map { $0.map { $0.stringValue } }
         )
     }
-    func write() -> JSON {
+    public func write() -> JSON {
         var json: [String : JSON] = [:]
         if let ints = self.ints {
             json["ints"] = JSON(ints)
@@ -72,7 +72,7 @@ struct WithPrimitivesArray: JSONSerializable, Equatable {
         return JSON(json)
     }
 }
-func ==(lhs: WithPrimitivesArray, rhs: WithPrimitivesArray) -> Bool {
+public func ==(lhs: WithPrimitivesArray, rhs: WithPrimitivesArray) -> Bool {
     return (
         (lhs.ints == nil ? (rhs.ints == nil) : lhs.ints! == rhs.ints!) &&
         (lhs.longs == nil ? (rhs.longs == nil) : lhs.longs! == rhs.longs!) &&

@@ -1,23 +1,23 @@
 import Foundation
 import SwiftyJSON
 
-struct WithPrimitivesMap: JSONSerializable, Equatable {
+public struct WithPrimitivesMap: JSONSerializable, Equatable {
     
-    let ints: [String: Int]?
+    public let ints: [String: Int]?
     
-    let longs: [String: Int]?
+    public let longs: [String: Int]?
     
-    let floats: [String: Float]?
+    public let floats: [String: Float]?
     
-    let doubles: [String: Double]?
+    public let doubles: [String: Double]?
     
-    let booleans: [String: Bool]?
+    public let booleans: [String: Bool]?
     
-    let strings: [String: String]?
+    public let strings: [String: String]?
     
-    let bytes: [String: String]?
+    public let bytes: [String: String]?
     
-    init(
+    public init(
         ints: [String: Int]?,
         longs: [String: Int]?,
         floats: [String: Float]?,
@@ -35,7 +35,7 @@ struct WithPrimitivesMap: JSONSerializable, Equatable {
         self.bytes = bytes
     }
     
-    static func read(json: JSON) -> WithPrimitivesMap {
+    public static func read(json: JSON) -> WithPrimitivesMap {
         return WithPrimitivesMap(
             ints: json["ints"].dictionary.map { $0.mapValues { $0.intValue } },
             longs: json["longs"].dictionary.map { $0.mapValues { $0.intValue } },
@@ -46,7 +46,7 @@ struct WithPrimitivesMap: JSONSerializable, Equatable {
             bytes: json["bytes"].dictionary.map { $0.mapValues { $0.stringValue } }
         )
     }
-    func write() -> JSON {
+    public func write() -> JSON {
         var json: [String : JSON] = [:]
         if let ints = self.ints {
             json["ints"] = JSON(ints)
@@ -72,7 +72,7 @@ struct WithPrimitivesMap: JSONSerializable, Equatable {
         return JSON(json)
     }
 }
-func ==(lhs: WithPrimitivesMap, rhs: WithPrimitivesMap) -> Bool {
+public func ==(lhs: WithPrimitivesMap, rhs: WithPrimitivesMap) -> Bool {
     return (
         (lhs.ints == nil ? (rhs.ints == nil) : lhs.ints! == rhs.ints!) &&
         (lhs.longs == nil ? (rhs.longs == nil) : lhs.longs! == rhs.longs!) &&

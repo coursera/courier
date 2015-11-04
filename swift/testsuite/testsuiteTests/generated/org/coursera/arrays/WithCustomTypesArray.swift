@@ -1,19 +1,19 @@
 import Foundation
 import SwiftyJSON
 
-struct WithCustomTypesArray: JSONSerializable, Equatable {
+public struct WithCustomTypesArray: JSONSerializable, Equatable {
     
-    let ints: [Int]?
+    public let ints: [Int]?
     
-    let arrays: [[Simple]]?
+    public let arrays: [[Simple]]?
     
-    let maps: [[String: Simple]]?
+    public let maps: [[String: Simple]]?
     
-    let unions: [WithCustomTypesArrayUnion]?
+    public let unions: [WithCustomTypesArrayUnion]?
     
-    let fixed: [String]?
+    public let fixed: [String]?
     
-    init(
+    public init(
         ints: [Int]?,
         arrays: [[Simple]]?,
         maps: [[String: Simple]]?,
@@ -27,7 +27,7 @@ struct WithCustomTypesArray: JSONSerializable, Equatable {
         self.fixed = fixed
     }
     
-    static func read(json: JSON) -> WithCustomTypesArray {
+    public static func read(json: JSON) -> WithCustomTypesArray {
         return WithCustomTypesArray(
             ints: json["ints"].array.map { $0.map { $0.intValue } },
             arrays: json["arrays"].array.map { $0.map { $0.arrayValue.map { Simple.read($0.jsonValue) } } },
@@ -36,7 +36,7 @@ struct WithCustomTypesArray: JSONSerializable, Equatable {
             fixed: json["fixed"].array.map { $0.map { $0.stringValue } }
         )
     }
-    func write() -> JSON {
+    public func write() -> JSON {
         var json: [String : JSON] = [:]
         if let ints = self.ints {
             json["ints"] = JSON(ints)
@@ -56,7 +56,7 @@ struct WithCustomTypesArray: JSONSerializable, Equatable {
         return JSON(json)
     }
 }
-func ==(lhs: WithCustomTypesArray, rhs: WithCustomTypesArray) -> Bool {
+public func ==(lhs: WithCustomTypesArray, rhs: WithCustomTypesArray) -> Bool {
     return (
         (lhs.ints == nil ? (rhs.ints == nil) : lhs.ints! == rhs.ints!) &&
         (lhs.arrays == nil ? (rhs.arrays == nil) : lhs.arrays! == rhs.arrays!) &&

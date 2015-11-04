@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-enum WithCustomTypesArrayUnion: JSONSerializable, Equatable {
+public enum WithCustomTypesArrayUnion: JSONSerializable, Equatable {
     
     case IntMember(Int)
     
@@ -10,7 +10,7 @@ enum WithCustomTypesArrayUnion: JSONSerializable, Equatable {
     case SimpleMember(Simple)
     case UNKNOWN$([String : JSON])
     
-    static func read(json: JSON) -> WithCustomTypesArrayUnion {
+    public static func read(json: JSON) -> WithCustomTypesArrayUnion {
         let dictionary = json.dictionaryValue
         if let member = dictionary["int"] {
             return .IntMember(member.intValue)
@@ -23,7 +23,7 @@ enum WithCustomTypesArrayUnion: JSONSerializable, Equatable {
         }
         return .UNKNOWN$(dictionary)
     }
-    func write() -> JSON {
+    public func write() -> JSON {
         switch self {
         case .IntMember(let member):
             return JSON(["int": JSON(member)]);
@@ -37,7 +37,7 @@ enum WithCustomTypesArrayUnion: JSONSerializable, Equatable {
     }
 }
 
-func ==(lhs: WithCustomTypesArrayUnion, rhs: WithCustomTypesArrayUnion) -> Bool {
+public func ==(lhs: WithCustomTypesArrayUnion, rhs: WithCustomTypesArrayUnion) -> Bool {
     switch (lhs, rhs) {
     case (let .IntMember(lhs), let .IntMember(rhs)):
         return lhs == rhs

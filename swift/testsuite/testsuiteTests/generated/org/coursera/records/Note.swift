@@ -1,22 +1,22 @@
 import Foundation
 import SwiftyJSON
 
-struct Note: JSONSerializable, Equatable {
+public struct Note: JSONSerializable, Equatable {
     
-    let text: String?
+    public let text: String?
     
-    init(
+    public init(
         text: String?
     ) {
         self.text = text
     }
     
-    static func read(json: JSON) -> Note {
+    public static func read(json: JSON) -> Note {
         return Note(
             text: json["text"].string
         )
     }
-    func write() -> JSON {
+    public func write() -> JSON {
         var json: [String : JSON] = [:]
         if let text = self.text {
             json["text"] = JSON(text)
@@ -24,7 +24,7 @@ struct Note: JSONSerializable, Equatable {
         return JSON(json)
     }
 }
-func ==(lhs: Note, rhs: Note) -> Bool {
+public func ==(lhs: Note, rhs: Note) -> Bool {
     return (
         (lhs.text == nil ? (rhs.text == nil) : lhs.text! == rhs.text!) &&
         true

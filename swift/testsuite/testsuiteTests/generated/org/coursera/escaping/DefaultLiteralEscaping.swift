@@ -1,22 +1,22 @@
 import Foundation
 import SwiftyJSON
 
-struct DefaultLiteralEscaping: JSONSerializable {
+public struct DefaultLiteralEscaping: JSONSerializable {
     
-    let stringField: String?
+    public let stringField: String?
     
-    init(
+    public init(
         stringField: String? = "quote: \", backslash: \\ slash: / backspace: \u{8} formfeed: \u{C} newline: \n carrage return: \r tab: \t unicode-of-ascii: B unicode-out-of-range: \u{2713}"
     ) {
         self.stringField = stringField
     }
     
-    static func read(json: JSON) -> DefaultLiteralEscaping {
+    public static func read(json: JSON) -> DefaultLiteralEscaping {
         return DefaultLiteralEscaping(
             stringField: json["stringField"].string
         )
     }
-    func write() -> JSON {
+    public func write() -> JSON {
         var json: [String : JSON] = [:]
         if let stringField = self.stringField {
             json["stringField"] = JSON(stringField)

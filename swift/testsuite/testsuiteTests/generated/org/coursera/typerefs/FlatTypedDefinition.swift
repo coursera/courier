@@ -1,14 +1,14 @@
 import Foundation
 import SwiftyJSON
 
-enum FlatTypedDefinition: JSONSerializable, Equatable {
+public enum FlatTypedDefinition: JSONSerializable, Equatable {
     
     case NoteMember(Note)
     
     case MessageMember(Message)
     case UNKNOWN$([String : JSON])
     
-    static func read(json: JSON) -> FlatTypedDefinition {
+    public static func read(json: JSON) -> FlatTypedDefinition {
         let dictionary = json.dictionaryValue
         switch json["typeName"].stringValue {
         case "note":
@@ -19,7 +19,7 @@ enum FlatTypedDefinition: JSONSerializable, Equatable {
             return .UNKNOWN$(dictionary)
         }
     }
-    func write() -> JSON {
+    public func write() -> JSON {
         switch self {
         case .NoteMember(let member):
             var json = member.write()
@@ -35,7 +35,7 @@ enum FlatTypedDefinition: JSONSerializable, Equatable {
     }
 }
 
-func ==(lhs: FlatTypedDefinition, rhs: FlatTypedDefinition) -> Bool {
+public func ==(lhs: FlatTypedDefinition, rhs: FlatTypedDefinition) -> Bool {
     switch (lhs, rhs) {
     case (let .NoteMember(lhs), let .NoteMember(rhs)):
         return lhs == rhs

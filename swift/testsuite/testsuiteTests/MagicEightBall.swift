@@ -9,23 +9,23 @@
 import Foundation
 import SwiftyJSON
 
-struct MagicEightBall: JSONSerializable, Equatable {
+public struct MagicEightBall: JSONSerializable, Equatable {
     
-    let question: String
-    let answer: MagicEightBallAnswer
+    public let question: String
+    public let answer: MagicEightBallAnswer
     
-    init(question: String, answer: MagicEightBallAnswer) {
+    public init(question: String, answer: MagicEightBallAnswer) {
         self.question = question
         self.answer = answer
     }
     
-    static func read(json: JSON) -> MagicEightBall {
+    public static func read(json: JSON) -> MagicEightBall {
         return MagicEightBall(
             question: json["question"].stringValue,
             answer: MagicEightBallAnswer.read(json["answer"].stringValue))
     }
     
-    func write() -> JSON {
+    public func write() -> JSON {
         var json: [String : JSON] = [:]
         json["question"] = JSON(self.question)
         json["answer"] = JSON(self.answer.write())
@@ -42,7 +42,7 @@ struct MagicEightBall: JSONSerializable, Equatable {
     */
 }
 
-func ==(lhs: MagicEightBall, rhs: MagicEightBall) -> Bool {
+public func ==(lhs: MagicEightBall, rhs: MagicEightBall) -> Bool {
     return
         lhs.question == rhs.question &&
         lhs.answer == rhs.answer

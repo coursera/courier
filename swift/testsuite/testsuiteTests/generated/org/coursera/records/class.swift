@@ -1,22 +1,22 @@
 import Foundation
 import SwiftyJSON
 
-struct `class`: JSONSerializable {
+public struct `class`: JSONSerializable {
     
-    let `private`: String?
+    public let `private`: String?
     
-    init(
+    public init(
         `private`: String?
     ) {
         self.`private` = `private`
     }
     
-    static func read(json: JSON) -> `class` {
+    public static func read(json: JSON) -> `class` {
         return `class`(
             `private`: json["private"].string
         )
     }
-    func write() -> JSON {
+    public func write() -> JSON {
         var json: [String : JSON] = [:]
         if let `private` = self.`private` {
             json["private"] = JSON(`private`)

@@ -1,21 +1,21 @@
 import Foundation
 import SwiftyJSON
 
-struct WithOptionalComplexTypeDefaults: JSONSerializable {
+public struct WithOptionalComplexTypeDefaults: JSONSerializable {
     
-    let record: Simple?
+    public let record: Simple?
     
-    let `enum`: Fruits?
+    public let `enum`: Fruits?
     
-    let union: Union?
+    public let union: Union?
     
-    let array: [Int]?
+    public let array: [Int]?
     
-    let map: [String: Int]?
+    public let map: [String: Int]?
     
-    let custom: Int?
+    public let custom: Int?
     
-    init(
+    public init(
         record: Simple? = Simple(message: "defaults!"),
         `enum`: Fruits? = .APPLE,
         union: Union? = .IntMember(1),
@@ -31,12 +31,12 @@ struct WithOptionalComplexTypeDefaults: JSONSerializable {
         self.custom = custom
     }
     
-    enum Union: JSONSerializable {
+    public enum Union: JSONSerializable {
         case IntMember(Int)
         case StringMember(String)
         case SimpleMember(Simple)
         case UNKNOWN$([String : JSON])
-        static func read(json: JSON) -> Union {
+        public static func read(json: JSON) -> Union {
             let dictionary = json.dictionaryValue
             if let member = dictionary["int"] {
                 return .IntMember(member.intValue)
@@ -49,7 +49,7 @@ struct WithOptionalComplexTypeDefaults: JSONSerializable {
             }
             return .UNKNOWN$(dictionary)
         }
-        func write() -> JSON {
+        public func write() -> JSON {
             switch self {
             case .IntMember(let member):
                 return JSON(["int": JSON(member)]);
@@ -63,7 +63,7 @@ struct WithOptionalComplexTypeDefaults: JSONSerializable {
         }
     }
     
-    static func read(json: JSON) -> WithOptionalComplexTypeDefaults {
+    public static func read(json: JSON) -> WithOptionalComplexTypeDefaults {
         return WithOptionalComplexTypeDefaults(
             record: json["record"].json.map { Simple.read($0) },
             `enum`: json["enum"].string.map { Fruits.read($0) },
@@ -73,7 +73,7 @@ struct WithOptionalComplexTypeDefaults: JSONSerializable {
             custom: json["custom"].int
         )
     }
-    func write() -> JSON {
+    public func write() -> JSON {
         var json: [String : JSON] = [:]
         if let record = self.record {
             json["record"] = record.write()
