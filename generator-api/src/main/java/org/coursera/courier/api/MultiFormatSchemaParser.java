@@ -34,7 +34,7 @@ import java.util.Set;
 
 /**
  * Combines multiple file format specific parsers into a single parser.
- * <p/>
+ *
  * E.g. All ".pdsc" files are delegated to one parser and all ".courier" files to another parser.
  */
 public class MultiFormatSchemaParser {
