@@ -1,0 +1,9 @@
+{
+  "type": "record",
+  "name": "WithOmitField",
+  "namespace": "org.coursera.records.test",
+  "fields": [
+    { "name": "keep", "type": "int" },
+    { "name": "omit", "type": "int", "scala": { "omit": true } }
+  ]
+}

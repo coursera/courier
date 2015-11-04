@@ -16,6 +16,7 @@
 
 package org.coursera.courier.generator.specs
 
+import com.linkedin.data.DataMap
 import com.linkedin.pegasus.generator.spec.RecordTemplateSpec.Field
 import org.coursera.courier.generator.CourierEscaping
 import org.coursera.courier.generator.ScalaEscaping
@@ -151,6 +152,9 @@ case class RecordField(field: Field) extends Deprecatable {
 
   def isOptional = schemaField.getOptional
 
+  def omit: Boolean =
+    scalaProperties.exists(props => Option(props.getBoolean("omit")).exists(_.booleanValue()))
+
   /**
    * Custom property supported by Courier. If "defaultNone" is true for an optional value,
    * it's default value in Scala will be None.
@@ -184,6 +188,10 @@ case class RecordField(field: Field) extends Deprecatable {
   }
   def properties: Map[String, AnyRef] = {
     schemaField.getProperties.asScala.toMap
+  }
+
+  def scalaProperties: Option[DataMap] = {
+    properties.get("scala").collect { case dataMap: DataMap => dataMap }
   }
 
   def scalaDoc = Option(schemaField.getDoc).flatMap(ScaladocEscaping.stringToScaladoc)
