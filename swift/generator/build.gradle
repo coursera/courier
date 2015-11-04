@@ -6,6 +6,7 @@ dependencies {
   compile externalDependency.rythm
   compile externalDependency.pegasusGenerator
   compile externalDependency.courierGeneratorApi
+  compile externalDependency.slf4jSimple
   testCompile externalDependency.junit
 }
 

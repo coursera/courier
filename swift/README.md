@@ -24,18 +24,41 @@ Note that pegasus is used twice, once as the resolverPath (which is where the ge
 for dependencies) and again for the source path that will be searched for all schemas to generate
 data bindings for.
 
-Using the generator with Xcode
-------------------------------
+Getting started with Xcode
+--------------------------
 
-1. Add SwiftyJSON to your Xcode project (https://github.com/SwiftyJSON/SwiftyJSON#integration).
-2. In the root directory of your xcode project, add a directory for pegasus schemas, e.g. `pegasus`.
-3. Also add a directory for the generator jar, e.g. `bin`.
-4. Download the jar from http://repo1.maven.org/maven2/org/coursera/courier/courier-swift-generator/
+Add SwiftyJSON to your Xcode project (https://github.com/SwiftyJSON/SwiftyJSON#integration):
+
+If you use Cocopods, update your Podfile to include SwiftyJSON, e.g.: 
+
+```
+platform :osx, '10.10'
+use_frameworks!
+
+target 'PROJECT_NAME' do
+  pod 'SwiftyJSON', :git => 'https://github.com/SwiftyJSON/SwiftyJSON.git'
+end
+```
+
+Be sure to replace `PROJECT_NAME` with the name of your Xcode project.
+
+And then run:
+
+```
+pod install
+```
+
+Running the generator from within Xcode
+---------------------------------------
+
+1. In the root directory of your xcode project, add a directory for pegasus schemas, e.g. `pegasus`.
+2. Also add a directory for the generator jar, e.g. `bin`.
+3. Download the jar from http://repo1.maven.org/maven2/org/coursera/courier/courier-swift-generator/
 into the directory created for it, e.g. `bin`.
-5. In Xcode, go to `Project` -> `Build Phases`
-6. Add a Run Script Phase before the compile phase, rename it to something like "Courier Data Binding Generator".
-7. Select a target directory to generate swift data bindings into and create it, e.g. `courier`.
-8. Set the script to something like:
+4. In Xcode, go to `Project` -> `Build Phases`
+5. Add a Run Script Phase before the compile phase, rename it to something like "Courier Data Binding Generator".
+6. Select a target directory to generate swift data bindings into and create it, e.g. `courier`.
+7. Set the script to something like:
 
 ```
 GENERATOR_JAR=$SRCROOT/bin/courier-swift-generator-0.14.0.jar
@@ -45,8 +68,8 @@ TARGET_DIR=$SRCROOT/courier # or $DERIVED_FILE_DIR/courier if you prefer
 java -jar $GENERATOR_JAR $TARGET_DIR $SCHEMA_ROOT $SCHEMA_ROOT
 ```
 
-9. Run the Xcode `build` (command-B).
-10. Add all the files generated into the target directory to your Xcode project sources
+8. Run the Xcode `build` (command-B).
+9. Add all the files generated into the target directory to your Xcode project sources
 
 How code is generated
 ---------------------
@@ -244,8 +267,6 @@ the project and run `Test` (command-U).
 
 TODO
 ----
-* [ ] Add a logger to the Fat Jar
-* [ ] Make CourierRuntime.swift available as a Pod?
 * [ ] Implement namespace handling strategy (details below)
 * [ ] Automate distribution of the Fat Jar, and generally make the distribution sane
 * [ ] Publish Fat Jar to remote repos
@@ -255,6 +276,7 @@ TODO
 * [ ] Move Poor Mans Source formatter into shared lib
 * [ ] Move TypedDefinitions class into shared lib
 * [ ] Add typed map key support (requires Equatable/Hashable)
+* [ ] Make CourierRuntime.swift available as a Pod?
 * [ ] Support recursively defined types (RecursivelyDefinedRecord.swift does not compile)
 * [ ] typerefs (anything left to do?)
 * [ ] custom types (what to do?)
