@@ -62,18 +62,12 @@
 		210CE9D91BE9EACF000EC414 /* WithTypedDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 210CE9A11BE9EACF000EC414 /* WithTypedDefinition.swift */; settings = {ASSET_TAGS = (); }; };
 		210CE9DA1BE9EACF000EC414 /* WithTypedKeyMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 210CE9A21BE9EACF000EC414 /* WithTypedKeyMap.swift */; settings = {ASSET_TAGS = (); }; };
 		210CE9DB1BE9EACF000EC414 /* WithUnion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 210CE9A31BE9EACF000EC414 /* WithUnion.swift */; settings = {ASSET_TAGS = (); }; };
-		219182771BDEA34400A4447C /* CourierRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 219182761BDEA34400A4447C /* CourierRuntime.swift */; settings = {ASSET_TAGS = (); }; };
+		210CE9DD1BEA85F8000EC414 /* CourierRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 210CE9DC1BEA85F8000EC414 /* CourierRuntime.swift */; settings = {ASSET_TAGS = (); }; };
 		21BBBBA91BD21904000EA1E5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21BBBBA81BD21904000EA1E5 /* AppDelegate.swift */; };
 		21BBBBAB1BD21904000EA1E5 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21BBBBAA1BD21904000EA1E5 /* ViewController.swift */; };
 		21BBBBAD1BD21904000EA1E5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 21BBBBAC1BD21904000EA1E5 /* Assets.xcassets */; };
 		21BBBBB01BD21904000EA1E5 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 21BBBBAE1BD21904000EA1E5 /* Main.storyboard */; };
-		21BBBBBB1BD21905000EA1E5 /* testsuiteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21BBBBBA1BD21905000EA1E5 /* testsuiteTests.swift */; };
-		21F91CD01BD21A88005CC950 /* Fortune.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21F91CCF1BD21A88005CC950 /* Fortune.swift */; settings = {ASSET_TAGS = (); }; };
-		21F91CD21BD21A9C005CC950 /* Telling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21F91CD11BD21A9C005CC950 /* Telling.swift */; settings = {ASSET_TAGS = (); }; };
-		21F91CD41BD21AB0005CC950 /* FortuneCookie.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21F91CD31BD21AB0005CC950 /* FortuneCookie.swift */; settings = {ASSET_TAGS = (); }; };
-		21F91CD61BD21ACB005CC950 /* MagicEightBall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21F91CD51BD21ACB005CC950 /* MagicEightBall.swift */; settings = {ASSET_TAGS = (); }; };
-		21F91CD81BD21ADE005CC950 /* MagicEightBallAnswer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21F91CD71BD21ADE005CC950 /* MagicEightBallAnswer.swift */; settings = {ASSET_TAGS = (); }; };
-		21F91CDA1BD21B03005CC950 /* DateTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21F91CD91BD21B03005CC950 /* DateTime.swift */; settings = {ASSET_TAGS = (); }; };
+		21BBBBBB1BD21905000EA1E5 /* GeneratedCodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21BBBBBA1BD21905000EA1E5 /* GeneratedCodeTests.swift */; };
 		F6C1E81A442264987CA2493B /* Pods_testsuite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E0CB5A114018337F6842367 /* Pods_testsuite.framework */; };
 /* End PBXBuildFile section */
 
@@ -144,7 +138,7 @@
 		210CE9A11BE9EACF000EC414 /* WithTypedDefinition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = WithTypedDefinition.swift; path = generated/WithTypedDefinition.swift; sourceTree = "<group>"; };
 		210CE9A21BE9EACF000EC414 /* WithTypedKeyMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = WithTypedKeyMap.swift; path = generated/WithTypedKeyMap.swift; sourceTree = "<group>"; };
 		210CE9A31BE9EACF000EC414 /* WithUnion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = WithUnion.swift; path = generated/WithUnion.swift; sourceTree = "<group>"; };
-		219182761BDEA34400A4447C /* CourierRuntime.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CourierRuntime.swift; sourceTree = "<group>"; };
+		210CE9DC1BEA85F8000EC414 /* CourierRuntime.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CourierRuntime.swift; sourceTree = "<group>"; };
 		21BBBBA51BD21904000EA1E5 /* testsuite.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = testsuite.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		21BBBBA81BD21904000EA1E5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		21BBBBAA1BD21904000EA1E5 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -152,14 +146,8 @@
 		21BBBBAF1BD21904000EA1E5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		21BBBBB11BD21904000EA1E5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		21BBBBB61BD21905000EA1E5 /* testsuiteTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = testsuiteTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		21BBBBBA1BD21905000EA1E5 /* testsuiteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = testsuiteTests.swift; sourceTree = "<group>"; };
+		21BBBBBA1BD21905000EA1E5 /* GeneratedCodeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratedCodeTests.swift; sourceTree = "<group>"; };
 		21BBBBBC1BD21905000EA1E5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		21F91CCF1BD21A88005CC950 /* Fortune.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Fortune.swift; sourceTree = "<group>"; };
-		21F91CD11BD21A9C005CC950 /* Telling.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Telling.swift; sourceTree = "<group>"; };
-		21F91CD31BD21AB0005CC950 /* FortuneCookie.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FortuneCookie.swift; sourceTree = "<group>"; };
-		21F91CD51BD21ACB005CC950 /* MagicEightBall.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MagicEightBall.swift; sourceTree = "<group>"; };
-		21F91CD71BD21ADE005CC950 /* MagicEightBallAnswer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MagicEightBallAnswer.swift; sourceTree = "<group>"; };
-		21F91CD91BD21B03005CC950 /* DateTime.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateTime.swift; sourceTree = "<group>"; };
 		A9B9DDD53706A9AF2DDDB37E /* Pods-testsuite.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-testsuite.debug.xcconfig"; path = "Pods/Target Support Files/Pods-testsuite/Pods-testsuite.debug.xcconfig"; sourceTree = "<group>"; };
 		F83F2FBDFF068FC1D655B4D7 /* Pods-testsuite.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-testsuite.release.xcconfig"; path = "Pods/Target Support Files/Pods-testsuite/Pods-testsuite.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -243,20 +231,17 @@
 				210CE9A31BE9EACF000EC414 /* WithUnion.swift */,
 			);
 			name = generated;
-			sourceTree = "<group>";
+			path = testsuiteTests;
+			sourceTree = SOURCE_ROOT;
 		};
-		211028841BDAE51400DB6F58 /* reference */ = {
+		211028841BDAE51400DB6F58 /* runtime */ = {
 			isa = PBXGroup;
 			children = (
-				21F91CCF1BD21A88005CC950 /* Fortune.swift */,
-				21F91CD11BD21A9C005CC950 /* Telling.swift */,
-				21F91CD31BD21AB0005CC950 /* FortuneCookie.swift */,
-				21F91CD51BD21ACB005CC950 /* MagicEightBall.swift */,
-				21F91CD71BD21ADE005CC950 /* MagicEightBallAnswer.swift */,
-				21F91CD91BD21B03005CC950 /* DateTime.swift */,
+				210CE9DC1BEA85F8000EC414 /* CourierRuntime.swift */,
 			);
-			name = reference;
-			sourceTree = "<group>";
+			name = runtime;
+			path = testsuiteTests;
+			sourceTree = SOURCE_ROOT;
 		};
 		21BBBB9C1BD21904000EA1E5 = {
 			isa = PBXGroup;
@@ -281,6 +266,8 @@
 		21BBBBA71BD21904000EA1E5 /* testsuite */ = {
 			isa = PBXGroup;
 			children = (
+				211028831BDAE4FA00DB6F58 /* generated */,
+				211028841BDAE51400DB6F58 /* runtime */,
 				21BBBBA81BD21904000EA1E5 /* AppDelegate.swift */,
 				21BBBBAA1BD21904000EA1E5 /* ViewController.swift */,
 				21BBBBAC1BD21904000EA1E5 /* Assets.xcassets */,
@@ -293,11 +280,8 @@
 		21BBBBB91BD21905000EA1E5 /* testsuiteTests */ = {
 			isa = PBXGroup;
 			children = (
-				211028831BDAE4FA00DB6F58 /* generated */,
-				21BBBBBA1BD21905000EA1E5 /* testsuiteTests.swift */,
+				21BBBBBA1BD21905000EA1E5 /* GeneratedCodeTests.swift */,
 				21BBBBBC1BD21905000EA1E5 /* Info.plist */,
-				211028841BDAE51400DB6F58 /* reference */,
-				219182761BDEA34400A4447C /* CourierRuntime.swift */,
 			);
 			path = testsuiteTests;
 			sourceTree = "<group>";
@@ -479,12 +463,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				210CE9CC1BE9EACF000EC414 /* WithOptionalPrimitives.swift in Sources */,
-				21F91CD61BD21ACB005CC950 /* MagicEightBall.swift in Sources */,
 				210CE9AC1BE9EACF000EC414 /* InlineRecord.swift in Sources */,
 				210CE9DA1BE9EACF000EC414 /* WithTypedKeyMap.swift in Sources */,
 				210CE9D31BE9EACF000EC414 /* WithPrimitivesArray.swift in Sources */,
-				21F91CD21BD21A9C005CC950 /* Telling.swift in Sources */,
-				21BBBBBB1BD21905000EA1E5 /* testsuiteTests.swift in Sources */,
+				21BBBBBB1BD21905000EA1E5 /* GeneratedCodeTests.swift in Sources */,
 				210CE9A61BE9EACF000EC414 /* DeprecatedRecord.swift in Sources */,
 				210CE9AD1BE9EACF000EC414 /* KeywordEscaping.swift in Sources */,
 				210CE9BF1BE9EACF000EC414 /* WithCustomTypesArrayUnion.swift in Sources */,
@@ -498,6 +480,7 @@
 				210CE9C41BE9EACF000EC414 /* WithFlatTypedDefinition.swift in Sources */,
 				210CE9D61BE9EACF000EC414 /* WithPrimitiveTyperefs.swift in Sources */,
 				210CE9BB1BE9EACF000EC414 /* WithComplexTypesMapUnion.swift in Sources */,
+				210CE9DD1BEA85F8000EC414 /* CourierRuntime.swift in Sources */,
 				210CE9AA1BE9EACF000EC414 /* Fruits.swift in Sources */,
 				210CE9A71BE9EACF000EC414 /* Empty.swift in Sources */,
 				210CE9B21BE9EACF000EC414 /* ReservedClassFieldEscaping.swift in Sources */,
@@ -506,10 +489,8 @@
 				210CE9D91BE9EACF000EC414 /* WithTypedDefinition.swift in Sources */,
 				210CE9D01BE9EACF000EC414 /* WithPrimitiveCustomTypesUnion.swift in Sources */,
 				210CE9BE1BE9EACF000EC414 /* WithCustomTypesArray.swift in Sources */,
-				219182771BDEA34400A4447C /* CourierRuntime.swift in Sources */,
 				210CE9B01BE9EACF000EC414 /* RecordKey.swift in Sources */,
 				210CE9CF1BE9EACF000EC414 /* WithPrimitiveCustomTypes.swift in Sources */,
-				21F91CD01BD21A88005CC950 /* Fortune.swift in Sources */,
 				210CE9AB1BE9EACF000EC414 /* InlineOptionalRecord.swift in Sources */,
 				210CE9D41BE9EACF000EC414 /* WithPrimitivesMap.swift in Sources */,
 				210CE9A91BE9EACF000EC414 /* FlatTypedDefinition.swift in Sources */,
@@ -529,7 +510,6 @@
 				210CE9C71BE9EACF000EC414 /* WithOptionalComplexTypes.swift in Sources */,
 				210CE9C81BE9EACF000EC414 /* WithOptionalComplexTypesDefaultNone.swift in Sources */,
 				210CE9AF1BE9EACF000EC414 /* Note.swift in Sources */,
-				21F91CD81BD21ADE005CC950 /* MagicEightBallAnswer.swift in Sources */,
 				210CE9A51BE9EACF000EC414 /* DefaultLiteralEscaping.swift in Sources */,
 				210CE9CA1BE9EACF000EC414 /* WithOptionalPrimitiveDefaultNone.swift in Sources */,
 				210CE9C51BE9EACF000EC414 /* WithInlineRecord.swift in Sources */,
@@ -539,8 +519,6 @@
 				210CE9D51BE9EACF000EC414 /* WithPrimitivesUnion.swift in Sources */,
 				210CE9B51BE9EACF000EC414 /* Union.swift in Sources */,
 				210CE9C01BE9EACF000EC414 /* WithCustomTypesMap.swift in Sources */,
-				21F91CDA1BD21B03005CC950 /* DateTime.swift in Sources */,
-				21F91CD41BD21AB0005CC950 /* FortuneCookie.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
