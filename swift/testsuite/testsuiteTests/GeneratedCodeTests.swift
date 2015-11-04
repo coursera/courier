@@ -8,43 +8,14 @@
 
 import XCTest
 import SwiftyJSON
+import Foundation
 
 @testable import testsuite
 
-class testsuiteTests: XCTestCase {
-    let jsonDir = "/Users/jbetz/base/coursera/courier/swift/generator/src/test/resources/test/records/"
+class GeneratedCodeTests: XCTestCase {
+    // TODO(jbetz): Locate a xcode variable for the project root, use that instead of the /base/coursera path here.
+    let jsonDir = NSProcessInfo.processInfo().environment["HOME"]! + "/base/coursera/courier/swift/generator/src/test/resources/test/records/"
     
-    // Reference tests:
-    func testSimple() {
-        let json = try! jsonFile("Simple.json");
-        let deserialized = Simple.read(json);
-        let serialized = deserialized.write();
-        
-        XCTAssertEqual(json, serialized)
-    }
-    
-    func testFortuneCookie() {
-        let json = try! jsonFile("FortuneCookie.json");
-        let deserialized = FortuneCookie.read(json);
-        let serialized = deserialized.write();
-        assertSameJsObject(json.rawString()!, actual: serialized.rawString()!)
-    }
-    
-    func testFortune_MagicEightBall() {
-        let json = try! jsonFile("Fortune_MagicEightBall.json");
-        let deserialized = Fortune.read(json);
-        let serialized = deserialized.write();
-        assertSameJsObject(json.rawString()!, actual: serialized.rawString()!)
-    }
-    
-    func testFortune_FortuneCookie() {
-        let json = try! jsonFile("Fortune_FortuneCookie.json");
-        let deserialized = Fortune.read(json);
-        let serialized = deserialized.write();
-        assertSameJsObject(json.rawString()!, actual: serialized.rawString()!)
-    }
-    
-    // Testsuite tests:
     func testWithComplexTypesMap() {
         let json = try! jsonFile("WithComplexTypesMap.json");
         let deserialized = WithComplexTypesMap.read(json);
@@ -214,6 +185,7 @@ class testsuiteTests: XCTestCase {
     }
     
     func jsonFile(name: String) throws -> JSON {
+        print("directory: " + jsonDir)
         let jsonString = try! String(contentsOfFile: jsonDir + name)
         let dataFromString = jsonString.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)!
         return JSON(data: dataFromString)

@@ -1,12 +1,33 @@
 Courier Data Binding Generator for Swift
 ========================================
 
+Installation
+------------
+
+Download the latest jar from maven central:
+
+http://repo1.maven.org/maven2/org/coursera/courier/courier-swift-generator/
+
 Running the generator from the command line
 -------------------------------------------
 
 ```
-java -jar generator/build/libs/courier-swift-generator-0.12.3.jar targetPath resolverPath sourcePath1[:sourcePath2]+
+java -jar generator/build/libs/courier-swift-generator-<version>.jar targetPath resolverPath sourcePath1[:sourcePath2]+
 ```
+
+For example, if you have `.pdsc` or `.courier` files in a `pegasus` directory, and wish to generate 
+`.swift` files into a `swift` directory, run:
+
+```
+java -jar generator/build/libs/courier-swift-generator-<version>.jar swift pegasus pegasus
+```
+
+Note that pegasus is used twice, once as the resolverPath (which is where the generator will search
+for dependencies) and again for the source path that will be searched for all schemas to generate
+data bindings for.
+
+Running the generator from Xcode
+--------------------------------
 
 How code is generated
 ---------------------
@@ -168,8 +189,11 @@ TODO: implement
 Runtime library
 ---------------
 
-All generated swift bindings depend on a `CourierRuntime.swift` class. This class primarily
-extends SwiftyJSON and Foundation classes that are needed to generate minimal, clean source code.
+All generated swift bindings depend on a `CourierRuntime.swift` class. This class builds on
+SwiftyJSON and Foundation classes to define minimal set of functions used by the generator to
+produce clean source code.
+
+This 
 
 Building from source
 --------------------
@@ -179,6 +203,25 @@ cd swift
 ./gradlew jar
 
 ``
+
+Publishing to Maven Central
+---------------------------
+
+A "fat jar" called `courier-swift-generator-<version>.jar` is published to maven central.
+
+This jar is published by running:
+
+```
+./gradlew uploadArchives
+```
+
+Testing
+-------
+
+1. Unit tests that are run by executing: `./gradlew test`.
+2. Swift code is compiled and tested for correctness by the `testsuite` Xcode project.  To test, open
+the project and run `Test` (command-U).
+
 
 TODO
 ----
