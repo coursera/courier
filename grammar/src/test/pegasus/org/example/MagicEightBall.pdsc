@@ -1,0 +1,15 @@
+{
+  "type": "record",
+  "name": "MagicEightBall",
+  "namespace": "org.example",
+  "fields": [
+    {
+      "name": "question",
+      "type": "string"
+    },
+    {
+      "name": "answer",
+      "type": "MagicEightBallAnswer"
+    }
+  ]
+}

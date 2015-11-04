@@ -1,0 +1,11 @@
+{
+  "name": "WithCourierFile",
+  "type": "record",
+  "namespace": "org.coursera.records.test",
+  "fields": [
+    {
+      "name": "courierFile",
+      "type": "org.coursera.records.CourierFile"
+    }
+  ]
+}

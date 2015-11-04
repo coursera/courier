@@ -18,12 +18,15 @@ How code is generated
 E.g.:
 
 ```swift
-struct Fortune {
+struct Fortune: JSONSerializable {
     /**
     The fortune telling.
     */
     let telling: Telling
     let createdAt: DateTime
+
+    static func read(json: JSON) -> Fortune
+    func write() -> JSON
 }
 ```
 
@@ -61,10 +64,13 @@ For example, given a union "AnswerFormat" with member types "TextEntry" and "Mul
 Java class signatures will be:
 
 ```swift
-enum AnswerFormat {
+enum AnswerFormat: JSONSerializable {
     case TextEntryMember(TextEntry)
     case MultipleChoiceMember(MultipleChoice)
     case UNKNOWN$
+
+    static func read(json: JSON) -> Fortune
+    func write() -> JSON
 }
 ```
 
@@ -77,9 +83,12 @@ structs are generated instead of classes.
 Equatable/Hashable
 ------------------
 
-TODO: implement
+TODO: This feature is at risk due to http://stackoverflow.com/questions/33377761/swift-equality-operator-on-nested-arrays.
+We may revisit the issue if it is urgently needed. In the meantime we'll continue to discuss the limitation with any
+Swift experts we can to see if there is a workaround.  Worst case we can define == for various combinations of nested collections up to
+some reasonable depth.
 
-Equatable and Hashable are implemented for "structural" equality.
+Equatable and Hashable would check for "structural" equality.
 
 For example:
 

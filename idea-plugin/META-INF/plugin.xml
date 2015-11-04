@@ -1,0 +1,53 @@
+<idea-plugin version="2">
+  <id>org.coursera.courier.plugin</id>
+  <name>Courier schema language</name>
+  <version>1.2.0</version>
+  <vendor url="https://groups.google.com/forum/#!forum/courier">Courier OSS Project</vendor>
+
+  <description><![CDATA[
+      Courier Schema Language plugin.<br>
+      <em>See github.com/coursera/courier</em>
+    ]]></description>
+
+  <change-notes><![CDATA[
+    ]]>
+  </change-notes>
+
+  <!-- please see http://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
+  <idea-version since-build="131"/>
+
+  <depends>com.intellij.modules.lang</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <!-- Add your extensions here -->
+    <fileTypeFactory implementation="org.coursera.courier.CourierFileTypeFactory"/>
+    <annotator language="Courier" implementationClass="org.coursera.courier.CourierAnnotator"/>
+    <colorSettingsPage implementation="org.coursera.courier.CourierColorSettingsPage"/>
+    <lang.parserDefinition language="Courier" implementationClass="org.coursera.courier.CourierParserDefinition"/>
+    <lang.syntaxHighlighterFactory key="Courier" implementationClass="org.coursera.courier.CourierSyntaxHighlighterFactory"/>
+    <lang.commenter language="Courier" implementationClass="org.coursera.courier.CourierCommenter"/>
+    <lang.documentationProvider language="Courier" implementationClass="org.coursera.courier.CourierCodeDocumentationProvider"/>
+    <lang.braceMatcher language="Courier" implementationClass="org.coursera.courier.CourierBraceMatcher"/>
+    <!-- TODO: review before reactivating -->
+    <!-- quoteHandler fileType="Courier" className="org.coursera.courier.CourierQuoteHandler" /-->
+
+    <lang.formatter language="Courier" implementationClass="org.coursera.courier.CourierFormattingModelBuilder"/>
+    <codeStyleSettingsProvider implementation="org.coursera.courier.CourierCodeStyleSettingsProvider" />
+    <langCodeStyleSettingsProvider implementation="org.coursera.courier.CourierLanguageCodeStyleSettingsProvider"/>
+    <commentCompleteHandler implementation="org.coursera.courier.CourierCommentCompleteHandler" />
+    <lang.ast.factory language="Courier" implementationClass="org.coursera.courier.CourierASTFactory" />
+  </extensions>
+
+  <application-components>
+    <!-- Add your application components here -->
+  </application-components>
+
+  <project-components>
+    <!-- Add your project components here -->
+  </project-components>
+
+  <actions>
+    <!-- Add your actions here -->
+  </actions>
+
+</idea-plugin>

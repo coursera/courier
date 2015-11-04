@@ -1,0 +1,5 @@
+namespace org.example
+
+record TyperefExample {
+  time: org.example.common.Timestamp = 1430849546000
+}

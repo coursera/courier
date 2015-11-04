@@ -1,0 +1,7 @@
+namespace org.coursera.records
+
+record CourierFile {
+  title: string
+  body: string? = nil
+  message: org.coursera.records.test.Message? = nil
+}

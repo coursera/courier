@@ -1,0 +1,12 @@
+{
+  "name": "TyperefExample",
+  "namespace": "org.example",
+  "type": "record",
+  "fields": [
+    {
+      "name": "time",
+      "type": "org.example.common.Timestamp",
+      "default": 1430849546000
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "name": "Timestamp",
+  "namespace": "org.example.common",
+  "type": "typeref",
+  "ref": "long",
+  "doc": "A unix timestamp."
+}

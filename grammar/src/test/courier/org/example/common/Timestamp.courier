@@ -1,0 +1,6 @@
+namespace org.example.common
+
+/**
+ * A unix timestamp.
+ */
+typeref Timestamp = long

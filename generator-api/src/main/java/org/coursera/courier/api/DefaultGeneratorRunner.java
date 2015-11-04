@@ -44,8 +44,9 @@ public class DefaultGeneratorRunner implements GeneratorRunner {
       PegasusCodeGenerator generator,
       GeneratorRunnerOptions options) throws IOException {
 
-    // TODO: make schema parser pluggable so we can integrate .courier file format
-    DataSchemaParser schemaParser = new DataSchemaParser(options.getResolverPath());
+    MultiFormatSchemaParser schemaParser =
+        new MultiFormatSchemaParser(options.getResolverPath(), options.getParsersForFileFormats());
+
     CourierTemplateSpecGenerator specGenerator = new CourierTemplateSpecGenerator(
         schemaParser.getSchemaResolver(),
         options.getDataNamespace(),
@@ -148,7 +149,8 @@ public class DefaultGeneratorRunner implements GeneratorRunner {
    * method should no longer be needed.
    */
   private static Set<ClassTemplateSpec> findTopLevelTypes(ClassTemplateSpec spec) {
-    Set<ClassTemplateSpec> specs = new HashSet<ClassTemplateSpec>(ClassTemplateSpecs.allReferencedTypes(spec));
+    Set<ClassTemplateSpec> specs =
+        new HashSet<ClassTemplateSpec>(ClassTemplateSpecs.allReferencedTypes(spec));
     specs.add(spec);
 
     Iterator<ClassTemplateSpec> iterator = specs.iterator();
