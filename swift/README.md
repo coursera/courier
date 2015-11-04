@@ -1,16 +1,14 @@
 Courier Data Binding Generator for Swift
 ========================================
 
-Installation
-------------
+Running the generator from the command line
+-------------------------------------------
 
 Download the latest jar from maven central:
 
 http://repo1.maven.org/maven2/org/coursera/courier/courier-swift-generator/
 
-Running the generator from the command line
--------------------------------------------
-
+Then run the generator using:
 ```
 java -jar generator/build/libs/courier-swift-generator-<version>.jar targetPath resolverPath sourcePath1[:sourcePath2]+
 ```
@@ -26,8 +24,29 @@ Note that pegasus is used twice, once as the resolverPath (which is where the ge
 for dependencies) and again for the source path that will be searched for all schemas to generate
 data bindings for.
 
-Running the generator from Xcode
---------------------------------
+Using the generator with Xcode
+------------------------------
+
+1. Add SwiftyJSON to your Xcode project (https://github.com/SwiftyJSON/SwiftyJSON#integration).
+2. In the root directory of your xcode project, add a directory for pegasus schemas, e.g. `pegasus`.
+3. Also add a directory for the generator jar, e.g. `bin`.
+4. Download the jar from http://repo1.maven.org/maven2/org/coursera/courier/courier-swift-generator/
+into the directory created for it, e.g. `bin`.
+5. In Xcode, go to `Project` -> `Build Phases`
+6. Add a Run Script Phase before the compile phase, rename it to something like "Courier Data Binding Generator".
+7. Select a target directory to generate swift data bindings into and create it, e.g. `courier`.
+8. Set the script to something like:
+
+```
+GENERATOR_JAR=$SRCROOT/bin/courier-swift-generator-0.14.0.jar
+SCHEMA_ROOT=$SRCROOT/pegasus
+TARGET_DIR=$SRCROOT/courier # or $DERIVED_FILE_DIR/courier if you prefer
+
+java -jar $GENERATOR_JAR $TARGET_DIR $SCHEMA_ROOT $SCHEMA_ROOT
+```
+
+9. Run the Xcode `build` (command-B).
+10. Add all the files generated into the target directory to your Xcode project sources
 
 How code is generated
 ---------------------
@@ -225,11 +244,8 @@ the project and run `Test` (command-U).
 
 TODO
 ----
-* [x] Flesh out unit tests
-* [x] Disable Equatable by default, only enable for tests
-* [x] Fix default literal escaping (problem cases are somewhat pathological)
-* [x] consolidate union/typed/flatTyped into a single rythm file
-* [x] Add deprecated annotations to enum symbols
+* [ ] Add a logger to the Fat Jar
+* [ ] Make CourierRuntime.swift available as a Pod?
 * [ ] Implement namespace handling strategy (details below)
 * [ ] Automate distribution of the Fat Jar, and generally make the distribution sane
 * [ ] Publish Fat Jar to remote repos

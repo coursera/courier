@@ -21,6 +21,8 @@ import com.linkedin.pegasus.generator.spec.ClassTemplateSpec;
 import com.linkedin.pegasus.generator.spec.EnumTemplateSpec;
 import com.linkedin.pegasus.generator.spec.RecordTemplateSpec;
 import com.linkedin.pegasus.generator.spec.UnionTemplateSpec;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.coursera.courier.swift.SwiftProperties;
 import org.coursera.courier.swift.SwiftSyntax;
 import org.coursera.courier.swift.PoorMansSwiftSourceFormatter;
@@ -34,6 +36,10 @@ import org.coursera.courier.api.PegasusCodeGenerator;
 import org.rythmengine.RythmEngine;
 import org.rythmengine.resource.ClasspathResourceLoader;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -57,6 +63,9 @@ public class SwiftGenerator implements PegasusCodeGenerator {
         new GeneratorRunnerOptions(targetPath, sourcePaths, resolverPath);
 
     new DefaultGeneratorRunner().run(new SwiftGenerator(), options);
+
+    InputStream runtime = ClassLoader.getSystemResourceAsStream("runtime/CourierRuntime.swift");
+    IOUtils.copy(runtime, new FileOutputStream(new File(targetPath, "CourierRuntime.swift")));
   }
 
   public SwiftGenerator() {
