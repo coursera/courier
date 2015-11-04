@@ -11,7 +11,8 @@ project.ext.externalDependency = [
     'rythm': 'org.rythmengine:rythm-engine:1.0.1',
     'pegasusGenerator': 'com.linkedin.pegasus:generator:2.6.0',
     'courierGeneratorApi': "org.coursera.courier:courier-generator-api:$courierVersion",
-    'junit': 'junit:junit:4.12'
+    'junit': 'junit:junit:4.12',
+    'slf4jSimple': 'org.slf4j:slf4j-simple:1.7.12'
 ]
 
 allprojects {
