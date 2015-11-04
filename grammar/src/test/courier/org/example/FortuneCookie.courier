@@ -1,0 +1,11 @@
+namespace org.example
+
+/**
+ * A fortune cookie.
+ */
+record FortuneCookie {
+  /** A fortune cookie message. */
+  message: string
+  certainty: float?
+  luckyNumbers: array[int]
+}

@@ -1,0 +1,110 @@
+{
+  parserClass="org.coursera.courier.parser.CourierParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="Courier"
+  psiImplClassSuffix="Impl"
+  psiPackage="org.coursera.courier.psi"
+  psiImplPackage="org.coursera.courier.psi.impl"
+
+  elementTypeHolderClass="org.coursera.courier.psi.CourierTypes"
+  elementTypeClass="org.coursera.courier.psi.CourierElementType"
+  tokenTypeClass="org.coursera.courier.psi.CourierTokenType"
+}
+
+document ::= topLevel
+
+topLevel ::= namespaceDeclaration namedTypeDeclaration
+
+namespaceDeclaration ::= NAMESPACE_KEYWORD namespace
+
+namespace ::= IDENTIFIER (DOT IDENTIFIER)*
+
+typeReference ::= fullyQualifiedName | simpleName
+
+typeNameDeclaration ::= simpleName
+
+simpleName ::= IDENTIFIER
+
+fullyQualifiedName ::= IDENTIFIER (DOT IDENTIFIER)+
+
+typeDeclaration ::= namedTypeDeclaration | anonymousTypeDeclaration
+
+namedTypeDeclaration ::= annotations? (recordDeclaration | enumDeclaration | typerefDeclaration | fixedDeclaration)
+
+anonymousTypeDeclaration ::= unionDeclaration | arrayDeclaration | mapDeclaration
+
+typeAssignment ::= typeReference | typeDeclaration
+
+annotations ::= schemadoc? propDeclaration*
+
+schemadoc ::= SCHEMADOC_START SCHEMADOC_CONTENT* SCHEMADOC_END {pin=1}
+
+propDeclaration ::= propNameDeclaration propJsonValue?
+
+propNameDeclaration ::= AT propName
+
+propName ::= IDENTIFIER
+
+propJsonValue ::= OPEN_PAREN jsonValue CLOSE_PAREN {pin=1}
+
+recordDeclaration ::= RECORD_KEYWORD typeNameDeclaration fieldSelection {pin=1}
+
+enumDeclaration ::= ENUM_KEYWORD typeNameDeclaration enumSymbolDeclarations {pin=1}
+
+enumSymbolDeclarations ::= OPEN_BRACE enumSymbolDeclaration* CLOSE_BRACE {pin=1}
+
+enumSymbolDeclaration ::= annotations? enumSymbol
+
+enumSymbol ::= IDENTIFIER
+
+typerefDeclaration ::= TYPEREF_KEYWORD typeNameDeclaration EQUALS typeAssignment {pin=1}
+
+fixedDeclaration ::= FIXED_KEYWORD typeNameDeclaration NUMBER_LITERAL {pin=1} // TODO(jbetz): force to be non-negative number
+
+unionDeclaration ::= UNION_KEYWORD unionTypeAssignments {pin=1}
+
+unionTypeAssignments ::= OPEN_BRACKET typeAssignment* CLOSE_BRACKET {pin=1}
+
+arrayDeclaration ::= ARRAY_KEYWORD arrayTypeAssignments {pin=1}
+
+arrayTypeAssignments ::= OPEN_BRACKET typeAssignment CLOSE_BRACKET {pin=1}
+
+mapDeclaration ::= MAP_KEYWORD mapTypeAssignments {pin=1}
+
+mapTypeAssignments ::= OPEN_BRACKET typeAssignment typeAssignment CLOSE_BRACKET {pin=1}
+
+fieldSelection ::= OPEN_BRACE fieldSelectionElement* CLOSE_BRACE {pin=1}
+
+fieldSelectionElement ::= fieldInclude | fieldDeclaration
+
+fieldInclude ::= DOTDOTDOT typeReference {pin=1}
+
+fieldDeclaration ::= annotations? fieldName COLON typeAssignment QUESTION_MARK? (EQUALS optionalLiteral)? {pin=2}
+
+fieldName ::= IDENTIFIER
+
+optionalLiteral ::= literal | NIL
+
+literal ::= jsonValue
+
+lineComment ::= SINGLE_LINE_COMMENT
+blockComment ::= BLOCK_COMMENT_EMPTY | BLOCK_COMMENT_NON_EMPTY
+commentString ::= COMMA | lineComment | blockComment
+
+jsonKeyValue ::= jsonString COLON jsonValue
+
+jsonObject ::= OPEN_BRACE jsonKeyValue* CLOSE_BRACE {pin=1}
+
+jsonArray ::= OPEN_BRACKET  jsonValue* CLOSE_BRACKET {pin=1}
+
+jsonValue ::= jsonString | jsonNumber | jsonBoolean | jsonObject | jsonArray | jsonNull
+
+jsonString ::= STRING
+
+jsonNumber ::= NUMBER_LITERAL
+
+jsonNull ::= NULL
+
+jsonBoolean ::= TRUE | FALSE

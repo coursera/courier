@@ -1,3 +1,17 @@
+# OS X
+.DS_Store
+
+# IntelliJ IDE
+.idea
+.idea_modules
+*.iml
+*.ipr
+*.iws
+
+out
+gen
 JFlex.jar
-gen/
-out/
+courier-idea-plugin.jar
+idea-flex.skeleton
+idea-flex_2.skeleton
+src/org/coursera/courier/CourierLexer.java

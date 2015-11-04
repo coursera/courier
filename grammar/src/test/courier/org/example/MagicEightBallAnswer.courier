@@ -1,0 +1,12 @@
+namespace org.example
+
+/**
+ * Magic eight ball answers.
+ */
+enum MagicEightBallAnswer {
+  IT_IS_CERTAIN
+
+  /** Where later is at least 10 ms from now. */
+  ASK_AGAIN_LATER
+  OUTLOOK_NOT_SO_GOOD
+}

@@ -1,0 +1,10 @@
+namespace org.example.common
+
+/**
+ * ISO 8601 date-time.
+ */
+@scala({
+  "class": "org.joda.time.DateTime",
+  "coercerClass": "org.coursera.models.common.DateTimeCoercer"
+})
+typeref DateTime = string

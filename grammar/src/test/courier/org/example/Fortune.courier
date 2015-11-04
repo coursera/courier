@@ -1,0 +1,12 @@
+namespace org.example
+
+/**
+ * A fortune.
+ */
+record Fortune {
+  /**
+   * The fortune telling.
+   */
+  telling: union[FortuneCookie, MagicEightBall, string]
+  createdAt: org.example.common.DateTime
+}

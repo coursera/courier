@@ -16,6 +16,11 @@
 
 package org.coursera.courier.api;
 
+import com.linkedin.data.schema.SchemaParserFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class GeneratorRunnerOptions {
   private String resolverPath;
   private String targetDirectoryPath;
@@ -28,6 +33,8 @@ public class GeneratorRunnerOptions {
   private boolean generateTyperefs = false;
   private boolean generatePredef = false;
 
+  private final List<ParserForFileFormat> parsersForFileFormats;
+
   public GeneratorRunnerOptions(
       String targetDirectoryPath,
       String[] sources,
@@ -35,6 +42,8 @@ public class GeneratorRunnerOptions {
     this.targetDirectoryPath = targetDirectoryPath;
     this.sources = sources;
     this.resolverPath = resolverPath;
+    this.parsersForFileFormats = new ArrayList<ParserForFileFormat>();
+    this.parsersForFileFormats.add(new ParserForFileFormat("pdsc", SchemaParserFactory.instance()));
   }
 
   public GeneratorRunnerOptions setDefaultPackage(String defaultPackage) {
@@ -59,6 +68,11 @@ public class GeneratorRunnerOptions {
 
   public GeneratorRunnerOptions setGeneratePredef(boolean generatePredef) {
     this.generatePredef = generatePredef;
+    return this;
+  }
+
+  public GeneratorRunnerOptions addParserForFileFormat(ParserForFileFormat parserForFormat) {
+    this.parsersForFileFormats.add(parserForFormat);
     return this;
   }
 
@@ -93,4 +107,9 @@ public class GeneratorRunnerOptions {
   public boolean isGeneratePredef() {
     return generatePredef;
   }
+
+  public List<ParserForFileFormat> getParsersForFileFormats() {
+    return parsersForFileFormats;
+  }
+
 }

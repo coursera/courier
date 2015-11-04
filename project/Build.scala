@@ -77,7 +77,7 @@ object Courier extends Build with OverridablePublishSettings {
   // Projects
   //
   lazy val generator = Project(id = "courier-generator", base = file("generator"))
-    .dependsOn(runtime, generatorApi)
+    .dependsOn(runtime, generatorApi, grammar)
     .settings(generatorVersionSettings)
     .enablePlugins(SbtTwirl)
     .settings(
@@ -89,6 +89,22 @@ object Courier extends Build with OverridablePublishSettings {
         ExternalDependencies.Scalariform.scalariform,
         ExternalDependencies.ApacheCommons.lang),
       dependencyOverrides += ExternalDependencies.ApacheCommons.io)
+
+  lazy val grammar = Project(id = "courier-grammar", base = file("grammar"))
+    .settings(generatorVersionSettings)
+    .settings(
+      libraryDependencies ++= Seq(
+        ExternalDependencies.Pegasus.data,
+        ExternalDependencies.JUnit.junit,
+        ExternalDependencies.Scalatest.scalatest,
+        ExternalDependencies.ApacheCommons.lang),
+      dependencyOverrides += ExternalDependencies.ApacheCommons.io,
+      testOptions in Test += Tests.Setup { () =>
+        System.setProperty("project.dir", baseDirectory.value.getAbsolutePath )
+      })
+    .settings(
+      libraryDependencies ++=
+        ExternalDependencies.ScalaParserCombinators.dependencies(scalaVersion.value))
 
   lazy val generatorApi = Project(id = "courier-generator-api", base = file("generator-api"))
     .settings(
@@ -137,7 +153,9 @@ object Courier extends Build with OverridablePublishSettings {
   // 2.11.
   def publishCommands(publishCommand: String) =
     s";++$sbtScalaVersion;project courier-sbt-plugin;$publishCommand" +
+    s";++$sbtScalaVersion;project courier-grammar;$publishCommand" +
     s";++$currentScalaVersion;project courier-generator;$publishCommand" +
+    s";++$currentScalaVersion;project courier-grammar;$publishCommand" +
     s";project courier-generator-api;$publishCommand" + // java project, so we do not cross build
     s";++$sbtScalaVersion;project courier-runtime;$publishCommand" +
     s";++$currentScalaVersion;project courier-runtime;$publishCommand"
@@ -231,9 +249,9 @@ object Courier extends Build with OverridablePublishSettings {
       val src = sourceDirectory.value / "main" / "pegasus"
       val dst = forkedVmCourierDest.value
       val classpath = (dependencyClasspath in Runtime in generator).value.files
-      streams.value.log.info("Generating .pdsc bindings...")
+      streams.value.log.info("Generating courier bindings...")
       val files = runForkedGenerator(src, dst, classpath, streams.value.log)
-      streams.value.log.info(s"There are ${files.size} classes generated from .pdsc")
+      streams.value.log.info(s"There are ${files.size} classes generated from courier bindings")
       files
     },
     sourceGenerators in Compile <+= (forkedVmCourierGenerator in Compile),

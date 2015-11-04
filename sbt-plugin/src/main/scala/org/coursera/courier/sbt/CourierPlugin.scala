@@ -21,8 +21,10 @@ import org.apache.commons.lang3.exception.ExceptionUtils
 import org.coursera.courier.ScalaGenerator
 import org.coursera.courier.api.DefaultGeneratorRunner
 import org.coursera.courier.api.GeneratorRunnerOptions
+import org.coursera.courier.api.ParserForFileFormat
 import org.coursera.courier.api.PegasusCodeGenerator
 import org.coursera.courier.generator.ScalaDataTemplateGenerator
+import org.coursera.courier.grammar.CourierSchemaParserFactory
 
 import sbt._
 import Keys._
@@ -130,7 +132,9 @@ object CourierPlugin extends Plugin {
               sourceFiles.map(_.absolutePath).toArray,
               resolverPath)
                 .setDefaultPackage(namespacePrefix.getOrElse(""))
-                .setGenerateTyperefs(genTyperefs))
+                .setGenerateTyperefs(genTyperefs)
+              .addParserForFileFormat(
+                new ParserForFileFormat("courier", new CourierSchemaParserFactory())))
 
           // NOTE: Deleting stale files does not work properly with courier activated on two
           // different projects.

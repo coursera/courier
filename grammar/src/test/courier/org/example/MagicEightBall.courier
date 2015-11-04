@@ -1,0 +1,6 @@
+namespace org.example
+
+record MagicEightBall {
+  question: string
+  answer: MagicEightBallAnswer
+}
