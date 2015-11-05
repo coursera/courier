@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct WithUnion: JSONSerializable, Equatable {
+public struct WithUnion: JSONSerializable, DataTreeSerializable, Equatable {
     
     public let value: Union?
     
@@ -11,17 +11,23 @@ public struct WithUnion: JSONSerializable, Equatable {
         self.value = value
     }
     
-    public static func read(json: JSON) -> WithUnion {
+    public static func readJSON(json: JSON) -> WithUnion {
         return WithUnion(
-            value: json["value"].json.map { Union.read($0) }
+            value: json["value"].json.map { Union.readJSON($0) }
         )
     }
-    public func write() -> JSON {
-        var json: [String : JSON] = [:]
+    public func writeJSON() -> JSON {
+        return JSON(self.writeData())
+    }
+    public static func readData(data: [String: AnyObject]) -> WithUnion {
+        return readJSON(JSON(data))
+    }
+    public func writeData() -> [String: AnyObject] {
+        var dict: [String : AnyObject] = [:]
         if let value = self.value {
-            json["value"] = value.write()
+            dict["value"] = value.writeData()
         }
-        return JSON(json)
+        return dict
     }
 }
 public func ==(lhs: WithUnion, rhs: WithUnion) -> Bool {

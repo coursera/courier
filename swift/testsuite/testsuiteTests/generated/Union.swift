@@ -1,31 +1,37 @@
 import Foundation
 import SwiftyJSON
 
-public enum Union: JSONSerializable, Equatable {
+public enum Union: JSONSerializable, DataTreeSerializable, Equatable {
     
     case NoteMember(Note)
     
     case MessageMember(Message)
-    case UNKNOWN$([String : JSON])
+    case UNKNOWN$([String : AnyObject])
     
-    public static func read(json: JSON) -> Union {
-        let dictionary = json.dictionaryValue
-        if let member = dictionary["org.coursera.records.Note"] {
-            return .NoteMember(Note.read(member.jsonValue))
+    public static func readJSON(json: JSON) -> Union {
+        let dict = json.dictionaryValue
+        if let member = dict["org.coursera.records.Note"] {
+            return .NoteMember(Note.readJSON(member.jsonValue))
         }
-        if let member = dictionary["org.coursera.records.Message"] {
-            return .MessageMember(Message.read(member.jsonValue))
+        if let member = dict["org.coursera.records.Message"] {
+            return .MessageMember(Message.readJSON(member.jsonValue))
         }
-        return .UNKNOWN$(dictionary)
+        return .UNKNOWN$(json.dictionaryObject!)
     }
-    public func write() -> JSON {
+    public func writeJSON() -> JSON {
+        return JSON(self.writeData())
+    }
+    public static func readData(data: [String: AnyObject]) -> Union {
+        return readJSON(JSON(data))
+    }
+    public func writeData() -> [String: AnyObject] {
         switch self {
         case .NoteMember(let member):
-            return JSON(["org.coursera.records.Note": member.write()]);
+            return ["org.coursera.records.Note": member.writeData()];
         case .MessageMember(let member):
-            return JSON(["org.coursera.records.Message": member.write()]);
-        case .UNKNOWN$(let dictionary):
-            return JSON(dictionary)
+            return ["org.coursera.records.Message": member.writeData()];
+        case .UNKNOWN$(let dict):
+            return dict
         }
     }
 }
@@ -37,7 +43,7 @@ public func ==(lhs: Union, rhs: Union) -> Bool {
     case (let .MessageMember(lhs), let .MessageMember(rhs)):
         return lhs == rhs
     case (let .UNKNOWN$(lhs), let .UNKNOWN$(rhs)):
-        return lhs == rhs
+        return JSON(lhs) == JSON(rhs)
     default:
         return false
     }

@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct WithPrimitiveTyperefsUnion: JSONSerializable {
+public struct WithPrimitiveTyperefsUnion: JSONSerializable, DataTreeSerializable {
     
     public let union: Union?
     
@@ -11,37 +11,49 @@ public struct WithPrimitiveTyperefsUnion: JSONSerializable {
         self.union = union
     }
     
-    public enum Union: JSONSerializable {
+    public enum Union: JSONSerializable, DataTreeSerializable {
         case IntMember(Int)
-        case UNKNOWN$([String : JSON])
-        public static func read(json: JSON) -> Union {
-            let dictionary = json.dictionaryValue
-            if let member = dictionary["int"] {
+        case UNKNOWN$([String : AnyObject])
+        public static func readJSON(json: JSON) -> Union {
+            let dict = json.dictionaryValue
+            if let member = dict["int"] {
                 return .IntMember(member.intValue)
             }
-            return .UNKNOWN$(dictionary)
+            return .UNKNOWN$(json.dictionaryObject!)
         }
-        public func write() -> JSON {
+        public func writeJSON() -> JSON {
+            return JSON(self.writeData())
+        }
+        public static func readData(data: [String: AnyObject]) -> Union {
+            return readJSON(JSON(data))
+        }
+        public func writeData() -> [String: AnyObject] {
             switch self {
             case .IntMember(let member):
-                return JSON(["int": JSON(member)]);
-            case .UNKNOWN$(let dictionary):
-                return JSON(dictionary)
+                return ["int": member];
+            case .UNKNOWN$(let dict):
+                return dict
             }
         }
     }
     
-    public static func read(json: JSON) -> WithPrimitiveTyperefsUnion {
+    public static func readJSON(json: JSON) -> WithPrimitiveTyperefsUnion {
         return WithPrimitiveTyperefsUnion(
-            union: json["union"].json.map { Union.read($0) }
+            union: json["union"].json.map { Union.readJSON($0) }
         )
     }
-    public func write() -> JSON {
-        var json: [String : JSON] = [:]
+    public func writeJSON() -> JSON {
+        return JSON(self.writeData())
+    }
+    public static func readData(data: [String: AnyObject]) -> WithPrimitiveTyperefsUnion {
+        return readJSON(JSON(data))
+    }
+    public func writeData() -> [String: AnyObject] {
+        var dict: [String : AnyObject] = [:]
         if let union = self.union {
-            json["union"] = union.write()
+            dict["union"] = union.writeData()
         }
-        return JSON(json)
+        return dict
     }
 }
 

@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct WithFlatTypedDefinition: JSONSerializable, Equatable {
+public struct WithFlatTypedDefinition: JSONSerializable, DataTreeSerializable, Equatable {
     
     public let value: FlatTypedDefinition?
     
@@ -11,17 +11,23 @@ public struct WithFlatTypedDefinition: JSONSerializable, Equatable {
         self.value = value
     }
     
-    public static func read(json: JSON) -> WithFlatTypedDefinition {
+    public static func readJSON(json: JSON) -> WithFlatTypedDefinition {
         return WithFlatTypedDefinition(
-            value: json["value"].json.map { FlatTypedDefinition.read($0) }
+            value: json["value"].json.map { FlatTypedDefinition.readJSON($0) }
         )
     }
-    public func write() -> JSON {
-        var json: [String : JSON] = [:]
+    public func writeJSON() -> JSON {
+        return JSON(self.writeData())
+    }
+    public static func readData(data: [String: AnyObject]) -> WithFlatTypedDefinition {
+        return readJSON(JSON(data))
+    }
+    public func writeData() -> [String: AnyObject] {
+        var dict: [String : AnyObject] = [:]
         if let value = self.value {
-            json["value"] = value.write()
+            dict["value"] = value.writeData()
         }
-        return JSON(json)
+        return dict
     }
 }
 public func ==(lhs: WithFlatTypedDefinition, rhs: WithFlatTypedDefinition) -> Bool {

@@ -3,25 +3,33 @@
 
 @{ String className = syntax.escapeKeyword(union.getClassName()) }
 
-public static func read(json: JSON) -> @className {
-  let dictionary = json.dictionaryValue
+public static func readJSON(json: JSON) -> @className {
+  let dict = json.dictionaryValue
   @for(Member member: union.getMembers()) {
   @{ String unionMemberName = syntax.toUnionMemberName(member.getClassTemplateSpec()) }
-    if let member = dictionary["@(member.getSchema().getUnionMemberKey())"] {
+    if let member = dict["@(member.getSchema().getUnionMemberKey())"] {
       return .@(unionMemberName)(@swifty.toGetAccessor("member", member))
     }
   }
-  return .UNKNOWN$(dictionary)
+  return .UNKNOWN$(json.dictionaryObject!)
 }
 
-public func write() -> JSON {
+public func writeJSON() -> JSON {
+  return JSON(self.writeData())
+}
+
+public static func readData(data: [String: AnyObject]) -> @className {
+  return readJSON(JSON(data))
+}
+
+public func writeData() -> [String: AnyObject] {
   switch self {
     @for(Member member: union.getMembers()) {
     @{ String unionMemberName = syntax.toUnionMemberName(member.getClassTemplateSpec()) }
       case .@(unionMemberName)(let member):
-        return JSON(["@(member.getSchema().getUnionMemberKey())": @swifty.toSetAccessor(member)]);
+        return ["@(member.getSchema().getUnionMemberKey())": @swifty.toSetAccessor(member)];
     }
-    case .UNKNOWN$(let dictionary):
-      return JSON(dictionary)
+    case .UNKNOWN$(let dict):
+      return dict
   }
 }

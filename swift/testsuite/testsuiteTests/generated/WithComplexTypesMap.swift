@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct WithComplexTypesMap: JSONSerializable, Equatable {
+public struct WithComplexTypesMap: JSONSerializable, DataTreeSerializable, Equatable {
     
     public let empties: [String: Empty]?
     
@@ -31,37 +31,43 @@ public struct WithComplexTypesMap: JSONSerializable, Equatable {
         self.fixed = fixed
     }
     
-    public static func read(json: JSON) -> WithComplexTypesMap {
+    public static func readJSON(json: JSON) -> WithComplexTypesMap {
         return WithComplexTypesMap(
-            empties: json["empties"].dictionary.map { $0.mapValues { Empty.read($0.jsonValue) } },
+            empties: json["empties"].dictionary.map { $0.mapValues { Empty.readJSON($0.jsonValue) } },
             fruits: json["fruits"].dictionary.map { $0.mapValues { Fruits.read($0.stringValue) } },
-            arrays: json["arrays"].dictionary.map { $0.mapValues { $0.arrayValue.map { Simple.read($0.jsonValue) } } },
-            maps: json["maps"].dictionary.map { $0.mapValues { $0.dictionaryValue.mapValues { Simple.read($0.jsonValue) } } },
-            unions: json["unions"].dictionary.map { $0.mapValues { WithComplexTypesMapUnion.read($0.jsonValue) } },
+            arrays: json["arrays"].dictionary.map { $0.mapValues { $0.arrayValue.map { Simple.readJSON($0.jsonValue) } } },
+            maps: json["maps"].dictionary.map { $0.mapValues { $0.dictionaryValue.mapValues { Simple.readJSON($0.jsonValue) } } },
+            unions: json["unions"].dictionary.map { $0.mapValues { WithComplexTypesMapUnion.readJSON($0.jsonValue) } },
             fixed: json["fixed"].dictionary.map { $0.mapValues { $0.stringValue } }
         )
     }
-    public func write() -> JSON {
-        var json: [String : JSON] = [:]
+    public func writeJSON() -> JSON {
+        return JSON(self.writeData())
+    }
+    public static func readData(data: [String: AnyObject]) -> WithComplexTypesMap {
+        return readJSON(JSON(data))
+    }
+    public func writeData() -> [String: AnyObject] {
+        var dict: [String : AnyObject] = [:]
         if let empties = self.empties {
-            json["empties"] = JSON(empties.mapValues { $0.write() })
+            dict["empties"] = empties.mapValues { $0.writeData() }
         }
         if let fruits = self.fruits {
-            json["fruits"] = JSON(fruits.mapValues { JSON($0.write()) })
+            dict["fruits"] = fruits.mapValues { $0.write() }
         }
         if let arrays = self.arrays {
-            json["arrays"] = JSON(arrays.mapValues { JSON($0.map { $0.write() }) })
+            dict["arrays"] = arrays.mapValues { $0.map { $0.writeData() } }
         }
         if let maps = self.maps {
-            json["maps"] = JSON(maps.mapValues { JSON($0.mapValues { $0.write() }) })
+            dict["maps"] = maps.mapValues { $0.mapValues { $0.writeData() } }
         }
         if let unions = self.unions {
-            json["unions"] = JSON(unions.mapValues { $0.write() })
+            dict["unions"] = unions.mapValues { $0.writeData() }
         }
         if let fixed = self.fixed {
-            json["fixed"] = JSON(fixed.mapValues { JSON($0) })
+            dict["fixed"] = fixed.mapValues { $0 }
         }
-        return JSON(json)
+        return dict
     }
 }
 public func ==(lhs: WithComplexTypesMap, rhs: WithComplexTypesMap) -> Bool {

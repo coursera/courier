@@ -70,10 +70,10 @@ public class SwiftyJSON {
       return enumSpec.getClassName() + ".read(" + anchor + ")";
     } else if (schemaType == DataSchema.Type.RECORD) {
       RecordTemplateSpec recordSpec = (RecordTemplateSpec)spec;
-      return recordSpec.getClassName() + ".read(" + anchor + ")";
+      return recordSpec.getClassName() + ".readJSON(" + anchor + ")";
     } else if (schemaType == DataSchema.Type.UNION) {
       UnionTemplateSpec unionSpec = (UnionTemplateSpec)spec;
-      return unionSpec.getClassName() + ".read(" + anchor + ")";
+      return unionSpec.getClassName() + ".readJSON(" + anchor + ")";
     } else if (schemaType == DataSchema.Type.MAP) {
       CourierMapTemplateSpec mapSpec = (CourierMapTemplateSpec)spec;
       return anchor + ".mapValues { " + toGetAccessor("$0", mapSpec.getValueClass(), false) + " }";
@@ -114,25 +114,25 @@ public class SwiftyJSON {
   public String toSetAccessor(String anchor, ClassTemplateSpec spec) {
     DataSchema.Type schemaType = spec.getSchema().getType();
     if (schemaType == DataSchema.Type.ENUM) {
-      return "JSON(" + anchor + ".write())";
-    } else if (EnumSet.of(DataSchema.Type.RECORD, DataSchema.Type.UNION).contains(schemaType)) {
       return anchor + ".write()";
+    } else if (EnumSet.of(DataSchema.Type.RECORD, DataSchema.Type.UNION).contains(schemaType)) {
+      return anchor + ".writeData()";
     } else if (schemaType == DataSchema.Type.MAP) {
       CourierMapTemplateSpec mapSpec = (CourierMapTemplateSpec)spec;
       if (mapSpec.getValueClass().getSchema().isPrimitive()) {
-        return "JSON(" + anchor + ")";
+        return anchor;
       } else {
-        return "JSON(" + anchor + ".mapValues { " + toSetAccessor("$0", mapSpec.getValueClass()) + " })";
+        return anchor + ".mapValues { " + toSetAccessor("$0", mapSpec.getValueClass()) + " }";
       }
     } else if (schemaType == DataSchema.Type.ARRAY) {
       ArrayTemplateSpec arraySpec = (ArrayTemplateSpec)spec;
       if (arraySpec.getItemClass().getSchema().isPrimitive()) {
-        return "JSON(" + anchor + ")";
+        return anchor;
       } else {
-        return "JSON(" + anchor + ".map { " + toSetAccessor("$0", arraySpec.getItemClass()) + " })";
+        return anchor + ".map { " + toSetAccessor("$0", arraySpec.getItemClass()) + " }";
       }
     } else {
-      return "JSON(" + anchor + ")";
+      return anchor;
     }
   }
 }

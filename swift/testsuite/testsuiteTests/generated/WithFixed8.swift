@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct WithFixed8: JSONSerializable {
+public struct WithFixed8: JSONSerializable, DataTreeSerializable {
     
     public let fixed: String?
     
@@ -11,16 +11,22 @@ public struct WithFixed8: JSONSerializable {
         self.fixed = fixed
     }
     
-    public static func read(json: JSON) -> WithFixed8 {
+    public static func readJSON(json: JSON) -> WithFixed8 {
         return WithFixed8(
             fixed: json["fixed"].string
         )
     }
-    public func write() -> JSON {
-        var json: [String : JSON] = [:]
+    public func writeJSON() -> JSON {
+        return JSON(self.writeData())
+    }
+    public static func readData(data: [String: AnyObject]) -> WithFixed8 {
+        return readJSON(JSON(data))
+    }
+    public func writeData() -> [String: AnyObject] {
+        var dict: [String : AnyObject] = [:]
         if let fixed = self.fixed {
-            json["fixed"] = JSON(fixed)
+            dict["fixed"] = fixed
         }
-        return JSON(json)
+        return dict
     }
 }

@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct WithInlineRecord: JSONSerializable {
+public struct WithInlineRecord: JSONSerializable, DataTreeSerializable {
     
     public let inline: InlineRecord?
     
@@ -15,20 +15,26 @@ public struct WithInlineRecord: JSONSerializable {
         self.inlineOptional = inlineOptional
     }
     
-    public static func read(json: JSON) -> WithInlineRecord {
+    public static func readJSON(json: JSON) -> WithInlineRecord {
         return WithInlineRecord(
-            inline: json["inline"].json.map { InlineRecord.read($0) },
-            inlineOptional: json["inlineOptional"].json.map { InlineOptionalRecord.read($0) }
+            inline: json["inline"].json.map { InlineRecord.readJSON($0) },
+            inlineOptional: json["inlineOptional"].json.map { InlineOptionalRecord.readJSON($0) }
         )
     }
-    public func write() -> JSON {
-        var json: [String : JSON] = [:]
+    public func writeJSON() -> JSON {
+        return JSON(self.writeData())
+    }
+    public static func readData(data: [String: AnyObject]) -> WithInlineRecord {
+        return readJSON(JSON(data))
+    }
+    public func writeData() -> [String: AnyObject] {
+        var dict: [String : AnyObject] = [:]
         if let inline = self.inline {
-            json["inline"] = inline.write()
+            dict["inline"] = inline.writeData()
         }
         if let inlineOptional = self.inlineOptional {
-            json["inlineOptional"] = inlineOptional.write()
+            dict["inlineOptional"] = inlineOptional.writeData()
         }
-        return JSON(json)
+        return dict
     }
 }

@@ -1,42 +1,48 @@
 import Foundation
 import SwiftyJSON
 
-public struct ReservedClassFieldEscaping: JSONSerializable {
+public struct ReservedClassFieldEscaping: JSONSerializable, DataTreeSerializable {
     
-    public let json$: String?
+    public let json: String?
     
-    public let read$: String?
+    public let read: String?
     
-    public let write$: String?
+    public let write: String?
     
     public init(
-        json$: String?,
-        read$: String?,
-        write$: String?
+        json: String?,
+        read: String?,
+        write: String?
     ) {
-        self.json$ = json$
-        self.read$ = read$
-        self.write$ = write$
+        self.json = json
+        self.read = read
+        self.write = write
     }
     
-    public static func read(json: JSON) -> ReservedClassFieldEscaping {
+    public static func readJSON(json: JSON) -> ReservedClassFieldEscaping {
         return ReservedClassFieldEscaping(
-            json$: json["json"].string,
-            read$: json["read"].string,
-            write$: json["write"].string
+            json: json["json"].string,
+            read: json["read"].string,
+            write: json["write"].string
         )
     }
-    public func write() -> JSON {
-        var json: [String : JSON] = [:]
-        if let json$ = self.json$ {
-            json["json"] = JSON(json$)
+    public func writeJSON() -> JSON {
+        return JSON(self.writeData())
+    }
+    public static func readData(data: [String: AnyObject]) -> ReservedClassFieldEscaping {
+        return readJSON(JSON(data))
+    }
+    public func writeData() -> [String: AnyObject] {
+        var dict: [String : AnyObject] = [:]
+        if let json = self.json {
+            dict["json"] = json
         }
-        if let read$ = self.read$ {
-            json["read"] = JSON(read$)
+        if let read = self.read {
+            dict["read"] = read
         }
-        if let write$ = self.write$ {
-            json["write"] = JSON(write$)
+        if let write = self.write {
+            dict["write"] = write
         }
-        return JSON(json)
+        return dict
     }
 }

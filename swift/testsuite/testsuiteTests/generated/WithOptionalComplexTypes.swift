@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct WithOptionalComplexTypes: JSONSerializable {
+public struct WithOptionalComplexTypes: JSONSerializable, DataTreeSerializable {
     
     public let record: Simple?
     
@@ -31,69 +31,81 @@ public struct WithOptionalComplexTypes: JSONSerializable {
         self.custom = custom
     }
     
-    public enum Union: JSONSerializable {
+    public enum Union: JSONSerializable, DataTreeSerializable {
         case IntMember(Int)
         case StringMember(String)
         case SimpleMember(Simple)
-        case UNKNOWN$([String : JSON])
-        public static func read(json: JSON) -> Union {
-            let dictionary = json.dictionaryValue
-            if let member = dictionary["int"] {
+        case UNKNOWN$([String : AnyObject])
+        public static func readJSON(json: JSON) -> Union {
+            let dict = json.dictionaryValue
+            if let member = dict["int"] {
                 return .IntMember(member.intValue)
             }
-            if let member = dictionary["string"] {
+            if let member = dict["string"] {
                 return .StringMember(member.stringValue)
             }
-            if let member = dictionary["org.coursera.records.test.Simple"] {
-                return .SimpleMember(Simple.read(member.jsonValue))
+            if let member = dict["org.coursera.records.test.Simple"] {
+                return .SimpleMember(Simple.readJSON(member.jsonValue))
             }
-            return .UNKNOWN$(dictionary)
+            return .UNKNOWN$(json.dictionaryObject!)
         }
-        public func write() -> JSON {
+        public func writeJSON() -> JSON {
+            return JSON(self.writeData())
+        }
+        public static func readData(data: [String: AnyObject]) -> Union {
+            return readJSON(JSON(data))
+        }
+        public func writeData() -> [String: AnyObject] {
             switch self {
             case .IntMember(let member):
-                return JSON(["int": JSON(member)]);
+                return ["int": member];
             case .StringMember(let member):
-                return JSON(["string": JSON(member)]);
+                return ["string": member];
             case .SimpleMember(let member):
-                return JSON(["org.coursera.records.test.Simple": member.write()]);
-            case .UNKNOWN$(let dictionary):
-                return JSON(dictionary)
+                return ["org.coursera.records.test.Simple": member.writeData()];
+            case .UNKNOWN$(let dict):
+                return dict
             }
         }
     }
     
-    public static func read(json: JSON) -> WithOptionalComplexTypes {
+    public static func readJSON(json: JSON) -> WithOptionalComplexTypes {
         return WithOptionalComplexTypes(
-            record: json["record"].json.map { Simple.read($0) },
+            record: json["record"].json.map { Simple.readJSON($0) },
             `enum`: json["enum"].string.map { Fruits.read($0) },
-            union: json["union"].json.map { Union.read($0) },
+            union: json["union"].json.map { Union.readJSON($0) },
             array: json["array"].array.map { $0.map { $0.intValue } },
             map: json["map"].dictionary.map { $0.mapValues { $0.intValue } },
             custom: json["custom"].int
         )
     }
-    public func write() -> JSON {
-        var json: [String : JSON] = [:]
+    public func writeJSON() -> JSON {
+        return JSON(self.writeData())
+    }
+    public static func readData(data: [String: AnyObject]) -> WithOptionalComplexTypes {
+        return readJSON(JSON(data))
+    }
+    public func writeData() -> [String: AnyObject] {
+        var dict: [String : AnyObject] = [:]
         if let record = self.record {
-            json["record"] = record.write()
+            dict["record"] = record.writeData()
         }
         if let `enum` = self.`enum` {
-            json["enum"] = JSON(`enum`.write())
+            dict["enum"] = `enum`.write()
         }
         if let union = self.union {
-            json["union"] = union.write()
+            dict["union"] = union.writeData()
         }
         if let array = self.array {
-            json["array"] = JSON(array)
+            dict["array"] = array
         }
         if let map = self.map {
-            json["map"] = JSON(map)
+            dict["map"] = map
         }
         if let custom = self.custom {
-            json["custom"] = JSON(custom)
+            dict["custom"] = custom
         }
-        return JSON(json)
+        return dict
     }
 }
 

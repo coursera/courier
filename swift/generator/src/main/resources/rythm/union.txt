@@ -10,12 +10,12 @@
   @classAnnotations(union.getTyperefClass().getSchema())
 }
 
-public enum @className: JSONSerializable@if (syntax.isEquatable()) {, Equatable} {
+public enum @className: JSONSerializable, DataTreeSerializable@if (syntax.isEquatable()) {, Equatable} {
   @for(Member member: union.getMembers()) {
     @{ String unionMemberName = syntax.toUnionMemberName(member.getClassTemplateSpec()) }
     case @(unionMemberName)(@syntax.toType(member.getClassTemplateSpec(), false))
   }
-  case UNKNOWN$([String : JSON])
+  case UNKNOWN$([String : AnyObject])
 
   @if (TypedDefinitions.isTypedDefinition(union)) {
     @typedDefinitionSerializers(union, TypedDefinitions.getTypedDefinitionMapping(union, false), syntax, swifty)

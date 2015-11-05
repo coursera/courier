@@ -4,7 +4,7 @@ import SwiftyJSON
 /**
     A simple record
 */
-public struct Simple: JSONSerializable, Equatable {
+public struct Simple: JSONSerializable, DataTreeSerializable, Equatable {
     
     /**
         A simple field
@@ -17,17 +17,23 @@ public struct Simple: JSONSerializable, Equatable {
         self.message = message
     }
     
-    public static func read(json: JSON) -> Simple {
+    public static func readJSON(json: JSON) -> Simple {
         return Simple(
             message: json["message"].string
         )
     }
-    public func write() -> JSON {
-        var json: [String : JSON] = [:]
+    public func writeJSON() -> JSON {
+        return JSON(self.writeData())
+    }
+    public static func readData(data: [String: AnyObject]) -> Simple {
+        return readJSON(JSON(data))
+    }
+    public func writeData() -> [String: AnyObject] {
+        var dict: [String : AnyObject] = [:]
         if let message = self.message {
-            json["message"] = JSON(message)
+            dict["message"] = message
         }
-        return JSON(json)
+        return dict
     }
 }
 public func ==(lhs: Simple, rhs: Simple) -> Bool {
