@@ -35,7 +35,13 @@ case class RecordDefinition(override val spec: RecordTemplateSpec) extends Defin
   def directReferencedTypes: Set[Definition] = fields.map(_.typ).toSet
 
   def customInfosToRegister: Seq[(RecordField, Seq[CustomInfoDefinition])] = {
-    fields.map { field =>
+    // customInfos only appear once per field set, so we must consider even omitted field when
+    // accumulating customInfos.
+    // TODO(jbetz): Improve pegasus internals to always return customInfos fields.  De-duplication
+    // should happen up at routines like this one, not in the RecordTemplateSpec.
+    val fieldsInclOmitted = spec.getFields.asScala.map(RecordField).toSeq
+
+    fieldsInclOmitted.map { field =>
       field -> field.customInfo.toSeq.flatMap { customInfo =>
         customInfo.customInfosToRegister
       }
