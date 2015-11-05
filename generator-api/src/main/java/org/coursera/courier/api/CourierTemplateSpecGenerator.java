@@ -313,7 +313,7 @@ public class CourierTemplateSpecGenerator {
         // When the schema bound to the specified class name is different
         // from the specified schema, then emit a log message when this occurs.
         //
-        _log.info("Class name: " + className +
+        _log.debug("Class name: " + className +
             ", bound to schema:" + schemaFromClassName +
             ", instead of schema: " + schema);
       }
