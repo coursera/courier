@@ -57,7 +57,7 @@ public class PoorMansSwiftSourceFormatter {
     StringBuilder result = new StringBuilder();
     Stack<Scope> scope = new Stack<>();
     scope.push(Scope.ROOT);
-
+ 
     int indentLevel = 0;
     boolean isPreviousLineEmpty = true;
     boolean isPreviousLinePreamble = false;

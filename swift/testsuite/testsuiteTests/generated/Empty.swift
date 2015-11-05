@@ -1,17 +1,23 @@
 import Foundation
 import SwiftyJSON
 
-public struct Empty: JSONSerializable, Equatable {
+public struct Empty: JSONSerializable, DataTreeSerializable, Equatable {
     
     public init(
     ) {
     }
     
-    public static func read(json: JSON) -> Empty {
+    public static func readJSON(json: JSON) -> Empty {
         return Empty(
         )
     }
-    public func write() -> JSON {
+    public func writeJSON() -> JSON {
+        return JSON(self.writeData())
+    }
+    public static func readData(data: [String: AnyObject]) -> Empty {
+        return readJSON(JSON(data))
+    }
+    public func writeData() -> [String: AnyObject] {
         return [:]
     }
 }

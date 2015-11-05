@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct WithTypedKeyMap: JSONSerializable, Equatable {
+public struct WithTypedKeyMap: JSONSerializable, DataTreeSerializable, Equatable {
     
     public let ints: [String: String]?
     
@@ -59,7 +59,7 @@ public struct WithTypedKeyMap: JSONSerializable, Equatable {
         self.inlineRecord = inlineRecord
     }
     
-    public static func read(json: JSON) -> WithTypedKeyMap {
+    public static func readJSON(json: JSON) -> WithTypedKeyMap {
         return WithTypedKeyMap(
             ints: json["ints"].dictionary.map { $0.mapValues { $0.stringValue } },
             longs: json["longs"].dictionary.map { $0.mapValues { $0.stringValue } },
@@ -76,48 +76,54 @@ public struct WithTypedKeyMap: JSONSerializable, Equatable {
             inlineRecord: json["inlineRecord"].dictionary.map { $0.mapValues { $0.stringValue } }
         )
     }
-    public func write() -> JSON {
-        var json: [String : JSON] = [:]
+    public func writeJSON() -> JSON {
+        return JSON(self.writeData())
+    }
+    public static func readData(data: [String: AnyObject]) -> WithTypedKeyMap {
+        return readJSON(JSON(data))
+    }
+    public func writeData() -> [String: AnyObject] {
+        var dict: [String : AnyObject] = [:]
         if let ints = self.ints {
-            json["ints"] = JSON(ints)
+            dict["ints"] = ints
         }
         if let longs = self.longs {
-            json["longs"] = JSON(longs)
+            dict["longs"] = longs
         }
         if let floats = self.floats {
-            json["floats"] = JSON(floats)
+            dict["floats"] = floats
         }
         if let doubles = self.doubles {
-            json["doubles"] = JSON(doubles)
+            dict["doubles"] = doubles
         }
         if let booleans = self.booleans {
-            json["booleans"] = JSON(booleans)
+            dict["booleans"] = booleans
         }
         if let strings = self.strings {
-            json["strings"] = JSON(strings)
+            dict["strings"] = strings
         }
         if let bytes = self.bytes {
-            json["bytes"] = JSON(bytes)
+            dict["bytes"] = bytes
         }
         if let record = self.record {
-            json["record"] = JSON(record)
+            dict["record"] = record
         }
         if let array = self.array {
-            json["array"] = JSON(array)
+            dict["array"] = array
         }
         if let `enum` = self.`enum` {
-            json["enum"] = JSON(`enum`)
+            dict["enum"] = `enum`
         }
         if let custom = self.custom {
-            json["custom"] = JSON(custom)
+            dict["custom"] = custom
         }
         if let fixed = self.fixed {
-            json["fixed"] = JSON(fixed)
+            dict["fixed"] = fixed
         }
         if let inlineRecord = self.inlineRecord {
-            json["inlineRecord"] = JSON(inlineRecord)
+            dict["inlineRecord"] = inlineRecord
         }
-        return JSON(json)
+        return dict
     }
 }
 public func ==(lhs: WithTypedKeyMap, rhs: WithTypedKeyMap) -> Bool {

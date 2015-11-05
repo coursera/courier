@@ -243,7 +243,6 @@ Building from source
 ```sh
 cd swift
 ./gradlew jar
-
 ``
 
 Publishing to Maven Central
@@ -264,9 +263,12 @@ Testing
 2. Swift code is compiled and tested for correctness by the `testsuite` Xcode project.  To test, open
 the project and run `Test` (command-U).
 
-
 TODO
 ----
+
+* [ ] Look into adding NSCoding support (see: 
+  http://swiftandpainless.com/nscoding-and-swift-structs/?utm_campaign=Swift+Developer+Weekly&utm_medium=email&utm_source=Swift_Developer_Weekly_27
+  and https://github.com/nicklockwood/AutoCoding)
 * [ ] Implement namespace handling strategy (details below)
 * [ ] Automate distribution of the Fat Jar, and generally make the distribution sane
 * [ ] Publish Fat Jar to remote repos

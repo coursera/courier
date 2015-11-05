@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct WithRecordArray: JSONSerializable, Equatable {
+public struct WithRecordArray: JSONSerializable, DataTreeSerializable, Equatable {
     
     public let empties: [Empty]?
     
@@ -15,21 +15,27 @@ public struct WithRecordArray: JSONSerializable, Equatable {
         self.fruits = fruits
     }
     
-    public static func read(json: JSON) -> WithRecordArray {
+    public static func readJSON(json: JSON) -> WithRecordArray {
         return WithRecordArray(
-            empties: json["empties"].array.map { $0.map { Empty.read($0.jsonValue) } },
+            empties: json["empties"].array.map { $0.map { Empty.readJSON($0.jsonValue) } },
             fruits: json["fruits"].array.map { $0.map { Fruits.read($0.stringValue) } }
         )
     }
-    public func write() -> JSON {
-        var json: [String : JSON] = [:]
+    public func writeJSON() -> JSON {
+        return JSON(self.writeData())
+    }
+    public static func readData(data: [String: AnyObject]) -> WithRecordArray {
+        return readJSON(JSON(data))
+    }
+    public func writeData() -> [String: AnyObject] {
+        var dict: [String : AnyObject] = [:]
         if let empties = self.empties {
-            json["empties"] = JSON(empties.map { $0.write() })
+            dict["empties"] = empties.map { $0.writeData() }
         }
         if let fruits = self.fruits {
-            json["fruits"] = JSON(fruits.map { JSON($0.write()) })
+            dict["fruits"] = fruits.map { $0.write() }
         }
-        return JSON(json)
+        return dict
     }
 }
 public func ==(lhs: WithRecordArray, rhs: WithRecordArray) -> Bool {

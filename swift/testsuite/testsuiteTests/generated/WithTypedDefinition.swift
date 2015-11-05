@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct WithTypedDefinition: JSONSerializable, Equatable {
+public struct WithTypedDefinition: JSONSerializable, DataTreeSerializable, Equatable {
     
     public let value: TypedDefinition?
     
@@ -11,17 +11,23 @@ public struct WithTypedDefinition: JSONSerializable, Equatable {
         self.value = value
     }
     
-    public static func read(json: JSON) -> WithTypedDefinition {
+    public static func readJSON(json: JSON) -> WithTypedDefinition {
         return WithTypedDefinition(
-            value: json["value"].json.map { TypedDefinition.read($0) }
+            value: json["value"].json.map { TypedDefinition.readJSON($0) }
         )
     }
-    public func write() -> JSON {
-        var json: [String : JSON] = [:]
+    public func writeJSON() -> JSON {
+        return JSON(self.writeData())
+    }
+    public static func readData(data: [String: AnyObject]) -> WithTypedDefinition {
+        return readJSON(JSON(data))
+    }
+    public func writeData() -> [String: AnyObject] {
+        var dict: [String : AnyObject] = [:]
         if let value = self.value {
-            json["value"] = value.write()
+            dict["value"] = value.writeData()
         }
-        return JSON(json)
+        return dict
     }
 }
 public func ==(lhs: WithTypedDefinition, rhs: WithTypedDefinition) -> Bool {

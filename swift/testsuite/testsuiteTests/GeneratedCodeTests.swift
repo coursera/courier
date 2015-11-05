@@ -18,7 +18,7 @@ class GeneratedCodeTests: XCTestCase {
     
     func testWithComplexTypesMap() {
         let json = try! jsonFile("WithComplexTypesMap.json");
-        let deserialized = WithComplexTypesMap.read(json);
+        let deserialized = WithComplexTypesMap.readJSON(json);
         
         let expected = WithComplexTypesMap(
             empties: ["a": Empty(), "b": Empty(), "c": Empty()],
@@ -30,13 +30,13 @@ class GeneratedCodeTests: XCTestCase {
         
         XCTAssertEqual(deserialized, expected)
         
-        let serialized = deserialized.write();
+        let serialized = deserialized.writeJSON();
         assertSameJsObject(json.rawString()!, actual: serialized.rawString()!)
     }
     
     func testWithCustomTypesArray() {
         let json = try! jsonFile("WithCustomTypesArray.json");
-        let deserialized = WithCustomTypesArray.read(json);
+        let deserialized = WithCustomTypesArray.readJSON(json);
         
         let expected = WithCustomTypesArray(
             ints: [1, 2, 3],
@@ -47,49 +47,49 @@ class GeneratedCodeTests: XCTestCase {
         
         XCTAssertEqual(deserialized, expected)
         
-        let serialized = deserialized.write();
+        let serialized = deserialized.writeJSON();
         assertSameJsObject(json.rawString()!, actual: serialized.rawString()!)
     }
     
     func testWithCustomTypesMap() {
         let json = try! jsonFile("WithCustomTypesMap.json");
-        let deserialized = WithCustomTypesMap.read(json);
+        let deserialized = WithCustomTypesMap.readJSON(json);
         
         let expected = WithCustomTypesMap(ints: ["a": 1, "b": 2, "c": 3])
         
         XCTAssertEqual(deserialized, expected)
         
-        let serialized = deserialized.write();
+        let serialized = deserialized.writeJSON();
         assertSameJsObject(json.rawString()!, actual: serialized.rawString()!)
     }
     
     func testWithFlatTypedDefinition() {
         let json = try! jsonFile("WithFlatTypedDefinition.json");
-        let deserialized = WithFlatTypedDefinition.read(json);
+        let deserialized = WithFlatTypedDefinition.readJSON(json);
         
         let expected = WithFlatTypedDefinition(
             value: .MessageMember(Message(title: "title", body: "Hello, Swift.")))
         
         XCTAssertEqual(deserialized, expected)
         
-        let serialized = deserialized.write();
+        let serialized = deserialized.writeJSON();
         assertSameJsObject(json.rawString()!, actual: serialized.rawString()!)
     }
     
     func testWithPrimitives() {
         let json = try! jsonFile("WithPrimitives.json");
-        let deserialized = WithPrimitives.read(json);
+        let deserialized = WithPrimitives.readJSON(json);
         
         let expected = WithPrimitives(intField: 1, longField: 2, floatField: 3.3, doubleField: 4.4, booleanField: true, stringField: "str", bytesField: "\u{0000}\u{0001}\u{0002}")
         XCTAssertEqual(deserialized, expected)
         
-        let serialized = deserialized.write();
+        let serialized = deserialized.writeJSON();
         assertSameJsObject(json.rawString()!, actual: serialized.rawString()!)
     }
     
     func testWithPrimitivesArray() {
         let json = try! jsonFile("WithPrimitivesArray.json");
-        let deserialized = WithPrimitivesArray.read(json);
+        let deserialized = WithPrimitivesArray.readJSON(json);
         
         let expected = WithPrimitivesArray(
             ints: [1, 2, 3],
@@ -101,13 +101,13 @@ class GeneratedCodeTests: XCTestCase {
             bytes: ["\u{0000}\u{0001}\u{0002}", "\u{0003}\u{0004}\u{0005}"])
         XCTAssertEqual(deserialized, expected)
         
-        let serialized = deserialized.write();
+        let serialized = deserialized.writeJSON();
         assertSameJsObject(json.rawString()!, actual: serialized.rawString()!)
     }
     
     func testWithPrimitivesMap() {
         let json = try! jsonFile("WithPrimitivesMap.json");
-        let deserialized = WithPrimitivesMap.read(json);
+        let deserialized = WithPrimitivesMap.readJSON(json);
         
         let expected = WithPrimitivesMap(
             ints: ["a": 1, "b": 2, "c": 3],
@@ -119,62 +119,133 @@ class GeneratedCodeTests: XCTestCase {
             bytes: ["a": "\u{0000}\u{0001}\u{0002}", "b": "\u{0003}\u{0004}\u{0005}", "c": "\u{0006}\u{0007}\u{8}"])
         XCTAssertEqual(deserialized, expected)
         
-        let serialized = deserialized.write();
+        let serialized = deserialized.writeJSON();
         assertSameJsObject(json.rawString()!, actual: serialized.rawString()!)
     }
     
     func testWithRecordArray() {
         let json = try! jsonFile("WithRecordArray.json");
-        let deserialized = WithRecordArray.read(json);
+        let deserialized = WithRecordArray.readJSON(json);
         
         let expected = WithRecordArray(
             empties: [Empty(), Empty(), Empty()],
             fruits: [Fruits.APPLE, Fruits.BANANA, Fruits.ORANGE])
         XCTAssertEqual(deserialized, expected)
         
-        let serialized = deserialized.write();
+        let serialized = deserialized.writeJSON();
         assertSameJsObject(json.rawString()!, actual: serialized.rawString()!)
     }
     
     func testWithTypedDefinition() {
         let json = try! jsonFile("WithTypedDefinition.json");
-        let deserialized = WithTypedDefinition.read(json);
+        let deserialized = WithTypedDefinition.readJSON(json);
         
         let expected = WithTypedDefinition(
             value: .MessageMember(Message(title: "title", body: "Hello, Swift.")))
         XCTAssertEqual(deserialized, expected)
         
-        let serialized = deserialized.write();
+        let serialized = deserialized.writeJSON();
         assertSameJsObject(json.rawString()!, actual: serialized.rawString()!)
     }
     
     func testWithTypedKeyMap() {
         let json = try! jsonFile("WithTypedKeyMap.json");
-        let deserialized = WithTypedKeyMap.read(json);
+        let deserialized = WithTypedKeyMap.readJSON(json);
         
         // TODO: implement once we have typed key maps
         
-        let serialized = deserialized.write();
+        let serialized = deserialized.writeJSON();
         assertSameJsObject(json.rawString()!, actual: serialized.rawString()!)
     }
     
     func testWithUnion() {
         let json = try! jsonFile("WithUnion.json");
-        let deserialized = WithUnion.read(json);
+        let deserialized = WithUnion.readJSON(json);
         
         let expected = WithUnion(value: .MessageMember(Message(title: "title", body: "Hello, Swift.")))
         XCTAssertEqual(deserialized, expected)
         
-        let serialized = deserialized.write();
+        let serialized = deserialized.writeJSON();
         assertSameJsObject(json.rawString()!, actual: serialized.rawString()!)
+    }
+    
+    func testWithComplexTypes() {
+        let json = try! jsonFile("WithComplexTypes.json");
+        let deserialized = WithComplexTypes.readJSON(json);
+        
+        let expected = WithComplexTypes(
+            record: Simple(message: "record"),
+            `enum`: Fruits.APPLE,
+            union: WithComplexTypes.Union.SimpleMember(Simple(message: "union")),
+            array: [1, 2],
+            map: ["a": 1, "b": 2],
+            complexMap: ["x": Simple(message: "complexMap")],
+            custom: 100)
+        XCTAssertEqual(deserialized, expected)
+        
+        let serialized = deserialized.writeJSON();
+        assertSameJsObject(json.rawString()!, actual: serialized.rawString()!)
+    }
+    
+    func testDataTreeWritable() {
+        let record = WithComplexTypes(
+            record: Simple(message: "record"),
+            `enum`: Fruits.APPLE,
+            union: WithComplexTypes.Union.SimpleMember(Simple(message: "union")),
+            array: [1, 2],
+            map: ["a": 1, "b": 2],
+            complexMap: ["x": Simple(message: "complexMap")],
+            custom: 100)
+        
+        let anyObject = record.writeData()
+        if let record = anyObject["record"] as? [String: String] {
+            XCTAssertEqual(record["message"], "record")
+        } else {
+            XCTFail()
+        }
+        if let `enum` = anyObject["enum"] as? String {
+            XCTAssertEqual(`enum`, "APPLE")
+        } else {
+            XCTFail()
+        }
+        if let union = anyObject["union"] as? [String: AnyObject] {
+            if let simple = union["org.coursera.records.test.Simple"] as? [String: String] {
+                XCTAssertEqual(simple["message"], "union")
+            } else {
+                XCTFail()
+            }
+        } else {
+            XCTFail()
+        }
+        if let array = anyObject["array"] as? [Int] {
+            XCTAssertEqual(array, [1, 2])
+        } else {
+            XCTFail()
+        }
+        if let map = anyObject["map"] as? [String: Int] {
+            XCTAssertEqual(map, ["a": 1, "b": 2])
+        } else {
+            XCTFail()
+        }
+        if let complexMap = anyObject["complexMap"] as? [String: AnyObject] {
+            if let simple = complexMap["x"] as? [String: String] {
+                XCTAssertEqual(simple["message"], "complexMap")
+            } else {
+                XCTFail()
+            }
+        } else {
+            XCTFail()
+        }
+        if let custom = anyObject["custom"] as? Int {
+            XCTAssertEqual(custom, 100)
+        } else {
+            XCTFail()
+        }
     }
 
     // TODO: This is lame.  I'd prefer use SwiftyJSON to do the comparison here as well, but was unable to 
     // figure out how to compare JSON correctly with it
     func assertSameJsObject(expected: String, actual: String) {
-        //print("actual:" + actual)
-        //print("expected:" + expected)
-
         let expectedData = expected.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)!
         let expectedObj = try! NSJSONSerialization.JSONObjectWithData(expectedData, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
         
@@ -185,7 +256,6 @@ class GeneratedCodeTests: XCTestCase {
     }
     
     func jsonFile(name: String) throws -> JSON {
-        print("directory: " + jsonDir)
         let jsonString = try! String(contentsOfFile: jsonDir + name)
         let dataFromString = jsonString.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)!
         return JSON(data: dataFromString)

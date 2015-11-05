@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct WithCustomTypesMap: JSONSerializable, Equatable {
+public struct WithCustomTypesMap: JSONSerializable, DataTreeSerializable, Equatable {
     
     public let ints: [String: Int]?
     
@@ -11,17 +11,23 @@ public struct WithCustomTypesMap: JSONSerializable, Equatable {
         self.ints = ints
     }
     
-    public static func read(json: JSON) -> WithCustomTypesMap {
+    public static func readJSON(json: JSON) -> WithCustomTypesMap {
         return WithCustomTypesMap(
             ints: json["ints"].dictionary.map { $0.mapValues { $0.intValue } }
         )
     }
-    public func write() -> JSON {
-        var json: [String : JSON] = [:]
+    public func writeJSON() -> JSON {
+        return JSON(self.writeData())
+    }
+    public static func readData(data: [String: AnyObject]) -> WithCustomTypesMap {
+        return readJSON(JSON(data))
+    }
+    public func writeData() -> [String: AnyObject] {
+        var dict: [String : AnyObject] = [:]
         if let ints = self.ints {
-            json["ints"] = JSON(ints)
+            dict["ints"] = ints
         }
-        return JSON(json)
+        return dict
     }
 }
 public func ==(lhs: WithCustomTypesMap, rhs: WithCustomTypesMap) -> Bool {

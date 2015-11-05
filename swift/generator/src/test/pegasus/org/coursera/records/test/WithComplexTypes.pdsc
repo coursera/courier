@@ -10,5 +10,8 @@
     { "name": "map", "type": { "type": "map", "values": "int" } },
     { "name": "complexMap", "type": { "type": "map", "values": "Simple" } },
     { "name": "custom", "type": "org.coursera.customtypes.CustomInt" }
-  ]
+  ],
+  "swift": {
+    "equatable": true
+  }
 }

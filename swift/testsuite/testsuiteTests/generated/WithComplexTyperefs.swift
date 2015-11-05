@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct WithComplexTyperefs: JSONSerializable {
+public struct WithComplexTyperefs: JSONSerializable, DataTreeSerializable {
     
     public let `enum`: Fruits?
     
@@ -27,32 +27,38 @@ public struct WithComplexTyperefs: JSONSerializable {
         self.union = union
     }
     
-    public static func read(json: JSON) -> WithComplexTyperefs {
+    public static func readJSON(json: JSON) -> WithComplexTyperefs {
         return WithComplexTyperefs(
             `enum`: json["enum"].string.map { Fruits.read($0) },
-            record: json["record"].json.map { Empty.read($0) },
-            map: json["map"].dictionary.map { $0.mapValues { Empty.read($0.jsonValue) } },
-            array: json["array"].array.map { $0.map { Empty.read($0.jsonValue) } },
-            union: json["union"].json.map { UnionTyperef.read($0) }
+            record: json["record"].json.map { Empty.readJSON($0) },
+            map: json["map"].dictionary.map { $0.mapValues { Empty.readJSON($0.jsonValue) } },
+            array: json["array"].array.map { $0.map { Empty.readJSON($0.jsonValue) } },
+            union: json["union"].json.map { UnionTyperef.readJSON($0) }
         )
     }
-    public func write() -> JSON {
-        var json: [String : JSON] = [:]
+    public func writeJSON() -> JSON {
+        return JSON(self.writeData())
+    }
+    public static func readData(data: [String: AnyObject]) -> WithComplexTyperefs {
+        return readJSON(JSON(data))
+    }
+    public func writeData() -> [String: AnyObject] {
+        var dict: [String : AnyObject] = [:]
         if let `enum` = self.`enum` {
-            json["enum"] = JSON(`enum`.write())
+            dict["enum"] = `enum`.write()
         }
         if let record = self.record {
-            json["record"] = record.write()
+            dict["record"] = record.writeData()
         }
         if let map = self.map {
-            json["map"] = JSON(map.mapValues { $0.write() })
+            dict["map"] = map.mapValues { $0.writeData() }
         }
         if let array = self.array {
-            json["array"] = JSON(array.map { $0.write() })
+            dict["array"] = array.map { $0.writeData() }
         }
         if let union = self.union {
-            json["union"] = union.write()
+            dict["union"] = union.writeData()
         }
-        return JSON(json)
+        return dict
     }
 }

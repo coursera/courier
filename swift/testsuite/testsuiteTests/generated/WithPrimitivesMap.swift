@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct WithPrimitivesMap: JSONSerializable, Equatable {
+public struct WithPrimitivesMap: JSONSerializable, DataTreeSerializable, Equatable {
     
     public let ints: [String: Int]?
     
@@ -35,7 +35,7 @@ public struct WithPrimitivesMap: JSONSerializable, Equatable {
         self.bytes = bytes
     }
     
-    public static func read(json: JSON) -> WithPrimitivesMap {
+    public static func readJSON(json: JSON) -> WithPrimitivesMap {
         return WithPrimitivesMap(
             ints: json["ints"].dictionary.map { $0.mapValues { $0.intValue } },
             longs: json["longs"].dictionary.map { $0.mapValues { $0.intValue } },
@@ -46,30 +46,36 @@ public struct WithPrimitivesMap: JSONSerializable, Equatable {
             bytes: json["bytes"].dictionary.map { $0.mapValues { $0.stringValue } }
         )
     }
-    public func write() -> JSON {
-        var json: [String : JSON] = [:]
+    public func writeJSON() -> JSON {
+        return JSON(self.writeData())
+    }
+    public static func readData(data: [String: AnyObject]) -> WithPrimitivesMap {
+        return readJSON(JSON(data))
+    }
+    public func writeData() -> [String: AnyObject] {
+        var dict: [String : AnyObject] = [:]
         if let ints = self.ints {
-            json["ints"] = JSON(ints)
+            dict["ints"] = ints
         }
         if let longs = self.longs {
-            json["longs"] = JSON(longs)
+            dict["longs"] = longs
         }
         if let floats = self.floats {
-            json["floats"] = JSON(floats)
+            dict["floats"] = floats
         }
         if let doubles = self.doubles {
-            json["doubles"] = JSON(doubles)
+            dict["doubles"] = doubles
         }
         if let booleans = self.booleans {
-            json["booleans"] = JSON(booleans)
+            dict["booleans"] = booleans
         }
         if let strings = self.strings {
-            json["strings"] = JSON(strings)
+            dict["strings"] = strings
         }
         if let bytes = self.bytes {
-            json["bytes"] = JSON(bytes)
+            dict["bytes"] = bytes
         }
-        return JSON(json)
+        return dict
     }
 }
 public func ==(lhs: WithPrimitivesMap, rhs: WithPrimitivesMap) -> Bool {

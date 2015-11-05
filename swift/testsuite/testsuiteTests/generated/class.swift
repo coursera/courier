@@ -1,17 +1,32 @@
 import Foundation
 import SwiftyJSON
 
-public struct `class`: JSONSerializable {
+public struct `class`: JSONSerializable, DataTreeSerializable {
+    
+    public let `private`: String?
     
     public init(
+        `private`: String?
     ) {
+        self.`private` = `private`
     }
     
-    public static func read(json: JSON) -> `class` {
+    public static func readJSON(json: JSON) -> `class` {
         return `class`(
+            `private`: json["private"].string
         )
     }
-    public func write() -> JSON {
-        return [:]
+    public func writeJSON() -> JSON {
+        return JSON(self.writeData())
+    }
+    public static func readData(data: [String: AnyObject]) -> `class` {
+        return readJSON(JSON(data))
+    }
+    public func writeData() -> [String: AnyObject] {
+        var dict: [String : AnyObject] = [:]
+        if let `private` = self.`private` {
+            dict["private"] = `private`
+        }
+        return dict
     }
 }

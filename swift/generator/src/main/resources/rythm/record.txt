@@ -14,7 +14,7 @@
 @{ String className = syntax.escapeKeyword(record.getClassName()) }
 
 @classAnnotations(record.getSchema())
-public struct @className: JSONSerializable@if (syntax.isEquatable()) {, Equatable} {
+public struct @className: JSONSerializable, DataTreeSerializable@if (syntax.isEquatable()) {, Equatable} {
   @for(Field field: record.getFields()) {
     @{ String fieldName = syntax.escapeKeyword(field.getSchemaField().getName()) }
     @fieldAnnotations(field)
@@ -34,31 +34,39 @@ public struct @className: JSONSerializable@if (syntax.isEquatable()) {, Equatabl
 
   @enclosedTypes(record, syntax)
 
-  public static func read(json: JSON) -> @className {
+  public static func readJSON(json: JSON) -> @className {
     return @(className)(
       @for(Field field: record.getFields()) {
       @(syntax.escapeKeyword(field.getSchemaField().getName())): @(swifty.toGetAccessor("json[\"" + field.getSchemaField().getName() + "\"]", field.getType(), syntax.isOptional(field)))@if(!field_isLast){,}
       })
   }
 
-  public func write() -> JSON {
+  public func writeJSON() -> JSON {
+    return JSON(self.writeData())
+  }
+
+  public static func readData(data: [String: AnyObject]) -> @className {
+    return readJSON(JSON(data))
+  }
+
+  public func writeData() -> [String: AnyObject] {
     @if(record.getFields().size() == 0) {
       return [:]
     } else {
-      var json: [String : JSON] = [:]
+      var dict: [String : AnyObject] = [:]
 
       @for(Field field: record.getFields()) {
         @{String fieldName = syntax.escapeKeyword(field.getSchemaField().getName())}
         @if(syntax.isOptional(field)) {
           if let @fieldName = self.@(fieldName) {
-            json["@(field.getSchemaField().getName())"] = @swifty.toSetAccessor(fieldName, field.getType())
+            dict["@(field.getSchemaField().getName())"] = @swifty.toSetAccessor(fieldName, field.getType())
           }
         } else {
-          json["@(field.getSchemaField().getName())"] = @swifty.toSetAccessor(fieldName, field.getType())
+          dict["@(field.getSchemaField().getName())"] = @swifty.toSetAccessor(fieldName, field.getType())
         }
       }
 
-      return JSON(json)
+      return dict
     }
   }
 

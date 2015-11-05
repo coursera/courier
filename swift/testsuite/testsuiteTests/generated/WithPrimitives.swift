@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct WithPrimitives: JSONSerializable, Equatable {
+public struct WithPrimitives: JSONSerializable, DataTreeSerializable, Equatable {
     
     public let intField: Int?
     
@@ -35,7 +35,7 @@ public struct WithPrimitives: JSONSerializable, Equatable {
         self.bytesField = bytesField
     }
     
-    public static func read(json: JSON) -> WithPrimitives {
+    public static func readJSON(json: JSON) -> WithPrimitives {
         return WithPrimitives(
             intField: json["intField"].int,
             longField: json["longField"].int,
@@ -46,30 +46,36 @@ public struct WithPrimitives: JSONSerializable, Equatable {
             bytesField: json["bytesField"].string
         )
     }
-    public func write() -> JSON {
-        var json: [String : JSON] = [:]
+    public func writeJSON() -> JSON {
+        return JSON(self.writeData())
+    }
+    public static func readData(data: [String: AnyObject]) -> WithPrimitives {
+        return readJSON(JSON(data))
+    }
+    public func writeData() -> [String: AnyObject] {
+        var dict: [String : AnyObject] = [:]
         if let intField = self.intField {
-            json["intField"] = JSON(intField)
+            dict["intField"] = intField
         }
         if let longField = self.longField {
-            json["longField"] = JSON(longField)
+            dict["longField"] = longField
         }
         if let floatField = self.floatField {
-            json["floatField"] = JSON(floatField)
+            dict["floatField"] = floatField
         }
         if let doubleField = self.doubleField {
-            json["doubleField"] = JSON(doubleField)
+            dict["doubleField"] = doubleField
         }
         if let booleanField = self.booleanField {
-            json["booleanField"] = JSON(booleanField)
+            dict["booleanField"] = booleanField
         }
         if let stringField = self.stringField {
-            json["stringField"] = JSON(stringField)
+            dict["stringField"] = stringField
         }
         if let bytesField = self.bytesField {
-            json["bytesField"] = JSON(bytesField)
+            dict["bytesField"] = bytesField
         }
-        return JSON(json)
+        return dict
     }
 }
 public func ==(lhs: WithPrimitives, rhs: WithPrimitives) -> Bool {

@@ -81,7 +81,7 @@ public class SwiftSyntax {
 
   private static final Set<String> reservedSymbols = new HashSet<String>(Arrays.asList(new String[]{
       // reserved by code generator
-      "read", "write", "validate", "json" // If removed, we potentially get "invalid redeclaration of write errors"
+      "readJSON", "writeJSON", "validate", "toData" // If removed, we potentially get "invalid redeclaration of write errors"
   }));
 
   /**

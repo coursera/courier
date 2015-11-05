@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct InlineRecord: JSONSerializable {
+public struct InlineRecord: JSONSerializable, DataTreeSerializable {
     
     public let value: Int?
     
@@ -11,16 +11,22 @@ public struct InlineRecord: JSONSerializable {
         self.value = value
     }
     
-    public static func read(json: JSON) -> InlineRecord {
+    public static func readJSON(json: JSON) -> InlineRecord {
         return InlineRecord(
             value: json["value"].int
         )
     }
-    public func write() -> JSON {
-        var json: [String : JSON] = [:]
+    public func writeJSON() -> JSON {
+        return JSON(self.writeData())
+    }
+    public static func readData(data: [String: AnyObject]) -> InlineRecord {
+        return readJSON(JSON(data))
+    }
+    public func writeData() -> [String: AnyObject] {
+        var dict: [String : AnyObject] = [:]
         if let value = self.value {
-            json["value"] = JSON(value)
+            dict["value"] = value
         }
-        return JSON(json)
+        return dict
     }
 }

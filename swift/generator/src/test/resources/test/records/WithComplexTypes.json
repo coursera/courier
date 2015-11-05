@@ -1,0 +1,9 @@
+{
+  "record": { "message": "record"},
+  "enum": "APPLE",
+  "union": { "org.coursera.records.test.Simple": { "message": "union" }},
+  "array": [1, 2],
+  "map": { "a": 1, "b": 2},
+  "complexMap": { "x": { "message": "complexMap"}},
+  "custom": 100
+}

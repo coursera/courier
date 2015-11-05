@@ -13,7 +13,7 @@
           return lhs == rhs
       }
       case (let .UNKNOWN$(lhs), let .UNKNOWN$(rhs)):
-          return lhs == rhs
+          return JSON(lhs) == JSON(rhs)
       default:
           return false
     }

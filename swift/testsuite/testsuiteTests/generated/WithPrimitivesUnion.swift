@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct WithPrimitivesUnion: JSONSerializable {
+public struct WithPrimitivesUnion: JSONSerializable, DataTreeSerializable {
     
     public let union: Union?
     
@@ -11,7 +11,7 @@ public struct WithPrimitivesUnion: JSONSerializable {
         self.union = union
     }
     
-    public enum Union: JSONSerializable {
+    public enum Union: JSONSerializable, DataTreeSerializable {
         case IntMember(Int)
         case LongMember(Int)
         case FloatMember(Float)
@@ -19,65 +19,77 @@ public struct WithPrimitivesUnion: JSONSerializable {
         case BooleanMember(Bool)
         case StringMember(String)
         case BytesMember(String)
-        case UNKNOWN$([String : JSON])
-        public static func read(json: JSON) -> Union {
-            let dictionary = json.dictionaryValue
-            if let member = dictionary["int"] {
+        case UNKNOWN$([String : AnyObject])
+        public static func readJSON(json: JSON) -> Union {
+            let dict = json.dictionaryValue
+            if let member = dict["int"] {
                 return .IntMember(member.intValue)
             }
-            if let member = dictionary["long"] {
+            if let member = dict["long"] {
                 return .LongMember(member.intValue)
             }
-            if let member = dictionary["float"] {
+            if let member = dict["float"] {
                 return .FloatMember(member.floatValue)
             }
-            if let member = dictionary["double"] {
+            if let member = dict["double"] {
                 return .DoubleMember(member.doubleValue)
             }
-            if let member = dictionary["boolean"] {
+            if let member = dict["boolean"] {
                 return .BooleanMember(member.boolValue)
             }
-            if let member = dictionary["string"] {
+            if let member = dict["string"] {
                 return .StringMember(member.stringValue)
             }
-            if let member = dictionary["bytes"] {
+            if let member = dict["bytes"] {
                 return .BytesMember(member.stringValue)
             }
-            return .UNKNOWN$(dictionary)
+            return .UNKNOWN$(json.dictionaryObject!)
         }
-        public func write() -> JSON {
+        public func writeJSON() -> JSON {
+            return JSON(self.writeData())
+        }
+        public static func readData(data: [String: AnyObject]) -> Union {
+            return readJSON(JSON(data))
+        }
+        public func writeData() -> [String: AnyObject] {
             switch self {
             case .IntMember(let member):
-                return JSON(["int": JSON(member)]);
+                return ["int": member];
             case .LongMember(let member):
-                return JSON(["long": JSON(member)]);
+                return ["long": member];
             case .FloatMember(let member):
-                return JSON(["float": JSON(member)]);
+                return ["float": member];
             case .DoubleMember(let member):
-                return JSON(["double": JSON(member)]);
+                return ["double": member];
             case .BooleanMember(let member):
-                return JSON(["boolean": JSON(member)]);
+                return ["boolean": member];
             case .StringMember(let member):
-                return JSON(["string": JSON(member)]);
+                return ["string": member];
             case .BytesMember(let member):
-                return JSON(["bytes": JSON(member)]);
-            case .UNKNOWN$(let dictionary):
-                return JSON(dictionary)
+                return ["bytes": member];
+            case .UNKNOWN$(let dict):
+                return dict
             }
         }
     }
     
-    public static func read(json: JSON) -> WithPrimitivesUnion {
+    public static func readJSON(json: JSON) -> WithPrimitivesUnion {
         return WithPrimitivesUnion(
-            union: json["union"].json.map { Union.read($0) }
+            union: json["union"].json.map { Union.readJSON($0) }
         )
     }
-    public func write() -> JSON {
-        var json: [String : JSON] = [:]
+    public func writeJSON() -> JSON {
+        return JSON(self.writeData())
+    }
+    public static func readData(data: [String: AnyObject]) -> WithPrimitivesUnion {
+        return readJSON(JSON(data))
+    }
+    public func writeData() -> [String: AnyObject] {
+        var dict: [String : AnyObject] = [:]
         if let union = self.union {
-            json["union"] = union.write()
+            dict["union"] = union.writeData()
         }
-        return JSON(json)
+        return dict
     }
 }
 

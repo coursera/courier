@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct Message: JSONSerializable, Equatable {
+public struct Message: JSONSerializable, DataTreeSerializable, Equatable {
     
     public let title: String?
     
@@ -15,21 +15,27 @@ public struct Message: JSONSerializable, Equatable {
         self.body = body
     }
     
-    public static func read(json: JSON) -> Message {
+    public static func readJSON(json: JSON) -> Message {
         return Message(
             title: json["title"].string,
             body: json["body"].string
         )
     }
-    public func write() -> JSON {
-        var json: [String : JSON] = [:]
+    public func writeJSON() -> JSON {
+        return JSON(self.writeData())
+    }
+    public static func readData(data: [String: AnyObject]) -> Message {
+        return readJSON(JSON(data))
+    }
+    public func writeData() -> [String: AnyObject] {
+        var dict: [String : AnyObject] = [:]
         if let title = self.title {
-            json["title"] = JSON(title)
+            dict["title"] = title
         }
         if let body = self.body {
-            json["body"] = JSON(body)
+            dict["body"] = body
         }
-        return JSON(json)
+        return dict
     }
 }
 public func ==(lhs: Message, rhs: Message) -> Bool {

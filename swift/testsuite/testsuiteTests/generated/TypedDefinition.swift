@@ -1,31 +1,37 @@
 import Foundation
 import SwiftyJSON
 
-public enum TypedDefinition: JSONSerializable, Equatable {
+public enum TypedDefinition: JSONSerializable, DataTreeSerializable, Equatable {
     
     case NoteMember(Note)
     
     case MessageMember(Message)
-    case UNKNOWN$([String : JSON])
+    case UNKNOWN$([String : AnyObject])
     
-    public static func read(json: JSON) -> TypedDefinition {
+    public static func readJSON(json: JSON) -> TypedDefinition {
         switch json["typeName"].stringValue {
         case "note":
-            return .NoteMember(Note.read(json["definition"].jsonValue))
+            return .NoteMember(Note.readJSON(json["definition"].jsonValue))
         case "message":
-            return .MessageMember(Message.read(json["definition"].jsonValue))
+            return .MessageMember(Message.readJSON(json["definition"].jsonValue))
         default:
-            return .UNKNOWN$(json.dictionaryValue)
+            return .UNKNOWN$(json.dictionaryObject!)
         }
     }
-    public func write() -> JSON {
+    public func writeJSON() -> JSON {
+        return JSON(self.writeData())
+    }
+    public static func readData(data: [String: AnyObject]) -> TypedDefinition {
+        return readJSON(JSON(data))
+    }
+    public func writeData() -> [String: AnyObject] {
         switch self {
         case .NoteMember(let member):
-            return JSON(["typeName": "note", "definition": member.write()]);
+            return ["typeName": "note", "definition": member.writeData()];
         case .MessageMember(let member):
-            return JSON(["typeName": "message", "definition": member.write()]);
-        case .UNKNOWN$(let json):
-            return JSON(json)
+            return ["typeName": "message", "definition": member.writeData()];
+        case .UNKNOWN$(let dict):
+            return dict
         }
     }
 }
@@ -37,7 +43,7 @@ public func ==(lhs: TypedDefinition, rhs: TypedDefinition) -> Bool {
     case (let .MessageMember(lhs), let .MessageMember(rhs)):
         return lhs == rhs
     case (let .UNKNOWN$(lhs), let .UNKNOWN$(rhs)):
-        return lhs == rhs
+        return JSON(lhs) == JSON(rhs)
     default:
         return false
     }

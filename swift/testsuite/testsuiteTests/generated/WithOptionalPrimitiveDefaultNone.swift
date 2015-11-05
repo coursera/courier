@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct WithOptionalPrimitiveDefaultNone: JSONSerializable {
+public struct WithOptionalPrimitiveDefaultNone: JSONSerializable, DataTreeSerializable {
     
     public let intWithDefault: Int?
     
@@ -39,7 +39,7 @@ public struct WithOptionalPrimitiveDefaultNone: JSONSerializable {
         self.enumWithDefault = enumWithDefault
     }
     
-    public static func read(json: JSON) -> WithOptionalPrimitiveDefaultNone {
+    public static func readJSON(json: JSON) -> WithOptionalPrimitiveDefaultNone {
         return WithOptionalPrimitiveDefaultNone(
             intWithDefault: json["intWithDefault"].int,
             longWithDefault: json["longWithDefault"].int,
@@ -51,32 +51,38 @@ public struct WithOptionalPrimitiveDefaultNone: JSONSerializable {
             enumWithDefault: json["enumWithDefault"].string.map { Fruits.read($0) }
         )
     }
-    public func write() -> JSON {
-        var json: [String : JSON] = [:]
+    public func writeJSON() -> JSON {
+        return JSON(self.writeData())
+    }
+    public static func readData(data: [String: AnyObject]) -> WithOptionalPrimitiveDefaultNone {
+        return readJSON(JSON(data))
+    }
+    public func writeData() -> [String: AnyObject] {
+        var dict: [String : AnyObject] = [:]
         if let intWithDefault = self.intWithDefault {
-            json["intWithDefault"] = JSON(intWithDefault)
+            dict["intWithDefault"] = intWithDefault
         }
         if let longWithDefault = self.longWithDefault {
-            json["longWithDefault"] = JSON(longWithDefault)
+            dict["longWithDefault"] = longWithDefault
         }
         if let floatWithDefault = self.floatWithDefault {
-            json["floatWithDefault"] = JSON(floatWithDefault)
+            dict["floatWithDefault"] = floatWithDefault
         }
         if let doubleWithDefault = self.doubleWithDefault {
-            json["doubleWithDefault"] = JSON(doubleWithDefault)
+            dict["doubleWithDefault"] = doubleWithDefault
         }
         if let booleanWithDefault = self.booleanWithDefault {
-            json["booleanWithDefault"] = JSON(booleanWithDefault)
+            dict["booleanWithDefault"] = booleanWithDefault
         }
         if let stringWithDefault = self.stringWithDefault {
-            json["stringWithDefault"] = JSON(stringWithDefault)
+            dict["stringWithDefault"] = stringWithDefault
         }
         if let bytesWithDefault = self.bytesWithDefault {
-            json["bytesWithDefault"] = JSON(bytesWithDefault)
+            dict["bytesWithDefault"] = bytesWithDefault
         }
         if let enumWithDefault = self.enumWithDefault {
-            json["enumWithDefault"] = JSON(enumWithDefault.write())
+            dict["enumWithDefault"] = enumWithDefault.write()
         }
-        return JSON(json)
+        return dict
     }
 }
