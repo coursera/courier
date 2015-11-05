@@ -66,7 +66,7 @@ public protocol DataTreeWritable {
   func writeData() -> [String: AnyObject]
 }
 
-public extension Dictionary {
+extension Dictionary {
     public init(_ elements: [Element]){
         self.init()
         for (k, v) in elements {
@@ -79,7 +79,7 @@ public extension Dictionary {
     }
 }
 
-public extension JSON {
+extension JSON {
 
     //Optional JSON
     public var json: JSON? {
@@ -113,7 +113,7 @@ public extension JSON {
 }
 
 // arrays of arrays
-public func ==<T: Equatable>(lhs: [[T]], rhs: [[T]]) -> Bool {
+func ==<T: Equatable>(lhs: [[T]], rhs: [[T]]) -> Bool {
     for (var i = 0; i < lhs.count; i++) {
         if (lhs[i] != rhs[i]) {
             return false
@@ -123,7 +123,7 @@ public func ==<T: Equatable>(lhs: [[T]], rhs: [[T]]) -> Bool {
 }
 
 // arrays of dictionaries
-public func ==<K, V: Equatable>(lhs: [[K:V]], rhs: [[K:V]]) -> Bool {
+func ==<K, V: Equatable>(lhs: [[K:V]], rhs: [[K:V]]) -> Bool {
     for (var i = 0; i < lhs.count; i++) {
         if (lhs[i] != rhs[i]) {
             return false
@@ -133,7 +133,7 @@ public func ==<K, V: Equatable>(lhs: [[K:V]], rhs: [[K:V]]) -> Bool {
 }
 
 // dictionaries of dictionaries
-public func ==<K, K2, V: Equatable>(lhs: [K:[K2:V]], rhs: [K:[K2:V]]) -> Bool {
+func ==<K, K2, V: Equatable>(lhs: [K:[K2:V]], rhs: [K:[K2:V]]) -> Bool {
     if (lhs.count != rhs.count) {
         return false
     }
@@ -150,7 +150,7 @@ public func ==<K, K2, V: Equatable>(lhs: [K:[K2:V]], rhs: [K:[K2:V]]) -> Bool {
 }
 
 // dictionaries of arrays
-public func ==<K, E: Equatable>(lhs: [K:[E]], rhs: [K:[E]]) -> Bool {
+func ==<K, E: Equatable>(lhs: [K:[E]], rhs: [K:[E]]) -> Bool {
     if (lhs.count != rhs.count) {
         return false
     }
@@ -167,7 +167,7 @@ public func ==<K, E: Equatable>(lhs: [K:[E]], rhs: [K:[E]]) -> Bool {
 }
 
 // dictionaries of arrays of arrays
-public func ==<K, E: Equatable>(lhs: [K:[[E]]], rhs: [K:[[E]]]) -> Bool {
+func ==<K, E: Equatable>(lhs: [K:[[E]]], rhs: [K:[[E]]]) -> Bool {
     if (lhs.count != rhs.count) {
         return false
     }
