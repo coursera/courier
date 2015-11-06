@@ -1,9 +1,17 @@
 //
-//  testsuiteTests.swift
-//  testsuiteTests
+// Copyright 2015 Coursera Inc.
 //
-//  Created by Joe Betz on 10/16/15.
-//  Copyright © 2015 Joe Betz. All rights reserved.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 
 import XCTest
@@ -188,16 +196,7 @@ class GeneratedCodeTests: XCTestCase {
     }
     
     func testDataTreeWritable() {
-        let record = WithComplexTypes(
-            record: Simple(message: "record"),
-            `enum`: Fruits.APPLE,
-            union: WithComplexTypes.Union.SimpleMember(Simple(message: "union")),
-            array: [1, 2],
-            map: ["a": 1, "b": 2],
-            complexMap: ["x": Simple(message: "complexMap")],
-            custom: 100)
-        
-        let anyObject = record.writeData()
+        let anyObject = withComplexTypesFixture.writeData()
         if let record = anyObject["record"] as? [String: String] {
             XCTAssertEqual(record["message"], "record")
         } else {
@@ -242,6 +241,23 @@ class GeneratedCodeTests: XCTestCase {
             XCTFail()
         }
     }
+    
+    func testDataTreeSerializable() {
+        let data = withComplexTypesFixture.writeData()
+        let roundTripped = WithComplexTypes.readData(data)
+        XCTAssertEqual(withComplexTypesFixture, roundTripped)
+    }
+    
+    func testNSCoding() {
+        let archived = NSKeyedArchiver.archivedDataWithRootObject(withComplexTypesFixture.writeData())
+        
+        if let unarchived = NSKeyedUnarchiver.unarchiveObjectWithData(archived) as? [String: AnyObject]{
+            let deserialized = WithComplexTypes.readData(unarchived)
+            XCTAssertEqual(withComplexTypesFixture, deserialized)
+        } else {
+            XCTFail()
+        }
+    }
 
     // TODO: This is lame.  I'd prefer use SwiftyJSON to do the comparison here as well, but was unable to 
     // figure out how to compare JSON correctly with it
@@ -260,4 +276,13 @@ class GeneratedCodeTests: XCTestCase {
         let dataFromString = jsonString.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)!
         return JSON(data: dataFromString)
     }
+    
+    let withComplexTypesFixture = WithComplexTypes(
+        record: Simple(message: "record"),
+        `enum`: Fruits.APPLE,
+        union: WithComplexTypes.Union.SimpleMember(Simple(message: "union")),
+        array: [1, 2],
+        map: ["a": 1, "b": 2],
+        complexMap: ["x": Simple(message: "complexMap")],
+        custom: 100)
 }

@@ -43,7 +43,6 @@ import org.coursera.courier.swift.SwiftProperties.Optionality;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -53,11 +52,14 @@ import java.util.Set;
 public class SwiftSyntax {
 
   private final ClassTemplateSpec classSpec;
-  public final SwiftProperties swiftProperties;
+  private final SwiftProperties swiftProperties;
+  private final GlobalConfig globalConfig;
 
-  public SwiftSyntax(ClassTemplateSpec classSpec, SwiftProperties swiftProperties) {
+  public SwiftSyntax(
+      ClassTemplateSpec classSpec, SwiftProperties swiftProperties, GlobalConfig globalConfig) {
     this.classSpec = classSpec;
     this.swiftProperties = swiftProperties;
+    this.globalConfig = globalConfig;
   }
 
   private static final Set<String> swiftKeywords = new HashSet<String>(Arrays.asList(new String[]{
@@ -146,8 +148,8 @@ public class SwiftSyntax {
     if (classSpec instanceof UnionTemplateSpec) {
       UnionTemplateSpec unionSpec = (UnionTemplateSpec)classSpec;
       TyperefTemplateSpec typerefSpec = unionSpec.getTyperefClass();
-      if (typerefSpec == null) return SwiftProperties.DEFAULT.equatable;
-      return SwiftProperties.lookupSwiftProperties(typerefSpec).equatable;
+      if (typerefSpec == null) return globalConfig.defaults.equatable;
+      return globalConfig.lookupSwiftProperties(typerefSpec).equatable;
     } else {
       return swiftProperties.equatable;
     }
