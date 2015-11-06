@@ -21,8 +21,8 @@ import com.linkedin.pegasus.generator.spec.ClassTemplateSpec;
 import com.linkedin.pegasus.generator.spec.EnumTemplateSpec;
 import com.linkedin.pegasus.generator.spec.RecordTemplateSpec;
 import com.linkedin.pegasus.generator.spec.UnionTemplateSpec;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.coursera.courier.swift.GlobalConfig;
 import org.coursera.courier.swift.SwiftProperties;
 import org.coursera.courier.swift.SwiftSyntax;
 import org.coursera.courier.swift.PoorMansSwiftSourceFormatter;
@@ -39,7 +39,6 @@ import org.rythmengine.resource.ClasspathResourceLoader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -47,30 +46,49 @@ import java.util.Collections;
  * Courier code generator for Swift.
  */
 public class SwiftGenerator implements PegasusCodeGenerator {
+  private static final SwiftProperties.Optionality defaultOptionality =
+      SwiftProperties.Optionality.REQUIRED_FIELDS_MAY_BE_ABSENT;
+
+  private final GlobalConfig globalConfig;
   private final RythmEngine engine;
 
   public static void main(String[] args) throws Throwable {
-    if (args.length != 3) {
+    // TODO(jbetz): use a CLI parser library
+
+    if (args.length < 3 || args.length > 4) {
       throw new IllegalArgumentException(
-          "Usage: targetPath resolverPath sourcePath1[:sourcePath2]+");
+          "Usage: targetPath resolverPath1[:resolverPath2]+ sourcePath1[:sourcePath2]+ [REQUIRED_FIELDS_MAY_BE_ABSENT|STRICT]");
     }
     String targetPath = args[0];
     String resolverPath = args[1];
     String sourcePathString = args[2];
     String[] sourcePaths = sourcePathString.split(":");
 
+    SwiftProperties.Optionality optionality = defaultOptionality;
+    if (args.length > 3) {
+      optionality = SwiftProperties.Optionality.valueOf(args[3]);
+    }
+
     GeneratorRunnerOptions options =
         new GeneratorRunnerOptions(targetPath, sourcePaths, resolverPath);
 
-    new DefaultGeneratorRunner().run(new SwiftGenerator(), options);
+    GlobalConfig globalConfig = new GlobalConfig(optionality, false);
+    new DefaultGeneratorRunner().run(new SwiftGenerator(globalConfig), options);
 
     InputStream runtime = ClassLoader.getSystemResourceAsStream("runtime/CourierRuntime.swift");
     IOUtils.copy(runtime, new FileOutputStream(new File(targetPath, "CourierRuntime.swift")));
   }
 
   public SwiftGenerator() {
-    engine = new RythmEngine();
-    engine.registerResourceLoader(new ClasspathResourceLoader(engine, "/"));
+    this(new GlobalConfig(
+        defaultOptionality,
+        false));
+  }
+
+  public SwiftGenerator(GlobalConfig globalConfig) {
+    this.globalConfig = globalConfig;
+    this.engine = new RythmEngine();
+    this.engine.registerResourceLoader(new ClasspathResourceLoader(engine, "/"));
   }
 
   public static class SwiftCompilationUnit extends GeneratedCodeTargetFile {
@@ -86,8 +104,8 @@ public class SwiftGenerator implements PegasusCodeGenerator {
   public GeneratedCode generate(ClassTemplateSpec templateSpec) {
 
     String code;
-    SwiftProperties swiftProperties = SwiftProperties.lookupSwiftProperties(templateSpec);
-    SwiftSyntax syntax = new SwiftSyntax(templateSpec, swiftProperties);
+    SwiftProperties swiftProperties = globalConfig.lookupSwiftProperties(templateSpec);
+    SwiftSyntax syntax = new SwiftSyntax(templateSpec, swiftProperties, globalConfig);
     SwiftyJSON swifty = new SwiftyJSON(syntax);
 
     if (templateSpec instanceof RecordTemplateSpec) {

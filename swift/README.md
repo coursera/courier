@@ -88,8 +88,8 @@ struct Fortune: JSONSerializable {
     let telling: Telling
     let createdAt: DateTime
 
-    static func read(json: JSON) -> Fortune
-    func write() -> JSON
+    static func readJSON(json: JSON) -> Fortune
+    func writeJSON() -> JSON
 }
 ```
 
@@ -132,8 +132,8 @@ enum AnswerFormat: JSONSerializable {
     case MultipleChoiceMember(MultipleChoice)
     case UNKNOWN$
 
-    static func read(json: JSON) -> Fortune
-    func write() -> JSON
+    static func readJSON(json: JSON) -> Fortune
+    func writeJSON() -> JSON
 }
 ```
 
@@ -165,15 +165,21 @@ Example(array: [Note("hello"), Note("bye!")]) == Example(array: [Note("hello"), 
 Example(array: [Note("hello"), Note("bye!")]).hashvalue == Example(array: [Note("hello"), Note("bye!")]).hashvalue // -> true
 ```
 
-Projections
------------
+Projections and Optionality
+---------------------------
 
 When using REST frameworks like Naptime, it is common to send and receive partial data.  This
 is very commonly used when a subset of fields of a resources are "projected".
 
 Since even fields that are marked as required in a Pegasus schema may be absent when data is
-projected, all fields are optional in generated Swift bindings.  This allows a single
+projected, Courier's [Optionality](https://github.com/coursera/courier/blob/master/swift/generator/src/main/java/org/coursera/courier/swift/SwiftProperties.java#L31)
+settings defaults to REQUIRED_FIELDS_MAY_BE_ABSENT.  This allows a single
 generated Swift struct to be used for bindings to unprojected and projected data.
+
+If this behaviour is not desired, one may set `Optionality` to `STRICT`.
+
+See the [Optionality property docs](https://github.com/coursera/courier/blob/master/swift/generator/src/main/java/org/coursera/courier/swift/SwiftProperties.java#L8)
+for details on how to set the `Optionality` property.
 
 Namespaces
 ----------
@@ -215,17 +221,35 @@ are generated to use SwiftyJSON's `JSON` type.
 
 For example, to read JSON:
 
-```
+```swift
 let json = JSON("{ \"body\": \"Hello Pegasus!\"}")
-let message = Message.read(json)
-message.write() // -> { "body": "Hello Pegasus!" }
+let message = Message.readJSON(json)
+message.writeJSON() // -> { "body": "Hello Pegasus!" }
 
 ```
+
+NSCoding Serialization
+----------------------
+
+```swift
+let json = JSON("{ \"body\": \"Hello Pegasus!\"}")
+let message = Message.readJSON(json)
+
+// serialize to NSData:
+let archived = NSKeyedArchiver.archivedDataWithRootObject(message.writeData())
+
+// deserialize from NSData:
+if let unarchived = NSKeyedUnarchiver.unarchiveObjectWithData(archived) as? [String: AnyObject] {
+  let deserialized = Message.readData(unarchived)
+  // do something
+}
+```
+
 
 Binary Protocols
 ----------------
 
-TODO: implement
+TODO: Implement PSON or one of the other wire format binary protocols used by the Pegasus ecosystem. 
 
 
 Runtime library
