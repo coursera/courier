@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct WithRecordArray: JSONSerializable, DataTreeSerializable, Equatable {
+public struct WithRecordArray: Serializable, Equatable {
     
     public let empties: [Empty]?
     
@@ -20,12 +20,6 @@ public struct WithRecordArray: JSONSerializable, DataTreeSerializable, Equatable
             empties: try json["empties"].array.map { try $0.map { try Empty.readJSON($0.jsonValue) } },
             fruits: json["fruits"].array.map { $0.map { Fruits.read($0.stringValue) } }
         )
-    }
-    public func writeJSON() -> JSON {
-        return JSON(self.writeData())
-    }
-    public static func readData(data: [String: AnyObject]) throws -> WithRecordArray {
-        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

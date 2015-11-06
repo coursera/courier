@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct WithCustomIntWrapper: JSONSerializable, DataTreeSerializable {
+public struct WithCustomIntWrapper: Serializable {
     
     public let wrapper: Int?
     
@@ -15,12 +15,6 @@ public struct WithCustomIntWrapper: JSONSerializable, DataTreeSerializable {
         return WithCustomIntWrapper(
             wrapper: json["wrapper"].int
         )
-    }
-    public func writeJSON() -> JSON {
-        return JSON(self.writeData())
-    }
-    public static func readData(data: [String: AnyObject]) throws -> WithCustomIntWrapper {
-        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

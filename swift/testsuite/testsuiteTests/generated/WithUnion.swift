@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct WithUnion: JSONSerializable, DataTreeSerializable, Equatable {
+public struct WithUnion: Serializable, Equatable {
     
     public let value: Union?
     
@@ -15,12 +15,6 @@ public struct WithUnion: JSONSerializable, DataTreeSerializable, Equatable {
         return WithUnion(
             value: try json["value"].json.map { try Union.readJSON($0) }
         )
-    }
-    public func writeJSON() -> JSON {
-        return JSON(self.writeData())
-    }
-    public static func readData(data: [String: AnyObject]) throws -> WithUnion {
-        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

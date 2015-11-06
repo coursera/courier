@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public enum WithCustomTypesArrayUnion: JSONSerializable, DataTreeSerializable, Equatable {
+public enum WithCustomTypesArrayUnion: Serializable, Equatable {
     
     case IntMember(Int)
     
@@ -26,12 +26,6 @@ public enum WithCustomTypesArrayUnion: JSONSerializable, DataTreeSerializable, E
         } else {
             throw ReadError.MalformedUnion
         }
-    }
-    public func writeJSON() -> JSON {
-        return JSON(self.writeData())
-    }
-    public static func readData(data: [String: AnyObject]) throws -> WithCustomTypesArrayUnion {
-        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         switch self {

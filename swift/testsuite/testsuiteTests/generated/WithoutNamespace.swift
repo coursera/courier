@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct WithoutNamespace: JSONSerializable, DataTreeSerializable {
+public struct WithoutNamespace: Serializable {
     
     public let field1: String?
     
@@ -15,12 +15,6 @@ public struct WithoutNamespace: JSONSerializable, DataTreeSerializable {
         return WithoutNamespace(
             field1: json["field1"].string
         )
-    }
-    public func writeJSON() -> JSON {
-        return JSON(self.writeData())
-    }
-    public static func readData(data: [String: AnyObject]) throws -> WithoutNamespace {
-        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

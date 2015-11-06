@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public enum UnionTyperef: JSONSerializable, DataTreeSerializable {
+public enum UnionTyperef: Serializable {
     
     case StringMember(String)
     
@@ -21,12 +21,6 @@ public enum UnionTyperef: JSONSerializable, DataTreeSerializable {
         } else {
             throw ReadError.MalformedUnion
         }
-    }
-    public func writeJSON() -> JSON {
-        return JSON(self.writeData())
-    }
-    public static func readData(data: [String: AnyObject]) throws -> UnionTyperef {
-        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         switch self {

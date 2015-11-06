@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct DefaultLiteralEscaping: JSONSerializable, DataTreeSerializable {
+public struct DefaultLiteralEscaping: Serializable {
     
     public let stringField: String?
     
@@ -15,12 +15,6 @@ public struct DefaultLiteralEscaping: JSONSerializable, DataTreeSerializable {
         return DefaultLiteralEscaping(
             stringField: json["stringField"].string
         )
-    }
-    public func writeJSON() -> JSON {
-        return JSON(self.writeData())
-    }
-    public static func readData(data: [String: AnyObject]) throws -> DefaultLiteralEscaping {
-        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct WithPrimitivesMap: JSONSerializable, DataTreeSerializable, Equatable {
+public struct WithPrimitivesMap: Serializable, Equatable {
     
     public let ints: [String: Int]?
     
@@ -45,12 +45,6 @@ public struct WithPrimitivesMap: JSONSerializable, DataTreeSerializable, Equatab
             strings: json["strings"].dictionary.map { $0.mapValues { $0.stringValue } },
             bytes: json["bytes"].dictionary.map { $0.mapValues { $0.stringValue } }
         )
-    }
-    public func writeJSON() -> JSON {
-        return JSON(self.writeData())
-    }
-    public static func readData(data: [String: AnyObject]) throws -> WithPrimitivesMap {
-        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

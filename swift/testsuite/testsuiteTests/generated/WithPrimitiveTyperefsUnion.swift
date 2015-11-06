@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct WithPrimitiveTyperefsUnion: JSONSerializable, DataTreeSerializable {
+public struct WithPrimitiveTyperefsUnion: Serializable {
     
     public let union: Union?
     
@@ -11,7 +11,7 @@ public struct WithPrimitiveTyperefsUnion: JSONSerializable, DataTreeSerializable
         self.union = union
     }
     
-    public enum Union: JSONSerializable, DataTreeSerializable {
+    public enum Union: Serializable {
         case IntMember(Int)
         case UNKNOWN$([String : AnyObject])
         public static func readJSON(json: JSON) throws -> Union {
@@ -24,12 +24,6 @@ public struct WithPrimitiveTyperefsUnion: JSONSerializable, DataTreeSerializable
             } else {
                 throw ReadError.MalformedUnion
             }
-        }
-        public func writeJSON() -> JSON {
-            return JSON(self.writeData())
-        }
-        public static func readData(data: [String: AnyObject]) throws -> Union {
-            return try readJSON(JSON(data))
         }
         public func writeData() -> [String: AnyObject] {
             switch self {
@@ -45,12 +39,6 @@ public struct WithPrimitiveTyperefsUnion: JSONSerializable, DataTreeSerializable
         return WithPrimitiveTyperefsUnion(
             union: try json["union"].json.map { try Union.readJSON($0) }
         )
-    }
-    public func writeJSON() -> JSON {
-        return JSON(self.writeData())
-    }
-    public static func readData(data: [String: AnyObject]) throws -> WithPrimitiveTyperefsUnion {
-        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

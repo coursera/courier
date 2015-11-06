@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct WithCustomTypesMap: JSONSerializable, DataTreeSerializable, Equatable {
+public struct WithCustomTypesMap: Serializable, Equatable {
     
     public let ints: [String: Int]?
     
@@ -15,12 +15,6 @@ public struct WithCustomTypesMap: JSONSerializable, DataTreeSerializable, Equata
         return WithCustomTypesMap(
             ints: json["ints"].dictionary.map { $0.mapValues { $0.intValue } }
         )
-    }
-    public func writeJSON() -> JSON {
-        return JSON(self.writeData())
-    }
-    public static func readData(data: [String: AnyObject]) throws -> WithCustomTypesMap {
-        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

@@ -10,7 +10,7 @@
   @classAnnotations(union.getTyperefClass().getSchema())
 }
 
-public enum @className: JSONSerializable, DataTreeSerializable@if (syntax.isEquatable()) {, Equatable} {
+public enum @className: Serializable@if (syntax.isEquatable()) {, Equatable} {
   @for(Member member: union.getMembers()) {
     @{ String unionMemberName = syntax.toUnionMemberName(member.getClassTemplateSpec()) }
     case @(unionMemberName)(@syntax.toType(member.getClassTemplateSpec(), false))

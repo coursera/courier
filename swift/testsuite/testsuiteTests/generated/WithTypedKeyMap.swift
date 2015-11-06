@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct WithTypedKeyMap: JSONSerializable, DataTreeSerializable, Equatable {
+public struct WithTypedKeyMap: Serializable, Equatable {
     
     public let ints: [String: String]?
     
@@ -75,12 +75,6 @@ public struct WithTypedKeyMap: JSONSerializable, DataTreeSerializable, Equatable
             fixed: json["fixed"].dictionary.map { $0.mapValues { $0.stringValue } },
             inlineRecord: json["inlineRecord"].dictionary.map { $0.mapValues { $0.stringValue } }
         )
-    }
-    public func writeJSON() -> JSON {
-        return JSON(self.writeData())
-    }
-    public static func readData(data: [String: AnyObject]) throws -> WithTypedKeyMap {
-        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

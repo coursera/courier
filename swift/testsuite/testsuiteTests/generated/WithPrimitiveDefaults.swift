@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct WithPrimitiveDefaults: JSONSerializable, DataTreeSerializable {
+public struct WithPrimitiveDefaults: Serializable {
     
     public let intWithDefault: Int?
     
@@ -50,12 +50,6 @@ public struct WithPrimitiveDefaults: JSONSerializable, DataTreeSerializable {
             bytesWithDefault: json["bytesWithDefault"].string,
             enumWithDefault: json["enumWithDefault"].string.map { Fruits.read($0) }
         )
-    }
-    public func writeJSON() -> JSON {
-        return JSON(self.writeData())
-    }
-    public static func readData(data: [String: AnyObject]) throws -> WithPrimitiveDefaults {
-        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]
