@@ -1,0 +1,5 @@
+namespace org.coursera.fortune
+
+record Note {
+  message: string
+}
