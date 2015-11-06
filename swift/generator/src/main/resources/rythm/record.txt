@@ -14,7 +14,7 @@
 @{ String className = syntax.escapeKeyword(record.getClassName()) }
 
 @classAnnotations(record.getSchema())
-public struct @className: JSONSerializable, DataTreeSerializable@if (syntax.isEquatable()) {, Equatable} {
+public struct @className: Serializable@if (syntax.isEquatable()) {, Equatable} {
   @for(Field field: record.getFields()) {
     @{ String fieldName = syntax.escapeKeyword(field.getSchemaField().getName()) }
     @fieldAnnotations(field)
@@ -39,14 +39,6 @@ public struct @className: JSONSerializable, DataTreeSerializable@if (syntax.isEq
       @for(Field field: record.getFields()) {
       @(syntax.escapeKeyword(field.getSchemaField().getName())): @(swifty.toGetAccessor("json[\"" + field.getSchemaField().getName() + "\"]", field.getType(), syntax.isOptional(field)))@if(!field_isLast){,}
       })
-  }
-
-  public func writeJSON() -> JSON {
-    return JSON(self.writeData())
-  }
-
-  public static func readData(data: [String: AnyObject]) throws -> @className {
-    return try readJSON(JSON(data))
   }
 
   public func writeData() -> [String: AnyObject] {

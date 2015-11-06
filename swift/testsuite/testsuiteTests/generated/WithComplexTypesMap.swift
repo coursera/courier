@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct WithComplexTypesMap: JSONSerializable, DataTreeSerializable, Equatable {
+public struct WithComplexTypesMap: Serializable, Equatable {
     
     public let empties: [String: Empty]?
     
@@ -40,12 +40,6 @@ public struct WithComplexTypesMap: JSONSerializable, DataTreeSerializable, Equat
             unions: try json["unions"].dictionary.map { try $0.mapValues { try WithComplexTypesMapUnion.readJSON($0.jsonValue) } },
             fixed: json["fixed"].dictionary.map { $0.mapValues { $0.stringValue } }
         )
-    }
-    public func writeJSON() -> JSON {
-        return JSON(self.writeData())
-    }
-    public static func readData(data: [String: AnyObject]) throws -> WithComplexTypesMap {
-        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

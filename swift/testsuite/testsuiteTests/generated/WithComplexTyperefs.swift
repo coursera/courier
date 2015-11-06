@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct WithComplexTyperefs: JSONSerializable, DataTreeSerializable {
+public struct WithComplexTyperefs: Serializable {
     
     public let `enum`: Fruits?
     
@@ -35,12 +35,6 @@ public struct WithComplexTyperefs: JSONSerializable, DataTreeSerializable {
             array: try json["array"].array.map { try $0.map { try Empty.readJSON($0.jsonValue) } },
             union: try json["union"].json.map { try UnionTyperef.readJSON($0) }
         )
-    }
-    public func writeJSON() -> JSON {
-        return JSON(self.writeData())
-    }
-    public static func readData(data: [String: AnyObject]) throws -> WithComplexTyperefs {
-        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

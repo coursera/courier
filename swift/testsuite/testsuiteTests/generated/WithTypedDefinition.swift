@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct WithTypedDefinition: JSONSerializable, DataTreeSerializable, Equatable {
+public struct WithTypedDefinition: Serializable, Equatable {
     
     public let value: TypedDefinition?
     
@@ -15,12 +15,6 @@ public struct WithTypedDefinition: JSONSerializable, DataTreeSerializable, Equat
         return WithTypedDefinition(
             value: try json["value"].json.map { try TypedDefinition.readJSON($0) }
         )
-    }
-    public func writeJSON() -> JSON {
-        return JSON(self.writeData())
-    }
-    public static func readData(data: [String: AnyObject]) throws -> WithTypedDefinition {
-        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

@@ -4,7 +4,7 @@ import SwiftyJSON
 /**
     A simple record
 */
-public struct Simple: JSONSerializable, DataTreeSerializable, Equatable {
+public struct Simple: Serializable, Equatable {
     
     /**
         A simple field
@@ -21,12 +21,6 @@ public struct Simple: JSONSerializable, DataTreeSerializable, Equatable {
         return Simple(
             message: json["message"].string
         )
-    }
-    public func writeJSON() -> JSON {
-        return JSON(self.writeData())
-    }
-    public static func readData(data: [String: AnyObject]) throws -> Simple {
-        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

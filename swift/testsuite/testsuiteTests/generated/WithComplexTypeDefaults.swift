@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct WithComplexTypeDefaults: JSONSerializable, DataTreeSerializable {
+public struct WithComplexTypeDefaults: Serializable {
     
     public let record: Simple?
     
@@ -31,7 +31,7 @@ public struct WithComplexTypeDefaults: JSONSerializable, DataTreeSerializable {
         self.custom = custom
     }
     
-    public enum Union: JSONSerializable, DataTreeSerializable {
+    public enum Union: Serializable {
         case IntMember(Int)
         case StringMember(String)
         case SimpleMember(Simple)
@@ -52,12 +52,6 @@ public struct WithComplexTypeDefaults: JSONSerializable, DataTreeSerializable {
             } else {
                 throw ReadError.MalformedUnion
             }
-        }
-        public func writeJSON() -> JSON {
-            return JSON(self.writeData())
-        }
-        public static func readData(data: [String: AnyObject]) throws -> Union {
-            return try readJSON(JSON(data))
         }
         public func writeData() -> [String: AnyObject] {
             switch self {
@@ -82,12 +76,6 @@ public struct WithComplexTypeDefaults: JSONSerializable, DataTreeSerializable {
             map: json["map"].dictionary.map { $0.mapValues { $0.intValue } },
             custom: json["custom"].int
         )
-    }
-    public func writeJSON() -> JSON {
-        return JSON(self.writeData())
-    }
-    public static func readData(data: [String: AnyObject]) throws -> WithComplexTypeDefaults {
-        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

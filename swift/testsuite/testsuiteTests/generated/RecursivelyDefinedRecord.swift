@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct RecursivelyDefinedRecord: JSONSerializable, DataTreeSerializable {
+public struct RecursivelyDefinedRecord: Serializable {
     
     public let `self`: RecursivelyDefinedRecord?
     
@@ -15,12 +15,6 @@ public struct RecursivelyDefinedRecord: JSONSerializable, DataTreeSerializable {
         return RecursivelyDefinedRecord(
             `self`: try json["self"].json.map { try RecursivelyDefinedRecord.readJSON($0) }
         )
-    }
-    public func writeJSON() -> JSON {
-        return JSON(self.writeData())
-    }
-    public static func readData(data: [String: AnyObject]) throws -> RecursivelyDefinedRecord {
-        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

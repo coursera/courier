@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct ReservedClassFieldEscaping: JSONSerializable, DataTreeSerializable {
+public struct ReservedClassFieldEscaping: Serializable {
     
     public let json: String?
     
@@ -25,12 +25,6 @@ public struct ReservedClassFieldEscaping: JSONSerializable, DataTreeSerializable
             read: json["read"].string,
             write: json["write"].string
         )
-    }
-    public func writeJSON() -> JSON {
-        return JSON(self.writeData())
-    }
-    public static func readData(data: [String: AnyObject]) throws -> ReservedClassFieldEscaping {
-        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct WithComplexTypes: JSONSerializable, DataTreeSerializable, Equatable {
+public struct WithComplexTypes: Serializable, Equatable {
     
     public let record: Simple?
     
@@ -35,7 +35,7 @@ public struct WithComplexTypes: JSONSerializable, DataTreeSerializable, Equatabl
         self.custom = custom
     }
     
-    public enum Union: JSONSerializable, DataTreeSerializable, Equatable {
+    public enum Union: Serializable, Equatable {
         case IntMember(Int)
         case StringMember(String)
         case SimpleMember(Simple)
@@ -56,12 +56,6 @@ public struct WithComplexTypes: JSONSerializable, DataTreeSerializable, Equatabl
             } else {
                 throw ReadError.MalformedUnion
             }
-        }
-        public func writeJSON() -> JSON {
-            return JSON(self.writeData())
-        }
-        public static func readData(data: [String: AnyObject]) throws -> Union {
-            return try readJSON(JSON(data))
         }
         public func writeData() -> [String: AnyObject] {
             switch self {
@@ -87,12 +81,6 @@ public struct WithComplexTypes: JSONSerializable, DataTreeSerializable, Equatabl
             complexMap: try json["complexMap"].dictionary.map { try $0.mapValues { try Simple.readJSON($0.jsonValue) } },
             custom: json["custom"].int
         )
-    }
-    public func writeJSON() -> JSON {
-        return JSON(self.writeData())
-    }
-    public static func readData(data: [String: AnyObject]) throws -> WithComplexTypes {
-        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

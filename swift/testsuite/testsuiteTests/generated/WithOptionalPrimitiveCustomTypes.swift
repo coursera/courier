@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct WithOptionalPrimitiveCustomTypes: JSONSerializable, DataTreeSerializable {
+public struct WithOptionalPrimitiveCustomTypes: Serializable {
     
     public let intField: Int?
     
@@ -15,12 +15,6 @@ public struct WithOptionalPrimitiveCustomTypes: JSONSerializable, DataTreeSerial
         return WithOptionalPrimitiveCustomTypes(
             intField: json["intField"].int
         )
-    }
-    public func writeJSON() -> JSON {
-        return JSON(self.writeData())
-    }
-    public static func readData(data: [String: AnyObject]) throws -> WithOptionalPrimitiveCustomTypes {
-        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

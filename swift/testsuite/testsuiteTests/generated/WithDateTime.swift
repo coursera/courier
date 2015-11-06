@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct WithDateTime: JSONSerializable, DataTreeSerializable {
+public struct WithDateTime: Serializable {
     
     public let time: Int?
     
@@ -15,12 +15,6 @@ public struct WithDateTime: JSONSerializable, DataTreeSerializable {
         return WithDateTime(
             time: json["time"].int
         )
-    }
-    public func writeJSON() -> JSON {
-        return JSON(self.writeData())
-    }
-    public static func readData(data: [String: AnyObject]) throws -> WithDateTime {
-        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

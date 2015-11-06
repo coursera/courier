@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct KeywordEscaping: JSONSerializable, DataTreeSerializable {
+public struct KeywordEscaping: Serializable {
     
     public let `default`: String?
     
@@ -15,12 +15,6 @@ public struct KeywordEscaping: JSONSerializable, DataTreeSerializable {
         return KeywordEscaping(
             `default`: json["default"].string
         )
-    }
-    public func writeJSON() -> JSON {
-        return JSON(self.writeData())
-    }
-    public static func readData(data: [String: AnyObject]) throws -> KeywordEscaping {
-        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

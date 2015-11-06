@@ -18,28 +18,11 @@ import Foundation
 import SwiftyJSON
 
 /**
-  Serializable to and from JSON via SwiftyJson.
-*/
-public protocol JSONSerializable: JSONReadable, JSONWritable {}
+  Serializable to:
 
-/**
-  Readable from JSON via SwiftyJson.
-*/
-public protocol JSONReadable {
-    static func readJSON(json: JSON) throws -> Self
-}
+  JSON - via SwiftyJson
 
-/**
-  Writable to JSON via SwiftyJson.
-*/
-public protocol JSONWritable {
-    func writeJSON() -> JSON
-}
-
-/**
-  Readable and writable as a "DataTree".
-
-  A "DataTree" is a "JSON equivalent" data structure composed of the following
+  "DataTrees" - a "JSON equivalent" data structure composed of the following
   Swift types:
 
   * `[String: AnyObject]` - Equivalent to a JSON object.
@@ -50,20 +33,37 @@ public protocol JSONWritable {
   field names used as map keys. If a optional field is `nil` valued it is simply left absent
   from the map.
 */
-public protocol DataTreeSerializable: DataTreeReadable, DataTreeWritable {}
+public protocol Serializable {
 
-/**
-  Readable from a "DataTree".
-*/
-public protocol DataTreeReadable {
+  /**
+    Read from JSON via SwiftyJson.
+  */
+  static func readJSON(json: JSON) throws -> Self
+
+  /**
+    Write to JSON via SwiftyJson.
+  */
+  func writeJSON() -> JSON
+
+  /**
+    Read from a "DataTree".
+  */
   static func readData(data: [String: AnyObject]) throws -> Self
+
+  /**
+    Write to a "DataTree".
+  */
+  func writeData() -> [String: AnyObject]
 }
 
-/**
-  Writable to a "DataTree".
-*/
-public protocol DataTreeWritable {
-  func writeData() -> [String: AnyObject]
+extension Serializable {
+    public static func readData(data: [String: AnyObject]) throws -> Self {
+        return try readJSON(JSON(data))
+    }
+
+    public func writeJSON() -> JSON {
+        return JSON(writeData())
+    }
 }
 
 public enum ReadError: ErrorType {
