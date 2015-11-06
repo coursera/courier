@@ -15,7 +15,7 @@ public struct Message: JSONSerializable, DataTreeSerializable, Equatable {
         self.body = body
     }
     
-    public static func readJSON(json: JSON) -> Message {
+    public static func readJSON(json: JSON) throws -> Message {
         return Message(
             title: json["title"].string,
             body: json["body"].string
@@ -24,8 +24,8 @@ public struct Message: JSONSerializable, DataTreeSerializable, Equatable {
     public func writeJSON() -> JSON {
         return JSON(self.writeData())
     }
-    public static func readData(data: [String: AnyObject]) -> Message {
-        return readJSON(JSON(data))
+    public static func readData(data: [String: AnyObject]) throws -> Message {
+        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

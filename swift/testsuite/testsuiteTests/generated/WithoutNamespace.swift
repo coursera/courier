@@ -11,7 +11,7 @@ public struct WithoutNamespace: JSONSerializable, DataTreeSerializable {
         self.field1 = field1
     }
     
-    public static func readJSON(json: JSON) -> WithoutNamespace {
+    public static func readJSON(json: JSON) throws -> WithoutNamespace {
         return WithoutNamespace(
             field1: json["field1"].string
         )
@@ -19,8 +19,8 @@ public struct WithoutNamespace: JSONSerializable, DataTreeSerializable {
     public func writeJSON() -> JSON {
         return JSON(self.writeData())
     }
-    public static func readData(data: [String: AnyObject]) -> WithoutNamespace {
-        return readJSON(JSON(data))
+    public static func readData(data: [String: AnyObject]) throws -> WithoutNamespace {
+        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

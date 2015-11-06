@@ -34,7 +34,7 @@ public struct @className: JSONSerializable, DataTreeSerializable@if (syntax.isEq
 
   @enclosedTypes(record, syntax)
 
-  public static func readJSON(json: JSON) -> @className {
+  public static func readJSON(json: JSON) throws -> @className {
     return @(className)(
       @for(Field field: record.getFields()) {
       @(syntax.escapeKeyword(field.getSchemaField().getName())): @(swifty.toGetAccessor("json[\"" + field.getSchemaField().getName() + "\"]", field.getType(), syntax.isOptional(field)))@if(!field_isLast){,}
@@ -45,8 +45,8 @@ public struct @className: JSONSerializable, DataTreeSerializable@if (syntax.isEq
     return JSON(self.writeData())
   }
 
-  public static func readData(data: [String: AnyObject]) -> @className {
-    return readJSON(JSON(data))
+  public static func readData(data: [String: AnyObject]) throws -> @className {
+    return try readJSON(JSON(data))
   }
 
   public func writeData() -> [String: AnyObject] {

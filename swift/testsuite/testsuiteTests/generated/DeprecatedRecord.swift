@@ -18,7 +18,7 @@ public struct DeprecatedRecord: JSONSerializable, DataTreeSerializable {
         self.field2 = field2
     }
     
-    public static func readJSON(json: JSON) -> DeprecatedRecord {
+    public static func readJSON(json: JSON) throws -> DeprecatedRecord {
         return DeprecatedRecord(
             field1: json["field1"].string,
             field2: json["field2"].string
@@ -27,8 +27,8 @@ public struct DeprecatedRecord: JSONSerializable, DataTreeSerializable {
     public func writeJSON() -> JSON {
         return JSON(self.writeData())
     }
-    public static func readData(data: [String: AnyObject]) -> DeprecatedRecord {
-        return readJSON(JSON(data))
+    public static func readData(data: [String: AnyObject]) throws -> DeprecatedRecord {
+        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

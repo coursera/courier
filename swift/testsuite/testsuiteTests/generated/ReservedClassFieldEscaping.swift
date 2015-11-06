@@ -19,7 +19,7 @@ public struct ReservedClassFieldEscaping: JSONSerializable, DataTreeSerializable
         self.write = write
     }
     
-    public static func readJSON(json: JSON) -> ReservedClassFieldEscaping {
+    public static func readJSON(json: JSON) throws -> ReservedClassFieldEscaping {
         return ReservedClassFieldEscaping(
             json: json["json"].string,
             read: json["read"].string,
@@ -29,8 +29,8 @@ public struct ReservedClassFieldEscaping: JSONSerializable, DataTreeSerializable
     public func writeJSON() -> JSON {
         return JSON(self.writeData())
     }
-    public static func readData(data: [String: AnyObject]) -> ReservedClassFieldEscaping {
-        return readJSON(JSON(data))
+    public static func readData(data: [String: AnyObject]) throws -> ReservedClassFieldEscaping {
+        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

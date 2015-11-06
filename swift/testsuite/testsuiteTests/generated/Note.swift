@@ -11,7 +11,7 @@ public struct Note: JSONSerializable, DataTreeSerializable, Equatable {
         self.text = text
     }
     
-    public static func readJSON(json: JSON) -> Note {
+    public static func readJSON(json: JSON) throws -> Note {
         return Note(
             text: json["text"].string
         )
@@ -19,8 +19,8 @@ public struct Note: JSONSerializable, DataTreeSerializable, Equatable {
     public func writeJSON() -> JSON {
         return JSON(self.writeData())
     }
-    public static func readData(data: [String: AnyObject]) -> Note {
-        return readJSON(JSON(data))
+    public static func readData(data: [String: AnyObject]) throws -> Note {
+        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

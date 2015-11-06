@@ -11,7 +11,7 @@ public struct WithDateTime: JSONSerializable, DataTreeSerializable {
         self.time = time
     }
     
-    public static func readJSON(json: JSON) -> WithDateTime {
+    public static func readJSON(json: JSON) throws -> WithDateTime {
         return WithDateTime(
             time: json["time"].int
         )
@@ -19,8 +19,8 @@ public struct WithDateTime: JSONSerializable, DataTreeSerializable {
     public func writeJSON() -> JSON {
         return JSON(self.writeData())
     }
-    public static func readData(data: [String: AnyObject]) -> WithDateTime {
-        return readJSON(JSON(data))
+    public static func readData(data: [String: AnyObject]) throws -> WithDateTime {
+        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

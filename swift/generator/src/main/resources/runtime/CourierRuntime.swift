@@ -26,7 +26,7 @@ public protocol JSONSerializable: JSONReadable, JSONWritable {}
   Readable from JSON via SwiftyJson.
 */
 public protocol JSONReadable {
-    static func readJSON(json: JSON) -> Self
+    static func readJSON(json: JSON) throws -> Self
 }
 
 /**
@@ -39,7 +39,7 @@ public protocol JSONWritable {
 /**
   Readable and writable as a "DataTree".
 
-  a "DataTree" is a "JSON equivalent" data structure composed of the following
+  A "DataTree" is a "JSON equivalent" data structure composed of the following
   Swift types:
 
   * `[String: AnyObject]` - Equivalent to a JSON object.
@@ -56,7 +56,7 @@ public protocol DataTreeSerializable: DataTreeReadable, DataTreeWritable {}
   Readable from a "DataTree".
 */
 public protocol DataTreeReadable {
-  static func readData(data: [String: AnyObject]) -> Self
+  static func readData(data: [String: AnyObject]) throws -> Self
 }
 
 /**
@@ -64,6 +64,11 @@ public protocol DataTreeReadable {
 */
 public protocol DataTreeWritable {
   func writeData() -> [String: AnyObject]
+}
+
+public enum ReadError: ErrorType {
+  case MalformedUnion
+  case WrongType
 }
 
 extension Dictionary {
@@ -74,8 +79,8 @@ extension Dictionary {
         }
     }
 
-    public func mapValues<U>(transform: Value -> U) -> [Key : U] {
-        return Dictionary<Key, U>(self.map{ (key, value) in (key, transform(value)) })
+    public func mapValues<U>(transform: Value throws -> U) rethrows -> [Key : U] {
+        return Dictionary<Key, U>(try self.map { (key, value) in (key, try transform(value)) })
     }
 }
 

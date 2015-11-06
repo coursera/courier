@@ -35,7 +35,7 @@ public struct WithPrimitives: JSONSerializable, DataTreeSerializable, Equatable 
         self.bytesField = bytesField
     }
     
-    public static func readJSON(json: JSON) -> WithPrimitives {
+    public static func readJSON(json: JSON) throws -> WithPrimitives {
         return WithPrimitives(
             intField: json["intField"].int,
             longField: json["longField"].int,
@@ -49,8 +49,8 @@ public struct WithPrimitives: JSONSerializable, DataTreeSerializable, Equatable 
     public func writeJSON() -> JSON {
         return JSON(self.writeData())
     }
-    public static func readData(data: [String: AnyObject]) -> WithPrimitives {
-        return readJSON(JSON(data))
+    public static func readData(data: [String: AnyObject]) throws -> WithPrimitives {
+        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

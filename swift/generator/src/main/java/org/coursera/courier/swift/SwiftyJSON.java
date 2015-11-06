@@ -47,46 +47,82 @@ public class SwiftyJSON {
   }
 
   public String toGetAccessor(String anchor, ClassTemplateSpec spec, boolean isOptional) {
+    return toTryGetAccessor(anchor, spec, isOptional).toString();
+  }
+
+  private TryAccessor toTryGetAccessor(String anchor, ClassTemplateSpec spec, boolean isOptional) {
     if (spec.getSchema().isPrimitive() || spec.getSchema().getType() == DataSchema.Type.FIXED) {
       return toAccessor(anchor, spec, isOptional);
     } else {
-      return toWrappedGetAccessor(anchor, spec, isOptional);
+      return toWrappedTryGetAccessor(anchor, spec, isOptional);
     }
   }
 
-  public String toWrappedGetAccessor(String anchor, ClassTemplateSpec spec, boolean isOptional) {
-    String directAccessor =  toAccessor(anchor, spec, isOptional);
+  private TryAccessor toWrappedTryGetAccessor(String anchor, ClassTemplateSpec spec, boolean isOptional) {
+    TryAccessor directAccessor = toAccessor(anchor, spec, isOptional);
     if (isOptional) {
-      return directAccessor + ".map { "+ toWrappedGetAccessor("$0", spec) + " }";
+      TryAccessor wrapped = toWrappedTryGetAccessor("$0", spec);
+      return wrapped.maybeTry(directAccessor + ".map { "+ wrapped + " }");
     } else {
-      return toWrappedGetAccessor(directAccessor, spec);
+      return toWrappedTryGetAccessor(directAccessor.toString(), spec);
     }
   }
 
-  public String toWrappedGetAccessor(String anchor, ClassTemplateSpec spec) {
+  private static class TryAccessor {
+    public final String accessor;
+    public final Boolean mightThrow;
+    public TryAccessor(String accessor, Boolean mightThrow) {
+      this.accessor = accessor;
+      this.mightThrow = mightThrow;
+    }
+
+    public TryAccessor maybeTry(String wrappedAccessor) {
+      if (mightThrow) {
+        return new TryAccessor("try " + wrappedAccessor, true);
+      } else {
+        return new TryAccessor(wrappedAccessor, false);
+      }
+    }
+
+    public String toString() {
+      return accessor;
+    }
+  }
+
+  private static TryAccessor accessorWithTry(String accessor) {
+    return new TryAccessor(accessor, true);
+  }
+
+  private static TryAccessor accessor(String accessor) {
+    return new TryAccessor(accessor, false);
+  }
+
+  private TryAccessor toWrappedTryGetAccessor(String anchor, ClassTemplateSpec spec) {
     DataSchema.Type schemaType = spec.getSchema().getType();
     if (schemaType == DataSchema.Type.ENUM) {
       EnumTemplateSpec enumSpec = (EnumTemplateSpec)spec;
-      return enumSpec.getClassName() + ".read(" + anchor + ")";
+      return accessor(enumSpec.getClassName() + ".read(" + anchor + ")");
     } else if (schemaType == DataSchema.Type.RECORD) {
       RecordTemplateSpec recordSpec = (RecordTemplateSpec)spec;
-      return recordSpec.getClassName() + ".readJSON(" + anchor + ")";
+      return accessorWithTry("try " + recordSpec.getClassName() + ".readJSON(" + anchor + ")");
     } else if (schemaType == DataSchema.Type.UNION) {
       UnionTemplateSpec unionSpec = (UnionTemplateSpec)spec;
-      return unionSpec.getClassName() + ".readJSON(" + anchor + ")";
+      return accessorWithTry("try " + unionSpec.getClassName() + ".readJSON(" + anchor + ")");
     } else if (schemaType == DataSchema.Type.MAP) {
       CourierMapTemplateSpec mapSpec = (CourierMapTemplateSpec)spec;
-      return anchor + ".mapValues { " + toGetAccessor("$0", mapSpec.getValueClass(), false) + " }";
+      TryAccessor wrapped = toTryGetAccessor("$0", mapSpec.getValueClass(), false);
+      return wrapped.maybeTry(anchor + ".mapValues { " + wrapped.toString() + " }");
     } else if (schemaType == DataSchema.Type.ARRAY) {
       ArrayTemplateSpec arraySpec = (ArrayTemplateSpec)spec;
-      return anchor + ".map { " + toGetAccessor("$0", arraySpec.getItemClass(), false) + " }";
+      TryAccessor wrapped = toTryGetAccessor("$0", arraySpec.getItemClass(), false);
+      return wrapped.maybeTry(anchor + ".map { " + wrapped.toString() + " }");
     } else {
       throw new IllegalArgumentException("unrecognized type: " + schemaType);
     }
   }
 
-  public String toAccessor(String anchor, ClassTemplateSpec spec, boolean isOptional) {
-    return anchor + "." + maybeDirectOptional(swiftyType(spec), isOptional);
+  public TryAccessor toAccessor(String anchor, ClassTemplateSpec spec, boolean isOptional) {
+    return accessor(anchor + "." + maybeDirectOptional(swiftyType(spec), isOptional));
   }
 
   public String swiftyType(ClassTemplateSpec spec) {

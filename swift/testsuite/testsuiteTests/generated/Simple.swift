@@ -17,7 +17,7 @@ public struct Simple: JSONSerializable, DataTreeSerializable, Equatable {
         self.message = message
     }
     
-    public static func readJSON(json: JSON) -> Simple {
+    public static func readJSON(json: JSON) throws -> Simple {
         return Simple(
             message: json["message"].string
         )
@@ -25,8 +25,8 @@ public struct Simple: JSONSerializable, DataTreeSerializable, Equatable {
     public func writeJSON() -> JSON {
         return JSON(self.writeData())
     }
-    public static func readData(data: [String: AnyObject]) -> Simple {
-        return readJSON(JSON(data))
+    public static func readData(data: [String: AnyObject]) throws -> Simple {
+        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

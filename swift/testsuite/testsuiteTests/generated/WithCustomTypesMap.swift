@@ -11,7 +11,7 @@ public struct WithCustomTypesMap: JSONSerializable, DataTreeSerializable, Equata
         self.ints = ints
     }
     
-    public static func readJSON(json: JSON) -> WithCustomTypesMap {
+    public static func readJSON(json: JSON) throws -> WithCustomTypesMap {
         return WithCustomTypesMap(
             ints: json["ints"].dictionary.map { $0.mapValues { $0.intValue } }
         )
@@ -19,8 +19,8 @@ public struct WithCustomTypesMap: JSONSerializable, DataTreeSerializable, Equata
     public func writeJSON() -> JSON {
         return JSON(self.writeData())
     }
-    public static func readData(data: [String: AnyObject]) -> WithCustomTypesMap {
-        return readJSON(JSON(data))
+    public static func readData(data: [String: AnyObject]) throws -> WithCustomTypesMap {
+        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

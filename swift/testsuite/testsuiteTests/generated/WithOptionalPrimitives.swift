@@ -35,7 +35,7 @@ public struct WithOptionalPrimitives: JSONSerializable, DataTreeSerializable {
         self.bytesField = bytesField
     }
     
-    public static func readJSON(json: JSON) -> WithOptionalPrimitives {
+    public static func readJSON(json: JSON) throws -> WithOptionalPrimitives {
         return WithOptionalPrimitives(
             intField: json["intField"].int,
             longField: json["longField"].int,
@@ -49,8 +49,8 @@ public struct WithOptionalPrimitives: JSONSerializable, DataTreeSerializable {
     public func writeJSON() -> JSON {
         return JSON(self.writeData())
     }
-    public static func readData(data: [String: AnyObject]) -> WithOptionalPrimitives {
-        return readJSON(JSON(data))
+    public static func readData(data: [String: AnyObject]) throws -> WithOptionalPrimitives {
+        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

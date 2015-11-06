@@ -11,16 +11,16 @@ public struct WithFlatTypedDefinition: JSONSerializable, DataTreeSerializable, E
         self.value = value
     }
     
-    public static func readJSON(json: JSON) -> WithFlatTypedDefinition {
+    public static func readJSON(json: JSON) throws -> WithFlatTypedDefinition {
         return WithFlatTypedDefinition(
-            value: json["value"].json.map { FlatTypedDefinition.readJSON($0) }
+            value: try json["value"].json.map { try FlatTypedDefinition.readJSON($0) }
         )
     }
     public func writeJSON() -> JSON {
         return JSON(self.writeData())
     }
-    public static func readData(data: [String: AnyObject]) -> WithFlatTypedDefinition {
-        return readJSON(JSON(data))
+    public static func readData(data: [String: AnyObject]) throws -> WithFlatTypedDefinition {
+        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

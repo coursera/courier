@@ -11,7 +11,7 @@ public struct WithPrimitiveCustomTypes: JSONSerializable, DataTreeSerializable {
         self.intField = intField
     }
     
-    public static func readJSON(json: JSON) -> WithPrimitiveCustomTypes {
+    public static func readJSON(json: JSON) throws -> WithPrimitiveCustomTypes {
         return WithPrimitiveCustomTypes(
             intField: json["intField"].int
         )
@@ -19,8 +19,8 @@ public struct WithPrimitiveCustomTypes: JSONSerializable, DataTreeSerializable {
     public func writeJSON() -> JSON {
         return JSON(self.writeData())
     }
-    public static func readData(data: [String: AnyObject]) -> WithPrimitiveCustomTypes {
-        return readJSON(JSON(data))
+    public static func readData(data: [String: AnyObject]) throws -> WithPrimitiveCustomTypes {
+        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

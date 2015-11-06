@@ -11,7 +11,7 @@ public struct WithCustomIntWrapper: JSONSerializable, DataTreeSerializable {
         self.wrapper = wrapper
     }
     
-    public static func readJSON(json: JSON) -> WithCustomIntWrapper {
+    public static func readJSON(json: JSON) throws -> WithCustomIntWrapper {
         return WithCustomIntWrapper(
             wrapper: json["wrapper"].int
         )
@@ -19,8 +19,8 @@ public struct WithCustomIntWrapper: JSONSerializable, DataTreeSerializable {
     public func writeJSON() -> JSON {
         return JSON(self.writeData())
     }
-    public static func readData(data: [String: AnyObject]) -> WithCustomIntWrapper {
-        return readJSON(JSON(data))
+    public static func readData(data: [String: AnyObject]) throws -> WithCustomIntWrapper {
+        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

@@ -20,7 +20,7 @@ public struct WithPrimitivesUnion: JSONSerializable, DataTreeSerializable {
         case StringMember(String)
         case BytesMember(String)
         case UNKNOWN$([String : AnyObject])
-        public static func readJSON(json: JSON) -> Union {
+        public static func readJSON(json: JSON) throws -> Union {
             let dict = json.dictionaryValue
             if let member = dict["int"] {
                 return .IntMember(member.intValue)
@@ -43,13 +43,17 @@ public struct WithPrimitivesUnion: JSONSerializable, DataTreeSerializable {
             if let member = dict["bytes"] {
                 return .BytesMember(member.stringValue)
             }
-            return .UNKNOWN$(json.dictionaryObject!)
+            if let unknownDict = json.dictionaryObject {
+                return .UNKNOWN$(unknownDict)
+            } else {
+                throw ReadError.MalformedUnion
+            }
         }
         public func writeJSON() -> JSON {
             return JSON(self.writeData())
         }
-        public static func readData(data: [String: AnyObject]) -> Union {
-            return readJSON(JSON(data))
+        public static func readData(data: [String: AnyObject]) throws -> Union {
+            return try readJSON(JSON(data))
         }
         public func writeData() -> [String: AnyObject] {
             switch self {
@@ -73,16 +77,16 @@ public struct WithPrimitivesUnion: JSONSerializable, DataTreeSerializable {
         }
     }
     
-    public static func readJSON(json: JSON) -> WithPrimitivesUnion {
+    public static func readJSON(json: JSON) throws -> WithPrimitivesUnion {
         return WithPrimitivesUnion(
-            union: json["union"].json.map { Union.readJSON($0) }
+            union: try json["union"].json.map { try Union.readJSON($0) }
         )
     }
     public func writeJSON() -> JSON {
         return JSON(self.writeData())
     }
-    public static func readData(data: [String: AnyObject]) -> WithPrimitivesUnion {
-        return readJSON(JSON(data))
+    public static func readData(data: [String: AnyObject]) throws -> WithPrimitivesUnion {
+        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

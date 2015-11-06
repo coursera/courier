@@ -36,7 +36,7 @@ public struct WithOptionalComplexTypes: JSONSerializable, DataTreeSerializable {
         case StringMember(String)
         case SimpleMember(Simple)
         case UNKNOWN$([String : AnyObject])
-        public static func readJSON(json: JSON) -> Union {
+        public static func readJSON(json: JSON) throws -> Union {
             let dict = json.dictionaryValue
             if let member = dict["int"] {
                 return .IntMember(member.intValue)
@@ -45,15 +45,19 @@ public struct WithOptionalComplexTypes: JSONSerializable, DataTreeSerializable {
                 return .StringMember(member.stringValue)
             }
             if let member = dict["org.coursera.records.test.Simple"] {
-                return .SimpleMember(Simple.readJSON(member.jsonValue))
+                return .SimpleMember(try Simple.readJSON(member.jsonValue))
             }
-            return .UNKNOWN$(json.dictionaryObject!)
+            if let unknownDict = json.dictionaryObject {
+                return .UNKNOWN$(unknownDict)
+            } else {
+                throw ReadError.MalformedUnion
+            }
         }
         public func writeJSON() -> JSON {
             return JSON(self.writeData())
         }
-        public static func readData(data: [String: AnyObject]) -> Union {
-            return readJSON(JSON(data))
+        public static func readData(data: [String: AnyObject]) throws -> Union {
+            return try readJSON(JSON(data))
         }
         public func writeData() -> [String: AnyObject] {
             switch self {
@@ -69,11 +73,11 @@ public struct WithOptionalComplexTypes: JSONSerializable, DataTreeSerializable {
         }
     }
     
-    public static func readJSON(json: JSON) -> WithOptionalComplexTypes {
+    public static func readJSON(json: JSON) throws -> WithOptionalComplexTypes {
         return WithOptionalComplexTypes(
-            record: json["record"].json.map { Simple.readJSON($0) },
+            record: try json["record"].json.map { try Simple.readJSON($0) },
             `enum`: json["enum"].string.map { Fruits.read($0) },
-            union: json["union"].json.map { Union.readJSON($0) },
+            union: try json["union"].json.map { try Union.readJSON($0) },
             array: json["array"].array.map { $0.map { $0.intValue } },
             map: json["map"].dictionary.map { $0.mapValues { $0.intValue } },
             custom: json["custom"].int
@@ -82,8 +86,8 @@ public struct WithOptionalComplexTypes: JSONSerializable, DataTreeSerializable {
     public func writeJSON() -> JSON {
         return JSON(self.writeData())
     }
-    public static func readData(data: [String: AnyObject]) -> WithOptionalComplexTypes {
-        return readJSON(JSON(data))
+    public static func readData(data: [String: AnyObject]) throws -> WithOptionalComplexTypes {
+        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]
