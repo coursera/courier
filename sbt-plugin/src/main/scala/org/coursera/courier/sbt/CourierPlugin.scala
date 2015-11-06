@@ -43,20 +43,20 @@ import xsbti.Severity
  */
 object CourierPlugin extends Plugin {
 
-  val courierGenerator = taskKey[Seq[File]]("Generates Scala bindings for .pdsc files")
+  val courierGenerator = taskKey[Seq[File]]("Generates Scala bindings for .pdsc and .courier files")
 
   val courierGeneratorClass = settingKey[Class[_ <: PegasusCodeGenerator]](
     "PegasusCodeGenerator implementation class run by this generator.")
 
   val courierSourceDirectory = settingKey[File](
-    "Directory with .pdsc files used to generate Scala bindings")
+    "Directory with .pdsc and .courier files used to generate Scala bindings")
 
   val courierDestinationDirectory = settingKey[File]("Directory with the generated bindings")
 
   val courierPrefix = settingKey[Option[String]](
     "Namespace prefix used for generated Scala classes")
 
-  val courierCacheSources = taskKey[File]("Caches .pdsc sources")
+  val courierCacheSources = taskKey[File]("Caches .pdsc and .courier sources")
 
   val packageDataModel = taskKey[File]("Produces a data model jar containing only pdsc files")
 
@@ -89,7 +89,7 @@ object CourierPlugin extends Plugin {
 
     courierCacheSources in conf := (streams in conf).value.cacheDirectory / "pdsc.sources",
 
-    watchSources in conf := ((courierSourceDirectory in conf).value ** "*.pdsc").get,
+    watchSources in conf := ((courierSourceDirectory in conf).value ** sourceFileFilter).get,
 
     courierGenerator in conf := {
       // Allow use of slf4j logging inside the generator code that we call into later
@@ -110,7 +110,7 @@ object CourierPlugin extends Plugin {
       val resolverPath = resolverPathFiles.mkString(pathSeparator)
 
       val cacheFileSources = (courierCacheSources in conf).value
-      val sourceFiles = (src ** "*.pdsc").get
+      val sourceFiles = (src ** sourceFileFilter).get
       val previousScalaFiles = (dst ** "*.scala").get
 
       val (anyFilesChanged, cacheSourceFiles) = {
@@ -119,7 +119,7 @@ object CourierPlugin extends Plugin {
 
       log.debug("Detected changed files: " + anyFilesChanged)
       val results = if (anyFilesChanged) {
-        log.info("Courier: Generating Scala bindings for .pdsc files.")
+        log.info("Courier: Generating Scala bindings for .pdsc and .courier files.")
         log.debug("Courier resolver path: " + resolverPath)
         log.debug("Courier source path: " + src)
         log.debug("Courier destination path: " + dst)
@@ -179,6 +179,8 @@ object CourierPlugin extends Plugin {
 
     generateTyperefs in conf := false)
 
+  private[this] val sourceFileFilter: FileFilter = ("*.pdsc" || "*.courier")
+
   private[this] val JsonParseExceptionRegExp =
     """(?s).*\[Source: (.*?); line: (\d*), column: (\d*)\].*?""".r
 
@@ -225,16 +227,15 @@ object CourierPlugin extends Plugin {
   /**
    * Finds descendants of `dir` matching `globExpr` and maps them to paths relative to `dir`.
    */
-  private[this] def pegasusMappings(dir : File, globExpr : String): Seq[(File, String)] = {
-    val filter = GlobFilter(globExpr)
-    Seq(dir).flatMap(d => Path.allSubpaths(d).filter{ case (f, id) => filter.accept(f) } )
+  private[this] def pegasusMappings(dir : File, fileFilter : FileFilter): Seq[(File, String)] = {
+    Seq(dir).flatMap(d => Path.allSubpaths(d).filter{ case (f, id) => fileFilter.accept(f) } )
   }
 
   // Returns settings that can be applied to a project to cause it to package the Pegasus artifacts.
   private[this] def pegasusArtifacts(conf: Configuration): Seq[Def.Setting[_]] = {
     def packageDataModelMappings: Def.Initialize[Task[Seq[(File, String)]]] =
       (courierSourceDirectory in conf).map { (dir) =>
-        pegasusMappings(dir, "*.pdsc")
+        pegasusMappings(dir, sourceFileFilter)
       }
 
     // The resulting settings create the two packaging tasks, put their artifacts in specific
