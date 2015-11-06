@@ -11,7 +11,7 @@ public struct `class`: JSONSerializable, DataTreeSerializable {
         self.`private` = `private`
     }
     
-    public static func readJSON(json: JSON) -> `class` {
+    public static func readJSON(json: JSON) throws -> `class` {
         return `class`(
             `private`: json["private"].string
         )
@@ -19,8 +19,8 @@ public struct `class`: JSONSerializable, DataTreeSerializable {
     public func writeJSON() -> JSON {
         return JSON(self.writeData())
     }
-    public static func readData(data: [String: AnyObject]) -> `class` {
-        return readJSON(JSON(data))
+    public static func readData(data: [String: AnyObject]) throws -> `class` {
+        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

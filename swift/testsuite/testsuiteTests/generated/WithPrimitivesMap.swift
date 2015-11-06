@@ -35,7 +35,7 @@ public struct WithPrimitivesMap: JSONSerializable, DataTreeSerializable, Equatab
         self.bytes = bytes
     }
     
-    public static func readJSON(json: JSON) -> WithPrimitivesMap {
+    public static func readJSON(json: JSON) throws -> WithPrimitivesMap {
         return WithPrimitivesMap(
             ints: json["ints"].dictionary.map { $0.mapValues { $0.intValue } },
             longs: json["longs"].dictionary.map { $0.mapValues { $0.intValue } },
@@ -49,8 +49,8 @@ public struct WithPrimitivesMap: JSONSerializable, DataTreeSerializable, Equatab
     public func writeJSON() -> JSON {
         return JSON(self.writeData())
     }
-    public static func readData(data: [String: AnyObject]) -> WithPrimitivesMap {
-        return readJSON(JSON(data))
+    public static func readData(data: [String: AnyObject]) throws -> WithPrimitivesMap {
+        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

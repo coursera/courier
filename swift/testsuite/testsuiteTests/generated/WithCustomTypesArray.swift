@@ -27,20 +27,20 @@ public struct WithCustomTypesArray: JSONSerializable, DataTreeSerializable, Equa
         self.fixed = fixed
     }
     
-    public static func readJSON(json: JSON) -> WithCustomTypesArray {
+    public static func readJSON(json: JSON) throws -> WithCustomTypesArray {
         return WithCustomTypesArray(
             ints: json["ints"].array.map { $0.map { $0.intValue } },
-            arrays: json["arrays"].array.map { $0.map { $0.arrayValue.map { Simple.readJSON($0.jsonValue) } } },
-            maps: json["maps"].array.map { $0.map { $0.dictionaryValue.mapValues { Simple.readJSON($0.jsonValue) } } },
-            unions: json["unions"].array.map { $0.map { WithCustomTypesArrayUnion.readJSON($0.jsonValue) } },
+            arrays: try json["arrays"].array.map { try $0.map { try $0.arrayValue.map { try Simple.readJSON($0.jsonValue) } } },
+            maps: try json["maps"].array.map { try $0.map { try $0.dictionaryValue.mapValues { try Simple.readJSON($0.jsonValue) } } },
+            unions: try json["unions"].array.map { try $0.map { try WithCustomTypesArrayUnion.readJSON($0.jsonValue) } },
             fixed: json["fixed"].array.map { $0.map { $0.stringValue } }
         )
     }
     public func writeJSON() -> JSON {
         return JSON(self.writeData())
     }
-    public static func readData(data: [String: AnyObject]) -> WithCustomTypesArray {
-        return readJSON(JSON(data))
+    public static func readData(data: [String: AnyObject]) throws -> WithCustomTypesArray {
+        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

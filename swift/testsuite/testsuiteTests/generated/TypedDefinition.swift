@@ -8,21 +8,25 @@ public enum TypedDefinition: JSONSerializable, DataTreeSerializable, Equatable {
     case MessageMember(Message)
     case UNKNOWN$([String : AnyObject])
     
-    public static func readJSON(json: JSON) -> TypedDefinition {
+    public static func readJSON(json: JSON) throws -> TypedDefinition {
         switch json["typeName"].stringValue {
         case "note":
-            return .NoteMember(Note.readJSON(json["definition"].jsonValue))
+            return .NoteMember(try Note.readJSON(json["definition"].jsonValue))
         case "message":
-            return .MessageMember(Message.readJSON(json["definition"].jsonValue))
+            return .MessageMember(try Message.readJSON(json["definition"].jsonValue))
         default:
-            return .UNKNOWN$(json.dictionaryObject!)
+            if let unknownDict = json.dictionaryObject {
+                return .UNKNOWN$(unknownDict)
+            } else {
+                throw ReadError.MalformedUnion
+            }
         }
     }
     public func writeJSON() -> JSON {
         return JSON(self.writeData())
     }
-    public static func readData(data: [String: AnyObject]) -> TypedDefinition {
-        return readJSON(JSON(data))
+    public static func readData(data: [String: AnyObject]) throws -> TypedDefinition {
+        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         switch self {

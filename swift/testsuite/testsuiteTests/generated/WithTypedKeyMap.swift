@@ -59,7 +59,7 @@ public struct WithTypedKeyMap: JSONSerializable, DataTreeSerializable, Equatable
         self.inlineRecord = inlineRecord
     }
     
-    public static func readJSON(json: JSON) -> WithTypedKeyMap {
+    public static func readJSON(json: JSON) throws -> WithTypedKeyMap {
         return WithTypedKeyMap(
             ints: json["ints"].dictionary.map { $0.mapValues { $0.stringValue } },
             longs: json["longs"].dictionary.map { $0.mapValues { $0.stringValue } },
@@ -79,8 +79,8 @@ public struct WithTypedKeyMap: JSONSerializable, DataTreeSerializable, Equatable
     public func writeJSON() -> JSON {
         return JSON(self.writeData())
     }
-    public static func readData(data: [String: AnyObject]) -> WithTypedKeyMap {
-        return readJSON(JSON(data))
+    public static func readData(data: [String: AnyObject]) throws -> WithTypedKeyMap {
+        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

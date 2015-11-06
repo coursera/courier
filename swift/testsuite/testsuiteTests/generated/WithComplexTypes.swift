@@ -40,7 +40,7 @@ public struct WithComplexTypes: JSONSerializable, DataTreeSerializable, Equatabl
         case StringMember(String)
         case SimpleMember(Simple)
         case UNKNOWN$([String : AnyObject])
-        public static func readJSON(json: JSON) -> Union {
+        public static func readJSON(json: JSON) throws -> Union {
             let dict = json.dictionaryValue
             if let member = dict["int"] {
                 return .IntMember(member.intValue)
@@ -49,15 +49,19 @@ public struct WithComplexTypes: JSONSerializable, DataTreeSerializable, Equatabl
                 return .StringMember(member.stringValue)
             }
             if let member = dict["org.coursera.records.test.Simple"] {
-                return .SimpleMember(Simple.readJSON(member.jsonValue))
+                return .SimpleMember(try Simple.readJSON(member.jsonValue))
             }
-            return .UNKNOWN$(json.dictionaryObject!)
+            if let unknownDict = json.dictionaryObject {
+                return .UNKNOWN$(unknownDict)
+            } else {
+                throw ReadError.MalformedUnion
+            }
         }
         public func writeJSON() -> JSON {
             return JSON(self.writeData())
         }
-        public static func readData(data: [String: AnyObject]) -> Union {
-            return readJSON(JSON(data))
+        public static func readData(data: [String: AnyObject]) throws -> Union {
+            return try readJSON(JSON(data))
         }
         public func writeData() -> [String: AnyObject] {
             switch self {
@@ -73,22 +77,22 @@ public struct WithComplexTypes: JSONSerializable, DataTreeSerializable, Equatabl
         }
     }
     
-    public static func readJSON(json: JSON) -> WithComplexTypes {
+    public static func readJSON(json: JSON) throws -> WithComplexTypes {
         return WithComplexTypes(
-            record: json["record"].json.map { Simple.readJSON($0) },
+            record: try json["record"].json.map { try Simple.readJSON($0) },
             `enum`: json["enum"].string.map { Fruits.read($0) },
-            union: json["union"].json.map { Union.readJSON($0) },
+            union: try json["union"].json.map { try Union.readJSON($0) },
             array: json["array"].array.map { $0.map { $0.intValue } },
             map: json["map"].dictionary.map { $0.mapValues { $0.intValue } },
-            complexMap: json["complexMap"].dictionary.map { $0.mapValues { Simple.readJSON($0.jsonValue) } },
+            complexMap: try json["complexMap"].dictionary.map { try $0.mapValues { try Simple.readJSON($0.jsonValue) } },
             custom: json["custom"].int
         )
     }
     public func writeJSON() -> JSON {
         return JSON(self.writeData())
     }
-    public static func readData(data: [String: AnyObject]) -> WithComplexTypes {
-        return readJSON(JSON(data))
+    public static func readData(data: [String: AnyObject]) throws -> WithComplexTypes {
+        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

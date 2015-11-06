@@ -10,7 +10,7 @@ public enum WithComplexTypesMapUnion: JSONSerializable, DataTreeSerializable, Eq
     case SimpleMember(Simple)
     case UNKNOWN$([String : AnyObject])
     
-    public static func readJSON(json: JSON) -> WithComplexTypesMapUnion {
+    public static func readJSON(json: JSON) throws -> WithComplexTypesMapUnion {
         let dict = json.dictionaryValue
         if let member = dict["int"] {
             return .IntMember(member.intValue)
@@ -19,15 +19,19 @@ public enum WithComplexTypesMapUnion: JSONSerializable, DataTreeSerializable, Eq
             return .StringMember(member.stringValue)
         }
         if let member = dict["org.coursera.records.test.Simple"] {
-            return .SimpleMember(Simple.readJSON(member.jsonValue))
+            return .SimpleMember(try Simple.readJSON(member.jsonValue))
         }
-        return .UNKNOWN$(json.dictionaryObject!)
+        if let unknownDict = json.dictionaryObject {
+            return .UNKNOWN$(unknownDict)
+        } else {
+            throw ReadError.MalformedUnion
+        }
     }
     public func writeJSON() -> JSON {
         return JSON(self.writeData())
     }
-    public static func readData(data: [String: AnyObject]) -> WithComplexTypesMapUnion {
-        return readJSON(JSON(data))
+    public static func readData(data: [String: AnyObject]) throws -> WithComplexTypesMapUnion {
+        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         switch self {

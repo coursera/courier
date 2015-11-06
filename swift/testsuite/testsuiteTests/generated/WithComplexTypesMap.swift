@@ -31,21 +31,21 @@ public struct WithComplexTypesMap: JSONSerializable, DataTreeSerializable, Equat
         self.fixed = fixed
     }
     
-    public static func readJSON(json: JSON) -> WithComplexTypesMap {
+    public static func readJSON(json: JSON) throws -> WithComplexTypesMap {
         return WithComplexTypesMap(
-            empties: json["empties"].dictionary.map { $0.mapValues { Empty.readJSON($0.jsonValue) } },
+            empties: try json["empties"].dictionary.map { try $0.mapValues { try Empty.readJSON($0.jsonValue) } },
             fruits: json["fruits"].dictionary.map { $0.mapValues { Fruits.read($0.stringValue) } },
-            arrays: json["arrays"].dictionary.map { $0.mapValues { $0.arrayValue.map { Simple.readJSON($0.jsonValue) } } },
-            maps: json["maps"].dictionary.map { $0.mapValues { $0.dictionaryValue.mapValues { Simple.readJSON($0.jsonValue) } } },
-            unions: json["unions"].dictionary.map { $0.mapValues { WithComplexTypesMapUnion.readJSON($0.jsonValue) } },
+            arrays: try json["arrays"].dictionary.map { try $0.mapValues { try $0.arrayValue.map { try Simple.readJSON($0.jsonValue) } } },
+            maps: try json["maps"].dictionary.map { try $0.mapValues { try $0.dictionaryValue.mapValues { try Simple.readJSON($0.jsonValue) } } },
+            unions: try json["unions"].dictionary.map { try $0.mapValues { try WithComplexTypesMapUnion.readJSON($0.jsonValue) } },
             fixed: json["fixed"].dictionary.map { $0.mapValues { $0.stringValue } }
         )
     }
     public func writeJSON() -> JSON {
         return JSON(self.writeData())
     }
-    public static func readData(data: [String: AnyObject]) -> WithComplexTypesMap {
-        return readJSON(JSON(data))
+    public static func readData(data: [String: AnyObject]) throws -> WithComplexTypesMap {
+        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

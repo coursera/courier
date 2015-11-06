@@ -3,7 +3,7 @@
 
 @{ String className = syntax.escapeKeyword(union.getClassName()) }
 
-public static func readJSON(json: JSON) -> @className {
+public static func readJSON(json: JSON) throws -> @className {
   let dict = json.dictionaryValue
   switch json["typeName"].stringValue {
     @for(Member member: union.getMembers()) {
@@ -12,7 +12,11 @@ public static func readJSON(json: JSON) -> @className {
         return .@(unionMemberName)(@swifty.toGetAccessor("json", member))
       }
       default:
-        return .UNKNOWN$(json.dictionaryObject!)
+        if let unknownDict = json.dictionaryObject {
+          return .UNKNOWN$(unknownDict)
+        } else {
+          throw ReadError.MalformedUnion
+        }
     }
 }
 
@@ -20,8 +24,8 @@ public func writeJSON() -> JSON {
   return JSON(self.writeData())
 }
 
-public static func readData(data: [String: AnyObject]) -> @className {
-  return readJSON(JSON(data))
+public static func readData(data: [String: AnyObject]) throws -> @className {
+  return try readJSON(JSON(data))
 }
 
 public func writeData() -> [String: AnyObject] {

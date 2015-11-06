@@ -27,20 +27,20 @@ public struct WithComplexTyperefs: JSONSerializable, DataTreeSerializable {
         self.union = union
     }
     
-    public static func readJSON(json: JSON) -> WithComplexTyperefs {
+    public static func readJSON(json: JSON) throws -> WithComplexTyperefs {
         return WithComplexTyperefs(
             `enum`: json["enum"].string.map { Fruits.read($0) },
-            record: json["record"].json.map { Empty.readJSON($0) },
-            map: json["map"].dictionary.map { $0.mapValues { Empty.readJSON($0.jsonValue) } },
-            array: json["array"].array.map { $0.map { Empty.readJSON($0.jsonValue) } },
-            union: json["union"].json.map { UnionTyperef.readJSON($0) }
+            record: try json["record"].json.map { try Empty.readJSON($0) },
+            map: try json["map"].dictionary.map { try $0.mapValues { try Empty.readJSON($0.jsonValue) } },
+            array: try json["array"].array.map { try $0.map { try Empty.readJSON($0.jsonValue) } },
+            union: try json["union"].json.map { try UnionTyperef.readJSON($0) }
         )
     }
     public func writeJSON() -> JSON {
         return JSON(self.writeData())
     }
-    public static func readData(data: [String: AnyObject]) -> WithComplexTyperefs {
-        return readJSON(JSON(data))
+    public static func readData(data: [String: AnyObject]) throws -> WithComplexTyperefs {
+        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

@@ -13,15 +13,19 @@ public struct WithEmptyUnion: JSONSerializable, DataTreeSerializable {
     
     public enum Union: JSONSerializable, DataTreeSerializable {
         case UNKNOWN$([String : AnyObject])
-        public static func readJSON(json: JSON) -> Union {
+        public static func readJSON(json: JSON) throws -> Union {
             let dict = json.dictionaryValue
-            return .UNKNOWN$(json.dictionaryObject!)
+            if let unknownDict = json.dictionaryObject {
+                return .UNKNOWN$(unknownDict)
+            } else {
+                throw ReadError.MalformedUnion
+            }
         }
         public func writeJSON() -> JSON {
             return JSON(self.writeData())
         }
-        public static func readData(data: [String: AnyObject]) -> Union {
-            return readJSON(JSON(data))
+        public static func readData(data: [String: AnyObject]) throws -> Union {
+            return try readJSON(JSON(data))
         }
         public func writeData() -> [String: AnyObject] {
             switch self {
@@ -31,16 +35,16 @@ public struct WithEmptyUnion: JSONSerializable, DataTreeSerializable {
         }
     }
     
-    public static func readJSON(json: JSON) -> WithEmptyUnion {
+    public static func readJSON(json: JSON) throws -> WithEmptyUnion {
         return WithEmptyUnion(
-            union: json["union"].json.map { Union.readJSON($0) }
+            union: try json["union"].json.map { try Union.readJSON($0) }
         )
     }
     public func writeJSON() -> JSON {
         return JSON(self.writeData())
     }
-    public static func readData(data: [String: AnyObject]) -> WithEmptyUnion {
-        return readJSON(JSON(data))
+    public static func readData(data: [String: AnyObject]) throws -> WithEmptyUnion {
+        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

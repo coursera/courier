@@ -11,16 +11,16 @@ public struct WithUnion: JSONSerializable, DataTreeSerializable, Equatable {
         self.value = value
     }
     
-    public static func readJSON(json: JSON) -> WithUnion {
+    public static func readJSON(json: JSON) throws -> WithUnion {
         return WithUnion(
-            value: json["value"].json.map { Union.readJSON($0) }
+            value: try json["value"].json.map { try Union.readJSON($0) }
         )
     }
     public func writeJSON() -> JSON {
         return JSON(self.writeData())
     }
-    public static func readData(data: [String: AnyObject]) -> WithUnion {
-        return readJSON(JSON(data))
+    public static func readData(data: [String: AnyObject]) throws -> WithUnion {
+        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

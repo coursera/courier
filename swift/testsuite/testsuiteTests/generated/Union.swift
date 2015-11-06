@@ -8,21 +8,25 @@ public enum Union: JSONSerializable, DataTreeSerializable, Equatable {
     case MessageMember(Message)
     case UNKNOWN$([String : AnyObject])
     
-    public static func readJSON(json: JSON) -> Union {
+    public static func readJSON(json: JSON) throws -> Union {
         let dict = json.dictionaryValue
         if let member = dict["org.coursera.records.Note"] {
-            return .NoteMember(Note.readJSON(member.jsonValue))
+            return .NoteMember(try Note.readJSON(member.jsonValue))
         }
         if let member = dict["org.coursera.records.Message"] {
-            return .MessageMember(Message.readJSON(member.jsonValue))
+            return .MessageMember(try Message.readJSON(member.jsonValue))
         }
-        return .UNKNOWN$(json.dictionaryObject!)
+        if let unknownDict = json.dictionaryObject {
+            return .UNKNOWN$(unknownDict)
+        } else {
+            throw ReadError.MalformedUnion
+        }
     }
     public func writeJSON() -> JSON {
         return JSON(self.writeData())
     }
-    public static func readData(data: [String: AnyObject]) -> Union {
-        return readJSON(JSON(data))
+    public static func readData(data: [String: AnyObject]) throws -> Union {
+        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         switch self {

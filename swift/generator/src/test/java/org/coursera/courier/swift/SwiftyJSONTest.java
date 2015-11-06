@@ -6,6 +6,6 @@ import org.junit.Test;
 public class SwiftyJSONTest extends TestSuite {
   @Test
   public void testGetAccessor() {
-    //SwiftyJSON.toGetAccessor()
+    //SwiftyJSON.toTryGetAccessor()
   }
 }

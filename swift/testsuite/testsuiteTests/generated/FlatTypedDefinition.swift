@@ -8,22 +8,26 @@ public enum FlatTypedDefinition: JSONSerializable, DataTreeSerializable, Equatab
     case MessageMember(Message)
     case UNKNOWN$([String : AnyObject])
     
-    public static func readJSON(json: JSON) -> FlatTypedDefinition {
+    public static func readJSON(json: JSON) throws -> FlatTypedDefinition {
         let dict = json.dictionaryValue
         switch json["typeName"].stringValue {
         case "note":
-            return .NoteMember(Note.readJSON(json.jsonValue))
+            return .NoteMember(try Note.readJSON(json.jsonValue))
         case "message":
-            return .MessageMember(Message.readJSON(json.jsonValue))
+            return .MessageMember(try Message.readJSON(json.jsonValue))
         default:
-            return .UNKNOWN$(json.dictionaryObject!)
+            if let unknownDict = json.dictionaryObject {
+                return .UNKNOWN$(unknownDict)
+            } else {
+                throw ReadError.MalformedUnion
+            }
         }
     }
     public func writeJSON() -> JSON {
         return JSON(self.writeData())
     }
-    public static func readData(data: [String: AnyObject]) -> FlatTypedDefinition {
-        return readJSON(JSON(data))
+    public static func readData(data: [String: AnyObject]) throws -> FlatTypedDefinition {
+        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         switch self {

@@ -15,17 +15,17 @@ public struct WithInlineRecord: JSONSerializable, DataTreeSerializable {
         self.inlineOptional = inlineOptional
     }
     
-    public static func readJSON(json: JSON) -> WithInlineRecord {
+    public static func readJSON(json: JSON) throws -> WithInlineRecord {
         return WithInlineRecord(
-            inline: json["inline"].json.map { InlineRecord.readJSON($0) },
-            inlineOptional: json["inlineOptional"].json.map { InlineOptionalRecord.readJSON($0) }
+            inline: try json["inline"].json.map { try InlineRecord.readJSON($0) },
+            inlineOptional: try json["inlineOptional"].json.map { try InlineOptionalRecord.readJSON($0) }
         )
     }
     public func writeJSON() -> JSON {
         return JSON(self.writeData())
     }
-    public static func readData(data: [String: AnyObject]) -> WithInlineRecord {
-        return readJSON(JSON(data))
+    public static func readData(data: [String: AnyObject]) throws -> WithInlineRecord {
+        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

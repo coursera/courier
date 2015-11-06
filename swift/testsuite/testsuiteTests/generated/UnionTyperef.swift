@@ -8,7 +8,7 @@ public enum UnionTyperef: JSONSerializable, DataTreeSerializable {
     case IntMember(Int)
     case UNKNOWN$([String : AnyObject])
     
-    public static func readJSON(json: JSON) -> UnionTyperef {
+    public static func readJSON(json: JSON) throws -> UnionTyperef {
         let dict = json.dictionaryValue
         if let member = dict["string"] {
             return .StringMember(member.stringValue)
@@ -16,13 +16,17 @@ public enum UnionTyperef: JSONSerializable, DataTreeSerializable {
         if let member = dict["int"] {
             return .IntMember(member.intValue)
         }
-        return .UNKNOWN$(json.dictionaryObject!)
+        if let unknownDict = json.dictionaryObject {
+            return .UNKNOWN$(unknownDict)
+        } else {
+            throw ReadError.MalformedUnion
+        }
     }
     public func writeJSON() -> JSON {
         return JSON(self.writeData())
     }
-    public static func readData(data: [String: AnyObject]) -> UnionTyperef {
-        return readJSON(JSON(data))
+    public static func readData(data: [String: AnyObject]) throws -> UnionTyperef {
+        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         switch self {

@@ -7,15 +7,15 @@ public struct Empty: JSONSerializable, DataTreeSerializable, Equatable {
     ) {
     }
     
-    public static func readJSON(json: JSON) -> Empty {
+    public static func readJSON(json: JSON) throws -> Empty {
         return Empty(
         )
     }
     public func writeJSON() -> JSON {
         return JSON(self.writeData())
     }
-    public static func readData(data: [String: AnyObject]) -> Empty {
-        return readJSON(JSON(data))
+    public static func readData(data: [String: AnyObject]) throws -> Empty {
+        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         return [:]

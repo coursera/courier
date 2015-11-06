@@ -39,7 +39,7 @@ public struct WithOptionalPrimitiveDefaults: JSONSerializable, DataTreeSerializa
         self.enumWithDefault = enumWithDefault
     }
     
-    public static func readJSON(json: JSON) -> WithOptionalPrimitiveDefaults {
+    public static func readJSON(json: JSON) throws -> WithOptionalPrimitiveDefaults {
         return WithOptionalPrimitiveDefaults(
             intWithDefault: json["intWithDefault"].int,
             longWithDefault: json["longWithDefault"].int,
@@ -54,8 +54,8 @@ public struct WithOptionalPrimitiveDefaults: JSONSerializable, DataTreeSerializa
     public func writeJSON() -> JSON {
         return JSON(self.writeData())
     }
-    public static func readData(data: [String: AnyObject]) -> WithOptionalPrimitiveDefaults {
-        return readJSON(JSON(data))
+    public static func readData(data: [String: AnyObject]) throws -> WithOptionalPrimitiveDefaults {
+        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

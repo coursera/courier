@@ -18,30 +18,34 @@ public struct WithComplexTypesUnion: JSONSerializable, DataTreeSerializable {
         case MapMember([String: Simple])
         case FixedMember(String)
         case UNKNOWN$([String : AnyObject])
-        public static func readJSON(json: JSON) -> Union {
+        public static func readJSON(json: JSON) throws -> Union {
             let dict = json.dictionaryValue
             if let member = dict["org.coursera.records.test.Empty"] {
-                return .EmptyMember(Empty.readJSON(member.jsonValue))
+                return .EmptyMember(try Empty.readJSON(member.jsonValue))
             }
             if let member = dict["org.coursera.enums.Fruits"] {
                 return .FruitsMember(Fruits.read(member.stringValue))
             }
             if let member = dict["array"] {
-                return .ArrayMember(member.arrayValue.map { Simple.readJSON($0.jsonValue) })
+                return .ArrayMember(try member.arrayValue.map { try Simple.readJSON($0.jsonValue) })
             }
             if let member = dict["map"] {
-                return .MapMember(member.dictionaryValue.mapValues { Simple.readJSON($0.jsonValue) })
+                return .MapMember(try member.dictionaryValue.mapValues { try Simple.readJSON($0.jsonValue) })
             }
             if let member = dict["org.coursera.fixed.Fixed8"] {
                 return .FixedMember(member.stringValue)
             }
-            return .UNKNOWN$(json.dictionaryObject!)
+            if let unknownDict = json.dictionaryObject {
+                return .UNKNOWN$(unknownDict)
+            } else {
+                throw ReadError.MalformedUnion
+            }
         }
         public func writeJSON() -> JSON {
             return JSON(self.writeData())
         }
-        public static func readData(data: [String: AnyObject]) -> Union {
-            return readJSON(JSON(data))
+        public static func readData(data: [String: AnyObject]) throws -> Union {
+            return try readJSON(JSON(data))
         }
         public func writeData() -> [String: AnyObject] {
             switch self {
@@ -61,16 +65,16 @@ public struct WithComplexTypesUnion: JSONSerializable, DataTreeSerializable {
         }
     }
     
-    public static func readJSON(json: JSON) -> WithComplexTypesUnion {
+    public static func readJSON(json: JSON) throws -> WithComplexTypesUnion {
         return WithComplexTypesUnion(
-            union: json["union"].json.map { Union.readJSON($0) }
+            union: try json["union"].json.map { try Union.readJSON($0) }
         )
     }
     public func writeJSON() -> JSON {
         return JSON(self.writeData())
     }
-    public static func readData(data: [String: AnyObject]) -> WithComplexTypesUnion {
-        return readJSON(JSON(data))
+    public static func readData(data: [String: AnyObject]) throws -> WithComplexTypesUnion {
+        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]

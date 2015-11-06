@@ -26,7 +26,7 @@ class GeneratedCodeTests: XCTestCase {
     
     func testWithComplexTypesMap() {
         let json = try! jsonFile("WithComplexTypesMap.json");
-        let deserialized = WithComplexTypesMap.readJSON(json);
+        let deserialized = try! WithComplexTypesMap.readJSON(json);
         
         let expected = WithComplexTypesMap(
             empties: ["a": Empty(), "b": Empty(), "c": Empty()],
@@ -44,7 +44,7 @@ class GeneratedCodeTests: XCTestCase {
     
     func testWithCustomTypesArray() {
         let json = try! jsonFile("WithCustomTypesArray.json");
-        let deserialized = WithCustomTypesArray.readJSON(json);
+        let deserialized = try! WithCustomTypesArray.readJSON(json);
         
         let expected = WithCustomTypesArray(
             ints: [1, 2, 3],
@@ -61,7 +61,7 @@ class GeneratedCodeTests: XCTestCase {
     
     func testWithCustomTypesMap() {
         let json = try! jsonFile("WithCustomTypesMap.json");
-        let deserialized = WithCustomTypesMap.readJSON(json);
+        let deserialized = try! WithCustomTypesMap.readJSON(json);
         
         let expected = WithCustomTypesMap(ints: ["a": 1, "b": 2, "c": 3])
         
@@ -73,7 +73,7 @@ class GeneratedCodeTests: XCTestCase {
     
     func testWithFlatTypedDefinition() {
         let json = try! jsonFile("WithFlatTypedDefinition.json");
-        let deserialized = WithFlatTypedDefinition.readJSON(json);
+        let deserialized = try! WithFlatTypedDefinition.readJSON(json);
         
         let expected = WithFlatTypedDefinition(
             value: .MessageMember(Message(title: "title", body: "Hello, Swift.")))
@@ -86,7 +86,7 @@ class GeneratedCodeTests: XCTestCase {
     
     func testWithPrimitives() {
         let json = try! jsonFile("WithPrimitives.json");
-        let deserialized = WithPrimitives.readJSON(json);
+        let deserialized = try! WithPrimitives.readJSON(json);
         
         let expected = WithPrimitives(intField: 1, longField: 2, floatField: 3.3, doubleField: 4.4, booleanField: true, stringField: "str", bytesField: "\u{0000}\u{0001}\u{0002}")
         XCTAssertEqual(deserialized, expected)
@@ -97,7 +97,7 @@ class GeneratedCodeTests: XCTestCase {
     
     func testWithPrimitivesArray() {
         let json = try! jsonFile("WithPrimitivesArray.json");
-        let deserialized = WithPrimitivesArray.readJSON(json);
+        let deserialized = try! WithPrimitivesArray.readJSON(json);
         
         let expected = WithPrimitivesArray(
             ints: [1, 2, 3],
@@ -115,7 +115,7 @@ class GeneratedCodeTests: XCTestCase {
     
     func testWithPrimitivesMap() {
         let json = try! jsonFile("WithPrimitivesMap.json");
-        let deserialized = WithPrimitivesMap.readJSON(json);
+        let deserialized = try! WithPrimitivesMap.readJSON(json);
         
         let expected = WithPrimitivesMap(
             ints: ["a": 1, "b": 2, "c": 3],
@@ -133,7 +133,7 @@ class GeneratedCodeTests: XCTestCase {
     
     func testWithRecordArray() {
         let json = try! jsonFile("WithRecordArray.json");
-        let deserialized = WithRecordArray.readJSON(json);
+        let deserialized = try! WithRecordArray.readJSON(json);
         
         let expected = WithRecordArray(
             empties: [Empty(), Empty(), Empty()],
@@ -146,7 +146,7 @@ class GeneratedCodeTests: XCTestCase {
     
     func testWithTypedDefinition() {
         let json = try! jsonFile("WithTypedDefinition.json");
-        let deserialized = WithTypedDefinition.readJSON(json);
+        let deserialized = try! WithTypedDefinition.readJSON(json);
         
         let expected = WithTypedDefinition(
             value: .MessageMember(Message(title: "title", body: "Hello, Swift.")))
@@ -158,7 +158,7 @@ class GeneratedCodeTests: XCTestCase {
     
     func testWithTypedKeyMap() {
         let json = try! jsonFile("WithTypedKeyMap.json");
-        let deserialized = WithTypedKeyMap.readJSON(json);
+        let deserialized = try! WithTypedKeyMap.readJSON(json);
         
         // TODO: implement once we have typed key maps
         
@@ -168,7 +168,7 @@ class GeneratedCodeTests: XCTestCase {
     
     func testWithUnion() {
         let json = try! jsonFile("WithUnion.json");
-        let deserialized = WithUnion.readJSON(json);
+        let deserialized = try! WithUnion.readJSON(json);
         
         let expected = WithUnion(value: .MessageMember(Message(title: "title", body: "Hello, Swift.")))
         XCTAssertEqual(deserialized, expected)
@@ -179,7 +179,7 @@ class GeneratedCodeTests: XCTestCase {
     
     func testWithComplexTypes() {
         let json = try! jsonFile("WithComplexTypes.json");
-        let deserialized = WithComplexTypes.readJSON(json);
+        let deserialized = try! WithComplexTypes.readJSON(json);
         
         let expected = WithComplexTypes(
             record: Simple(message: "record"),
@@ -244,7 +244,7 @@ class GeneratedCodeTests: XCTestCase {
     
     func testDataTreeSerializable() {
         let data = withComplexTypesFixture.writeData()
-        let roundTripped = WithComplexTypes.readData(data)
+        let roundTripped = try! WithComplexTypes.readData(data)
         XCTAssertEqual(withComplexTypesFixture, roundTripped)
     }
     
@@ -252,7 +252,7 @@ class GeneratedCodeTests: XCTestCase {
         let archived = NSKeyedArchiver.archivedDataWithRootObject(withComplexTypesFixture.writeData())
         
         if let unarchived = NSKeyedUnarchiver.unarchiveObjectWithData(archived) as? [String: AnyObject]{
-            let deserialized = WithComplexTypes.readData(unarchived)
+            let deserialized = try! WithComplexTypes.readData(unarchived)
             XCTAssertEqual(withComplexTypesFixture, deserialized)
         } else {
             XCTFail()

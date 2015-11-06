@@ -11,7 +11,7 @@ public struct WithFixed8: JSONSerializable, DataTreeSerializable {
         self.fixed = fixed
     }
     
-    public static func readJSON(json: JSON) -> WithFixed8 {
+    public static func readJSON(json: JSON) throws -> WithFixed8 {
         return WithFixed8(
             fixed: json["fixed"].string
         )
@@ -19,8 +19,8 @@ public struct WithFixed8: JSONSerializable, DataTreeSerializable {
     public func writeJSON() -> JSON {
         return JSON(self.writeData())
     }
-    public static func readData(data: [String: AnyObject]) -> WithFixed8 {
-        return readJSON(JSON(data))
+    public static func readData(data: [String: AnyObject]) throws -> WithFixed8 {
+        return try readJSON(JSON(data))
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]
