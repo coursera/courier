@@ -13,7 +13,7 @@ public struct KeywordEscaping: Serializable {
     
     public static func readJSON(json: JSON) throws -> KeywordEscaping {
         return KeywordEscaping(
-            `default`: json["default"].string
+            `default`: try json["default"].optional(.String).string
         )
     }
     public func writeData() -> [String: AnyObject] {

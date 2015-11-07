@@ -33,12 +33,12 @@ public struct WithComplexTypesMap: Serializable, Equatable {
     
     public static func readJSON(json: JSON) throws -> WithComplexTypesMap {
         return WithComplexTypesMap(
-            empties: try json["empties"].dictionary.map { try $0.mapValues { try Empty.readJSON($0.jsonValue) } },
-            fruits: json["fruits"].dictionary.map { $0.mapValues { Fruits.read($0.stringValue) } },
-            arrays: try json["arrays"].dictionary.map { try $0.mapValues { try $0.arrayValue.map { try Simple.readJSON($0.jsonValue) } } },
-            maps: try json["maps"].dictionary.map { try $0.mapValues { try $0.dictionaryValue.mapValues { try Simple.readJSON($0.jsonValue) } } },
-            unions: try json["unions"].dictionary.map { try $0.mapValues { try WithComplexTypesMapUnion.readJSON($0.jsonValue) } },
-            fixed: json["fixed"].dictionary.map { $0.mapValues { $0.stringValue } }
+            empties: try json["empties"].optional(.Dictionary).dictionary.map {try $0.mapValues { try Empty.readJSON($0.required(.Dictionary).jsonValue) } },
+            fruits: try json["fruits"].optional(.Dictionary).dictionary.map {try $0.mapValues { try Fruits.read($0.required(.String).stringValue) } },
+            arrays: try json["arrays"].optional(.Dictionary).dictionary.map {try $0.mapValues { try $0.required(.Array).arrayValue.map { try Simple.readJSON($0.required(.Dictionary).jsonValue) } } },
+            maps: try json["maps"].optional(.Dictionary).dictionary.map {try $0.mapValues { try $0.required(.Dictionary).dictionaryValue.mapValues { try Simple.readJSON($0.required(.Dictionary).jsonValue) } } },
+            unions: try json["unions"].optional(.Dictionary).dictionary.map {try $0.mapValues { try WithComplexTypesMapUnion.readJSON($0.required(.Dictionary).jsonValue) } },
+            fixed: try json["fixed"].optional(.Dictionary).dictionary.map {try $0.mapValues { try $0.required(.String).stringValue } }
         )
     }
     public func writeData() -> [String: AnyObject] {

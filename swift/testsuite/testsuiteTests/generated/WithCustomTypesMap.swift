@@ -13,7 +13,7 @@ public struct WithCustomTypesMap: Serializable, Equatable {
     
     public static func readJSON(json: JSON) throws -> WithCustomTypesMap {
         return WithCustomTypesMap(
-            ints: json["ints"].dictionary.map { $0.mapValues { $0.intValue } }
+            ints: try json["ints"].optional(.Dictionary).dictionary.map {try $0.mapValues { try $0.required(.Number).intValue } }
         )
     }
     public func writeData() -> [String: AnyObject] {

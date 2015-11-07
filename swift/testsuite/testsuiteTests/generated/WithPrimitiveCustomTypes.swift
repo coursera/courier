@@ -13,7 +13,7 @@ public struct WithPrimitiveCustomTypes: Serializable {
     
     public static func readJSON(json: JSON) throws -> WithPrimitiveCustomTypes {
         return WithPrimitiveCustomTypes(
-            intField: json["intField"].int
+            intField: try json["intField"].optional(.Number).int
         )
     }
     public func writeData() -> [String: AnyObject] {

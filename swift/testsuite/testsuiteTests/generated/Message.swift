@@ -17,8 +17,8 @@ public struct Message: Serializable, Equatable {
     
     public static func readJSON(json: JSON) throws -> Message {
         return Message(
-            title: json["title"].string,
-            body: json["body"].string
+            title: try json["title"].optional(.String).string,
+            body: try json["body"].optional(.String).string
         )
     }
     public func writeData() -> [String: AnyObject] {

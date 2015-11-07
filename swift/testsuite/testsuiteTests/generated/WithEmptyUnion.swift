@@ -18,7 +18,7 @@ public struct WithEmptyUnion: Serializable {
             if let unknownDict = json.dictionaryObject {
                 return .UNKNOWN$(unknownDict)
             } else {
-                throw ReadError.MalformedUnion
+                throw ReadError(cause: "Union must be a JSON object.")
             }
         }
         public func writeData() -> [String: AnyObject] {
@@ -31,7 +31,7 @@ public struct WithEmptyUnion: Serializable {
     
     public static func readJSON(json: JSON) throws -> WithEmptyUnion {
         return WithEmptyUnion(
-            union: try json["union"].json.map { try Union.readJSON($0) }
+            union: try json["union"].optional(.Dictionary).json.map {try Union.readJSON($0) }
         )
     }
     public func writeData() -> [String: AnyObject] {

@@ -18,42 +18,42 @@ import Foundation
 import SwiftyJSON
 
 /**
-  Serializable to:
+    Serializable to:
 
-  JSON - via SwiftyJson
+    JSON - via SwiftyJson
 
-  "DataTrees" - a "JSON equivalent" data structure composed of the following
-  Swift types:
+    "DataTrees" - a "JSON equivalent" data structure composed of the following
+    Swift types:
 
-  * `[String: AnyObject]` - Equivalent to a JSON object.
-  * `[AnyObject]` - Equivalent to a JSON array.
-  * `String`, `Boolean` and numeric types. - Equivalent their respective JSON primitive types.
+    * `[String: AnyObject]` - Equivalent to a JSON object.
+    * `[AnyObject]` - Equivalent to a JSON array.
+    * `String`, `Boolean` and numeric types. - Equivalent their respective JSON primitive types.
 
-  Structs and classes are represented as a "DataTree" by an `[String: AnyObject]` map where
-  field names used as map keys. If a optional field is `nil` valued it is simply left absent
-  from the map.
+    Structs and classes are represented as a "DataTree" by an `[String: AnyObject]` map where
+    field names used as map keys. If a optional field is `nil` valued it is simply left absent
+    from the map.
 */
 public protocol Serializable {
 
-  /**
-    Read from JSON via SwiftyJson.
-  */
-  static func readJSON(json: JSON) throws -> Self
+    /**
+      Read from JSON via SwiftyJson.
+    */
+    static func readJSON(json: JSON) throws -> Self
 
-  /**
-    Write to JSON via SwiftyJson.
-  */
-  func writeJSON() -> JSON
+    /**
+      Write to JSON via SwiftyJson.
+    */
+    func writeJSON() -> JSON
 
-  /**
-    Read from a "DataTree".
-  */
-  static func readData(data: [String: AnyObject]) throws -> Self
+    /**
+      Read from a "DataTree".
+    */
+    static func readData(data: [String: AnyObject]) throws -> Self
 
-  /**
-    Write to a "DataTree".
-  */
-  func writeData() -> [String: AnyObject]
+    /**
+      Write to a "DataTree".
+    */
+    func writeData() -> [String: AnyObject]
 }
 
 extension Serializable {
@@ -66,9 +66,8 @@ extension Serializable {
     }
 }
 
-public enum ReadError: ErrorType {
-  case MalformedUnion
-  case WrongType
+public struct ReadError: ErrorType {
+    let cause: String
 }
 
 extension Dictionary {
@@ -85,6 +84,20 @@ extension Dictionary {
 }
 
 extension JSON {
+
+    public func optional(expected: Type) throws -> JSON {
+        if (self.type != expected && self.type != .Null) {
+            throw ReadError(cause: "Wrong Type.")
+        }
+        return self;
+    }
+
+    public func required(expected: Type) throws -> JSON {
+        if (self.type != expected) {
+            throw ReadError(cause: "Wrong Type.")
+        }
+        return self;
+    }
 
     //Optional JSON
     public var json: JSON? {
@@ -106,7 +119,7 @@ extension JSON {
     }
 
     // Not needed, but added to maintain SwiftyJSON consistency.
-    // SwiftyJSON expects a corresponding "xyzValue" accessor for all "xyz" accessors.
+    // SwiftyJSON expects a corresponding "xyzValue" expr for all "xyz" accessors.
     public var jsonValue: JSON {
         get {
             return self

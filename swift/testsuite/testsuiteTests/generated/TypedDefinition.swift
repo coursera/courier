@@ -11,14 +11,14 @@ public enum TypedDefinition: Serializable, Equatable {
     public static func readJSON(json: JSON) throws -> TypedDefinition {
         switch json["typeName"].stringValue {
         case "note":
-            return .NoteMember(try Note.readJSON(json["definition"].jsonValue))
+            return .NoteMember(try Note.readJSON(json["definition"].required(.Dictionary).jsonValue))
         case "message":
-            return .MessageMember(try Message.readJSON(json["definition"].jsonValue))
+            return .MessageMember(try Message.readJSON(json["definition"].required(.Dictionary).jsonValue))
         default:
             if let unknownDict = json.dictionaryObject {
                 return .UNKNOWN$(unknownDict)
             } else {
-                throw ReadError.MalformedUnion
+                throw ReadError(cause: "Typed Definition Union must be a JSON object.")
             }
         }
     }

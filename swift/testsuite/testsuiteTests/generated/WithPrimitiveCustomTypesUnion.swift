@@ -17,12 +17,12 @@ public struct WithPrimitiveCustomTypesUnion: Serializable {
         public static func readJSON(json: JSON) throws -> Union {
             let dict = json.dictionaryValue
             if let member = dict["int"] {
-                return .IntMember(member.intValue)
+                return .IntMember(try member.required(.Number).intValue)
             }
             if let unknownDict = json.dictionaryObject {
                 return .UNKNOWN$(unknownDict)
             } else {
-                throw ReadError.MalformedUnion
+                throw ReadError(cause: "Union must be a JSON object.")
             }
         }
         public func writeData() -> [String: AnyObject] {
@@ -37,7 +37,7 @@ public struct WithPrimitiveCustomTypesUnion: Serializable {
     
     public static func readJSON(json: JSON) throws -> WithPrimitiveCustomTypesUnion {
         return WithPrimitiveCustomTypesUnion(
-            union: try json["union"].json.map { try Union.readJSON($0) }
+            union: try json["union"].optional(.Dictionary).json.map {try Union.readJSON($0) }
         )
     }
     public func writeData() -> [String: AnyObject] {

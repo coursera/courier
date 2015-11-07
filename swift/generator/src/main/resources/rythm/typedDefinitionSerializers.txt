@@ -14,7 +14,7 @@ public static func readJSON(json: JSON) throws -> @className {
       if let unknownDict = json.dictionaryObject {
         return .UNKNOWN$(unknownDict)
       } else {
-        throw ReadError.MalformedUnion
+        throw ReadError(cause: "Typed Definition Union must be a JSON object.")
       }
   }
 }

@@ -13,18 +13,18 @@ public enum WithCustomTypesArrayUnion: Serializable, Equatable {
     public static func readJSON(json: JSON) throws -> WithCustomTypesArrayUnion {
         let dict = json.dictionaryValue
         if let member = dict["int"] {
-            return .IntMember(member.intValue)
+            return .IntMember(try member.required(.Number).intValue)
         }
         if let member = dict["string"] {
-            return .StringMember(member.stringValue)
+            return .StringMember(try member.required(.String).stringValue)
         }
         if let member = dict["org.coursera.records.test.Simple"] {
-            return .SimpleMember(try Simple.readJSON(member.jsonValue))
+            return .SimpleMember(try Simple.readJSON(member.required(.Dictionary).jsonValue))
         }
         if let unknownDict = json.dictionaryObject {
             return .UNKNOWN$(unknownDict)
         } else {
-            throw ReadError.MalformedUnion
+            throw ReadError(cause: "Union must be a JSON object.")
         }
     }
     public func writeData() -> [String: AnyObject] {

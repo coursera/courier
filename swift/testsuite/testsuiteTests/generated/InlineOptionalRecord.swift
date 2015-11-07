@@ -13,7 +13,7 @@ public struct InlineOptionalRecord: Serializable {
     
     public static func readJSON(json: JSON) throws -> InlineOptionalRecord {
         return InlineOptionalRecord(
-            value: json["value"].string
+            value: try json["value"].optional(.String).string
         )
     }
     public func writeData() -> [String: AnyObject] {

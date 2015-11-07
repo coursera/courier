@@ -23,30 +23,30 @@ public struct WithPrimitivesUnion: Serializable {
         public static func readJSON(json: JSON) throws -> Union {
             let dict = json.dictionaryValue
             if let member = dict["int"] {
-                return .IntMember(member.intValue)
+                return .IntMember(try member.required(.Number).intValue)
             }
             if let member = dict["long"] {
-                return .LongMember(member.intValue)
+                return .LongMember(try member.required(.Number).intValue)
             }
             if let member = dict["float"] {
-                return .FloatMember(member.floatValue)
+                return .FloatMember(try member.required(.Number).floatValue)
             }
             if let member = dict["double"] {
-                return .DoubleMember(member.doubleValue)
+                return .DoubleMember(try member.required(.Number).doubleValue)
             }
             if let member = dict["boolean"] {
-                return .BooleanMember(member.boolValue)
+                return .BooleanMember(try member.required(.Bool).boolValue)
             }
             if let member = dict["string"] {
-                return .StringMember(member.stringValue)
+                return .StringMember(try member.required(.String).stringValue)
             }
             if let member = dict["bytes"] {
-                return .BytesMember(member.stringValue)
+                return .BytesMember(try member.required(.String).stringValue)
             }
             if let unknownDict = json.dictionaryObject {
                 return .UNKNOWN$(unknownDict)
             } else {
-                throw ReadError.MalformedUnion
+                throw ReadError(cause: "Union must be a JSON object.")
             }
         }
         public func writeData() -> [String: AnyObject] {
@@ -73,7 +73,7 @@ public struct WithPrimitivesUnion: Serializable {
     
     public static func readJSON(json: JSON) throws -> WithPrimitivesUnion {
         return WithPrimitivesUnion(
-            union: try json["union"].json.map { try Union.readJSON($0) }
+            union: try json["union"].optional(.Dictionary).json.map {try Union.readJSON($0) }
         )
     }
     public func writeData() -> [String: AnyObject] {

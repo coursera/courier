@@ -13,7 +13,7 @@ public struct InlineRecord: Serializable {
     
     public static func readJSON(json: JSON) throws -> InlineRecord {
         return InlineRecord(
-            value: json["value"].int
+            value: try json["value"].optional(.Number).int
         )
     }
     public func writeData() -> [String: AnyObject] {

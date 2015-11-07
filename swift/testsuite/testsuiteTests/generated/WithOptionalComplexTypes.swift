@@ -39,18 +39,18 @@ public struct WithOptionalComplexTypes: Serializable {
         public static func readJSON(json: JSON) throws -> Union {
             let dict = json.dictionaryValue
             if let member = dict["int"] {
-                return .IntMember(member.intValue)
+                return .IntMember(try member.required(.Number).intValue)
             }
             if let member = dict["string"] {
-                return .StringMember(member.stringValue)
+                return .StringMember(try member.required(.String).stringValue)
             }
             if let member = dict["org.coursera.records.test.Simple"] {
-                return .SimpleMember(try Simple.readJSON(member.jsonValue))
+                return .SimpleMember(try Simple.readJSON(member.required(.Dictionary).jsonValue))
             }
             if let unknownDict = json.dictionaryObject {
                 return .UNKNOWN$(unknownDict)
             } else {
-                throw ReadError.MalformedUnion
+                throw ReadError(cause: "Union must be a JSON object.")
             }
         }
         public func writeData() -> [String: AnyObject] {
@@ -69,12 +69,12 @@ public struct WithOptionalComplexTypes: Serializable {
     
     public static func readJSON(json: JSON) throws -> WithOptionalComplexTypes {
         return WithOptionalComplexTypes(
-            record: try json["record"].json.map { try Simple.readJSON($0) },
-            `enum`: json["enum"].string.map { Fruits.read($0) },
-            union: try json["union"].json.map { try Union.readJSON($0) },
-            array: json["array"].array.map { $0.map { $0.intValue } },
-            map: json["map"].dictionary.map { $0.mapValues { $0.intValue } },
-            custom: json["custom"].int
+            record: try json["record"].optional(.Dictionary).json.map {try Simple.readJSON($0) },
+            `enum`: try json["enum"].optional(.String).string.map {Fruits.read($0) },
+            union: try json["union"].optional(.Dictionary).json.map {try Union.readJSON($0) },
+            array: try json["array"].optional(.Array).array.map {try $0.map { try $0.required(.Number).intValue } },
+            map: try json["map"].optional(.Dictionary).dictionary.map {try $0.mapValues { try $0.required(.Number).intValue } },
+            custom: try json["custom"].optional(.Number).int
         )
     }
     public func writeData() -> [String: AnyObject] {
