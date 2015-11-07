@@ -11,10 +11,10 @@ public enum Union: Serializable, Equatable {
     public static func readJSON(json: JSON) throws -> Union {
         let dict = json.dictionaryValue
         if let member = dict["org.coursera.records.Note"] {
-            return .NoteMember(try Note.readJSON(member.required(.Dictionary).jsonValue))
+            return .NoteMember(try Note.readJSON(try member.required(.Dictionary).jsonValue))
         }
         if let member = dict["org.coursera.records.Message"] {
-            return .MessageMember(try Message.readJSON(member.required(.Dictionary).jsonValue))
+            return .MessageMember(try Message.readJSON(try member.required(.Dictionary).jsonValue))
         }
         if let unknownDict = json.dictionaryObject {
             return .UNKNOWN$(unknownDict)
