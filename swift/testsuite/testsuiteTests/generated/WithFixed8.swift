@@ -13,7 +13,7 @@ public struct WithFixed8: Serializable {
     
     public static func readJSON(json: JSON) throws -> WithFixed8 {
         return WithFixed8(
-            fixed: json["fixed"].string
+            fixed: try json["fixed"].optional(.String).string
         )
     }
     public func writeData() -> [String: AnyObject] {

@@ -19,7 +19,7 @@ public struct Simple: Serializable, Equatable {
     
     public static func readJSON(json: JSON) throws -> Simple {
         return Simple(
-            message: json["message"].string
+            message: try json["message"].optional(.String).string
         )
     }
     public func writeData() -> [String: AnyObject] {

@@ -41,14 +41,14 @@ public struct WithOptionalPrimitiveDefaultNone: Serializable {
     
     public static func readJSON(json: JSON) throws -> WithOptionalPrimitiveDefaultNone {
         return WithOptionalPrimitiveDefaultNone(
-            intWithDefault: json["intWithDefault"].int,
-            longWithDefault: json["longWithDefault"].int,
-            floatWithDefault: json["floatWithDefault"].float,
-            doubleWithDefault: json["doubleWithDefault"].double,
-            booleanWithDefault: json["booleanWithDefault"].bool,
-            stringWithDefault: json["stringWithDefault"].string,
-            bytesWithDefault: json["bytesWithDefault"].string,
-            enumWithDefault: json["enumWithDefault"].string.map { Fruits.read($0) }
+            intWithDefault: try json["intWithDefault"].optional(.Number).int,
+            longWithDefault: try json["longWithDefault"].optional(.Number).int,
+            floatWithDefault: try json["floatWithDefault"].optional(.Number).float,
+            doubleWithDefault: try json["doubleWithDefault"].optional(.Number).double,
+            booleanWithDefault: try json["booleanWithDefault"].optional(.Bool).bool,
+            stringWithDefault: try json["stringWithDefault"].optional(.String).string,
+            bytesWithDefault: try json["bytesWithDefault"].optional(.String).string,
+            enumWithDefault: try json["enumWithDefault"].optional(.String).string.map {Fruits.read($0) }
         )
     }
     public func writeData() -> [String: AnyObject] {

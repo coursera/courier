@@ -13,7 +13,7 @@ public struct Note: Serializable, Equatable {
     
     public static func readJSON(json: JSON) throws -> Note {
         return Note(
-            text: json["text"].string
+            text: try json["text"].optional(.String).string
         )
     }
     public func writeData() -> [String: AnyObject] {

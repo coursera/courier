@@ -17,8 +17,8 @@ public struct RecordKey: Serializable {
     
     public static func readJSON(json: JSON) throws -> RecordKey {
         return RecordKey(
-            x: json["x"].int,
-            y: json["y"].bool
+            x: try json["x"].optional(.Number).int,
+            y: try json["y"].optional(.Bool).bool
         )
     }
     public func writeData() -> [String: AnyObject] {

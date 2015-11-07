@@ -13,7 +13,7 @@ public struct WithoutNamespace: Serializable {
     
     public static func readJSON(json: JSON) throws -> WithoutNamespace {
         return WithoutNamespace(
-            field1: json["field1"].string
+            field1: try json["field1"].optional(.String).string
         )
     }
     public func writeData() -> [String: AnyObject] {

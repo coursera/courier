@@ -21,24 +21,24 @@ public struct WithComplexTypesUnion: Serializable {
         public static func readJSON(json: JSON) throws -> Union {
             let dict = json.dictionaryValue
             if let member = dict["org.coursera.records.test.Empty"] {
-                return .EmptyMember(try Empty.readJSON(member.jsonValue))
+                return .EmptyMember(try Empty.readJSON(member.required(.Dictionary).jsonValue))
             }
             if let member = dict["org.coursera.enums.Fruits"] {
-                return .FruitsMember(Fruits.read(member.stringValue))
+                return .FruitsMember(try Fruits.read(member.required(.String).stringValue))
             }
             if let member = dict["array"] {
-                return .ArrayMember(try member.arrayValue.map { try Simple.readJSON($0.jsonValue) })
+                return .ArrayMember(try member.required(.Array).arrayValue.map { try Simple.readJSON($0.required(.Dictionary).jsonValue) })
             }
             if let member = dict["map"] {
-                return .MapMember(try member.dictionaryValue.mapValues { try Simple.readJSON($0.jsonValue) })
+                return .MapMember(try member.required(.Dictionary).dictionaryValue.mapValues { try Simple.readJSON($0.required(.Dictionary).jsonValue) })
             }
             if let member = dict["org.coursera.fixed.Fixed8"] {
-                return .FixedMember(member.stringValue)
+                return .FixedMember(try member.required(.String).stringValue)
             }
             if let unknownDict = json.dictionaryObject {
                 return .UNKNOWN$(unknownDict)
             } else {
-                throw ReadError.MalformedUnion
+                throw ReadError(cause: "Union must be a JSON object.")
             }
         }
         public func writeData() -> [String: AnyObject] {
@@ -61,7 +61,7 @@ public struct WithComplexTypesUnion: Serializable {
     
     public static func readJSON(json: JSON) throws -> WithComplexTypesUnion {
         return WithComplexTypesUnion(
-            union: try json["union"].json.map { try Union.readJSON($0) }
+            union: try json["union"].optional(.Dictionary).json.map {try Union.readJSON($0) }
         )
     }
     public func writeData() -> [String: AnyObject] {

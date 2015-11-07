@@ -13,7 +13,7 @@ public struct WithFlatTypedDefinition: Serializable, Equatable {
     
     public static func readJSON(json: JSON) throws -> WithFlatTypedDefinition {
         return WithFlatTypedDefinition(
-            value: try json["value"].json.map { try FlatTypedDefinition.readJSON($0) }
+            value: try json["value"].optional(.Dictionary).json.map {try FlatTypedDefinition.readJSON($0) }
         )
     }
     public func writeData() -> [String: AnyObject] {

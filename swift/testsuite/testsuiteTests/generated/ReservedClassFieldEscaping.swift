@@ -21,9 +21,9 @@ public struct ReservedClassFieldEscaping: Serializable {
     
     public static func readJSON(json: JSON) throws -> ReservedClassFieldEscaping {
         return ReservedClassFieldEscaping(
-            json: json["json"].string,
-            read: json["read"].string,
-            write: json["write"].string
+            json: try json["json"].optional(.String).string,
+            read: try json["read"].optional(.String).string,
+            write: try json["write"].optional(.String).string
         )
     }
     public func writeData() -> [String: AnyObject] {

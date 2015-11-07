@@ -16,14 +16,14 @@ extension Dictionary {
             self[k] = v
         }
     }
-    
+
     func mapValues<U>(transform: Value -> U) -> [Key : U] {
         return Dictionary<Key, U>(self.map{ (key, value) in (key, transform(value)) })
     }
 }
 
 extension JSON {
-    
+
     //Optional JSON
     public var json: JSON? {
         get {
@@ -42,9 +42,9 @@ extension JSON {
             }
         }
     }
-    
+
     // Not needed, but added to maintain SwiftyJSON consistency.
-    // SwiftyJSON expects a corresponding "xyzValue" accessor for all "xyz" accessors.
+    // SwiftyJSON expects a corresponding "xyzValue" expr for all "xyz" accessors.
     public var jsonValue: JSON {
         get {
             return self

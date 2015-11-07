@@ -29,11 +29,11 @@ public struct WithCustomTypesArray: Serializable, Equatable {
     
     public static func readJSON(json: JSON) throws -> WithCustomTypesArray {
         return WithCustomTypesArray(
-            ints: json["ints"].array.map { $0.map { $0.intValue } },
-            arrays: try json["arrays"].array.map { try $0.map { try $0.arrayValue.map { try Simple.readJSON($0.jsonValue) } } },
-            maps: try json["maps"].array.map { try $0.map { try $0.dictionaryValue.mapValues { try Simple.readJSON($0.jsonValue) } } },
-            unions: try json["unions"].array.map { try $0.map { try WithCustomTypesArrayUnion.readJSON($0.jsonValue) } },
-            fixed: json["fixed"].array.map { $0.map { $0.stringValue } }
+            ints: try json["ints"].optional(.Array).array.map {try $0.map { try $0.required(.Number).intValue } },
+            arrays: try json["arrays"].optional(.Array).array.map {try $0.map { try $0.required(.Array).arrayValue.map { try Simple.readJSON($0.required(.Dictionary).jsonValue) } } },
+            maps: try json["maps"].optional(.Array).array.map {try $0.map { try $0.required(.Dictionary).dictionaryValue.mapValues { try Simple.readJSON($0.required(.Dictionary).jsonValue) } } },
+            unions: try json["unions"].optional(.Array).array.map {try $0.map { try WithCustomTypesArrayUnion.readJSON($0.required(.Dictionary).jsonValue) } },
+            fixed: try json["fixed"].optional(.Array).array.map {try $0.map { try $0.required(.String).stringValue } }
         )
     }
     public func writeData() -> [String: AnyObject] {

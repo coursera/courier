@@ -130,9 +130,9 @@ Java class signatures will be:
 enum AnswerFormat: JSONSerializable {
     case TextEntryMember(TextEntry)
     case MultipleChoiceMember(MultipleChoice)
-    case UNKNOWN$
+    case UNKNOWN$([String, JSON])
 
-    static func readJSON(json: JSON) -> Fortune
+    static func readJSON(json: JSON) -> AnswerFormat
     func writeJSON() -> JSON
 }
 ```
@@ -225,7 +225,6 @@ For example, to read JSON:
 let json = JSON("{ \"body\": \"Hello Pegasus!\"}")
 let message = Message.readJSON(json)
 message.writeJSON() // -> { "body": "Hello Pegasus!" }
-
 ```
 
 NSCoding Serialization

@@ -13,7 +13,7 @@ public struct WithDateTime: Serializable {
     
     public static func readJSON(json: JSON) throws -> WithDateTime {
         return WithDateTime(
-            time: json["time"].int
+            time: try json["time"].optional(.Number).int
         )
     }
     public func writeData() -> [String: AnyObject] {

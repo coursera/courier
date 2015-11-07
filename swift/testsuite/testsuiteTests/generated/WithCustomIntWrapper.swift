@@ -13,7 +13,7 @@ public struct WithCustomIntWrapper: Serializable {
     
     public static func readJSON(json: JSON) throws -> WithCustomIntWrapper {
         return WithCustomIntWrapper(
-            wrapper: json["wrapper"].int
+            wrapper: try json["wrapper"].optional(.Number).int
         )
     }
     public func writeData() -> [String: AnyObject] {

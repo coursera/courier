@@ -13,7 +13,7 @@ public struct DefaultLiteralEscaping: Serializable {
     
     public static func readJSON(json: JSON) throws -> DefaultLiteralEscaping {
         return DefaultLiteralEscaping(
-            stringField: json["stringField"].string
+            stringField: try json["stringField"].optional(.String).string
         )
     }
     public func writeData() -> [String: AnyObject] {

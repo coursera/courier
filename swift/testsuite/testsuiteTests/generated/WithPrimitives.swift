@@ -37,13 +37,13 @@ public struct WithPrimitives: Serializable, Equatable {
     
     public static func readJSON(json: JSON) throws -> WithPrimitives {
         return WithPrimitives(
-            intField: json["intField"].int,
-            longField: json["longField"].int,
-            floatField: json["floatField"].float,
-            doubleField: json["doubleField"].double,
-            booleanField: json["booleanField"].bool,
-            stringField: json["stringField"].string,
-            bytesField: json["bytesField"].string
+            intField: try json["intField"].optional(.Number).int,
+            longField: try json["longField"].optional(.Number).int,
+            floatField: try json["floatField"].optional(.Number).float,
+            doubleField: try json["doubleField"].optional(.Number).double,
+            booleanField: try json["booleanField"].optional(.Bool).bool,
+            stringField: try json["stringField"].optional(.String).string,
+            bytesField: try json["bytesField"].optional(.String).string
         )
     }
     public func writeData() -> [String: AnyObject] {

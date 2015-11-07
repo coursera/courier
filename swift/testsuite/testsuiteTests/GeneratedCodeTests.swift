@@ -258,6 +258,42 @@ class GeneratedCodeTests: XCTestCase {
             XCTFail()
         }
     }
+    
+    func testMalformedUnionMember() {
+        let json = try! jsonFile("WithUnion_malformedMember.json");
+        do {
+            try WithUnion.readJSON(json);
+            XCTFail()
+        } catch let error as ReadError {
+            XCTAssertEqual(error.cause, "Wrong Type.")
+        } catch {
+            XCTFail()
+        }
+    }
+    
+    func testMalformedUnionTag() {
+        let json = try! jsonFile("WithUnion_malformedTag.json");
+        do {
+            try WithUnion.readJSON(json);
+            XCTFail()
+        } catch let error as ReadError {
+            XCTAssertEqual(error.cause, "Wrong Type.")
+        } catch {
+            XCTFail()
+        }
+    }
+    
+    func testWrongFieldType() {
+        let json = try! jsonFile("Message_wrongFieldType.json");
+        do {
+            try Message.readJSON(json);
+            XCTFail()
+        } catch let error as ReadError {
+            XCTAssertEqual(error.cause, "Wrong Type.")
+        } catch {
+            XCTFail()
+        }
+    }
 
     // TODO: This is lame.  I'd prefer use SwiftyJSON to do the comparison here as well, but was unable to 
     // figure out how to compare JSON correctly with it

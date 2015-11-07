@@ -20,8 +20,8 @@ public struct DeprecatedRecord: Serializable {
     
     public static func readJSON(json: JSON) throws -> DeprecatedRecord {
         return DeprecatedRecord(
-            field1: json["field1"].string,
-            field2: json["field2"].string
+            field1: try json["field1"].optional(.String).string,
+            field2: try json["field2"].optional(.String).string
         )
     }
     public func writeData() -> [String: AnyObject] {
