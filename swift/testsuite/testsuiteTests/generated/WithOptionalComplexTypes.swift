@@ -45,7 +45,7 @@ public struct WithOptionalComplexTypes: Serializable {
                 return .StringMember(try member.required(.String).stringValue)
             }
             if let member = dict["org.coursera.records.test.Simple"] {
-                return .SimpleMember(try Simple.readJSON(member.required(.Dictionary).jsonValue))
+                return .SimpleMember(try Simple.readJSON(try member.required(.Dictionary).jsonValue))
             }
             if let unknownDict = json.dictionaryObject {
                 return .UNKNOWN$(unknownDict)

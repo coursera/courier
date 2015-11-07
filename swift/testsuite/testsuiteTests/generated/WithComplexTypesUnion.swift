@@ -21,16 +21,16 @@ public struct WithComplexTypesUnion: Serializable {
         public static func readJSON(json: JSON) throws -> Union {
             let dict = json.dictionaryValue
             if let member = dict["org.coursera.records.test.Empty"] {
-                return .EmptyMember(try Empty.readJSON(member.required(.Dictionary).jsonValue))
+                return .EmptyMember(try Empty.readJSON(try member.required(.Dictionary).jsonValue))
             }
             if let member = dict["org.coursera.enums.Fruits"] {
-                return .FruitsMember(try Fruits.read(member.required(.String).stringValue))
+                return .FruitsMember(try Fruits.read(try member.required(.String).stringValue))
             }
             if let member = dict["array"] {
-                return .ArrayMember(try member.required(.Array).arrayValue.map { try Simple.readJSON($0.required(.Dictionary).jsonValue) })
+                return .ArrayMember(try member.required(.Array).arrayValue.map { try Simple.readJSON(try $0.required(.Dictionary).jsonValue) })
             }
             if let member = dict["map"] {
-                return .MapMember(try member.required(.Dictionary).dictionaryValue.mapValues { try Simple.readJSON($0.required(.Dictionary).jsonValue) })
+                return .MapMember(try member.required(.Dictionary).dictionaryValue.mapValues { try Simple.readJSON(try $0.required(.Dictionary).jsonValue) })
             }
             if let member = dict["org.coursera.fixed.Fixed8"] {
                 return .FixedMember(try member.required(.String).stringValue)

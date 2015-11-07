@@ -12,9 +12,9 @@ public enum FlatTypedDefinition: Serializable, Equatable {
         let dict = json.dictionaryValue
         switch json["typeName"].stringValue {
         case "note":
-            return .NoteMember(try Note.readJSON(json.required(.Dictionary).jsonValue))
+            return .NoteMember(try Note.readJSON(try json.required(.Dictionary).jsonValue))
         case "message":
-            return .MessageMember(try Message.readJSON(json.required(.Dictionary).jsonValue))
+            return .MessageMember(try Message.readJSON(try json.required(.Dictionary).jsonValue))
         default:
             if let unknownDict = json.dictionaryObject {
                 return .UNKNOWN$(unknownDict)

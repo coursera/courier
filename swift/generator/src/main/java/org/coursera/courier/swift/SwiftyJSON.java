@@ -3,51 +3,50 @@ package org.coursera.courier.swift;
 import com.linkedin.data.schema.DataSchema;
 import com.linkedin.pegasus.generator.spec.ArrayTemplateSpec;
 import com.linkedin.pegasus.generator.spec.ClassTemplateSpec;
-import com.linkedin.pegasus.generator.spec.EnumTemplateSpec;
-import com.linkedin.pegasus.generator.spec.RecordTemplateSpec;
 import com.linkedin.pegasus.generator.spec.UnionTemplateSpec;
 import org.coursera.courier.api.CourierMapTemplateSpec;
 
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
 public class SwiftyJSON {
 
-  private static final Map<DataSchema.Type, String> schemaTypeToSwiftyType;
+  private static final Map<DataSchema.Type, String> swiftyTypeAccessors;
   static {
-    schemaTypeToSwiftyType = new HashMap<DataSchema.Type, String>();
-    schemaTypeToSwiftyType.put(DataSchema.Type.INT, "int"); // TODO(jbetz): just use Int32 here? (On a 64-bit platform, Int is the same size as Int64.)
-    schemaTypeToSwiftyType.put(DataSchema.Type.LONG, "int"); // TODO(jbetz): just use Int64 here? (On a 32-bit platform, Int is the same size as Int32.)
-    schemaTypeToSwiftyType.put(DataSchema.Type.FLOAT, "float");
-    schemaTypeToSwiftyType.put(DataSchema.Type.DOUBLE, "double");
-    schemaTypeToSwiftyType.put(DataSchema.Type.STRING, "string");
-    schemaTypeToSwiftyType.put(DataSchema.Type.BOOLEAN, "bool");
-    schemaTypeToSwiftyType.put(DataSchema.Type.BYTES, "string"); // TODO(jbetz): provide an adapter for converting pegasus byte strings to swift byte[]
-    schemaTypeToSwiftyType.put(DataSchema.Type.FIXED, "string"); // TODO(jbetz): provide an adapter for converting pegasus byte strings to swift byte[]
-    schemaTypeToSwiftyType.put(DataSchema.Type.ENUM, "string");
-    schemaTypeToSwiftyType.put(DataSchema.Type.RECORD, "json");
-    schemaTypeToSwiftyType.put(DataSchema.Type.UNION, "json");
-    schemaTypeToSwiftyType.put(DataSchema.Type.MAP, "dictionary");
-    schemaTypeToSwiftyType.put(DataSchema.Type.ARRAY, "array");
+    Map<DataSchema.Type, String> map = new HashMap<DataSchema.Type, String>();
+    map.put(DataSchema.Type.INT, "int"); // TODO(jbetz): just use Int32 here? (On a 64-bit platform, Int is the same size as Int64.)
+    map.put(DataSchema.Type.LONG, "int"); // TODO(jbetz): just use Int64 here? (On a 32-bit platform, Int is the same size as Int32.)
+    map.put(DataSchema.Type.FLOAT, "float");
+    map.put(DataSchema.Type.DOUBLE, "double");
+    map.put(DataSchema.Type.STRING, "string");
+    map.put(DataSchema.Type.BOOLEAN, "bool");
+    map.put(DataSchema.Type.BYTES, "string"); // TODO(jbetz): provide an adapter for converting pegasus byte strings to swift byte[]
+    map.put(DataSchema.Type.FIXED, "string"); // TODO(jbetz): provide an adapter for converting pegasus byte strings to swift byte[]
+    map.put(DataSchema.Type.ENUM, "string");
+    map.put(DataSchema.Type.RECORD, "json");
+    map.put(DataSchema.Type.UNION, "json");
+    map.put(DataSchema.Type.MAP, "dictionary");
+    map.put(DataSchema.Type.ARRAY, "array");
+    swiftyTypeAccessors = map;
   }
 
-  private static final Map<DataSchema.Type, String> schemaTypetoSwiftyTypeEnum;
+  private static final Map<DataSchema.Type, String> swiftyTypeIdentifiers;
   static {
-    schemaTypetoSwiftyTypeEnum = new HashMap<DataSchema.Type, String>();
-    schemaTypetoSwiftyTypeEnum.put(DataSchema.Type.INT, ".Number"); // TODO(jbetz): just use Int32 here? (On a 64-bit platform, Int is the same size as Int64.)
-    schemaTypetoSwiftyTypeEnum.put(DataSchema.Type.LONG, ".Number"); // TODO(jbetz): just use Int64 here? (On a 32-bit platform, Int is the same size as Int32.)
-    schemaTypetoSwiftyTypeEnum.put(DataSchema.Type.FLOAT, ".Number");
-    schemaTypetoSwiftyTypeEnum.put(DataSchema.Type.DOUBLE, ".Number");
-    schemaTypetoSwiftyTypeEnum.put(DataSchema.Type.STRING, ".String");
-    schemaTypetoSwiftyTypeEnum.put(DataSchema.Type.BOOLEAN, ".Bool");
-    schemaTypetoSwiftyTypeEnum.put(DataSchema.Type.BYTES, ".String"); // TODO(jbetz): provide an adapter for converting pegasus byte strings to swift byte[]
-    schemaTypetoSwiftyTypeEnum.put(DataSchema.Type.FIXED, ".String"); // TODO(jbetz): provide an adapter for converting pegasus byte strings to swift byte[]
-    schemaTypetoSwiftyTypeEnum.put(DataSchema.Type.ENUM, ".String");
-    schemaTypetoSwiftyTypeEnum.put(DataSchema.Type.RECORD, ".Dictionary");
-    schemaTypetoSwiftyTypeEnum.put(DataSchema.Type.UNION, ".Dictionary");
-    schemaTypetoSwiftyTypeEnum.put(DataSchema.Type.MAP, ".Dictionary");
-    schemaTypetoSwiftyTypeEnum.put(DataSchema.Type.ARRAY, ".Array");
+    Map<DataSchema.Type, String> map = new HashMap<DataSchema.Type, String>();
+    map.put(DataSchema.Type.INT, ".Number");
+    map.put(DataSchema.Type.LONG, ".Number");
+    map.put(DataSchema.Type.FLOAT, ".Number");
+    map.put(DataSchema.Type.DOUBLE, ".Number");
+    map.put(DataSchema.Type.STRING, ".String");
+    map.put(DataSchema.Type.BOOLEAN, ".Bool");
+    map.put(DataSchema.Type.BYTES, ".String");
+    map.put(DataSchema.Type.FIXED, ".String");
+    map.put(DataSchema.Type.ENUM, ".String");
+    map.put(DataSchema.Type.RECORD, ".Dictionary");
+    map.put(DataSchema.Type.UNION, ".Dictionary");
+    map.put(DataSchema.Type.MAP, ".Dictionary");
+    map.put(DataSchema.Type.ARRAY, ".Array");
+    swiftyTypeIdentifiers = map;
   }
 
   private SwiftSyntax syntax;
@@ -56,93 +55,77 @@ public class SwiftyJSON {
     this.syntax = syntax;
   }
 
-  // Assumes the fields are contained in json$.
-  // Creates a Swift source string that evaluates to Swifty's JSON type.
-
+  /**
+   * See toGetAccessor, below.
+   */
   public String toGetAccessor(String anchor, UnionTemplateSpec.Member member) {
     ClassTemplateSpec type = member.getClassTemplateSpec();
     return toGetAccessor(anchor, type, false);
   }
 
+  /**
+   * Given an expression that evaluates to a SwiftyJson JSON type, and the Pegasus type is should
+   * be deserialized to, return a expression that evaluates to the deserialized Swift data binding
+   * type.
+   */
   public String toGetAccessor(String anchor, ClassTemplateSpec spec, boolean isOptional) {
-    return buildGetAccessor(anchor, spec, isOptional).toString();
+    return readTypeExpr(expr(anchor), spec, isOptional).evaluated();
+  }
+
+  private Expr readTypeExpr(Expr expr, ClassTemplateSpec spec, boolean isOptional) {
+    DataSchema schema = spec.getSchema();
+    CheckedThrowExpr directAccessor = checkedTypeAccessorExpr(expr, spec, isOptional);
+    if (schema.isPrimitive() || schema.getType() == DataSchema.Type.FIXED) {
+      return directAccessor;
+    } else {
+      if (isOptional) {
+        Expr readClosure = readTypeExpr(expr("$0"), spec);
+        return directAccessor.apply(".map {" + readClosure.evaluated() + " }", readClosure);
+      } else {
+        return readTypeExpr(directAccessor, spec);
+      }
+    }
+  }
+
+  private Expr readTypeExpr(Expr expr, ClassTemplateSpec spec) {
+    DataSchema.Type schemaType = spec.getSchema().getType();
+    switch (schemaType) {
+      case ENUM:
+        return expr(spec.getClassName()).apply(".read(" + expr.evaluated() + ")", expr);
+      case RECORD:
+      case UNION:
+        // readJSON throws
+        return checkedThrowExpr(spec.getClassName()).apply(".readJSON(" + expr.evaluated() + ")", expr);
+      case MAP:
+        CourierMapTemplateSpec mapSpec = (CourierMapTemplateSpec)spec;
+        Expr readValueClosure = readTypeExpr(expr("$0"), mapSpec.getValueClass(), false);
+        return expr.apply(".mapValues { " + readValueClosure.evaluated() + " }", readValueClosure);
+      case ARRAY:
+        ArrayTemplateSpec arraySpec = (ArrayTemplateSpec)spec;
+        Expr readItemClosure = readTypeExpr(expr("$0"), arraySpec.getItemClass(), false);
+        return expr.apply(".map { " + readItemClosure.evaluated() + " }", readItemClosure);
+      default:
+        throw new IllegalArgumentException("unrecognized type: " + schemaType);
+    }
+  }
+
+  private CheckedThrowExpr checkedTypeAccessorExpr(Expr expr, ClassTemplateSpec spec, boolean isOptional) {
+    String typeIdentifier = typeIdentifier(spec);
+    String typeAccessor = typeAccessor(spec, isOptional);
+    if (isOptional) {
+      return checkedThrowExpr(expr.apply(".optional(" + typeIdentifier + ")." + typeAccessor));
+    } else {
+      return checkedThrowExpr(expr.apply(".required(" + typeIdentifier + ")." + typeAccessor));
+    }
   }
 
   /**
-   * Constructs a Swift expression that converts the given anchor expression into the
-   * swift types used to represent the given spec.
+   * A SwiftyJson property name for a particular Pegasus type.
    *
-   * For example, if the anchor is "example" and the spec is for a record type called "Message"
-   * the resulting expression would be "try Message.readJSON(example)".
+   * E.g. a required string is accessed using the "stringValue" property.
    */
-  private Expr buildGetAccessor(String anchor, ClassTemplateSpec spec, boolean isOptional) {
-    if (spec.getSchema().isPrimitive() || spec.getSchema().getType() == DataSchema.Type.FIXED) {
-      return directAccessor(anchor, spec, isOptional);
-    } else {
-      return buildComplexTypeGetAccessor(anchor, spec, isOptional);
-    }
-  }
-
-  private Expr buildComplexTypeGetAccessor(String anchor, ClassTemplateSpec spec, boolean isOptional) {
-    Expr directAccessor = directAccessor(anchor, spec, isOptional);
-    if (isOptional) {
-      return throwExpr(directAccessor.undecorated() + ".map {" + buildComplexTypeGetAccessor("$0", spec).toString() + " }");
-    } else {
-      return throwExpr(buildComplexTypeGetAccessor(directAccessor.undecorated(), spec).undecorated());
-    }
-  }
-
-  private Expr buildComplexTypeGetAccessor(String anchor, ClassTemplateSpec spec) {
-    DataSchema.Type schemaType = spec.getSchema().getType();
-    if (schemaType == DataSchema.Type.ENUM) {
-      EnumTemplateSpec enumSpec = (EnumTemplateSpec)spec;
-      return expr(enumSpec.getClassName() + ".read(" + anchor + ")");
-    } else if (schemaType == DataSchema.Type.RECORD) {
-      RecordTemplateSpec recordSpec = (RecordTemplateSpec)spec;
-      return throwExpr(recordSpec.getClassName() + ".readJSON(" + anchor + ")");
-    } else if (schemaType == DataSchema.Type.UNION) {
-      UnionTemplateSpec unionSpec = (UnionTemplateSpec)spec;
-      return throwExpr(unionSpec.getClassName() + ".readJSON(" + anchor + ")");
-    } else if (schemaType == DataSchema.Type.MAP) {
-      CourierMapTemplateSpec mapSpec = (CourierMapTemplateSpec)spec;
-      Expr inner = buildGetAccessor("$0", mapSpec.getValueClass(), false);
-      return inner.wrap(anchor + ".mapValues { ", inner, " }");
-    } else if (schemaType == DataSchema.Type.ARRAY) {
-      ArrayTemplateSpec arraySpec = (ArrayTemplateSpec)spec;
-      Expr inner = buildGetAccessor("$0", arraySpec.getItemClass(), false);
-      return inner.wrap(anchor + ".map { ", inner, " }");
-    } else {
-      throw new IllegalArgumentException("unrecognized type: " + schemaType);
-    }
-  }
-
-  public Expr directAccessor(String anchor, ClassTemplateSpec spec, boolean isOptional) {
-    if (isOptional) {
-      return throwExpr(anchor + ".optional(" + swiftyTypeEnum(spec) + ")." + maybeDirectOptional(swiftyType(spec), isOptional));
-    } else {
-      return throwExpr(anchor + ".required(" + swiftyTypeEnum(spec) + ")." + maybeDirectOptional(swiftyType(spec), isOptional));
-    }
-  }
-
-  public String swiftyType(ClassTemplateSpec spec) {
-    DataSchema.Type schemaType = spec.getSchema().getType();
-    String swiftyType = schemaTypeToSwiftyType.get(schemaType);
-    if (swiftyType == null) {
-      throw new IllegalArgumentException("unrecognized type: " + schemaType);
-    }
-    return swiftyType;
-  }
-
-  public String swiftyTypeEnum(ClassTemplateSpec spec) {
-    DataSchema.Type schemaType = spec.getSchema().getType();
-    String swiftyType = schemaTypetoSwiftyTypeEnum.get(schemaType);
-    if (swiftyType == null) {
-      throw new IllegalArgumentException("unrecognized type: " + schemaType);
-    }
-    return swiftyType;
-  }
-
-  private String maybeDirectOptional(String type, boolean isOptional) {
+  private String typeAccessor(ClassTemplateSpec spec, boolean isOptional) {
+    String type = typeAccessor(spec);
     if (!isOptional) {
       return type + "Value";
     } else {
@@ -150,86 +133,122 @@ public class SwiftyJSON {
     }
   }
 
+  private String typeAccessor(ClassTemplateSpec spec) {
+    DataSchema.Type schemaType = spec.getSchema().getType();
+    String swiftyType = swiftyTypeAccessors.get(schemaType);
+    if (swiftyType == null) {
+      throw new IllegalArgumentException("unrecognized type: " + schemaType);
+    }
+    return swiftyType;
+  }
+
+  private String typeIdentifier(ClassTemplateSpec spec) {
+    DataSchema.Type schemaType = spec.getSchema().getType();
+    String swiftyType = swiftyTypeIdentifiers.get(schemaType);
+    if (swiftyType == null) {
+      throw new IllegalArgumentException("unrecognized type: " + schemaType);
+    }
+    return swiftyType;
+  }
+
   public String toSetAccessor(UnionTemplateSpec.Member member) {
     ClassTemplateSpec type = member.getClassTemplateSpec();
     return toSetAccessor("member", type);
   }
 
+  /**
+   * Given an expression that evaluates to a Swift data binding type, and the pegasus type of the
+   * data binding, return an expression that evaluates to the serialized SwiftyJson JSON type.
+   */
   public String toSetAccessor(String anchor, ClassTemplateSpec spec) {
     DataSchema.Type schemaType = spec.getSchema().getType();
-    if (schemaType == DataSchema.Type.ENUM) {
-      return anchor + ".write()";
-    } else if (EnumSet.of(DataSchema.Type.RECORD, DataSchema.Type.UNION).contains(schemaType)) {
-      return anchor + ".writeData()";
-    } else if (schemaType == DataSchema.Type.MAP) {
-      CourierMapTemplateSpec mapSpec = (CourierMapTemplateSpec)spec;
-      if (mapSpec.getValueClass().getSchema().isPrimitive()) {
+    switch (schemaType) {
+      case ENUM:
+        return anchor + ".write()";
+      case RECORD:
+      case UNION:
+        return anchor + ".writeData()";
+      case MAP:
+        CourierMapTemplateSpec mapSpec = (CourierMapTemplateSpec)spec;
+        if (mapSpec.getValueClass().getSchema().isPrimitive()) {
+          return anchor;
+        } else {
+          return anchor + ".mapValues { " + toSetAccessor("$0", mapSpec.getValueClass()) + " }";
+        }
+      case ARRAY:
+        ArrayTemplateSpec arraySpec = (ArrayTemplateSpec)spec;
+        if (arraySpec.getItemClass().getSchema().isPrimitive()) {
+          return anchor;
+        } else {
+          return anchor + ".map { " + toSetAccessor("$0", arraySpec.getItemClass()) + " }";
+        }
+      default:
         return anchor;
-      } else {
-        return anchor + ".mapValues { " + toSetAccessor("$0", mapSpec.getValueClass()) + " }";
-      }
-    } else if (schemaType == DataSchema.Type.ARRAY) {
-      ArrayTemplateSpec arraySpec = (ArrayTemplateSpec)spec;
-      if (arraySpec.getItemClass().getSchema().isPrimitive()) {
-        return anchor;
-      } else {
-        return anchor + ".map { " + toSetAccessor("$0", arraySpec.getItemClass()) + " }";
-      }
-    } else {
-      return anchor;
     }
   }
 
-  private interface Expr {
-    Expr wrap(String prefix, Expr wrappedExpr, String postfix);
-    String undecorated();
-  }
+  /*
+   * Utilities to track Swift "throws" propagation, since thrown errors must be explicitly
+   * propagated at at each expression, including closures using "try".
+   */
 
-  private static class PlainExpr implements Expr {
+  private static class Expr {
     public final String expr;
 
-    public PlainExpr(String expr) {
+    public Expr(String expr) {
       this.expr = expr;
     }
 
-    public Expr wrap(String prefix, Expr wrappedExpr, String postfix) {
-      return new PlainExpr(prefix + wrappedExpr.toString() + postfix);
+    public Expr apply(String invocation) {
+      return new Expr(expr + invocation);
     }
 
-    public String undecorated() {
-      return expr;
+    public Expr apply(String invocation, Expr nestedExpr) {
+      if (nestedExpr instanceof CheckedThrowExpr) {
+        return new CheckedThrowExpr(expr + invocation);
+      }
+      return new Expr(expr + invocation);
     }
 
-    public String toString() {
+    public String evaluated() {
       return expr;
     }
   }
 
-  private static class ThrowsExpr implements Expr {
-    public final String expr;
-    public ThrowsExpr(String expr) {
-      this.expr = expr;
+  private static class CheckedThrowExpr extends Expr {
+    public CheckedThrowExpr(String expr) {
+      super(expr);
     }
 
-    public Expr wrap(String prefix, Expr wrappedExpr, String postfix) {
-      return new ThrowsExpr(prefix + wrappedExpr.toString() + postfix);
+    @Override
+    public CheckedThrowExpr apply(String invocation) {
+      return new CheckedThrowExpr(expr + invocation);
     }
 
-    public String undecorated() {
-      return expr;
+    @Override
+    public CheckedThrowExpr apply(String invocation, Expr nestedExpr) {
+      return new CheckedThrowExpr(expr + invocation);
     }
 
-    public String toString() {
+    @Override
+    public String evaluated() {
       return "try " + expr;
     }
   }
 
-  private static Expr throwExpr(String expr) {
-    return new ThrowsExpr(expr);
+  private static CheckedThrowExpr checkedThrowExpr(String expr) {
+    return new CheckedThrowExpr(expr);
+  }
+
+  private static CheckedThrowExpr checkedThrowExpr(Expr expr) {
+    if (expr instanceof CheckedThrowExpr) {
+      return (CheckedThrowExpr)expr;
+    }
+    return new CheckedThrowExpr(expr.evaluated());
   }
 
   private static Expr expr(String expr) {
-    return new PlainExpr(expr);
+    return new Expr(expr);
   }
 
 }

@@ -49,7 +49,7 @@ public struct WithComplexTypes: Serializable, Equatable {
                 return .StringMember(try member.required(.String).stringValue)
             }
             if let member = dict["org.coursera.records.test.Simple"] {
-                return .SimpleMember(try Simple.readJSON(member.required(.Dictionary).jsonValue))
+                return .SimpleMember(try Simple.readJSON(try member.required(.Dictionary).jsonValue))
             }
             if let unknownDict = json.dictionaryObject {
                 return .UNKNOWN$(unknownDict)
@@ -78,7 +78,7 @@ public struct WithComplexTypes: Serializable, Equatable {
             union: try json["union"].optional(.Dictionary).json.map {try Union.readJSON($0) },
             array: try json["array"].optional(.Array).array.map {try $0.map { try $0.required(.Number).intValue } },
             map: try json["map"].optional(.Dictionary).dictionary.map {try $0.mapValues { try $0.required(.Number).intValue } },
-            complexMap: try json["complexMap"].optional(.Dictionary).dictionary.map {try $0.mapValues { try Simple.readJSON($0.required(.Dictionary).jsonValue) } },
+            complexMap: try json["complexMap"].optional(.Dictionary).dictionary.map {try $0.mapValues { try Simple.readJSON(try $0.required(.Dictionary).jsonValue) } },
             custom: try json["custom"].optional(.Number).int
         )
     }
