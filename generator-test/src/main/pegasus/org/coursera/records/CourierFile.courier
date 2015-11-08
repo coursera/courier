@@ -4,5 +4,5 @@ namespace org.coursera.records
  *
  */
 record CourierFile {
-  find: stirng
+  find: string
 }
