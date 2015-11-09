@@ -136,7 +136,7 @@ object Example extends Build {
 
 Your project can now generate Courier data bindings.
 
-To tryi it out, add `.pdsc` files to the `src/main/pegasus` directory of your project. For example:
+To try it out, add `.pdsc` files to the `src/main/pegasus` directory of your project. For example:
 
 `schemas/src/main/pegasus/org/example/fortune/Fortune.pdsc`:
 
