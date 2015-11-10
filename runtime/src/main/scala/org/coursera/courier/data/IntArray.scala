@@ -61,7 +61,7 @@ object IntArray {
   }
 
   def apply(dataList: DataList, conversion: DataConversion): IntArray = {
-    new IntArray(DataTemplates.makeImmutable(dataList, SCHEMA, conversion))
+    new IntArray(DataTemplates.makeImmutable(dataList, conversion))
   }
 
   def newBuilder = new DataBuilder()

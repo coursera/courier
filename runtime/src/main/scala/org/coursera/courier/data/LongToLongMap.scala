@@ -93,7 +93,7 @@ object LongToLongMap {
   }
 
   def apply(dataMap: DataMap, conversion: DataConversion): LongToLongMap = {
-    new LongToLongMap(DataTemplates.makeImmutable(dataMap, SCHEMA, conversion))
+    new LongToLongMap(DataTemplates.makeImmutable(dataMap, conversion))
   }
 
   def newBuilder = new DataBuilder()

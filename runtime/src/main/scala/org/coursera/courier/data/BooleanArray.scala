@@ -61,7 +61,7 @@ object BooleanArray {
   }
 
   def apply(dataList: DataList, conversion: DataConversion): BooleanArray = {
-    new BooleanArray(DataTemplates.makeImmutable(dataList, SCHEMA, conversion))
+    new BooleanArray(DataTemplates.makeImmutable(dataList, conversion))
   }
 
   def newBuilder = new DataBuilder()

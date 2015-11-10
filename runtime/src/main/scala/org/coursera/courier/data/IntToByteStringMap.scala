@@ -93,7 +93,7 @@ object IntToByteStringMap {
   }
 
   def apply(dataMap: DataMap, conversion: DataConversion): IntToByteStringMap = {
-    new IntToByteStringMap(DataTemplates.makeImmutable(dataMap, SCHEMA, conversion))
+    new IntToByteStringMap(DataTemplates.makeImmutable(dataMap, conversion))
   }
 
   def newBuilder = new DataBuilder()

@@ -31,7 +31,7 @@ object DataTemplates {
   type DataConversion = DataConversion.Value
 
   def makeImmutable[T <: DataComplex](
-      data: T, schema: DataSchema, conversion: DataConversion): T = {
+      data: T, conversion: DataConversion): T = {
     conversion match {
       case DataConversion.DeepCopy =>
         val copy = data.copy()

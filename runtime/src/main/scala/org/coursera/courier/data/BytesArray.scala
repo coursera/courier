@@ -61,7 +61,7 @@ object BytesArray {
   }
 
   def apply(dataList: DataList, conversion: DataConversion): BytesArray = {
-    new BytesArray(DataTemplates.makeImmutable(dataList, SCHEMA, conversion))
+    new BytesArray(DataTemplates.makeImmutable(dataList, conversion))
   }
 
   def newBuilder = new DataBuilder()

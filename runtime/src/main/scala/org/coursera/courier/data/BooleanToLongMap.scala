@@ -93,7 +93,7 @@ object BooleanToLongMap {
   }
 
   def apply(dataMap: DataMap, conversion: DataConversion): BooleanToLongMap = {
-    new BooleanToLongMap(DataTemplates.makeImmutable(dataMap, SCHEMA, conversion))
+    new BooleanToLongMap(DataTemplates.makeImmutable(dataMap, conversion))
   }
 
   def newBuilder = new DataBuilder()

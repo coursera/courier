@@ -61,7 +61,7 @@ object LongArray {
   }
 
   def apply(dataList: DataList, conversion: DataConversion): LongArray = {
-    new LongArray(DataTemplates.makeImmutable(dataList, SCHEMA, conversion))
+    new LongArray(DataTemplates.makeImmutable(dataList, conversion))
   }
 
   def newBuilder = new DataBuilder()

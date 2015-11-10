@@ -157,7 +157,7 @@ object @(map.scalaType) {
   }
 
   def apply(dataMap: DataMap, conversion: DataConversion): @(map.scalaType) = {
-    new @(map.scalaType)(DataTemplates.makeImmutable(dataMap, SCHEMA, conversion))
+    new @(map.scalaType)(DataTemplates.makeImmutable(dataMap, conversion))
   }
 
   def newBuilder = new DataBuilder()

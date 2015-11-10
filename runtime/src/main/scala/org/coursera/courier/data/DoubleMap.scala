@@ -93,7 +93,7 @@ object DoubleMap {
   }
 
   def apply(dataMap: DataMap, conversion: DataConversion): DoubleMap = {
-    new DoubleMap(DataTemplates.makeImmutable(dataMap, SCHEMA, conversion))
+    new DoubleMap(DataTemplates.makeImmutable(dataMap, conversion))
   }
 
   def newBuilder = new DataBuilder()

@@ -93,7 +93,7 @@ object BytesMap {
   }
 
   def apply(dataMap: DataMap, conversion: DataConversion): BytesMap = {
-    new BytesMap(DataTemplates.makeImmutable(dataMap, SCHEMA, conversion))
+    new BytesMap(DataTemplates.makeImmutable(dataMap, conversion))
   }
 
   def newBuilder = new DataBuilder()

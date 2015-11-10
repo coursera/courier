@@ -93,7 +93,7 @@ object FloatMap {
   }
 
   def apply(dataMap: DataMap, conversion: DataConversion): FloatMap = {
-    new FloatMap(DataTemplates.makeImmutable(dataMap, SCHEMA, conversion))
+    new FloatMap(DataTemplates.makeImmutable(dataMap, conversion))
   }
 
   def newBuilder = new DataBuilder()

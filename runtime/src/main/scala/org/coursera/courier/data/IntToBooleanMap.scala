@@ -93,7 +93,7 @@ object IntToBooleanMap {
   }
 
   def apply(dataMap: DataMap, conversion: DataConversion): IntToBooleanMap = {
-    new IntToBooleanMap(DataTemplates.makeImmutable(dataMap, SCHEMA, conversion))
+    new IntToBooleanMap(DataTemplates.makeImmutable(dataMap, conversion))
   }
 
   def newBuilder = new DataBuilder()

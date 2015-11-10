@@ -76,7 +76,7 @@
   override def copy(): DataTemplate[DataList] = this
 
   override def copy(dataList: DataList, conversion: DataConversion): @(array.scalaType) = {
-    new @(array.scalaType)(DataTemplates.makeImmutable(dataList, @(array.scalaType).SCHEMA, conversion))
+    new @(array.scalaType)(DataTemplates.makeImmutable(dataList, conversion))
   }
 
   override def clone(): DataTemplate[DataList] = this
@@ -101,7 +101,7 @@ object @(array.scalaType) {
   }
 
   def apply(dataList: DataList, conversion: DataConversion): @(array.scalaType) = {
-    new @(array.scalaType)(DataTemplates.makeImmutable(dataList, SCHEMA, conversion))
+    new @(array.scalaType)(DataTemplates.makeImmutable(dataList, conversion))
   }
 
   def newBuilder = new DataBuilder()
