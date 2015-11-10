@@ -55,9 +55,9 @@ Courier goes to great lengths to produce data bindings that look and feel natura
 How development with Courier works
 ----------------------------------
 
-* Developers write schema files (`.pdsc`) files. 
+* Developers write schema files (`.pdsc` or `.courier`) files.
 * Data bindings are generated from schemas for each language.
-* Developers then code against those data bindings and get a strong guarentee that the JSON that those bindings read and write are compatible with all the other languages doing the same thing. 
+* Developers then code against those data bindings and get a strong guarentee that the JSON that those bindings read and write are compatible with all the other languages doing the same thing.
 
 Courier provides the Scala data binding generator for the Pegasus schema language. It is intended to be used in combination with other Pegasus based data bindings generators, such as the [Java generator](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates) provided by Linkedin.
 
@@ -136,9 +136,11 @@ object Example extends Build {
 
 Your project can now generate Courier data bindings.
 
-To try it out, add `.pdsc` files to the `src/main/pegasus` directory of your project. For example:
+To try it out, add `.pdsc` or `.courier` files to the `src/main/pegasus` directory of your project. For example:
 
-`schemas/src/main/pegasus/org/example/fortune/Fortune.pdsc`:
+In `schemas/src/main/pegasus/org/example/fortune`, add either:
+
+`Fortune.pdsc`:
 
 ```json
 {
@@ -150,6 +152,18 @@ To try it out, add `.pdsc` files to the `src/main/pegasus` directory of your pro
   ]
 }
 
+```
+
+or
+
+`Fortune.courier`:
+
+```
+namespace org.example.fortune
+
+record Fortune {
+  message: string
+}
 ```
 
 In SBT, run:
@@ -180,7 +194,7 @@ object Example extends App {
 
 The generator is run automatically before `src/main/scala` compilation. It also registers for
 triggered execution to support SBT commands like `~compile`, which will cause the generator to
-run immediately whenever a .pdsc file is changed.
+run immediately whenever a .pdsc or .courier file is changed.
 
 The generator will write Scala files to the `target/scala-<scalaMajorVersion>/courier` directory of
 your project and add them to the compile classpath.
@@ -188,12 +202,15 @@ your project and add them to the compile classpath.
 For details on the `.pdsc` file format, see
 [Pegasus Schemas and Data](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates).
 
+For details on the `.courier` file format, see
+[.courier File Format](https://github.com/coursera/courier/blob/master/grammar/README.md).
+
 The code generator is an extension of the Rest.li SBT Plugin, for more details, see
 [the rest.li-sbt-plugin wiki](https://github.com/linkedin/rest.li-sbt-plugin).
 
 #### Testing
 
-`.pdsc` files only needed for tests may be added to `src/test/pegasus`.
+`.pdsc` or `.courier` files only needed for tests may be added to `src/test/pegasus`.
 
 
 Documentation
@@ -208,6 +225,8 @@ primitives, enums, unions, maps and arrays.
 
 For example, a basic record type containing a few fields:
 
+`Example.pdsc`:
+
 ```json
 {
   "name": "Example",
@@ -221,6 +240,17 @@ For example, a basic record type containing a few fields:
 }
 ```
 
+`Example.courier`:
+
+```
+namespace org.example
+
+record Example {
+  field1: string
+  field2: int?
+}
+```
+
 This will be generated as:
 
 ```scala
@@ -231,6 +261,8 @@ case class Example(field1: String, field2: Option[Int])
 [Record Fields](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates#record-field-attributes)
 may be optional and/or may have default values.
 
+`.pdsc`:
+
 Schema Field                                 | Generated Scala
 ---------------------------------------------|------------------------------------------------------
 `"type": "string"`                           | `case class Record(field: String)`
@@ -239,20 +271,40 @@ Schema Field                                 | Generated Scala
 `..., "optional": true "default": "message"` | `case class Record(field: Option[String] = Some("message"))`
 `..., "optional": true, "defaultNone": true` | `case class Record(field: Option[String] = None)`
 
+`.courier`:
+
+Schema Field                                 | Generated Scala
+---------------------------------------------|------------------------------------------------------
+`field: string`                              | `case class Record(field: String)`
+`field: string = "message"`                  | `case class Record(field: String = "message")`
+`field: string?`                             | `case class Record(field: Option[String])`
+`field: string? = "message"`                 | `case class Record(field: Option[String] = Some("message"))`
+`field: string? = nil`                       | `case class Record(field: Option[String] = None)`
+
+
 Note that `"defaultNone"` is not part of Pegasus, but is a custom property supported by Courier
 specifically added it make it possible to generate idiomatic Scala bindings.
 
 Schema fields may also be documented or marked as deprecated:
+
+`.pdsc`:
 
 Schema Field                                 | Generated Scala
 ---------------------------------------------|------------------------------------------------------
 `..., "doc": "A documented field"`           | `case class Record(/** A documented field */ field: String)`
 `..., "deprecated": "Use field X instead"`   | `case class Record(@deprecated(message = "Use field X instead") field: String)`
 
+`.courier`:
+
+Schema Field                                 | Generated Scala
+---------------------------------------------|------------------------------------------------------
+`/** A documented field" */`                 | `case class Record(/** A documented field */ field: String)`
+`@deprecated("Use field X instead")`         | `case class Record(@deprecated(message = "Use field X instead") field: String)`
+
 Records may [include fields from other records](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates#including-fields-from-another-record)
 using `"include"`:
 
-```scala
+```json
 {
   "name" : "WithIncluded",
   "type" : "record",
@@ -305,8 +357,16 @@ Array Type
 [Pegasus Arrays](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates#array-type)
 are defined with a `items` type using the form:
 
+`.pdsc`:
+
 ```json
 { "type": "array", "items": "org.example.Fortune" }
+```
+
+`.courier`:
+
+```
+array[org.example.Fortune]
 ```
 
 Arrays bind to the Scala `IndexedSeq` type:
@@ -325,6 +385,8 @@ ExampleRecord(fortunes = Seq(Fortune(...), Fortune(...)))
 
 For example, to define a field of a record containing an array, use:
 
+`.pdsc`:
+
 ```json
 {
   "name": "Fortune",
@@ -333,6 +395,16 @@ For example, to define a field of a record containing an array, use:
   "fields": [
     { "name": "arrayField", "type": { "type": "array", "items": "int" } }
   ]
+}
+```
+
+`.courier`:
+
+```
+namespace org.example.fortune
+
+record Fortune {
+  arrayField: array[int]
 }
 ```
 
@@ -350,10 +422,20 @@ The array types for all primitive value types (`IntArray`, `StringArray`, ...) a
 provided in the `courier-runtime` artifact in the `org.coursera.courier.data` package. The generator
 is aware of these classes and will refer to them instead of generating them when primitive arrays are used.
 
+`.pdsc`:
+
 Schema type                                         | Scala type
 ----------------------------------------------------|--------------------------------------------------
 `{ "type": "array", "items": "int" }`               | `org.coursera.courier.data.IntArray` (predefined)
 `{ "type": "array", "items": "org.example.Record" }`| `org.example.RecordArray` (generated)
+
+`.courier`:
+
+Schema type                                         | Scala type
+----------------------------------------------------|--------------------------------------------------
+`array[int]`                                        | `org.coursera.courier.data.IntArray` (predefined)
+`array[org.example.Record]`                         | `org.example.RecordArray` (generated)
+
 
 All generated Arrays implement Scala's `IndexedSeq`, `Traversable` and `Product` traits and behave
 like a standard Scala collection type.
@@ -389,7 +471,7 @@ RecordArray(Record(field = 1), Record(field = 2)) |`[ { "field": 1 }, { "field":
 
 
 Ordinarily, arrays are defined inline inside other types. But if needed,
-typerefs allow a map to be defined in a separate .pdsc file and be assigned a
+typerefs allow a map to be defined in a separate `.pdsc` or `.courier` file and be assigned a
 unique type name. See below for more details about typerefs.
 
 Map Type
@@ -398,8 +480,16 @@ Map Type
 [Pegasus Maps](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates#map-type)
 are defined with a `values` type, and an optional `keys` type, using the form:
 
+`.pdsc`:
+
 ```json
 { "type": "map", "keys": "int", "values": "org.example.Fortune" }
+```
+
+`.courier`:
+
+```
+map[int, org.example.Fortune]
 ```
 
 Maps bind to the Scala `Map` type:
@@ -418,8 +508,16 @@ Fortune(Map("a" -> 1, "b" -> 2))
 
 If no "keys" type is specified, the key type will default to "string". For example:
 
+`.pdsc`:
+
 ```json
 { "type": "map", "values": "org.example.Note" }
+```
+
+`.courier`:
+
+```
+map[string, org.example.Note]
 ```
 
 will bind to:
@@ -435,6 +533,8 @@ is used to serialize/deserialize complex type keys to JSON strings.
 
 To define a field of a record containing a map, use:
 
+`.pdsc`:
+
 ```json
 {
   "name": "Fortune",
@@ -443,6 +543,16 @@ To define a field of a record containing a map, use:
   "fields": [
     { "name": "mapField", "type": { "type": "map", "values": "int" } }
   ]
+}
+```
+
+`.courier`:
+
+```
+namespace org.example.fortune
+
+record Fortune {
+  mapField: map[string, int]
 }
 ```
 
@@ -457,11 +567,21 @@ and be generated as `case class Fortune(mapField: IntMap)`.
 Like arrays, map values can be of any type, and the map types for all primitives
 are predefined.
 
+`.pdsc`:
+
 Schema type                                                                        | Scala type
 -----------------------------------------------------------------------------------|------------------------------------------------
 `{ "type": "map", "values": "int" }`                                               | `org.coursera.courier.data.IntMap` (predefined)
 `{ "type": "map", "values": "org.example.Record" }`                                | `org.example.RecordMap` (generated)
 `{ "type": "map", "keys": "org.example.SimpleId", "values": "org.example.Record" }`| `org.example.SimpleIdToRecordMap` (generated)
+
+`.courier`:
+
+Schema type                                                                        | Scala type
+-----------------------------------------------------------------------------------|------------------------------------------------
+`map[string, int]`                                                                 | `org.coursera.courier.data.IntMap` (predefined)
+`map[string, org.example.Record`                                                   | `org.example.RecordMap` (generated)
+`map[org.example.SimpleId, org.example.Record]`                                    | `org.example.SimpleIdToRecordMap` (generated)
 
 All generated Maps implement Scala's `Map` and `Iterable` traits and behave
 like a standard Scala collection type. The contain an implicit converter so that a Scala `Map`
@@ -494,7 +614,7 @@ SimpleIdToRecordMap(SimpleId(id = 1000) -> Record(field = 1)) |`{ "(id~1000)": {
 
 
 Ordinarily, maps are defined inline inside other types. But if needed,
-typerefs allow a map to be defined in a separate .pdsc file and be assigned a
+typerefs allow a map to be defined in a separate `.pdsc` or `.courier` file and be assigned a
 unique type name name. See below for more details about typerefs.
 
 Union Type
@@ -508,15 +628,31 @@ type except union: primitive, record, enum, map or array.
 
 Unions types are defined in using the form:
 
+`.pdsc`:
+
 ```json
 [ "<MemberType1>", "<MemberType2>" ]
+```
+
+`.courier`:
+
+```
+union[<MemberType1>, <MemberType2>]
 ```
 
 For example, a union that holds an `int`, `string` or a `Fortune`
 would be defined as:
 
+`.pdsc`:
+
 ```json
 [ "int", "string", "org.example.Fortune" ]
+```
+
+`.courier`:
+
+```
+union[int, string, org.example.Fortune]
 ```
 
 The member type names also serve as the "member keys" (sometimes called "union tags"),
@@ -533,6 +669,8 @@ Schema type           | Member key            | Example JSON data
 Let's look at an example of a union in use.  To define a field of a record containing a
 union of two other records, we would define:
 
+`.pdsc`:
+
 ```json
 {
   "name": "Question",
@@ -541,6 +679,16 @@ union of two other records, we would define:
   "fields": [
     { "name": "answerFormat", "type": [ "MultipleChoice", "TextEntry" ] }
   ]
+}
+```
+
+`.courier`:
+
+```
+namespace org.example
+
+record Question {
+  answerFormat: union[MultipleChoice, TextEntry]
 }
 ```
 
@@ -600,7 +748,7 @@ The member key of primitives, maps, arrays and unions are the same as their type
 `Record(field = IntArrayMember(IntArray(1,2,3)))` | `{ "field": { "array": [1, 2, 3] } }`
 
 Ordinarily, unions are defined inside other types. But if needed,
-typerefs may be used to define a union in a separate .pdsc file and give the union
+typerefs may be used to define a union in a separate `.pdsc` or `.courier` file and give the union
 any desired name. See below for more details about typerefs.
 
 #### Union Backward Compatibility
@@ -626,12 +774,26 @@ Enum Type
 
 Enums types may contain any number of symbols, for example:
 
+`.pdsc`:
+
 ```json
 {
   "type" : "enum",
   "name" : "Fruits",
   "namespace" : "org.example",
   "symbols" : ["APPLE", "BANANA", "ORANGE"]
+}
+```
+
+`.courier`:
+
+```
+namespace org.example
+
+enum Fruits {
+  APPLE
+  BANANA
+  ORANGE
 }
 ```
 
@@ -655,6 +817,8 @@ Fruits.Fruits
 
 Enums are referenced in other schemas either by name, e.g.:
 
+`.pdsc`:
+
 ```json
 {
   "type": "record",
@@ -666,7 +830,19 @@ Enums are referenced in other schemas either by name, e.g.:
 }
 ```
 
+`.courier`:
+
+```
+namespace org.example
+
+record FruitBasket {
+  fruit: org.example.Fruits
+}
+```
+
 ..or by inlining their type definition, e.g.:
+
+`.pdsc`:
 
 ```json
 {
@@ -683,6 +859,14 @@ Enums are referenced in other schemas either by name, e.g.:
       }
     }
   ]
+}
+```
+
+`.courier`:
+
+```
+record FruitBasket {
+  fruit: enum Fruits { APPLE, BANANA, ORANGE }
 }
 ```
 
@@ -728,6 +912,8 @@ They can be used for a variety of purposes. A few common uses:
 
 (1) Provide a name for a union, map, or array so that it can be referenced by name. E.g.:
 
+`.pdsc`:
+
 ```json
 {
   "name": "AnswerTypes",
@@ -736,6 +922,14 @@ They can be used for a variety of purposes. A few common uses:
   "ref": ["MutlipleChoice", "TextEntry"]
 }
 
+```
+
+`.courier`:
+
+```
+namespace org.example
+
+typeref AnswerTypes = union[MultipleChoice, TextEntry]
 ```
 
 This will be generated as:
@@ -749,6 +943,8 @@ case class TextEntryMember(value: TextEntry) extends AnswerTypes
 And can be referred to from any other type using the name
 `org.example.AnswerTypes`, e.g.:
 
+`.pdsc`:
+
 ```json
 {
   "type": "record",
@@ -760,10 +956,22 @@ And can be referred to from any other type using the name
 }
 ```
 
+`.courier`:
+
+```
+namespace org.example
+
+record Question {
+  answerFormat: org.example.AnswerTypes
+}
+```
+
 This is particularly useful because unions, maps and arrays cannot otherwise be
 named directly like records and enums can.
 
 (2) Provide additional clarity when using primitive types for specific purposes.
+
+`.pdsc`:
 
 ```json
 {
@@ -772,6 +980,14 @@ named directly like records and enums can.
   "type": "typeref",
   "ref": "long"
 }
+```
+
+`.courier`:
+
+```
+namespace org.example
+
+typeref UnixTimestamp = long
 ```
 
 No classes will be generated for this typeref. In Scala, typerefs to primitives
@@ -802,6 +1018,8 @@ case class SlugId(slug: String)
 
 Define a Pegasus typeref schema like:
 
+`.pdsc`:
+
 ```json
 {
   "name": "SlugId",
@@ -814,11 +1032,22 @@ Define a Pegasus typeref schema like:
 }
 ```
 
+`.courier`:
+
+```
+namespace org.example.schemas
+
+@scala({"class": "org.example.SlugId"})
+typeref SlugId = string
+```
+
 ### Coercers
 
 For example, [Joda time](http://www.joda.org/joda-time/) has a convenient
 `DateTime` class. If we wish to use this class in Scala to represent date times,
 all we need to do is define a pegasus custom type that binds to it:
+
+`.pdsc`:
 
 ```json
 {
@@ -833,6 +1062,18 @@ all we need to do is define a pegasus custom type that binds to it:
   }
 }
 
+```
+
+`.courier`:
+
+```
+namespace org.example
+
+@scala({
+  "class": "org.joda.time.DateTime",
+  "coercerClass": "org.coursera.models.common.DateTimeCoercer"
+})
+typeref DateTime = string
 ```
 
 The coercer is responsible for converting the pegasus "referenced" type, in this
@@ -863,6 +1104,8 @@ object DateTimeCoercer {
 Once a custom type is defined, it can be used in any type. For example, to use the DateTime
 custom type in a record:
 
+`.pdsc`:
+
 ```json
 {
   "type": "record",
@@ -871,6 +1114,16 @@ custom type in a record:
   "fields": [
     { "name": "createdAt", "type": "org.example.DateTime" }
   ]
+}
+```
+
+`.courier`:
+
+```
+namespace org.example
+
+record Fortune {
+  createdAt: org.example.DateTime
 }
 ```
 
