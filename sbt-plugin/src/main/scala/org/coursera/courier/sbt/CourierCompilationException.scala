@@ -31,29 +31,29 @@ class CourierCompilationException(
     message: String,
     atLine: Option[Int],
     column: Option[Int],
-    severity: Severity) extends xsbti.CompileFailed {
+    severity: Severity) extends xsbti.CompileFailed with FeedbackProvidedException {
 
   def arguments(): Array[String] = Array()
   def problems(): Array[Problem] = Array(
-    new RestliCompilationProblem(source, message, atLine, column, severity))
+    new CourierCompilationProblem(source, message, atLine, column, severity))
   def line = atLine.map(_.asInstanceOf[java.lang.Integer]).orNull
   def position = column.map(_.asInstanceOf[java.lang.Integer]).orNull
   def sourceName = source.map(_.getAbsolutePath).orNull
 }
 
-class RestliCompilationProblem(
+class CourierCompilationProblem(
     source: Option[File],
     msg: String,
     atLine: Option[Int],
     column: Option[Int],
     svrty: Severity) extends Problem {
-  def category(): String = "Rest.li"
+  def category(): String = "Courier"
   def severity(): Severity = svrty
   def message(): String = msg
-  def position(): Position = new RestliCompilationErrorPosition(source, atLine, column)
+  def position(): Position = new CourierCompilationErrorPosition(source, atLine, column)
 }
 
-class RestliCompilationErrorPosition(
+class CourierCompilationErrorPosition(
     source: Option[File],
     atLine: Option[Int],
     column: Option[Int]) extends Position {

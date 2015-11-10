@@ -16,9 +16,7 @@
 
 package org.coursera.courier.grammar
 
-import java.io.IOException
-import java.io.InputStream
-import java.io.Reader
+import java.io._
 
 import com.linkedin.data.DataMap
 import com.linkedin.data.schema.ArrayDataSchema
@@ -75,8 +73,7 @@ class CourierSchemaParser(resolver: DataSchemaResolver) extends SchemaParser(res
    * @param inputStream with the JSON representation of the schema.
    */
   override def parse(inputStream: InputStream) {
-    val document = CourierGrammar.parse(inputStream)
-    parse(document)
+    parse(new InputStreamReader(inputStream))
   }
 
   /**
@@ -90,8 +87,20 @@ class CourierSchemaParser(resolver: DataSchemaResolver) extends SchemaParser(res
    * @param reader with the JSON representation of the schema.
    */
   override def parse(reader: Reader) {
-    val document = CourierGrammar.parse(reader)
-    parse(document)
+    try {
+      val document = CourierGrammar.parse(reader)
+      parse(document)
+    } catch {
+      case e: CourierParseError =>
+        val message = s"${e.error} [Source: ${getLocation.getSourceFile.getAbsolutePath}; " +
+          s"line: ${e.line}, column: ${e.column}]"
+        startErrorMessage().append(message)
+        System.err.println(message)
+      case io: IOException =>
+        val message = s"${io.getMessage} [Source: ${getLocation.getSourceFile.getAbsolutePath}]"
+        startErrorMessage().append(message)
+        System.err.println(message)
+    }
   }
 
   /**
@@ -105,8 +114,7 @@ class CourierSchemaParser(resolver: DataSchemaResolver) extends SchemaParser(res
    * @param source with the source code representation of the schema.
    */
   override def parse(source: String) {
-    val document = CourierGrammar.parse(source)
-    parse(document)
+    parse(new StringReader(source))
   }
 
   /**

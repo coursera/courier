@@ -16,21 +16,20 @@
 
 package org.coursera.courier.sbt
 
-import com.linkedin.util.FileUtil
+import java.io.File.pathSeparator
+
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.coursera.courier.ScalaGenerator
 import org.coursera.courier.api.DefaultGeneratorRunner
 import org.coursera.courier.api.GeneratorRunnerOptions
 import org.coursera.courier.api.ParserForFileFormat
 import org.coursera.courier.api.PegasusCodeGenerator
-import org.coursera.courier.generator.ScalaDataTemplateGenerator
 import org.coursera.courier.grammar.CourierSchemaParserFactory
-
+import sbt.Keys._
 import sbt._
-import Keys._
-import java.io.File.pathSeparator
-import scala.collection.JavaConverters._
 import xsbti.Severity
+
+import scala.collection.JavaConverters._
 
 /**
  * Based on the SBT Plugin from Sleipnir by Dmitriy Yefremov, which is in turn based on
@@ -147,10 +146,12 @@ object CourierPlugin extends Plugin {
         } catch {
           case e: java.io.IOException => {
             e.getMessage match {
-              case JsonParseExceptionRegExp(source, line, column) =>
+              case ParseExceptionRegExp(source, line, column) =>
+                val message =
+                  s"Schema parse error in $source: line: ${line.toInt}, column:  ${column.toInt}"
                 throw new CourierCompilationException(
                   Some(file(source)),
-                  s"JSON parse error in $source: line: ${line.toInt}, column:  ${column.toInt}",
+                  message,
                   Option(line.toInt),
                   Option(column.toInt),
                   Severity.Error)
@@ -181,7 +182,7 @@ object CourierPlugin extends Plugin {
 
   private[this] val sourceFileFilter: FileFilter = ("*.pdsc" || "*.courier")
 
-  private[this] val JsonParseExceptionRegExp =
+  private[this] val ParseExceptionRegExp =
     """(?s).*\[Source: (.*?); line: (\d*), column: (\d*)\].*?""".r
 
   /**

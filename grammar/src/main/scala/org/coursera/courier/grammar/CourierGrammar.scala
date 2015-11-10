@@ -17,7 +17,6 @@
 package org.coursera.courier.grammar
 
 import java.io.ByteArrayInputStream
-import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.io.Reader
@@ -25,9 +24,8 @@ import java.io.Reader
 import com.linkedin.data.DataList
 import com.linkedin.data.DataMap
 import org.apache.commons.lang3.StringEscapeUtils
-import scala.collection.JavaConverters._
-import scala.util.matching.Regex
 
+import scala.collection.JavaConverters._
 import scala.util.parsing.combinator.RegexParsers
 
 object CourierGrammar extends RegexParsers {
@@ -55,8 +53,7 @@ object CourierGrammar extends RegexParsers {
     parseResult match {
       case Success(result, _) => result
       case failure: NoSuccess =>
-        throw new IOException(
-          s"${failure.msg} line: ${failure.next.pos.line} column: ${failure.next.pos.column}")
+        throw new CourierParseError(failure.next.pos.line, failure.next.pos.column, failure.msg)
     }
   }
 

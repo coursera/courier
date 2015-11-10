@@ -83,8 +83,6 @@ public class MultiFormatSchemaParser {
       byExtension.put(fileExtension, new ArrayList<String>());
     }
 
-    final DataSchemaParser.ParseResult result = new DataSchemaParser.ParseResult();
-
     for (String source : sources) {
       final File sourceFile = new File(source);
       if (sourceFile.exists()) {
