@@ -10,7 +10,7 @@ schema language. The generated data bindings efficiently serialize to JSON and a
 
 <br>
 <div>
-  <img src="images/courier-flow.png" width="832" height= "182" />
+  <img src="images/courier-flow.png" style="max-width:100%; max-height:100%;" />
 </div>
 <br>
 
