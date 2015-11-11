@@ -35,12 +35,16 @@ a:hover.anchorjs-link {
   text-decoration: none;
 }
 
-.schema-fileformat-tabs li a {
+.fileformat-tabs li a {
   padding: 3px 15px 4px 15px;
 }
 
-.schema-example-tab-content {
-  margin-top: -7px;
+.fileformat-tab-content {
+  margin-top: -2px;
+}
+
+.fileformat-tab-pane table {
+  margin-top: 0px;
 }
 
 .highlight pre, pre, .highlight .hll {
