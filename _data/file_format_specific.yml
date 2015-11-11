@@ -1,0 +1,404 @@
+sbt_fortune:
+  pdsc: |
+    ##### schemas/src/main/pegasus/org/example/fortune/Fortune.pdsc:
+    ```json
+    {
+      "name": "Fortune",
+      "namespace": "org.example.fortune",
+      "type": "record",
+      "fields": [
+        { "name": "message", "type": "string" }
+      ]
+    }
+    ```
+  courier: |
+    ##### schemas/src/main/pegasus/org/example/fortune/Fortune.courier:
+    ```
+    namespace org.example.fortune
+
+    record Fortune {
+      message: string
+    }
+    ```
+record_example:
+  pdsc: |
+    ```json
+    {
+      "name": "Example",
+      "namespace": "org.example",
+      "doc": "A simple record.",
+      "type": "record",
+      "fields": [
+        { "name": "field1", "type": "string" },
+        { "name": "field2", "type": "int", "optional": true }
+      ]
+    }
+    ```
+  courier: |
+    ```
+    namespace org.example
+
+    record Example {
+      field1: string
+      field2: int?
+    }
+    ```
+array_example:
+  pdsc: |
+    ```json
+    { "type": "array", "items": "org.example.Fortune" }
+    ```
+  courier: |
+    ```
+    array[org.example.Fortune]
+    ```
+
+array_in_record:
+  pdsc: |
+    ```json
+    {
+      "name": "Fortune",
+      "namespace": "org.example.fortune",
+      "type": "record",
+      "fields": [
+        { "name": "arrayField", "type": { "type": "array", "items": "int" } }
+      ]
+    }
+    ```
+  courier: |
+    ```
+    namespace org.example.fortune
+
+    record Fortune {
+      arrayField: array[int]
+    }
+    ```
+
+map_explicit_key:
+  pdsc: |
+    ```json
+    { "type": "map", "keys": "int", "values": "org.example.Fortune" }
+    ```
+  courier: |
+    ```
+    map[int, org.example.Fortune]
+    ```
+
+map_implicit_key:
+  pdsc: |
+    ```json
+    { "type": "map", "values": "org.example.Note" }
+    ```
+  courier: |
+    ```json
+    map[string, org.example.Note]
+    ```
+
+map_in_record:
+  pdsc: |
+    ```json
+    {
+      "name": "Fortune",
+      "namespace": "org.example.fortune",
+      "type": "record",
+      "fields": [
+        { "name": "mapField", "type": { "type": "map", "values": "int" } }
+      ]
+    }
+    ```
+  courier: |
+    ```
+    namespace org.example.fortune
+
+    record Fortune {
+      mapField: map[string, int]
+    }
+    ```
+
+union_structure:
+  pdsc: |
+    ```json
+    [ "&lt;MemberType1&gt;", "&lt;MemberType2&gt;" ]
+    ```
+  courier: |
+    ```
+    union[&lt;MemberType1>, &lt;MemberType2&gt;]
+    ```
+
+union_example:
+  pdsc: |
+    ```json
+    [ "int", "string", "org.example.Fortune" ]
+    ```
+  courier: |
+    ```
+    union[int, string, org.example.Fortune]
+    ```
+
+union_in_record:
+  pdsc: |
+    ```json
+    {
+      "name": "Question",
+      "namespace": "org.example",
+      "type": "record",
+      "fields": [
+        { "name": "answerFormat", "type": [ "MultipleChoice", "TextEntry" ] }
+      ]
+    }
+    ```
+  courier: |
+    ```
+    namespace org.example
+
+    record Question {
+      answerFormat: union[MultipleChoice, TextEntry]
+    }
+    ```
+
+enum_example:
+  pdsc: |
+    ```json
+    {
+      "type" : "enum",
+      "name" : "Fruits",
+      "namespace" : "org.example",
+      "symbols" : ["APPLE", "BANANA", "ORANGE"]
+    }
+    ```
+  courier: |
+    ```
+    namespace org.example
+
+    enum Fruits {
+      APPLE
+      BANANA
+      ORANGE
+    }
+    ```
+
+enum_in_record:
+  pdsc: |
+    ```json
+    {
+      "type": "record",
+      "name": "FruitBasket",
+      "namespace": "org.example",
+      "fields": [
+        { "name": "fruit", "type": "org.example.Fruits" }
+      ]
+    }
+    ```
+  courier: |
+    ```
+    namespace org.example
+
+    record FruitBasket {
+      fruit: org.example.Fruits
+    }
+    ```
+
+enum_inline:
+  pdsc: |
+    ```json
+    {
+      "type": "record",
+      "name": "FruitBasket",
+      "namespace": "org.example",
+      "fields": [
+        {
+          "name": "fruit",
+          "type": {
+            "type": "enum",
+            "name": "Fruits",
+            "symbols": ["APPLE", "BANANA", "ORANGE"]
+          }
+        }
+      ]
+    }
+    ```
+  courier: |
+    ```
+    record FruitBasket {
+      fruit: enum Fruits { APPLE, BANANA, ORANGE }
+    }
+    ```
+
+typeref_example:
+  pdsc: |
+    ```json
+    {
+      "name": "AnswerTypes",
+      "namespace": "org.example",
+      "type": "typeref",
+      "ref": ["MutlipleChoice", "TextEntry"]
+    }
+    ```
+  courier: |
+    ```
+    namespace org.example
+
+    typeref AnswerTypes = union[MultipleChoice, TextEntry]
+    ```
+
+typeref_in_record:
+  pdsc: |
+    ```json
+    {
+      "type": "record",
+      "name": "Question",
+      "namespace": "org.example",
+      "fields": [
+        { "name": "answerFormat", "type": "org.example.AnswerTypes" }
+      ]
+    }
+    ```
+  courier: |
+    ```
+    namespace org.example
+
+    record Question {
+      answerFormat: org.example.AnswerTypes
+    }
+    ```
+
+typeref_for_timestamp:
+  pdsc: |
+    ```json
+    {
+      "name": "UnixTimestamp",
+      "namespace": "org.example",
+      "type": "typeref",
+      "ref": "long"
+    }
+    ```
+  courier: |
+    ```
+    namespace org.example
+
+    typeref UnixTimestamp = long
+    ```
+
+custom_type_single_element:
+  pdsc: |
+    ```json
+    {
+      "name": "SlugId",
+      "namespace": "org.example.schemas",
+      "type": "typeref",
+      "ref": "string",
+      "scala": {
+        "class": "org.example.SlugId"
+      }
+    }
+    ```
+  courier: |
+    ```
+    namespace org.example.schemas
+
+    @scala({"class": "org.example.SlugId"})
+    typeref SlugId = string
+    ```
+
+custom_type_coercer:
+  pdsc: |
+    ```json
+    {
+      "name": "DateTime",
+      "namespace": "org.example",
+      "type": "typeref",
+      "ref": "string",
+      "doc": "ISO 8601 date-time.",
+      "scala": {
+        "class": "org.joda.time.DateTime",
+        "coercerClass": "org.coursera.models.common.DateTimeCoercer"
+      }
+    }
+    ```
+  courier: |
+    ```
+    namespace org.example
+
+    @scala({
+      "class": "org.joda.time.DateTime",
+      "coercerClass": "org.coursera.models.common.DateTimeCoercer"
+    })
+    typeref DateTime = string
+    ```
+
+custom_type_in_record:
+  pdsc: |
+    ```json
+    {
+      "type": "record",
+      "name": "Fortune",
+      "namespace": "org.example",
+      "fields": [
+        { "name": "createdAt", "type": "org.example.DateTime" }
+      ]
+    }
+    ```
+  courier: |
+    ```
+    namespace org.example
+
+    record Fortune {
+      createdAt: org.example.DateTime
+    }
+    ```
+
+record_fields:
+  pdsc: |
+    Schema Field                                 | Generated Scala
+    ---------------------------------------------|------------------------------------------------------
+    `"type": "string"`                           | `case class Record(field: String)`
+    `..., "default": "message"`                  | `case class Record(field: String = "message")`
+    `..., "optional": true`                      | `case class Record(field: Option[String])`
+    `..., "optional": true "default": "message"` | `case class Record(field: Option[String] = Some("message"))`
+    `..., "optional": true, "defaultNone": true` | `case class Record(field: Option[String] = None)`
+  courier: |
+    Schema Field                                 | Generated Scala
+    ---------------------------------------------|------------------------------------------------------
+    `field: string`                              | `case class Record(field: String)`
+    `field: string = "message"`                  | `case class Record(field: String = "message")`
+    `field: string?`                             | `case class Record(field: Option[String])`
+    `field: string? = "message"`                 | `case class Record(field: Option[String] = Some("message"))`
+    `field: string? = nil`                       | `case class Record(field: Option[String] = None)`
+
+record_properties:
+  pdsc: |
+    Schema Field                                 | Generated Scala
+    ---------------------------------------------|------------------------------------------------------
+    `..., "doc": "A documented field"`           | `case class Record(/** A documented field */ field: String)`
+    `..., "deprecated": "Use field X instead"`   | `case class Record(@deprecated(message = "Use field X instead") field: String)`
+  courier: |
+    Schema Field                                 | Generated Scala
+    ---------------------------------------------|------------------------------------------------------
+    `/** A documented field" */`                 | `case class Record(/** A documented field */ field: String)`
+    `@deprecated("Use field X instead")`         | `case class Record(@deprecated(message = "Use field X instead") field: String)`
+
+array_examples:
+  pdsc: |
+    Schema type                                         | Scala type
+    ----------------------------------------------------|--------------------------------------------------
+    `{ "type": "array", "items": "int" }`               | `org.coursera.courier.data.IntArray` (predefined)
+    `{ "type": "array", "items": "org.example.Record" }`| `org.example.RecordArray` (generated)
+  courier: |
+    Schema type                                         | Scala type
+    ----------------------------------------------------|--------------------------------------------------
+    `array[int]`                                        | `org.coursera.courier.data.IntArray` (predefined)
+    `array[org.example.Record]`                         | `org.example.RecordArray` (generated)
+
+map_examples:
+  pdsc: |
+    Schema type                                                                        | Scala type
+    -----------------------------------------------------------------------------------|------------------------------------------------
+    `{ "type": "map", "values": "int" }`                                               | `org.coursera.courier.data.IntMap` (predefined)
+    `{ "type": "map", "values": "org.example.Record" }`                                | `org.example.RecordMap` (generated)
+    `{ "type": "map", "keys": "org.example.SimpleId", "values": "org.example.Record" }`| `org.example.SimpleIdToRecordMap` (generated)
+  courier: |
+    Schema type                                                                        | Scala type
+    -----------------------------------------------------------------------------------|------------------------------------------------
+    `map[string, int]`                                                                 | `org.coursera.courier.data.IntMap` (predefined)
+    `map[string, org.example.Record`                                                   | `org.example.RecordMap` (generated)
+    `map[org.example.SimpleId, org.example.Record]`                                    | `org.example.SimpleIdToRecordMap` (generated)

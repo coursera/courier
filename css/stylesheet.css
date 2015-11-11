@@ -13,7 +13,7 @@
 
 code {
   color: black;
-  background-color: #EEEEEE;
+  background-color: #f8f8f8;
 }
 
 table {
@@ -36,11 +36,15 @@ a:hover.anchorjs-link {
 }
 
 .schema-example-tabs li a {
-  padding: 4px 15px 4px 15px;
+  padding: 3px 15px 4px 15px;
 }
 
 .schema-example-tab-content {
   margin-top: -7px;
+}
+
+.highlight pre, pre, .highlight .hll {
+  background-color: #f8f8f8; border: 1px solid #eee; padding: 6px 10px; border-radius: 3px;
 }
 
 .btn {
