@@ -26,6 +26,10 @@ th {
   border-bottom-width: 2px;
 }
 
+a:hover.anchorjs-link {
+  text-decoration: none;
+}
+
 .btn {
   display: inline-block;
   margin-bottom: 1rem;

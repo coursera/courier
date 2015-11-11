@@ -3,3 +3,7 @@ $('#right-nav').affix({
         top: $('#right-nav').offset().top
     }
 });
+anchors.options = {
+  placement: 'left'
+};
+anchors.add('h2');
