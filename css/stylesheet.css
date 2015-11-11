@@ -35,7 +35,7 @@ a:hover.anchorjs-link {
   text-decoration: none;
 }
 
-.schema-example-tabs li a {
+.schema-fileformat-tabs li a {
   padding: 3px 15px 4px 15px;
 }
 
@@ -44,7 +44,10 @@ a:hover.anchorjs-link {
 }
 
 .highlight pre, pre, .highlight .hll {
-  background-color: #f8f8f8; border: 1px solid #eee; padding: 6px 10px; border-radius: 3px;
+  background-color: #f8f8f8;
+  border: 1px solid #eee;
+  padding: 6px 10px;
+  border-radius: 3px;
 }
 
 .btn {

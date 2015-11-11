@@ -1,17 +1,17 @@
-{% assign example = site.data.file_format_specific[include.name] %}
-<ul class="nav nav-pills schema-example-tabs" role="tablist">
+{% assign data = site.data.file_format_specific[include.name] %}
+<ul class="nav nav-pills schema-fileformat-tabs" role="tablist">
   <li role="presentation" style="float:right;"><a href="#ex-{{include.name}}-courier" aria-controls="ex-{{include.name}}-courier"   role="tab" data-toggle="tab">.courier</a></li>
   <li role="presentation" class="active" style="float:right;"><a href="#ex-{{include.name}}-pdsc" aria-controls="ex-{{include.name}}-pdsc" role="tab" data-toggle="tab">.pdsc</a></li>
 </ul>
 
-<div class="tab-content schema-example-tab-content">
-  <div role="tabpanel" class="tab-pane active" id="ex-{{include.name}}-pdsc">
+<div class="tab-content fileformat-tab-content">
+  <div role="tabpanel" class="fileformat-tab-pane tab-pane active" id="ex-{{include.name}}-pdsc">
     <h4></h4>
-    {{example.pdsc | markdownify}}
+    {{data.pdsc | markdownify}}
   </div>
 
-  <div role="tabpanel" class="tab-pane" id="ex-{{include.name}}-courier">
+  <div role="tabpanel" class="fileformat-tab-pane tab-pane" id="ex-{{include.name}}-courier">
     <h4></h4>
-    {{example.courier | markdownify}}
+    {{data.courier | markdownify}}
   </div>
 </div>

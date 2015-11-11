@@ -118,11 +118,11 @@ map_in_record:
 union_structure:
   pdsc: |
     ```json
-    [ "&lt;MemberType1&gt;", "&lt;MemberType2&gt;" ]
+    [ "<MemberType1>", "<MemberType2>" ]
     ```
   courier: |
     ```
-    union[&lt;MemberType1>, &lt;MemberType2&gt;]
+    union[<MemberType1>, &<MemberType2>]
     ```
 
 union_example:

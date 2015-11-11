@@ -89,10 +89,10 @@ Schema language:
 
 Compatible with other languages that use Pegasus bindings:
 
-* Java ([Pegasus](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates))
-* Swift (in development)
+* Scala
+* Java (via [Pegasus](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates))
+* Swift (via [Courier swift](https://github.com/coursera/courier/tree/master/swift))
 * Android specific Java bindings (via [Courier android](https://github.com/coursera/courier/tree/master/android))
-* (and, of course, Scala via Courier)
 
 Getting Started
 ---------------
