@@ -1,3 +1,6 @@
 Gemfile.lock
 _site
 .DS_Store
+src/courier_pygment.egg-info
+src/build
+

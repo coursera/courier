@@ -161,13 +161,13 @@ a:hover.anchorjs-link {
 
 @media screen and (min-width: 42em) and (max-width: 64em) {
   .project-name {
-    font-size: 2.25rem;
+    font-size: 3.50rem;
   }
 }
 
 @media screen and (max-width: 42em) {
   .project-name {
-    font-size: 1.75rem;
+    font-size: 2.00rem;
   }
 }
 
@@ -186,12 +186,12 @@ a:hover.anchorjs-link {
 
 @media screen and (min-width: 42em) and (max-width: 64em) {
   .project-tagline {
-    font-size: 1.15rem;
+    font-size: 1.75rem;
   }
 }
 
 @media screen and (max-width: 42em) {
   .project-tagline {
-    font-size: 1rem;
+    font-size: 1.25rem;
   }
 }

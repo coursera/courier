@@ -1,3 +1,4 @@
+<div class="fileformat-specific" id="{{include.name}}">
 {% assign data = site.data.file_format_specific[include.name] %}
 <ul class="nav nav-tabs fileformat-tabs" role="tablist" id="{{include.name}}-fileformat-tabs">
   {% for keyvalue in data %}
@@ -34,3 +35,4 @@ var elems = $("#{{include.name}}-fileformat-tab-content");
 var height = Math.max.apply(null, elems.map(function(){ return $(this).height(); }));
 elems.each(function(){ $(this).height(height);});
 </script>
+</div>
