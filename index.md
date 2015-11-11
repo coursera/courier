@@ -10,7 +10,7 @@ schema language. The generated data bindings efficiently serialize to JSON and a
 
 <br>
 <div>
-  <img src="images/courier-flow.png"/>
+  <img src="images/courier-flow.png" width="832" height= "182" />
 </div>
 <br>
 
@@ -1133,8 +1133,11 @@ This will be generated as:
 case class Fortune(createdAt: org.joda.time.DateTime)
 ```
 
-JSON serialization/deserialization
-----------------------------------
+Serialization
+=============
+
+JSON
+----
 
 All of the pegasus complex types may be serialized using:
 
