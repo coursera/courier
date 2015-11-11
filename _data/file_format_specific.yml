@@ -116,11 +116,11 @@ map_in_record:
 union_structure:
   pdsc: |
     ```json
-    [ "<MemberType1>", "<MemberType2>" ]
+    [ "MemberType1", "MemberType2" ]
     ```
   courier: |
     ```
-    union[<MemberType1>, <MemberType2>]
+    union[MemberType1, MemberType2]
     ```
 
 union_example:
@@ -217,6 +217,7 @@ enum_inline:
     ```
   courier: |
     ```
+    namespace org.example
     record FruitBasket {
       fruit: enum Fruits { APPLE, BANANA, ORANGE }
     }
