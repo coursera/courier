@@ -136,7 +136,7 @@ object Example extends Build {
 
 Your project can now generate Courier data bindings.
 
-To try it out, add `.pdsc` or `.courier` files to the `src/main/pegasus` directory of your project. For example:
+To try it out, add `.pdsc` or `.courier` files to the `src/main/pegasus` directory of your project. For example create the following file in the `schemas/src/main/pegasus/org/example/fortune` directory:
 
 {% include file_format_specific.html name="sbt_fortune" %}
 

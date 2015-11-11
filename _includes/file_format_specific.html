@@ -1,17 +1,36 @@
 {% assign data = site.data.file_format_specific[include.name] %}
-<ul class="nav nav-pills fileformat-tabs" role="tablist">
-  <li role="presentation" style="float:right;"><a href="#ex-{{include.name}}-courier" aria-controls="ex-{{include.name}}-courier"   role="tab" data-toggle="tab">.courier</a></li>
-  <li role="presentation" class="active" style="float:right;"><a href="#ex-{{include.name}}-pdsc" aria-controls="ex-{{include.name}}-pdsc" role="tab" data-toggle="tab">.pdsc</a></li>
+<ul class="nav nav-tabs fileformat-tabs" role="tablist" id="{{include.name}}-fileformat-tabs">
+  {% for keyvalue in data %}
+    {% assign format = keyvalue[0] %}
+    {% if forloop.index == 1 %}
+      <li role="presentation" class="active">
+        <a class="fileformat-tab {{format}}-fileformat-tab" href="#ex-{{include.name}}-{{format}}" aria-controls="ex-{{include.name}}-{{format}}" data-include="{{include.name}}" data-format="{{format}}" role="tab" data-toggle="tab">.{{format}}</a>
+      </li>
+    {% else %}
+      <li role="presentation">
+        <a class="fileformat-tab {{format}}-fileformat-tab" href="#ex-{{include.name}}-{{format}}" aria-controls="ex-{{include.name}}-{{format}}" data-include="{{include.name}}" data-format="{{format}}" role="tab" data-toggle="tab">.{{format}}</a>
+      </li>
+    {% endif %}
+  {%endfor%}
 </ul>
 
-<div class="tab-content fileformat-tab-content">
-  <div role="tabpanel" class="fileformat-tab-pane tab-pane active" id="ex-{{include.name}}-pdsc">
-    <h4></h4>
-    {{data.pdsc | markdownify}}
+<div class="tab-content fileformat-tab-content" id="{{include.name}}-fileformat-tab-content">
+{% for keyvalue in data %}
+  {% assign format = keyvalue[0] %}
+  {% assign data = keyvalue[1] %}
+  {% if forloop.index == 1 %}
+  <div role="tabpanel" class="fileformat-tab-pane {{format}}-fileformat-tab-pane tab-pane active" id="ex-{{include.name}}-{{format}}">
+    {{data | markdownify}}
   </div>
-
-  <div role="tabpanel" class="fileformat-tab-pane tab-pane" id="ex-{{include.name}}-courier">
-    <h4></h4>
-    {{data.courier | markdownify}}
+  {% else %}
+  <div role="tabpanel" class="fileformat-tab-pane {{format}}-fileformat-tab-pane tab-pane" id="ex-{{include.name}}-{{format}}">
+    {{data | markdownify}}
   </div>
+  {% endif %}
+{%endfor%}
 </div>
+<script type="text/javascript">
+var elems = $("#{{include.name}}-fileformat-tab-content");
+var height = Math.max.apply(null, elems.map(function(){ return $(this).height(); }));
+elems.each(function(){ $(this).height(height);});
+</script>
