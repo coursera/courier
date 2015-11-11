@@ -122,7 +122,7 @@ union_structure:
     ```
   courier: |
     ```
-    union[<MemberType1>, &<MemberType2>]
+    union[<MemberType1>, <MemberType2>]
     ```
 
 union_example:
