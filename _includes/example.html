@@ -1,0 +1,17 @@
+{% assign example = site.data.examples[include.name] %}
+<ul class="nav nav-pills schema-example-tabs" role="tablist">
+  <li role="presentation" style="float:right;"><a href="#ex-{{include.name}}-courier" aria-controls="ex-{{include.name}}-courier"   role="tab" data-toggle="tab">.courier</a></li>
+  <li role="presentation" class="active" style="float:right;"><a href="#ex-{{include.name}}-pdsc" aria-controls="ex-{{include.name}}-pdsc" role="tab" data-toggle="tab">.pdsc</a></li>
+</ul>
+
+<div class="tab-content schema-example-tab-content">
+  <div role="tabpanel" class="tab-pane active" id="ex-{{include.name}}-pdsc">
+    <h4></h4>
+    <pre class="prettyprint lang-js">{{example.pdsc_source}}</pre>
+  </div>
+
+  <div role="tabpanel" class="tab-pane" id="ex-{{include.name}}-courier">
+    <h4></h4>
+    <pre class="prettyprint lang-html">{{example.courier_source}}</pre>
+  </div>
+</div>

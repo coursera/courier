@@ -11,12 +11,17 @@
   padding-top: 40px;
 }
 
+code {
+  color: black;
+  background-color: #EEEEEE;
+}
+
 table {
-  margin: 20px 10px 20px 10px;
+  margin: 20px 20px 20px 20px;
 }
 
 td, th {
-  padding: 10px 5px 10px 5px;
+  padding: 10px 10px 10px 10px;
   border-style: solid;
   border-width: 1px;
   border-color: rgb(221, 221, 221);
@@ -30,6 +35,14 @@ a:hover.anchorjs-link {
   text-decoration: none;
 }
 
+.schema-example-tabs li a {
+  padding: 4px 15px 4px 15px;
+}
+
+.schema-example-tab-content {
+  margin-top: -7px;
+}
+
 .btn {
   display: inline-block;
   margin-bottom: 1rem;
@@ -39,15 +52,19 @@ a:hover.anchorjs-link {
   border-style: solid;
   border-width: 1px;
   border-radius: 0.3rem;
-  transition: color 0.2s, background-color 0.2s, border-color 0.2s; }
-  .btn + .btn {
-    margin-left: 1rem; }
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s;
+}
+
+.btn + .btn {
+  margin-left: 1rem;
+}
 
 .btn:hover {
   color: rgba(255, 255, 255, 0.8);
   text-decoration: none;
   background-color: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.3); }
+  border-color: rgba(255, 255, 255, 0.3);
+}
 
 @media screen and (min-width: 64em) {
   .btn {
@@ -58,17 +75,22 @@ a:hover.anchorjs-link {
 @media screen and (min-width: 42em) and (max-width: 64em) {
   .btn {
     padding: 0.6rem 0.9rem;
-    font-size: 0.9rem; } }
+    font-size: 0.9rem;
+  }
+}
 
 @media screen and (max-width: 42em) {
   .btn {
     display: block;
     width: 100%;
     padding: 0.75rem;
-    font-size: 0.9rem; }
-    .btn + .btn {
-      margin-top: 1rem;
-      margin-left: 0; } }
+    font-size: 0.9rem;
+  }
+  .btn + .btn {
+    margin-top: 1rem;
+    margin-left: 0;
+  }
+}
 
 .page-header {
   box-sizing: border-box;
@@ -81,24 +103,32 @@ a:hover.anchorjs-link {
   color: #fff;
   text-align: center;
   background-color: #159957;
-  background-image: linear-gradient(120deg, #32C1E2, #1851A5); }
+  background-image: linear-gradient(120deg, #32C1E2, #1851A5);
+}
 
 @media screen and (min-width: 64em) {
   .page-header {
-    padding: 8rem 8rem; } }
+    padding: 8rem 8rem;
+  }
+}
 
 @media screen and (min-width: 42em) and (max-width: 64em) {
   .page-header {
-    padding: 3rem 4rem; } }
+    padding: 3rem 4rem;
+  }
+}
 
 @media screen and (max-width: 42em) {
   .page-header {
-    padding: 2rem 1rem; } }
+    padding: 2rem 1rem;
+  }
+}
 
 .project-name {
   font-weight: bold;
   margin-top: 0;
-  margin-bottom: 0.2rem; }
+  margin-bottom: 0.2rem;
+}
 
 @media screen and (min-width: 64em) {
   .project-name {

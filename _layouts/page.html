@@ -9,19 +9,18 @@ layout: default
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Courier by coursera</title>
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/github.css" media="screen"> <!-- or github.css -->
     <link rel="stylesheet" type="text/css" href="css/stylesheet.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="css/github-light.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="css/jekyll-github.css" media="screen">
   </head>
-  <body>
+  <body onload="prettyPrint()">
      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
      <script src="js/bootstrap.min.js"></script>
+     <script src="js/prettify.js"></script>
 
     <div class="page-header">
-      <h1 class="project-name">Courier</h1>
-      <h2 class="project-tagline">Scala idiomatic data binding generator for JSON.</h2>
+      <div class="project-name">Courier</div>
+      <div class="project-tagline">Scala idiomatic data binding generator for JSON.</div>
       <a href="#getting-started" class="btn">Getting Started</a>
       <a href="#documentation" class="btn">Documentation</a>
       <a href="https://github.com/coursera/courier" class="btn">GitHub Page</a>
@@ -72,7 +71,7 @@ layout: default
             </li>
 
             <li>
-              <a href="#documentation"><h4>Types</h4></a>
+              <a href="#types"><h4>Types</h4></a>
               <ul>
                 <li>
                   <a href="#record-types">

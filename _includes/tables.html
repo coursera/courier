@@ -1,0 +1,15 @@
+{% assign table = site.data.tables[include.name] %}
+<ul class="nav nav-pills schema-example-tabs" role="tablist">
+  <li role="presentation" style="float:right;"><a href="#table-{{include.name}}-courier" aria-controls="table-{{include.name}}-courier"   role="tab" data-toggle="tab">.courier</a></li>
+  <li role="presentation" class="active" style="float:right;"><a href="#table-{{include.name}}-pdsc" aria-controls="table-{{include.name}}-pdsc" role="tab" data-toggle="tab">.pdsc</a></li>
+</ul>
+
+<div class="tab-content schema-example-tab-content">
+  <div role="tabpanel" class="tab-pane active" id="table-{{include.name}}-pdsc">
+    {{table.pdsc | markdownify}}
+  </div>
+
+  <div role="tabpanel" class="tab-pane" id="table-{{include.name}}-courier">
+    {{table.courier | markdownify}}
+  </div>
+</div>

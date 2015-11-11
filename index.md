@@ -106,15 +106,15 @@ Add the generator dependencies to your SBT plugins:
 
 `project/plugins.sbt`:
 
-```scala
+<pre class="prettyprint lang-scala">
 addSbtPlugin("org.coursera.courier" % "courier-sbt-plugin" % "0.4.1")
-```
+</pre>
 
 Next, add `courierSettings` to your SBT project to enable the generator:
 
 `project/Build.scala`:
 
-```scala
+<pre class="prettyprint lang-scala">
 import sbt._
 import Keys._
 import org.coursera.courier.sbt.CourierPlugin._
@@ -132,46 +132,20 @@ object Example extends Build {
     .settings(courierSettings: _*)
     .settings(libraryDependencies += "org.coursera.courier" %% "courier-runtime" % courierVersion)
 }
-```
+</pre>
 
 Your project can now generate Courier data bindings.
 
 To try it out, add `.pdsc` or `.courier` files to the `src/main/pegasus` directory of your project. For example:
 
-In `schemas/src/main/pegasus/org/example/fortune`, add either:
-
-`Fortune.pdsc`:
-
-```json
-{
-  "name": "Fortune",
-  "namespace": "org.example.fortune",
-  "type": "record",
-  "fields": [
-    { "name": "message", "type": "string" }
-  ]
-}
-
-```
-
-or
-
-`Fortune.courier`:
-
-```
-namespace org.example.fortune
-
-record Fortune {
-  message: string
-}
-```
+{% include example.html name="sbt_fortune" %}
 
 In SBT, run:
 
-```sh
+<pre class="prettyprint lang-sh">
 project example
 compile
-```
+</pre>
 
 When run, the `org.example.fortune.Fortune` Scala class is generated. It behaves the same as
 a case class, but can be serialized to JSON, or any other data format a Pegasus codec is available
@@ -179,7 +153,7 @@ for.  For example:
 
 `example/src/main/scala/Main.scala`:
 
-```scala
+<pre class="prettyprint lang-scala">
 import com.linkedin.data.template.PrettyPrinterJacksonDataTemplateCodec
 import org.example.fortune.Fortune
 
@@ -190,7 +164,7 @@ object Example extends App {
   println(codec.mapToString(fortune.dataMap))
   // -> { "message": "Today is your lucky day!" }
 }
-```
+</pre>
 
 The generator is run automatically before `src/main/scala` compilation. It also registers for
 triggered execution to support SBT commands like `~compile`, which will cause the generator to
@@ -213,8 +187,8 @@ The code generator is an extension of the Rest.li SBT Plugin, for more details, 
 `.pdsc` or `.courier` files only needed for tests may be added to `src/test/pegasus`.
 
 
-Documentation
-=============
+Types
+=====
 
 Record Types
 ------------
@@ -225,62 +199,19 @@ primitives, enums, unions, maps and arrays.
 
 For example, a basic record type containing a few fields:
 
-`Example.pdsc`:
-
-```json
-{
-  "name": "Example",
-  "namespace": "org.example",
-  "doc": "A simple record.",
-  "type": "record",
-  "fields": [
-    { "name": "field1", "type": "string" },
-    { "name": "field2", "type": "int", "optional": true }
-  ]
-}
-```
-
-`Example.courier`:
-
-```
-namespace org.example
-
-record Example {
-  field1: string
-  field2: int?
-}
-```
+{% include example.html name="record_example" %}
 
 This will be generated as:
 
-```scala
+<pre class="prettyprint lang-scala">
 /** A simple record */
 case class Example(field1: String, field2: Option[Int])
-```
+</pre>
 
 [Record Fields](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates#record-field-attributes)
 may be optional and/or may have default values.
 
-`.pdsc`:
-
-Schema Field                                 | Generated Scala
----------------------------------------------|------------------------------------------------------
-`"type": "string"`                           | `case class Record(field: String)`
-`..., "default": "message"`                  | `case class Record(field: String = "message")`
-`..., "optional": true`                      | `case class Record(field: Option[String])`
-`..., "optional": true "default": "message"` | `case class Record(field: Option[String] = Some("message"))`
-`..., "optional": true, "defaultNone": true` | `case class Record(field: Option[String] = None)`
-
-`.courier`:
-
-Schema Field                                 | Generated Scala
----------------------------------------------|------------------------------------------------------
-`field: string`                              | `case class Record(field: String)`
-`field: string = "message"`                  | `case class Record(field: String = "message")`
-`field: string?`                             | `case class Record(field: Option[String])`
-`field: string? = "message"`                 | `case class Record(field: Option[String] = Some("message"))`
-`field: string? = nil`                       | `case class Record(field: Option[String] = None)`
-
+{% include tables.html name="record_fields" %}
 
 Note that `"defaultNone"` is not part of Pegasus, but is a custom property supported by Courier
 specifically added it make it possible to generate idiomatic Scala bindings.
@@ -289,29 +220,19 @@ Schema fields may also be documented or marked as deprecated:
 
 `.pdsc`:
 
-Schema Field                                 | Generated Scala
----------------------------------------------|------------------------------------------------------
-`..., "doc": "A documented field"`           | `case class Record(/** A documented field */ field: String)`
-`..., "deprecated": "Use field X instead"`   | `case class Record(@deprecated(message = "Use field X instead") field: String)`
-
-`.courier`:
-
-Schema Field                                 | Generated Scala
----------------------------------------------|------------------------------------------------------
-`/** A documented field" */`                 | `case class Record(/** A documented field */ field: String)`
-`@deprecated("Use field X instead")`         | `case class Record(@deprecated(message = "Use field X instead") field: String)`
+{% include tables.html name="record_properties" %}
 
 Records may [include fields from other records](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates#including-fields-from-another-record)
 using `"include"`:
 
-```json
+<pre class="prettyprint lang-js">
 {
   "name" : "WithIncluded",
   "type" : "record",
   "include" : [ "Foo" ],
   "fields" : [ ... ]
 }
-```
+</pre>
 
 In pegasus, field inclusion does not imply inheritance, it is merely a
 convenience to reduce duplication when writing schemas.
@@ -357,62 +278,31 @@ Array Type
 [Pegasus Arrays](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates#array-type)
 are defined with a `items` type using the form:
 
-`.pdsc`:
-
-```json
-{ "type": "array", "items": "org.example.Fortune" }
-```
-
-`.courier`:
-
-```
-array[org.example.Fortune]
-```
+{% include example.html name="array_example" %}
 
 Arrays bind to the Scala `IndexedSeq` type:
 
-```scala
+<pre class="prettyprint lang-scala">
 IndexedSeq[Fortune]
-```
+</pre>
 
 Under the hood, Courier generates a `class FortuneArray extends IndexedSeq[Fortune]` type and then
 provides an implicit conversion from `Traversable[Fortune]` so that developers can work
 directly with Scala generic collection types. E.g.:
 
-```scala
+<pre class="prettyprint lang-scala">
 ExampleRecord(fortunes = Seq(Fortune(...), Fortune(...)))
-```
+</pre>
 
 For example, to define a field of a record containing an array, use:
 
-`.pdsc`:
-
-```json
-{
-  "name": "Fortune",
-  "namespace": "org.example.fortune",
-  "type": "record",
-  "fields": [
-    { "name": "arrayField", "type": { "type": "array", "items": "int" } }
-  ]
-}
-```
-
-`.courier`:
-
-```
-namespace org.example.fortune
-
-record Fortune {
-  arrayField: array[int]
-}
-```
+{% include example.html name="array_in_record" %}
 
 This will bind to:
 
-```scala
+<pre class="prettyprint lang-scala">
 case class Fortune(arrayField: Traversable[Int])
-```
+</pre>
 
 and be generated as `case class Fortune(arrayField: IntArray)`.
 
@@ -422,20 +312,7 @@ The array types for all primitive value types (`IntArray`, `StringArray`, ...) a
 provided in the `courier-runtime` artifact in the `org.coursera.courier.data` package. The generator
 is aware of these classes and will refer to them instead of generating them when primitive arrays are used.
 
-`.pdsc`:
-
-Schema type                                         | Scala type
-----------------------------------------------------|--------------------------------------------------
-`{ "type": "array", "items": "int" }`               | `org.coursera.courier.data.IntArray` (predefined)
-`{ "type": "array", "items": "org.example.Record" }`| `org.example.RecordArray` (generated)
-
-`.courier`:
-
-Schema type                                         | Scala type
-----------------------------------------------------|--------------------------------------------------
-`array[int]`                                        | `org.coursera.courier.data.IntArray` (predefined)
-`array[org.example.Record]`                         | `org.example.RecordArray` (generated)
-
+{% include tables.html name="array_examples" %}
 
 All generated Arrays implement Scala's `IndexedSeq`, `Traversable` and `Product` traits and behave
 like a standard Scala collection type.
@@ -444,7 +321,7 @@ All generated Arrays implement Scala's `IndexedSeq`, `Traversable` and `Product`
 like a standard Scala collection type. They contain an implicit converter so that a Scala `Traversable`
 can be converted to them without the need to do any explicit conversion.
 
-```scala
+<pre class="prettyprint lang-scala">
 // constructors
 val array = IntArray(10, 20, 30)
 val array: IntArray = Seq(10, 20, 30)
@@ -460,7 +337,7 @@ array.zipWithIndex
 array.filter(_ > 20)
 
 array.toSet
-```
+</pre>
 
 Unsurprisingly, Pegasus arrays are represented in JSON as arrays.
 
@@ -480,51 +357,31 @@ Map Type
 [Pegasus Maps](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates#map-type)
 are defined with a `values` type, and an optional `keys` type, using the form:
 
-`.pdsc`:
-
-```json
-{ "type": "map", "keys": "int", "values": "org.example.Fortune" }
-```
-
-`.courier`:
-
-```
-map[int, org.example.Fortune]
-```
+{% include example.html name="map_explicit_key" %}
 
 Maps bind to the Scala `Map` type:
 
-```scala
+<pre class="prettyprint lang-scala">
 Map[Int, Fortune]
-```
+</pre>
 
 Under the hood, Courier generates a `class IntToFortuneMap extends Map[Int, Fortune]` type and then
 provides an implicit conversion from `Map[String, Int]` so that developers can work
 directly with Scala generic collection types. E.g.:
 
-```scala
+<pre class="prettyprint lang-scala">
 Fortune(Map("a" -> 1, "b" -> 2))
-```
+</pre>
 
 If no "keys" type is specified, the key type will default to "string". For example:
 
-`.pdsc`:
-
-```json
-{ "type": "map", "values": "org.example.Note" }
-```
-
-`.courier`:
-
-```
-map[string, org.example.Note]
-```
+{% include example.html name="map_implicit_key" %}
 
 will bind to:
 
-```scala
+<pre class="prettyprint lang-scala">
 Map[String, Note]
-```
+</pre>
 
 and will be generated as `class NoteMap extends Map[String, Note]`.
 
@@ -533,61 +390,26 @@ is used to serialize/deserialize complex type keys to JSON strings.
 
 To define a field of a record containing a map, use:
 
-`.pdsc`:
-
-```json
-{
-  "name": "Fortune",
-  "namespace": "org.example.fortune",
-  "type": "record",
-  "fields": [
-    { "name": "mapField", "type": { "type": "map", "values": "int" } }
-  ]
-}
-```
-
-`.courier`:
-
-```
-namespace org.example.fortune
-
-record Fortune {
-  mapField: map[string, int]
-}
-```
+{% include example.html name="map_in_record" %}
 
 This will bind to:
 
-```scala
+<pre class="prettyprint lang-scala">
 case class Fortune(mapField: Map[String, Int])
-```
+</pre>
 
 and be generated as `case class Fortune(mapField: IntMap)`.
 
 Like arrays, map values can be of any type, and the map types for all primitives
 are predefined.
 
-`.pdsc`:
-
-Schema type                                                                        | Scala type
------------------------------------------------------------------------------------|------------------------------------------------
-`{ "type": "map", "values": "int" }`                                               | `org.coursera.courier.data.IntMap` (predefined)
-`{ "type": "map", "values": "org.example.Record" }`                                | `org.example.RecordMap` (generated)
-`{ "type": "map", "keys": "org.example.SimpleId", "values": "org.example.Record" }`| `org.example.SimpleIdToRecordMap` (generated)
-
-`.courier`:
-
-Schema type                                                                        | Scala type
------------------------------------------------------------------------------------|------------------------------------------------
-`map[string, int]`                                                                 | `org.coursera.courier.data.IntMap` (predefined)
-`map[string, org.example.Record`                                                   | `org.example.RecordMap` (generated)
-`map[org.example.SimpleId, org.example.Record]`                                    | `org.example.SimpleIdToRecordMap` (generated)
+{% include tables.html name="map_examples" %}
 
 All generated Maps implement Scala's `Map` and `Iterable` traits and behave
 like a standard Scala collection type. The contain an implicit converter so that a Scala `Map`
 can be converted to them without the need to do any explicit conversion.
 
-```scala
+<pre class="prettyprint lang-scala">
 // constructors
 val map = IntMap("a" -> 1, "b" -> 2, "c" -> 3)
 val map: IntMap = Map("a" -> 1, "b" -> 2, "c" -> 3)
@@ -602,7 +424,7 @@ map.contains("c")
 map.mapValues { v => ... }
 
 map.filterKeys { _.startsWith("a") }
-```
+</pre>
 
 Maps are represented in JSON as objects:
 
@@ -628,32 +450,12 @@ type except union: primitive, record, enum, map or array.
 
 Unions types are defined in using the form:
 
-`.pdsc`:
-
-```json
-[ "<MemberType1>", "<MemberType2>" ]
-```
-
-`.courier`:
-
-```
-union[<MemberType1>, <MemberType2>]
-```
+{% include example.html name="union_structure" %}
 
 For example, a union that holds an `int`, `string` or a `Fortune`
 would be defined as:
 
-`.pdsc`:
-
-```json
-[ "int", "string", "org.example.Fortune" ]
-```
-
-`.courier`:
-
-```
-union[int, string, org.example.Fortune]
-```
+{% include example.html name="union_example" %}
 
 The member type names also serve as the "member keys" (sometimes called "union tags"),
 and identify which union member type data holds.
@@ -669,32 +471,11 @@ Schema type           | Member key            | Example JSON data
 Let's look at an example of a union in use.  To define a field of a record containing a
 union of two other records, we would define:
 
-`.pdsc`:
-
-```json
-{
-  "name": "Question",
-  "namespace": "org.example",
-  "type": "record",
-  "fields": [
-    { "name": "answerFormat", "type": [ "MultipleChoice", "TextEntry" ] }
-  ]
-}
-```
-
-`.courier`:
-
-```
-namespace org.example
-
-record Question {
-  answerFormat: union[MultipleChoice, TextEntry]
-}
-```
+{% include example.html name="union_in_record" %}
 
 This will be generated as:
 
-```scala
+<pre class="prettyprint lang-scala">
 case class Question(answerFormat: Question.AnswerFormat)
 
 object Question {
@@ -705,7 +486,7 @@ object Question {
   case class TextEntryMember(value: TextEntry) extends AnswerFormat
   case class $UnknownMember() extends AnswerFormat // for backward compatibility (see below)
 }
-```
+</pre>
 
 Here, because the union was defined inline in in the Question record, it is
 generated as a class scoped within Question type.
@@ -727,13 +508,13 @@ Scala Expression                                     | Equivalent JSON data
 
 To read the union, pattern matching may be used, e.g.:
 
-```scala
+<pre class="prettyprint lang-scala">
 question.answerFormat match {
   case TextEntryMember(textEntry) => ...
   case MultipleChoiceMember(multipleChoice) => ...
   case $UnknownMember => ... // for backward compatibility (see below)
 }
-```
+</pre>
 
 Because the union is defined using a sealed base type, Scala can statically
 check that the cases used are exhaustive.
@@ -774,105 +555,37 @@ Enum Type
 
 Enums types may contain any number of symbols, for example:
 
-`.pdsc`:
-
-```json
-{
-  "type" : "enum",
-  "name" : "Fruits",
-  "namespace" : "org.example",
-  "symbols" : ["APPLE", "BANANA", "ORANGE"]
-}
-```
-
-`.courier`:
-
-```
-namespace org.example
-
-enum Fruits {
-  APPLE
-  BANANA
-  ORANGE
-}
-```
+{% include example.html name="enum_example" %}
 
 This will be generated as:
 
-```scala
+<pre class="prettyprint lang-scala">
 object Fruits extend Enumeration
-```
+</pre>
 
 where symbols are referenced as:
 
-```scala
+<pre class="prettyprint lang-scala">
 Fruits.APPLE
-```
+</pre>
 
 and the enum's Scala type is:
 
-```scala
+<pre class="prettyprint lang-scala">
 Fruits.Fruits
-```
+</pre>
 
 Enums are referenced in other schemas either by name, e.g.:
 
-`.pdsc`:
-
-```json
-{
-  "type": "record",
-  "name": "FruitBasket",
-  "namespace": "org.example",
-  "fields": [
-    { "name": "fruit", "type": "org.example.Fruits" }
-  ]
-}
-```
-
-`.courier`:
-
-```
-namespace org.example
-
-record FruitBasket {
-  fruit: org.example.Fruits
-}
-```
+{% include example.html name="enum_in_record" %}
 
 ..or by inlining their type definition, e.g.:
 
-`.pdsc`:
-
-```json
-{
-  "type": "record",
-  "name": "FruitBasket",
-  "namespace": "org.example",
-  "fields": [
-    {
-      "name": "fruit",
-      "type": {
-        "type": "enum",
-        "name": "Fruits",
-        "symbols": ["APPLE", "BANANA", "ORANGE"]
-      }
-    }
-  ]
-}
-```
-
-`.courier`:
-
-```
-record FruitBasket {
-  fruit: enum Fruits { APPLE, BANANA, ORANGE }
-}
-```
+{% include example.html name="enum_inline" %}
 
 This fully generated enum looks like:
 
-```scala
+<pre class="prettyprint lang-scala">
 object Fruits extends Enumeration {
   type Fruits = Value
 
@@ -882,7 +595,7 @@ object Fruits extends Enumeration {
 
   val $UNKNOWN = Value("$UNKNOWN") // for backward compatibility (see below)
 }
-```
+</pre>
 
 Enums are represented in JSON as strings, e.g. `"APPLE"`
 
@@ -912,83 +625,27 @@ They can be used for a variety of purposes. A few common uses:
 
 (1) Provide a name for a union, map, or array so that it can be referenced by name. E.g.:
 
-`.pdsc`:
-
-```json
-{
-  "name": "AnswerTypes",
-  "namespace": "org.example",
-  "type": "typeref",
-  "ref": ["MutlipleChoice", "TextEntry"]
-}
-
-```
-
-`.courier`:
-
-```
-namespace org.example
-
-typeref AnswerTypes = union[MultipleChoice, TextEntry]
-```
+{% include example.html name="typeref_example" %}
 
 This will be generated as:
 
-```scala
+<pre class="prettyprint lang-scala">
 abstract class AnswerTypes
 case class MutlipleChoiceMember(value: MutlipleChoice) extends AnswerTypes
 case class TextEntryMember(value: TextEntry) extends AnswerTypes
-```
+</pre>
 
 And can be referred to from any other type using the name
 `org.example.AnswerTypes`, e.g.:
 
-`.pdsc`:
-
-```json
-{
-  "type": "record",
-  "name": "Question",
-  "namespace": "org.example",
-  "fields": [
-    { "name": "answerFormat", "type": "org.example.AnswerTypes" }
-  ]
-}
-```
-
-`.courier`:
-
-```
-namespace org.example
-
-record Question {
-  answerFormat: org.example.AnswerTypes
-}
-```
+{% include example.html name="typeref_in_record" %}
 
 This is particularly useful because unions, maps and arrays cannot otherwise be
 named directly like records and enums can.
 
 (2) Provide additional clarity when using primitive types for specific purposes.
 
-`.pdsc`:
-
-```json
-{
-  "name": "UnixTimestamp",
-  "namespace": "org.example",
-  "type": "typeref",
-  "ref": "long"
-}
-```
-
-`.courier`:
-
-```
-namespace org.example
-
-typeref UnixTimestamp = long
-```
+{% include example.html name="typeref_for_timestamp" %}
 
 No classes will be generated for this typeref. In Scala, typerefs to primitives
 are simply bound to their reference types (unless the typref is defined as a
@@ -1012,34 +669,13 @@ Coercers are not required for Scala case classes that have only a single element
 
 For example, to coerce to the Scala case class:
 
-```scala
+<pre class="prettyprint lang-scala">
 case class SlugId(slug: String)
-```
+</pre>
 
 Define a Pegasus typeref schema like:
 
-`.pdsc`:
-
-```json
-{
-  "name": "SlugId",
-  "namespace": "org.example.schemas",
-  "type": "typeref",
-  "ref": "string",
-  "scala": {
-    "class": "org.example.SlugId"
-  }
-}
-```
-
-`.courier`:
-
-```
-namespace org.example.schemas
-
-@scala({"class": "org.example.SlugId"})
-typeref SlugId = string
-```
+{% include example.html name="custom_type_single_element" %}
 
 ### Coercers
 
@@ -1047,39 +683,12 @@ For example, [Joda time](http://www.joda.org/joda-time/) has a convenient
 `DateTime` class. If we wish to use this class in Scala to represent date times,
 all we need to do is define a pegasus custom type that binds to it:
 
-`.pdsc`:
-
-```json
-{
-  "name": "DateTime",
-  "namespace": "org.example",
-  "type": "typeref",
-  "ref": "string",
-  "doc": "ISO 8601 date-time.",
-  "scala": {
-    "class": "org.joda.time.DateTime",
-    "coercerClass": "org.coursera.models.common.DateTimeCoercer"
-  }
-}
-
-```
-
-`.courier`:
-
-```
-namespace org.example
-
-@scala({
-  "class": "org.joda.time.DateTime",
-  "coercerClass": "org.coursera.models.common.DateTimeCoercer"
-})
-typeref DateTime = string
-```
+{% include example.html name="custom_type_coercer" %}
 
 The coercer is responsible for converting the pegasus "referenced" type, in this
 case `"string"` to the Joda `DateTime` class:
 
-```scala
+<pre class="prettyprint lang-scala">
 class DateTimeCoercer extends DirectCoercer[DateTime] {
   override def coerceInput(obj: DateTime): AnyRef = {
     DateTimeCoercer.iso8601Format.print(obj)
@@ -1098,40 +707,18 @@ object DateTimeCoercer {
   }
   val iso8601Format = ISODateTimeFormat.dateTime()
 }
-
-```
+</pre>
 
 Once a custom type is defined, it can be used in any type. For example, to use the DateTime
 custom type in a record:
 
-`.pdsc`:
-
-```json
-{
-  "type": "record",
-  "name": "Fortune",
-  "namespace": "org.example",
-  "fields": [
-    { "name": "createdAt", "type": "org.example.DateTime" }
-  ]
-}
-```
-
-`.courier`:
-
-```
-namespace org.example
-
-record Fortune {
-  createdAt: org.example.DateTime
-}
-```
+{% include example.html name="custom_type_in_record" %}
 
 This will be generated as:
 
-```scala
+<pre class="prettyprint lang-scala">
 case class Fortune(createdAt: org.joda.time.DateTime)
-```
+</pre>
 
 Serialization
 =============
@@ -1141,17 +728,17 @@ JSON
 
 All of the pegasus complex types may be serialized using:
 
-```scala
+<pre class="prettyprint lang-scala">
 val fortune = Fortune(message = "Today is your lucky day!")
 val json = DataTemplates.writeDataMap(fortune.data()) // or writeDataList
-```
+</pre>
 
 And deserialized using:
 
-```scala
+<pre class="prettyprint lang-scala">
 val dataMap = DataTemplates.readDataMap(json) // or readDataList
 val fortune = Fortune(dataMap, DataConversion.SetReadOnly) // or DataConversion.DeepCopy
-```
+</pre>
 
 Codecs
 ------
@@ -1166,7 +753,7 @@ Pegasus and Courier provides multiple "Codecs":
 
 Example codec use:
 
-```
+<pre class="prettyprint lang-scala">
 val codec = new InlineStringCodec()
 
 // deserialize
@@ -1174,11 +761,11 @@ val dataMap = codec.bytesToMap("(key~value)".getBytes(Charset.forName("UTF-8"))
 
 // serialize
 val string = new String(codec.mapToBytes(dataMap, Charset.forName("UTF-8")))
-```
+</pre>
 
 All codecs also support input and output streams, e.g.:
 
-```
+<pre class="prettyprint lang-scala">
 val codec = PsonDataCodec()
 
 // deserialize
@@ -1186,7 +773,7 @@ val dataMap = codec.readMap(inputStream)
 
 // serialize
 codec.writeMap(dataMap, outputStream)
-```
+</pre>
 
 Avro Translators
 ----------------

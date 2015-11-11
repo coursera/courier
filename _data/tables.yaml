@@ -1,0 +1,55 @@
+record_fields:
+  pdsc: |
+    Schema Field                                 | Generated Scala
+    ---------------------------------------------|------------------------------------------------------
+    `"type": "string"`                           | `case class Record(field: String)`
+    `..., "default": "message"`                  | `case class Record(field: String = "message")`
+    `..., "optional": true`                      | `case class Record(field: Option[String])`
+    `..., "optional": true "default": "message"` | `case class Record(field: Option[String] = Some("message"))`
+    `..., "optional": true, "defaultNone": true` | `case class Record(field: Option[String] = None)`
+  courier: |
+    Schema Field                                 | Generated Scala
+    ---------------------------------------------|------------------------------------------------------
+    `field: string`                              | `case class Record(field: String)`
+    `field: string = "message"`                  | `case class Record(field: String = "message")`
+    `field: string?`                             | `case class Record(field: Option[String])`
+    `field: string? = "message"`                 | `case class Record(field: Option[String] = Some("message"))`
+    `field: string? = nil`                       | `case class Record(field: Option[String] = None)`
+
+record_properties:
+  pdsc: |
+    Schema Field                                 | Generated Scala
+    ---------------------------------------------|------------------------------------------------------
+    `..., "doc": "A documented field"`           | `case class Record(/** A documented field */ field: String)`
+    `..., "deprecated": "Use field X instead"`   | `case class Record(@deprecated(message = "Use field X instead") field: String)`
+  courier: |
+    Schema Field                                 | Generated Scala
+    ---------------------------------------------|------------------------------------------------------
+    `/** A documented field" */`                 | `case class Record(/** A documented field */ field: String)`
+    `@deprecated("Use field X instead")`         | `case class Record(@deprecated(message = "Use field X instead") field: String)`
+
+array_examples:
+  pdsc: |
+    Schema type                                         | Scala type
+    ----------------------------------------------------|--------------------------------------------------
+    `{ "type": "array", "items": "int" }`               | `org.coursera.courier.data.IntArray` (predefined)
+    `{ "type": "array", "items": "org.example.Record" }`| `org.example.RecordArray` (generated)
+  courier: |
+    Schema type                                         | Scala type
+    ----------------------------------------------------|--------------------------------------------------
+    `array[int]`                                        | `org.coursera.courier.data.IntArray` (predefined)
+    `array[org.example.Record]`                         | `org.example.RecordArray` (generated)
+
+map_examples:
+  pdsc: |
+    Schema type                                                                        | Scala type
+    -----------------------------------------------------------------------------------|------------------------------------------------
+    `{ "type": "map", "values": "int" }`                                               | `org.coursera.courier.data.IntMap` (predefined)
+    `{ "type": "map", "values": "org.example.Record" }`                                | `org.example.RecordMap` (generated)
+    `{ "type": "map", "keys": "org.example.SimpleId", "values": "org.example.Record" }`| `org.example.SimpleIdToRecordMap` (generated)
+  courier: |
+    Schema type                                                                        | Scala type
+    -----------------------------------------------------------------------------------|------------------------------------------------
+    `map[string, int]`                                                                 | `org.coursera.courier.data.IntMap` (predefined)
+    `map[string, org.example.Record`                                                   | `org.example.RecordMap` (generated)
+    `map[org.example.SimpleId, org.example.Record]`                                    | `org.example.SimpleIdToRecordMap` (generated)
