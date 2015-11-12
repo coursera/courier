@@ -24,7 +24,7 @@ public struct WithComplexTypesUnion: Serializable {
                 return .EmptyMember(try Empty.readJSON(try member.required(.Dictionary).jsonValue))
             }
             if let member = dict["org.coursera.enums.Fruits"] {
-                return .FruitsMember(try Fruits.read(try member.required(.String).stringValue))
+                return .FruitsMember(Fruits.read(try member.required(.String).stringValue))
             }
             if let member = dict["array"] {
                 return .ArrayMember(try member.required(.Array).arrayValue.map { try Simple.readJSON(try $0.required(.Dictionary).jsonValue) })

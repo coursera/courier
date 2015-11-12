@@ -41,8 +41,8 @@ See the idea-plugin project.
 
 TODO
 ----
-
-* [ ] Include file name in syntax errors.
+* [ ] Fix .courier parser to keep track of locations when parsing and include them in error
+messages produced.  Remove IOException throws once this is in place.
 * [ ] Add examples of `.courier` files to documentation.
 * [ ] Switch to `@property = JSValue` syntax for properties.
 * [ ] Add “new courier file” support (set package and name of the top level record / data type in
@@ -59,4 +59,3 @@ TODO
       the Java part of the Courier stack. Do we introduce a Scala dependency to the Java codebase,
       or do we migrate to a non-Scala parser?
 * [ ] Add linter support as separate tool usable from arc
-

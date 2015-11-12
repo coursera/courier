@@ -9,7 +9,6 @@ public enum FlatTypedDefinition: Serializable, Equatable {
     case UNKNOWN$([String : AnyObject])
     
     public static func readJSON(json: JSON) throws -> FlatTypedDefinition {
-        let dict = json.dictionaryValue
         switch json["typeName"].stringValue {
         case "note":
             return .NoteMember(try Note.readJSON(try json.required(.Dictionary).jsonValue))

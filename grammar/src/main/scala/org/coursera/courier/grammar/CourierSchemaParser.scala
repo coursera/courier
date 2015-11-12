@@ -292,6 +292,8 @@ class CourierSchemaParser(resolver: DataSchemaResolver) extends SchemaParser(res
   }
 
   private def toDataSchema(typeAssignment: TypeAssignment): DataSchema = {
+    // TODO(jbetz): Remove IOException throws. Errors should be written to the error message
+    // builder and parsing should not be halted at first error.
     typeAssignment match {
       case AssignmentByName(typeName) =>
         typeName match {

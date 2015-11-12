@@ -91,7 +91,7 @@ public class SwiftyJSON {
     DataSchema.Type schemaType = spec.getSchema().getType();
     switch (schemaType) {
       case ENUM:
-        return expr(spec.getClassName()).apply(".read(" + expr.evaluated() + ")", expr);
+        return expr(spec.getClassName()).apply(".read(" + expr.evaluated() + ")", expr, false);
       case RECORD:
       case UNION:
         // readJSON throws
@@ -194,9 +194,15 @@ public class SwiftyJSON {
 
   private static class Expr {
     public final String expr;
+    public final boolean rethrows;
 
     public Expr(String expr) {
+      this(expr, true);
+    }
+
+    public Expr(String expr, boolean rethrows) {
       this.expr = expr;
+      this.rethrows = rethrows;
     }
 
     public Expr apply(String invocation) {
@@ -204,10 +210,16 @@ public class SwiftyJSON {
     }
 
     public Expr apply(String invocation, Expr nestedExpr) {
+      return apply(invocation, nestedExpr, true);
+    }
+
+    // rethrows indicates if the applied method is a rethrows method (.map is, but Enum.read is
+    // not).
+    public Expr apply(String invocation, Expr nestedExpr, boolean rethrows) {
       if (nestedExpr instanceof CheckedThrowExpr) {
-        return new CheckedThrowExpr(expr + invocation);
+        return new CheckedThrowExpr(expr + invocation, rethrows);
       }
-      return new Expr(expr + invocation);
+      return new Expr(expr + invocation, rethrows);
     }
 
     public String evaluated() {
@@ -218,6 +230,10 @@ public class SwiftyJSON {
   private static class CheckedThrowExpr extends Expr {
     public CheckedThrowExpr(String expr) {
       super(expr);
+    }
+
+    public CheckedThrowExpr(String expr, boolean rethrows) {
+      super(expr, rethrows);
     }
 
     @Override
@@ -232,7 +248,11 @@ public class SwiftyJSON {
 
     @Override
     public String evaluated() {
-      return "try " + expr;
+      if (rethrows) {
+        return "try " + expr;
+      } else {
+        return expr;
+      }
     }
   }
 

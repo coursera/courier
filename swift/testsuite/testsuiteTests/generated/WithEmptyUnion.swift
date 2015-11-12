@@ -14,7 +14,6 @@ public struct WithEmptyUnion: Serializable {
     public enum Union: Serializable {
         case UNKNOWN$([String : AnyObject])
         public static func readJSON(json: JSON) throws -> Union {
-            let dict = json.dictionaryValue
             if let unknownDict = json.dictionaryObject {
                 return .UNKNOWN$(unknownDict)
             } else {

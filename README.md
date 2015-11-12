@@ -17,9 +17,6 @@ multiple data formats including JSON and [Avro](http://avro.apache.org/).
 Features
 --------
 
-* Testability: Utility to automatically populate data for models to ease testing (in a consistent manner)
-* Generate case classes for typerefs when requested, e.g. for `@scala.caseclass typeref Foo = string`,
-  generate `Foo(value: string)`. Support `@scala.anyval` as well.
 * Generates "Scala Idiomatic" data bindings (case classes, pattern matching, Scala collections...)
 * Bindings read/write natural looking JSON
 * Robust type system: Records, Arrays, Maps, Unions, Enums, Primitives, ...

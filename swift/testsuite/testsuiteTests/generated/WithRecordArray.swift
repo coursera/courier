@@ -18,7 +18,7 @@ public struct WithRecordArray: Serializable, Equatable {
     public static func readJSON(json: JSON) throws -> WithRecordArray {
         return WithRecordArray(
             empties: try json["empties"].optional(.Array).array.map {try $0.map { try Empty.readJSON(try $0.required(.Dictionary).jsonValue) } },
-            fruits: try json["fruits"].optional(.Array).array.map {try $0.map { try Fruits.read(try $0.required(.String).stringValue) } }
+            fruits: try json["fruits"].optional(.Array).array.map {try $0.map { Fruits.read(try $0.required(.String).stringValue) } }
         )
     }
     public func writeData() -> [String: AnyObject] {

@@ -21,3 +21,10 @@ Tests
 -----
 
 All tests for the generator are kept in the sibling `generator-test` project.
+
+TODO
+----
+
+* Testability: Utility to automatically populate data for models to ease testing (in a consistent manner)
+* Generate case classes for typerefs when requested, e.g. for `@scala.caseclass typeref Foo = string`,
+  generate `Foo(value: string)`. Support `@scala.anyval` as well.

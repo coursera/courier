@@ -4,7 +4,6 @@
 @{ String className = syntax.escapeKeyword(union.getClassName()) }
 
 public static func readJSON(json: JSON) throws -> @className {
-  let dict = json.dictionaryValue
   switch json["typeName"].stringValue {
     @for(Member member: union.getMembers()) {
       @{ String unionMemberName = syntax.toUnionMemberName(member.getClassTemplateSpec()) }
