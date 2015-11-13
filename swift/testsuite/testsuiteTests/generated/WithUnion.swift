@@ -13,7 +13,7 @@ public struct WithUnion: Serializable, Equatable {
     
     public static func readJSON(json: JSON) throws -> WithUnion {
         return WithUnion(
-            value: try json["value"].optional(.Dictionary).json.map {try Union.readJSON($0) }
+            value: try json["value"].optional(.Dictionary).json.map { try Union.readJSON($0) }
         )
     }
     public func writeData() -> [String: AnyObject] {

@@ -13,7 +13,7 @@ public struct RecursivelyDefinedRecord: Serializable {
     
     public static func readJSON(json: JSON) throws -> RecursivelyDefinedRecord {
         return RecursivelyDefinedRecord(
-            `self`: try json["self"].optional(.Dictionary).json.map {try RecursivelyDefinedRecord.readJSON($0) }
+            `self`: try json["self"].optional(.Dictionary).json.map { try RecursivelyDefinedRecord.readJSON($0) }
         )
     }
     public func writeData() -> [String: AnyObject] {

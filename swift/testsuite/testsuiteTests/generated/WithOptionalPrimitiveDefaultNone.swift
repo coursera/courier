@@ -48,7 +48,7 @@ public struct WithOptionalPrimitiveDefaultNone: Serializable {
             booleanWithDefault: try json["booleanWithDefault"].optional(.Bool).bool,
             stringWithDefault: try json["stringWithDefault"].optional(.String).string,
             bytesWithDefault: try json["bytesWithDefault"].optional(.String).string,
-            enumWithDefault: try json["enumWithDefault"].optional(.String).string.map {Fruits.read($0) }
+            enumWithDefault: try json["enumWithDefault"].optional(.String).string.map { Fruits.read($0) }
         )
     }
     public func writeData() -> [String: AnyObject] {

@@ -32,11 +32,7 @@ import com.linkedin.data.schema.PrimitiveDataSchema;
 import com.linkedin.data.schema.RecordDataSchema;
 import com.linkedin.data.schema.StringDataSchema;
 import com.linkedin.data.schema.UnionDataSchema;
-import com.linkedin.pegasus.generator.spec.ArrayTemplateSpec;
-import com.linkedin.pegasus.generator.spec.ClassTemplateSpec;
-import com.linkedin.pegasus.generator.spec.RecordTemplateSpec;
-import com.linkedin.pegasus.generator.spec.TyperefTemplateSpec;
-import com.linkedin.pegasus.generator.spec.UnionTemplateSpec;
+import com.linkedin.pegasus.generator.spec.*;
 import org.coursera.courier.api.CourierMapTemplateSpec;
 import org.coursera.courier.swift.SwiftProperties.Optionality;
 
@@ -83,7 +79,7 @@ public class SwiftSyntax {
 
   private static final Set<String> reservedSymbols = new HashSet<String>(Arrays.asList(new String[]{
       // reserved by code generator
-      "readJSON", "writeJSON", "validate", "toData" // If removed, we potentially get "invalid redeclaration of write errors"
+      "readJSON", "writeJSON", "validate", "toData" // If removed, we potentially get "invalid redeclaration of coercerOutput errors"
   }));
 
   /**
@@ -113,8 +109,6 @@ public class SwiftSyntax {
    * Returns the escaped fully qualified name of a {@link ClassTemplateSpec}.
    */
   public static String escapedFullname(ClassTemplateSpec spec) {
-    //return toFullname(spec.getNamespace(), escapeKeyword(spec.getClassName()));
-
     // TODO: Remove below null and introduce module namespacing
     return toFullname(null, escapeKeyword(spec.getClassName()));
   }
@@ -243,7 +237,24 @@ public class SwiftSyntax {
     if (defaultNone) {
       return "nil";
     } else {
-      return toLiteral(field.getType().getSchema(), field.getSchemaField().getDefault());
+      CustomInfoSpec customInfo = field.getCustomInfo();
+      ClassTemplateSpec fieldType;
+      if (customInfo != null) {
+        DataSchema refSchema = customInfo.getCustomSchema().getDereferencedDataSchema();
+        fieldType = ClassTemplateSpec.createFromDataSchema(refSchema);
+        String coercer = customInfo.getCoercerClass().getClassName();
+        String uncoerced = toLiteral(fieldType.getSchema(), field.getSchemaField().getDefault());
+        if (uncoerced == null) {
+          return null;
+        } else {
+          // TODO(jbetz): try! should be avoided. Is there anything reasonable we can do instead
+          // given that swift does not allow use to propagate errors in initializers?
+          return "try! " + SwiftyJSON.expr(coercer).coercerInput(SwiftyJSON.expr(uncoerced)).toSwiftCode();
+        }
+      } else {
+        fieldType = field.getType();
+        return toLiteral(fieldType.getSchema(), field.getSchemaField().getDefault());
+      }
     }
   }
 

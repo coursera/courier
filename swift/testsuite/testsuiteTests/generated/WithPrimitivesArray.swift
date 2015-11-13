@@ -37,13 +37,13 @@ public struct WithPrimitivesArray: Serializable, Equatable {
     
     public static func readJSON(json: JSON) throws -> WithPrimitivesArray {
         return WithPrimitivesArray(
-            ints: try json["ints"].optional(.Array).array.map {try $0.map { try $0.required(.Number).intValue } },
-            longs: try json["longs"].optional(.Array).array.map {try $0.map { try $0.required(.Number).intValue } },
-            floats: try json["floats"].optional(.Array).array.map {try $0.map { try $0.required(.Number).floatValue } },
-            doubles: try json["doubles"].optional(.Array).array.map {try $0.map { try $0.required(.Number).doubleValue } },
-            booleans: try json["booleans"].optional(.Array).array.map {try $0.map { try $0.required(.Bool).boolValue } },
-            strings: try json["strings"].optional(.Array).array.map {try $0.map { try $0.required(.String).stringValue } },
-            bytes: try json["bytes"].optional(.Array).array.map {try $0.map { try $0.required(.String).stringValue } }
+            ints: try json["ints"].optional(.Array).array.map { try $0.map { try $0.required(.Number).intValue } },
+            longs: try json["longs"].optional(.Array).array.map { try $0.map { try $0.required(.Number).intValue } },
+            floats: try json["floats"].optional(.Array).array.map { try $0.map { try $0.required(.Number).floatValue } },
+            doubles: try json["doubles"].optional(.Array).array.map { try $0.map { try $0.required(.Number).doubleValue } },
+            booleans: try json["booleans"].optional(.Array).array.map { try $0.map { try $0.required(.Bool).boolValue } },
+            strings: try json["strings"].optional(.Array).array.map { try $0.map { try $0.required(.String).stringValue } },
+            bytes: try json["bytes"].optional(.Array).array.map { try $0.map { try $0.required(.String).stringValue } }
         )
     }
     public func writeData() -> [String: AnyObject] {

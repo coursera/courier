@@ -29,11 +29,11 @@ public struct WithComplexTyperefs: Serializable {
     
     public static func readJSON(json: JSON) throws -> WithComplexTyperefs {
         return WithComplexTyperefs(
-            `enum`: try json["enum"].optional(.String).string.map {Fruits.read($0) },
-            record: try json["record"].optional(.Dictionary).json.map {try Empty.readJSON($0) },
-            map: try json["map"].optional(.Dictionary).dictionary.map {try $0.mapValues { try Empty.readJSON(try $0.required(.Dictionary).jsonValue) } },
-            array: try json["array"].optional(.Array).array.map {try $0.map { try Empty.readJSON(try $0.required(.Dictionary).jsonValue) } },
-            union: try json["union"].optional(.Dictionary).json.map {try UnionTyperef.readJSON($0) }
+            `enum`: try json["enum"].optional(.String).string.map { Fruits.read($0) },
+            record: try json["record"].optional(.Dictionary).json.map { try Empty.readJSON($0) },
+            map: try json["map"].optional(.Dictionary).dictionary.map { try $0.mapValues { try Empty.readJSON(try $0.required(.Dictionary).jsonValue) } },
+            array: try json["array"].optional(.Array).array.map { try $0.map { try Empty.readJSON(try $0.required(.Dictionary).jsonValue) } },
+            union: try json["union"].optional(.Dictionary).json.map { try UnionTyperef.readJSON($0) }
         )
     }
     public func writeData() -> [String: AnyObject] {

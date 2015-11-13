@@ -13,7 +13,7 @@ public struct WithOptionalComplexTypes: Serializable {
     
     public let map: [String: Int]?
     
-    public let custom: Int?
+    public let custom: CustomInt?
     
     public init(
         record: Simple?,
@@ -21,7 +21,7 @@ public struct WithOptionalComplexTypes: Serializable {
         union: Union?,
         array: [Int]?,
         map: [String: Int]?,
-        custom: Int?
+        custom: CustomInt?
     ) {
         self.record = record
         self.`enum` = `enum`
@@ -69,12 +69,12 @@ public struct WithOptionalComplexTypes: Serializable {
     
     public static func readJSON(json: JSON) throws -> WithOptionalComplexTypes {
         return WithOptionalComplexTypes(
-            record: try json["record"].optional(.Dictionary).json.map {try Simple.readJSON($0) },
-            `enum`: try json["enum"].optional(.String).string.map {Fruits.read($0) },
-            union: try json["union"].optional(.Dictionary).json.map {try Union.readJSON($0) },
-            array: try json["array"].optional(.Array).array.map {try $0.map { try $0.required(.Number).intValue } },
-            map: try json["map"].optional(.Dictionary).dictionary.map {try $0.mapValues { try $0.required(.Number).intValue } },
-            custom: try json["custom"].optional(.Number).int
+            record: try json["record"].optional(.Dictionary).json.map { try Simple.readJSON($0) },
+            `enum`: try json["enum"].optional(.String).string.map { Fruits.read($0) },
+            union: try json["union"].optional(.Dictionary).json.map { try Union.readJSON($0) },
+            array: try json["array"].optional(.Array).array.map { try $0.map { try $0.required(.Number).intValue } },
+            map: try json["map"].optional(.Dictionary).dictionary.map { try $0.mapValues { try $0.required(.Number).intValue } },
+            custom: try json["custom"].optional(.Number).int.map { try CustomIntCoercer.coerceInput($0) }
         )
     }
     public func writeData() -> [String: AnyObject] {
@@ -95,7 +95,7 @@ public struct WithOptionalComplexTypes: Serializable {
             dict["map"] = map
         }
         if let custom = self.custom {
-            dict["custom"] = custom
+            dict["custom"] = CustomIntCoercer.coerceOutput(custom)
         }
         return dict
     }

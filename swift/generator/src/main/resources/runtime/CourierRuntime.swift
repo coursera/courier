@@ -18,10 +18,23 @@ import Foundation
 import SwiftyJSON
 
 /**
+    Serializable to JSON via SwiftyJson
+*/
+public protocol JSONSerializable {
+
+    /**
+    Read from JSON via SwiftyJson.
+    */
+    static func readJSON(json: JSON) throws -> Self
+
+    /**
+    Write to JSON via SwiftyJson.
+    */
+    func writeJSON() -> JSON
+}
+
+/**
     Serializable to:
-
-    JSON - via SwiftyJson
-
     "DataTrees" - a "JSON equivalent" data structure composed of the following
     Swift types:
 
@@ -33,28 +46,23 @@ import SwiftyJSON
     field names used as map keys. If a optional field is `nil` valued it is simply left absent
     from the map.
 */
-public protocol Serializable {
+public protocol DataTreeSerializable {
 
     /**
-      Read from JSON via SwiftyJson.
-    */
-    static func readJSON(json: JSON) throws -> Self
-
-    /**
-      Write to JSON via SwiftyJson.
-    */
-    func writeJSON() -> JSON
-
-    /**
-      Read from a "DataTree".
+    Read from a "DataTree".
     */
     static func readData(data: [String: AnyObject]) throws -> Self
 
     /**
-      Write to a "DataTree".
+    Write to a "DataTree".
     */
     func writeData() -> [String: AnyObject]
 }
+
+/**
+    Serializable to JSON and DataTrees.
+*/
+public protocol Serializable: JSONSerializable, DataTreeSerializable {}
 
 extension Serializable {
     public static func readData(data: [String: AnyObject]) throws -> Self {
@@ -64,6 +72,20 @@ extension Serializable {
     public func writeJSON() -> JSON {
         return JSON(writeData())
     }
+}
+
+/**
+    Coercers provide a means of customizing what Swift type Courier binds to a particular
+    pegsus type.
+
+    Coercers must be registered in the schema (.pdsc or .courier file).
+*/
+public protocol Coercer {
+    typealias CustomType
+    typealias DirectType
+
+    static func coerceInput(value: DirectType) throws -> CustomType
+    static func coerceOutput(value: CustomType) -> DirectType
 }
 
 public struct ReadError: ErrorType {

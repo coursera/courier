@@ -37,7 +37,7 @@ public struct @className: Serializable@if (syntax.isEquatable()) {, Equatable} {
   public static func readJSON(json: JSON) throws -> @className {
     return @(className)(
       @for(Field field: record.getFields()) {
-      @(syntax.escapeKeyword(field.getSchemaField().getName())): @(swifty.toGetAccessor("json[\"" + field.getSchemaField().getName() + "\"]", field.getType(), syntax.isOptional(field)))@if(!field_isLast){,}
+      @(syntax.escapeKeyword(field.getSchemaField().getName())): @(swifty.toGetAccessor("json[\"" + field.getSchemaField().getName() + "\"]", field))@if(!field_isLast){,}
       })
   }
 
@@ -51,10 +51,10 @@ public struct @className: Serializable@if (syntax.isEquatable()) {, Equatable} {
         @{String fieldName = syntax.escapeKeyword(field.getSchemaField().getName())}
         @if(syntax.isOptional(field)) {
           if let @fieldName = self.@(fieldName) {
-            dict["@(field.getSchemaField().getName())"] = @swifty.toSetAccessor(fieldName, field.getType())
+            dict["@(field.getSchemaField().getName())"] = @swifty.toSetAccessor(fieldName, field)
           }
         } else {
-          dict["@(field.getSchemaField().getName())"] = @swifty.toSetAccessor(fieldName, field.getType())
+          dict["@(field.getSchemaField().getName())"] = @swifty.toSetAccessor(fieldName, field)
         }
       }
 

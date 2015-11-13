@@ -1,9 +1,7 @@
 package org.coursera.courier.swift;
 
 import com.linkedin.data.schema.DataSchema;
-import com.linkedin.pegasus.generator.spec.ArrayTemplateSpec;
-import com.linkedin.pegasus.generator.spec.ClassTemplateSpec;
-import com.linkedin.pegasus.generator.spec.UnionTemplateSpec;
+import com.linkedin.pegasus.generator.spec.*;
 import org.coursera.courier.api.CourierMapTemplateSpec;
 
 import java.util.HashMap;
@@ -14,8 +12,8 @@ public class SwiftyJSON {
   private static final Map<DataSchema.Type, String> swiftyTypeAccessors;
   static {
     Map<DataSchema.Type, String> map = new HashMap<DataSchema.Type, String>();
-    map.put(DataSchema.Type.INT, "int"); // TODO(jbetz): just use Int32 here? (On a 64-bit platform, Int is the same size as Int64.)
-    map.put(DataSchema.Type.LONG, "int"); // TODO(jbetz): just use Int64 here? (On a 32-bit platform, Int is the same size as Int32.)
+    map.put(DataSchema.Type.INT, "int");
+    map.put(DataSchema.Type.LONG, "int");
     map.put(DataSchema.Type.FLOAT, "float");
     map.put(DataSchema.Type.DOUBLE, "double");
     map.put(DataSchema.Type.STRING, "string");
@@ -30,7 +28,7 @@ public class SwiftyJSON {
     swiftyTypeAccessors = map;
   }
 
-  private static final Map<DataSchema.Type, String> swiftyTypeIdentifiers;
+  private static final Map<DataSchema.Type, String> swiftyTypeEnumSymbols;
   static {
     Map<DataSchema.Type, String> map = new HashMap<DataSchema.Type, String>();
     map.put(DataSchema.Type.INT, ".Number");
@@ -46,7 +44,7 @@ public class SwiftyJSON {
     map.put(DataSchema.Type.UNION, ".Dictionary");
     map.put(DataSchema.Type.MAP, ".Dictionary");
     map.put(DataSchema.Type.ARRAY, ".Array");
-    swiftyTypeIdentifiers = map;
+    swiftyTypeEnumSymbols = map;
   }
 
   private SwiftSyntax syntax;
@@ -55,67 +53,94 @@ public class SwiftyJSON {
     this.syntax = syntax;
   }
 
-  /**
-   * See toGetAccessor, below.
-   */
   public String toGetAccessor(String anchor, UnionTemplateSpec.Member member) {
     ClassTemplateSpec type = member.getClassTemplateSpec();
-    return toGetAccessor(anchor, type, false);
+    // TODO(jbetz): Union members can have custom info.  We need to either pick up latest rest.li
+    // code or inspect the typeref.
+    return readTypeExpr(expr(anchor), type, null, false).toSwiftCode();
+  }
+
+  public String toGetAccessor(String anchor, RecordTemplateSpec.Field field) {
+    CustomInfoSpec customInfo = field.getCustomInfo();
+    return readTypeExpr(
+      expr(anchor), selectFieldType(field), customInfo, syntax.isOptional(field)).toSwiftCode();
   }
 
   /**
-   * Given an expression that evaluates to a SwiftyJson JSON type, and the Pegasus type is should
-   * be deserialized to, return a expression that evaluates to the deserialized Swift data binding
-   * type.
+   * Given an expression that evaluates to a SwiftyJson JSON type, and its Pegasus type
+   * return a expression that evaluates to the corresponding Swift data binding type.
+   *
+   * @param expr provides the expression that evaluates to a SwiftyJson JSON type.
+   * @param spec provides the pegasus type that the returned expression should toSwiftCode to.
+   * @param custom if non-null, provides the custom type info for provided spec
+   * @param isOptional if true, the provide expr must evaluate to an optional type and the returned
+   *                   expression will evaluate to an optional type.
    */
-  public String toGetAccessor(String anchor, ClassTemplateSpec spec, boolean isOptional) {
-    return readTypeExpr(expr(anchor), spec, isOptional).evaluated();
-  }
-
-  private Expr readTypeExpr(Expr expr, ClassTemplateSpec spec, boolean isOptional) {
+  private Expr readTypeExpr(Expr expr, ClassTemplateSpec spec, CustomInfoSpec custom, boolean isOptional) {
     DataSchema schema = spec.getSchema();
-    CheckedThrowExpr directAccessor = checkedTypeAccessorExpr(expr, spec, isOptional);
-    if (schema.isPrimitive() || schema.getType() == DataSchema.Type.FIXED) {
-      return directAccessor;
-    } else {
-      if (isOptional) {
-        Expr readClosure = readTypeExpr(expr("$0"), spec);
-        return directAccessor.apply(".map {" + readClosure.evaluated() + " }", readClosure);
+    Expr directAccessor = checkedTypeAccessorExpr(expr, schema, isOptional);
+
+    // A direct type is a type that is the same for SwiftyJson and our generated Swift data bindings.
+    boolean isDirectType = schema.isPrimitive() || schema.getType() == DataSchema.Type.FIXED;
+
+    if (isDirectType) {
+      if (custom != null) {
+        Expr coercer = expr(custom.getCoercerClass().getClassName());
+        if (isOptional) {
+          return directAccessor.map(coercer.coercerInput($0));
+        } else {
+          return coercer.coercerInput(directAccessor);
+        }
       } else {
-        return readTypeExpr(directAccessor, spec);
+        return directAccessor;
+      }
+    } else {
+      if (custom != null) {
+        Expr coercer = expr(custom.getCoercerClass().getClassName());
+        if (isOptional) {
+          return directAccessor.map(coercer.coercerInput(readTypeExpr($0, spec)));
+        } else {
+          return coercer.coercerInput(readTypeExpr(directAccessor, spec));
+        }
+      } else {
+        if (isOptional) {
+          return directAccessor.map(readTypeExpr($0, spec));
+        } else {
+          return readTypeExpr(directAccessor, spec);
+        }
       }
     }
   }
 
   private Expr readTypeExpr(Expr expr, ClassTemplateSpec spec) {
     DataSchema.Type schemaType = spec.getSchema().getType();
+    Expr className = expr(spec.getClassName());
     switch (schemaType) {
       case ENUM:
-        return expr(spec.getClassName()).apply(".read(" + expr.evaluated() + ")", expr, false);
+        return className.enumRead(expr);
       case RECORD:
       case UNION:
-        // readJSON throws
-        return checkedThrowExpr(spec.getClassName()).apply(".readJSON(" + expr.evaluated() + ")", expr);
+        return className.readJSON(expr);
       case MAP:
         CourierMapTemplateSpec mapSpec = (CourierMapTemplateSpec)spec;
-        Expr readValueClosure = readTypeExpr(expr("$0"), mapSpec.getValueClass(), false);
-        return expr.apply(".mapValues { " + readValueClosure.evaluated() + " }", readValueClosure);
+        ClassTemplateSpec valueSpec = selectMapValueType(mapSpec);
+        return expr.mapValues(readTypeExpr($0, valueSpec, mapSpec.getCustomInfo(), false));
       case ARRAY:
         ArrayTemplateSpec arraySpec = (ArrayTemplateSpec)spec;
-        Expr readItemClosure = readTypeExpr(expr("$0"), arraySpec.getItemClass(), false);
-        return expr.apply(".map { " + readItemClosure.evaluated() + " }", readItemClosure);
+        ClassTemplateSpec itemSpec = selectArrayItemsType(arraySpec);
+        return expr.map(readTypeExpr($0, itemSpec, arraySpec.getCustomInfo(), false));
       default:
         throw new IllegalArgumentException("unrecognized type: " + schemaType);
     }
   }
 
-  private CheckedThrowExpr checkedTypeAccessorExpr(Expr expr, ClassTemplateSpec spec, boolean isOptional) {
-    String typeIdentifier = typeIdentifier(spec);
-    String typeAccessor = typeAccessor(spec, isOptional);
+  private Expr checkedTypeAccessorExpr(Expr expr, DataSchema schema, boolean isOptional) {
+    Expr typeIdentifier = expr(typeEnumSymbol(schema));
+    String typeAccessor = typeAccessor(schema, isOptional);
     if (isOptional) {
-      return checkedThrowExpr(expr.apply(".optional(" + typeIdentifier + ")." + typeAccessor));
+      return expr.optional(typeIdentifier).dot(typeAccessor);
     } else {
-      return checkedThrowExpr(expr.apply(".required(" + typeIdentifier + ")." + typeAccessor));
+      return expr.required(typeIdentifier).dot(typeAccessor);
     }
   }
 
@@ -124,8 +149,8 @@ public class SwiftyJSON {
    *
    * E.g. a required string is accessed using the "stringValue" property.
    */
-  private String typeAccessor(ClassTemplateSpec spec, boolean isOptional) {
-    String type = typeAccessor(spec);
+  private String typeAccessor(DataSchema schema, boolean isOptional) {
+    String type = typeAccessor(schema);
     if (!isOptional) {
       return type + "Value";
     } else {
@@ -133,8 +158,8 @@ public class SwiftyJSON {
     }
   }
 
-  private String typeAccessor(ClassTemplateSpec spec) {
-    DataSchema.Type schemaType = spec.getSchema().getType();
+  private String typeAccessor(DataSchema schema) {
+    DataSchema.Type schemaType = schema.getType();
     String swiftyType = swiftyTypeAccessors.get(schemaType);
     if (swiftyType == null) {
       throw new IllegalArgumentException("unrecognized type: " + schemaType);
@@ -142,48 +167,102 @@ public class SwiftyJSON {
     return swiftyType;
   }
 
-  private String typeIdentifier(ClassTemplateSpec spec) {
-    DataSchema.Type schemaType = spec.getSchema().getType();
-    String swiftyType = swiftyTypeIdentifiers.get(schemaType);
+  private String typeEnumSymbol(DataSchema schema) {
+    DataSchema.Type schemaType = schema.getType();
+    String swiftyType = swiftyTypeEnumSymbols.get(schemaType);
     if (swiftyType == null) {
       throw new IllegalArgumentException("unrecognized type: " + schemaType);
     }
     return swiftyType;
   }
 
-  public String toSetAccessor(UnionTemplateSpec.Member member) {
-    ClassTemplateSpec type = member.getClassTemplateSpec();
-    return toSetAccessor("member", type);
+  public String toSetAccessor(String anchor, UnionTemplateSpec.Member member) {
+    // TODO(jbetz): apply custom type of union member
+    return writeTypeExpr(expr(anchor), member.getClassTemplateSpec()).toSwiftCode();
+  }
+
+  public String toSetAccessor(String anchor, RecordTemplateSpec.Field field) {
+    return writeTypeExpr(expr(anchor), selectFieldType(field), field.getCustomInfo()).toSwiftCode();
   }
 
   /**
-   * Given an expression that evaluates to a Swift data binding type, and the pegasus type of the
-   * data binding, return an expression that evaluates to the serialized SwiftyJson JSON type.
+   * Given an expression that evaluates to a Swift data binding type, and it's pegasus type,
+   * return an expression that evaluates to the corresponding SwiftyJson JSON type.
+   *
+   * @param expr provides the expression that evaluates to a SwiftyJson JSON type.
+   * @param spec provides the pegasus type that the returned expression should toSwiftCode to.
    */
-  public String toSetAccessor(String anchor, ClassTemplateSpec spec) {
+  private Expr writeTypeExpr(Expr expr, ClassTemplateSpec spec, CustomInfoSpec customInfo) {
+    if (customInfo != null) {
+      Expr coercer = expr(customInfo.getCoercerClass().getClassName());
+      return coercer.coercerOutput(writeTypeExpr(expr, spec));
+    } else {
+      return writeTypeExpr(expr, spec);
+    }
+  }
+
+  private Expr writeTypeExpr(Expr expr, ClassTemplateSpec spec) {
     DataSchema.Type schemaType = spec.getSchema().getType();
     switch (schemaType) {
       case ENUM:
-        return anchor + ".write()";
+        return expr.enumWrite();
       case RECORD:
       case UNION:
-        return anchor + ".writeData()";
+        return expr.writeData();
       case MAP:
         CourierMapTemplateSpec mapSpec = (CourierMapTemplateSpec)spec;
-        if (mapSpec.getValueClass().getSchema().isPrimitive()) {
-          return anchor;
+        ClassTemplateSpec valueSpec = selectMapValueType(mapSpec);
+        CustomInfoSpec customInfo = mapSpec.getCustomInfo();
+        if (customInfo != null) {
+          Expr coercer = expr(customInfo.getCoercerClass().getClassName());
+          return expr.mapValues(writeTypeExpr(coercer.coercerOutput($0), valueSpec));
         } else {
-          return anchor + ".mapValues { " + toSetAccessor("$0", mapSpec.getValueClass()) + " }";
+          if (valueSpec.getSchema().isPrimitive()) {
+            return expr;
+          } else {
+            return expr.mapValues(writeTypeExpr($0, valueSpec));
+          }
         }
       case ARRAY:
         ArrayTemplateSpec arraySpec = (ArrayTemplateSpec)spec;
-        if (arraySpec.getItemClass().getSchema().isPrimitive()) {
-          return anchor;
+        ClassTemplateSpec itemSpec = selectArrayItemsType(arraySpec);
+        CustomInfoSpec arrayCustomInfo = arraySpec.getCustomInfo();
+        if (arrayCustomInfo != null) {
+          Expr coercer = expr(arrayCustomInfo.getCoercerClass().getClassName());
+          return expr.map(writeTypeExpr(coercer.coercerOutput($0), itemSpec));
         } else {
-          return anchor + ".map { " + toSetAccessor("$0", arraySpec.getItemClass()) + " }";
+          if (itemSpec.getSchema().isPrimitive()) {
+            return expr;
+          } else {
+            return expr.map(writeTypeExpr($0, itemSpec));
+          }
         }
       default:
-        return anchor;
+        return expr;
+    }
+  }
+
+  // Determine the field type to use in bindings.
+  private ClassTemplateSpec selectFieldType(RecordTemplateSpec.Field field) {
+    return getDereferencedType(field.getCustomInfo(), field.getType());
+  }
+
+  private ClassTemplateSpec selectMapValueType(CourierMapTemplateSpec mapSpec) {
+    return getDereferencedType(mapSpec.getCustomInfo(), mapSpec.getValueClass());
+  }
+
+  private ClassTemplateSpec selectArrayItemsType(ArrayTemplateSpec arraySpec) {
+    return getDereferencedType(arraySpec.getCustomInfo(), arraySpec.getItemClass());
+  }
+
+  // If the customInfo is null, return the fallback, otherwise get the dereferenced custom schema
+  // type from the customInfo
+  private ClassTemplateSpec getDereferencedType(CustomInfoSpec customInfo, ClassTemplateSpec fallback) {
+    if (customInfo != null) {
+      DataSchema refSchema = customInfo.getCustomSchema().getDereferencedDataSchema();
+      return ClassTemplateSpec.createFromDataSchema(refSchema);
+    } else {
+      return fallback;
     }
   }
 
@@ -191,64 +270,104 @@ public class SwiftyJSON {
    * Utilities to track Swift "throws" propagation, since thrown errors must be explicitly
    * propagated at at each expression, including closures using "try".
    */
-
-  private static class Expr {
-    public final String expr;
-    public final boolean rethrows;
+  // TODO(jbetz): This should be made considerably more type-safe.
+  static class Expr {
+    private final String expr;
+    private final boolean directThrows; // This expression node directly throws
+    private final boolean containsThrow; // This expression contains a sub-expression that throws
+    private final boolean rethrows; // This expression "rethrows" (throws if it has a child expression that throws)
 
     public Expr(String expr) {
-      this(expr, true);
+      this(expr, false, false, false);
     }
 
-    public Expr(String expr, boolean rethrows) {
+    public Expr(String expr, boolean directlyThrows, boolean containsThrow, boolean rethrows) {
       this.expr = expr;
+      this.directThrows = directlyThrows;
+      this.containsThrow = containsThrow;
       this.rethrows = rethrows;
     }
 
-    public Expr apply(String invocation) {
-      return new Expr(expr + invocation);
+    public Expr map(Expr body) {
+      return apply("map", body).rethrows();
     }
 
-    public Expr apply(String invocation, Expr nestedExpr) {
-      return apply(invocation, nestedExpr, true);
+    public Expr mapValues(Expr body) {
+      return apply("mapValues", body).rethrows();
     }
 
-    // rethrows indicates if the applied method is a rethrows method (.map is, but Enum.read is
-    // not).
-    public Expr apply(String invocation, Expr nestedExpr, boolean rethrows) {
-      if (nestedExpr instanceof CheckedThrowExpr) {
-        return new CheckedThrowExpr(expr + invocation, rethrows);
-      }
-      return new Expr(expr + invocation, rethrows);
+    public Expr readJSON(Expr param) {
+      return call("readJSON", param).directlyThrows();
     }
 
-    public String evaluated() {
-      return expr;
-    }
-  }
-
-  private static class CheckedThrowExpr extends Expr {
-    public CheckedThrowExpr(String expr) {
-      super(expr);
+    public Expr writeData() {
+      return call("writeData");
     }
 
-    public CheckedThrowExpr(String expr, boolean rethrows) {
-      super(expr, rethrows);
+    public Expr enumRead(Expr param) {
+      return call("read", param);
     }
 
-    @Override
-    public CheckedThrowExpr apply(String invocation) {
-      return new CheckedThrowExpr(expr + invocation);
+    public Expr enumWrite() {
+      return call("write");
     }
 
-    @Override
-    public CheckedThrowExpr apply(String invocation, Expr nestedExpr) {
-      return new CheckedThrowExpr(expr + invocation);
+    public Expr coercerInput(Expr param) {
+      return call("coerceInput", param).directlyThrows();
     }
 
-    @Override
-    public String evaluated() {
-      if (rethrows) {
+    public Expr coercerOutput(Expr param) {
+      return call("coerceOutput", param);
+    }
+
+    public Expr optional(Expr param) {
+      return call("optional", param).directlyThrows();
+    }
+
+    public Expr required(Expr param) {
+      return call("required", param).directlyThrows();
+    }
+
+    public Expr directlyThrows() {
+      return new Expr(expr, true, true, rethrows);
+    }
+
+    public Expr rethrows() {
+      return new Expr(expr, directThrows, containsThrow, true);
+    }
+
+    public Expr dot(String member) {
+      return new Expr(expr + "." + member, false, containsThrow, true);
+    }
+
+    public Expr call(String method) {
+      return new Expr(
+        expr + "." + method + "()",
+        false,
+        containsThrow,
+        false);
+    }
+
+    // rethrows indicates if the calls method is a rethrows method (e.g.
+    // .map() is, but Enum.read is not).
+    public Expr call(String method, Expr argument1) {
+      return new Expr(
+        expr + "." + method + "(" + argument1.toSwiftCode() + ")",
+        false,
+        containsThrow || argument1.containsThrow,
+        false);
+    }
+
+    public Expr apply(String method, Expr body) {
+      return new Expr(
+        expr + "." + method + " { " + body.toSwiftCode() + " }",
+        false,
+        containsThrow || body.containsThrow,
+        false);
+    }
+
+    public String toSwiftCode() {
+      if (directThrows || (containsThrow && rethrows)) {
         return "try " + expr;
       } else {
         return expr;
@@ -256,19 +375,9 @@ public class SwiftyJSON {
     }
   }
 
-  private static CheckedThrowExpr checkedThrowExpr(String expr) {
-    return new CheckedThrowExpr(expr);
-  }
+  static Expr $0 = expr("$0");
 
-  private static CheckedThrowExpr checkedThrowExpr(Expr expr) {
-    if (expr instanceof CheckedThrowExpr) {
-      return (CheckedThrowExpr)expr;
-    }
-    return new CheckedThrowExpr(expr.evaluated());
-  }
-
-  private static Expr expr(String expr) {
+  static Expr expr(String expr) {
     return new Expr(expr);
   }
-
 }

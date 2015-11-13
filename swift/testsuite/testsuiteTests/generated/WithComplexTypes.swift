@@ -15,7 +15,7 @@ public struct WithComplexTypes: Serializable, Equatable {
     
     public let complexMap: [String: Simple]?
     
-    public let custom: Int?
+    public let custom: CustomInt?
     
     public init(
         record: Simple?,
@@ -24,7 +24,7 @@ public struct WithComplexTypes: Serializable, Equatable {
         array: [Int]?,
         map: [String: Int]?,
         complexMap: [String: Simple]?,
-        custom: Int?
+        custom: CustomInt?
     ) {
         self.record = record
         self.`enum` = `enum`
@@ -73,13 +73,13 @@ public struct WithComplexTypes: Serializable, Equatable {
     
     public static func readJSON(json: JSON) throws -> WithComplexTypes {
         return WithComplexTypes(
-            record: try json["record"].optional(.Dictionary).json.map {try Simple.readJSON($0) },
-            `enum`: try json["enum"].optional(.String).string.map {Fruits.read($0) },
-            union: try json["union"].optional(.Dictionary).json.map {try Union.readJSON($0) },
-            array: try json["array"].optional(.Array).array.map {try $0.map { try $0.required(.Number).intValue } },
-            map: try json["map"].optional(.Dictionary).dictionary.map {try $0.mapValues { try $0.required(.Number).intValue } },
-            complexMap: try json["complexMap"].optional(.Dictionary).dictionary.map {try $0.mapValues { try Simple.readJSON(try $0.required(.Dictionary).jsonValue) } },
-            custom: try json["custom"].optional(.Number).int
+            record: try json["record"].optional(.Dictionary).json.map { try Simple.readJSON($0) },
+            `enum`: try json["enum"].optional(.String).string.map { Fruits.read($0) },
+            union: try json["union"].optional(.Dictionary).json.map { try Union.readJSON($0) },
+            array: try json["array"].optional(.Array).array.map { try $0.map { try $0.required(.Number).intValue } },
+            map: try json["map"].optional(.Dictionary).dictionary.map { try $0.mapValues { try $0.required(.Number).intValue } },
+            complexMap: try json["complexMap"].optional(.Dictionary).dictionary.map { try $0.mapValues { try Simple.readJSON(try $0.required(.Dictionary).jsonValue) } },
+            custom: try json["custom"].optional(.Number).int.map { try CustomIntCoercer.coerceInput($0) }
         )
     }
     public func writeData() -> [String: AnyObject] {
@@ -103,7 +103,7 @@ public struct WithComplexTypes: Serializable, Equatable {
             dict["complexMap"] = complexMap.mapValues { $0.writeData() }
         }
         if let custom = self.custom {
-            dict["custom"] = custom
+            dict["custom"] = CustomIntCoercer.coerceOutput(custom)
         }
         return dict
     }

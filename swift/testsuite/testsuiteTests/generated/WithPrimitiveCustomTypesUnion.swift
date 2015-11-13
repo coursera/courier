@@ -37,7 +37,7 @@ public struct WithPrimitiveCustomTypesUnion: Serializable {
     
     public static func readJSON(json: JSON) throws -> WithPrimitiveCustomTypesUnion {
         return WithPrimitiveCustomTypesUnion(
-            union: try json["union"].optional(.Dictionary).json.map {try Union.readJSON($0) }
+            union: try json["union"].optional(.Dictionary).json.map { try Union.readJSON($0) }
         )
     }
     public func writeData() -> [String: AnyObject] {

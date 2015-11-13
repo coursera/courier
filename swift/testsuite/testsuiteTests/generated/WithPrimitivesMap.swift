@@ -37,13 +37,13 @@ public struct WithPrimitivesMap: Serializable, Equatable {
     
     public static func readJSON(json: JSON) throws -> WithPrimitivesMap {
         return WithPrimitivesMap(
-            ints: try json["ints"].optional(.Dictionary).dictionary.map {try $0.mapValues { try $0.required(.Number).intValue } },
-            longs: try json["longs"].optional(.Dictionary).dictionary.map {try $0.mapValues { try $0.required(.Number).intValue } },
-            floats: try json["floats"].optional(.Dictionary).dictionary.map {try $0.mapValues { try $0.required(.Number).floatValue } },
-            doubles: try json["doubles"].optional(.Dictionary).dictionary.map {try $0.mapValues { try $0.required(.Number).doubleValue } },
-            booleans: try json["booleans"].optional(.Dictionary).dictionary.map {try $0.mapValues { try $0.required(.Bool).boolValue } },
-            strings: try json["strings"].optional(.Dictionary).dictionary.map {try $0.mapValues { try $0.required(.String).stringValue } },
-            bytes: try json["bytes"].optional(.Dictionary).dictionary.map {try $0.mapValues { try $0.required(.String).stringValue } }
+            ints: try json["ints"].optional(.Dictionary).dictionary.map { try $0.mapValues { try $0.required(.Number).intValue } },
+            longs: try json["longs"].optional(.Dictionary).dictionary.map { try $0.mapValues { try $0.required(.Number).intValue } },
+            floats: try json["floats"].optional(.Dictionary).dictionary.map { try $0.mapValues { try $0.required(.Number).floatValue } },
+            doubles: try json["doubles"].optional(.Dictionary).dictionary.map { try $0.mapValues { try $0.required(.Number).doubleValue } },
+            booleans: try json["booleans"].optional(.Dictionary).dictionary.map { try $0.mapValues { try $0.required(.Bool).boolValue } },
+            strings: try json["strings"].optional(.Dictionary).dictionary.map { try $0.mapValues { try $0.required(.String).stringValue } },
+            bytes: try json["bytes"].optional(.Dictionary).dictionary.map { try $0.mapValues { try $0.required(.String).stringValue } }
         )
     }
     public func writeData() -> [String: AnyObject] {

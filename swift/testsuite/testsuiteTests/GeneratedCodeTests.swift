@@ -47,7 +47,7 @@ class GeneratedCodeTests: XCTestCase {
         let deserialized = try! WithCustomTypesArray.readJSON(json);
         
         let expected = WithCustomTypesArray(
-            ints: [1, 2, 3],
+            ints: [CustomInt(int: 1), CustomInt(int: 2), CustomInt(int: 3)],
             arrays: [[ Simple(message: "a1")]],
             maps: [["a": Simple(message: "m1")]],
             unions: [.IntMember(1), .StringMember("str"), .SimpleMember(Simple(message: "u1"))],
@@ -63,7 +63,7 @@ class GeneratedCodeTests: XCTestCase {
         let json = try! jsonFile("WithCustomTypesMap.json");
         let deserialized = try! WithCustomTypesMap.readJSON(json);
         
-        let expected = WithCustomTypesMap(ints: ["a": 1, "b": 2, "c": 3])
+        let expected = WithCustomTypesMap(ints: ["a": CustomInt(int: 1), "b": CustomInt(int: 2), "c": CustomInt(int: 3)])
         
         XCTAssertEqual(deserialized, expected)
         
@@ -188,7 +188,7 @@ class GeneratedCodeTests: XCTestCase {
             array: [1, 2],
             map: ["a": 1, "b": 2],
             complexMap: ["x": Simple(message: "complexMap")],
-            custom: 100)
+            custom: CustomInt(int: 100))
         XCTAssertEqual(deserialized, expected)
         
         let serialized = deserialized.writeJSON();
@@ -320,5 +320,5 @@ class GeneratedCodeTests: XCTestCase {
         array: [1, 2],
         map: ["a": 1, "b": 2],
         complexMap: ["x": Simple(message: "complexMap")],
-        custom: 100)
+        custom: CustomInt(int: 100))
 }

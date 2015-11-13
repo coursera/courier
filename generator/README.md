@@ -28,3 +28,5 @@ TODO
 * Testability: Utility to automatically populate data for models to ease testing (in a consistent manner)
 * Generate case classes for typerefs when requested, e.g. for `@scala.caseclass typeref Foo = string`,
   generate `Foo(value: string)`. Support `@scala.anyval` as well.
+* Add support for typesafe properties?  See how flatbuffers does attributes.  We could
+  potentially build this into the schema system, but with more type safety that flatbuffers has.

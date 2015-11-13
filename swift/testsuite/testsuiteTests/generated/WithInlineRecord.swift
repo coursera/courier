@@ -17,8 +17,8 @@ public struct WithInlineRecord: Serializable {
     
     public static func readJSON(json: JSON) throws -> WithInlineRecord {
         return WithInlineRecord(
-            inline: try json["inline"].optional(.Dictionary).json.map {try InlineRecord.readJSON($0) },
-            inlineOptional: try json["inlineOptional"].optional(.Dictionary).json.map {try InlineOptionalRecord.readJSON($0) }
+            inline: try json["inline"].optional(.Dictionary).json.map { try InlineRecord.readJSON($0) },
+            inlineOptional: try json["inlineOptional"].optional(.Dictionary).json.map { try InlineOptionalRecord.readJSON($0) }
         )
     }
     public func writeData() -> [String: AnyObject] {

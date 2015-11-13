@@ -40,7 +40,7 @@ public class SwiftProperties {
 
     // TODO(jbetz): Remove as soon as we've migrated away from this usage pattern.
     /**
-     * WARNING: this mode is unsafe when used in conjunction with projections, as a read/modify/write
+     * WARNING: this mode is unsafe when used in conjunction with projections, as a read/modify/coercerOutput
      * pattern on a projection could result in the default value of primitives (e.g. 0 for ints)
      * to be accidentally written.
      *

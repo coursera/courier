@@ -73,7 +73,7 @@ public struct WithPrimitivesUnion: Serializable {
     
     public static func readJSON(json: JSON) throws -> WithPrimitivesUnion {
         return WithPrimitivesUnion(
-            union: try json["union"].optional(.Dictionary).json.map {try Union.readJSON($0) }
+            union: try json["union"].optional(.Dictionary).json.map { try Union.readJSON($0) }
         )
     }
     public func writeData() -> [String: AnyObject] {

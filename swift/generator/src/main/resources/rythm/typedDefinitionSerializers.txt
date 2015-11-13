@@ -24,7 +24,7 @@ public func writeData() -> [String: AnyObject] {
     @for(Member member: union.getMembers()) {
     @{ String unionMemberName = syntax.toUnionMemberName(member.getClassTemplateSpec()) }
       case .@(unionMemberName)(let member):
-        return ["typeName": "@(memberKeyToTypeName.get(member.getSchema().getUnionMemberKey()))", "definition": @swifty.toSetAccessor(member)];
+        return ["typeName": "@(memberKeyToTypeName.get(member.getSchema().getUnionMemberKey()))", "definition": @swifty.toSetAccessor("member", member)];
     }
     case .UNKNOWN$(let dict):
       return dict

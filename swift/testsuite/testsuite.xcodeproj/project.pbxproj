@@ -68,6 +68,7 @@
 		21BBBBB01BD21904000EA1E5 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 21BBBBAE1BD21904000EA1E5 /* Main.storyboard */; };
 		21BBBBBB1BD21905000EA1E5 /* GeneratedCodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21BBBBBA1BD21905000EA1E5 /* GeneratedCodeTests.swift */; };
 		21C09B071BEB2A45008031F2 /* CourierRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21C09B061BEB2A45008031F2 /* CourierRuntime.swift */; settings = {ASSET_TAGS = (); }; };
+		21D79D3C1BF5B26C00F4630B /* Coercers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21D79D3B1BF5B26C00F4630B /* Coercers.swift */; settings = {ASSET_TAGS = (); }; };
 		F6C1E81A442264987CA2493B /* Pods_testsuite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E0CB5A114018337F6842367 /* Pods_testsuite.framework */; };
 /* End PBXBuildFile section */
 
@@ -148,6 +149,7 @@
 		21BBBBBA1BD21905000EA1E5 /* GeneratedCodeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratedCodeTests.swift; sourceTree = "<group>"; };
 		21BBBBBC1BD21905000EA1E5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		21C09B061BEB2A45008031F2 /* CourierRuntime.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CourierRuntime.swift; path = generated/CourierRuntime.swift; sourceTree = "<group>"; };
+		21D79D3B1BF5B26C00F4630B /* Coercers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Coercers.swift; sourceTree = "<group>"; };
 		A9B9DDD53706A9AF2DDDB37E /* Pods-testsuite.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-testsuite.debug.xcconfig"; path = "Pods/Target Support Files/Pods-testsuite/Pods-testsuite.debug.xcconfig"; sourceTree = "<group>"; };
 		F83F2FBDFF068FC1D655B4D7 /* Pods-testsuite.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-testsuite.release.xcconfig"; path = "Pods/Target Support Files/Pods-testsuite/Pods-testsuite.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -270,6 +272,7 @@
 		21BBBBB91BD21905000EA1E5 /* testsuiteTests */ = {
 			isa = PBXGroup;
 			children = (
+				21D79D3B1BF5B26C00F4630B /* Coercers.swift */,
 				211028831BDAE4FA00DB6F58 /* generated */,
 				21BBBBBA1BD21905000EA1E5 /* GeneratedCodeTests.swift */,
 				21BBBBBC1BD21905000EA1E5 /* Info.plist */,
@@ -504,6 +507,7 @@
 				210CE9A51BE9EACF000EC414 /* DefaultLiteralEscaping.swift in Sources */,
 				210CE9CA1BE9EACF000EC414 /* WithOptionalPrimitiveDefaultNone.swift in Sources */,
 				210CE9C51BE9EACF000EC414 /* WithInlineRecord.swift in Sources */,
+				21D79D3C1BF5B26C00F4630B /* Coercers.swift in Sources */,
 				210CE9C11BE9EACF000EC414 /* WithDateTime.swift in Sources */,
 				210CE9D21BE9EACF000EC414 /* WithPrimitives.swift in Sources */,
 				210CE9B91BE9EACF000EC414 /* WithComplexTypes.swift in Sources */,

@@ -61,19 +61,19 @@ public struct WithTypedKeyMap: Serializable, Equatable {
     
     public static func readJSON(json: JSON) throws -> WithTypedKeyMap {
         return WithTypedKeyMap(
-            ints: try json["ints"].optional(.Dictionary).dictionary.map {try $0.mapValues { try $0.required(.String).stringValue } },
-            longs: try json["longs"].optional(.Dictionary).dictionary.map {try $0.mapValues { try $0.required(.String).stringValue } },
-            floats: try json["floats"].optional(.Dictionary).dictionary.map {try $0.mapValues { try $0.required(.String).stringValue } },
-            doubles: try json["doubles"].optional(.Dictionary).dictionary.map {try $0.mapValues { try $0.required(.String).stringValue } },
-            booleans: try json["booleans"].optional(.Dictionary).dictionary.map {try $0.mapValues { try $0.required(.String).stringValue } },
-            strings: try json["strings"].optional(.Dictionary).dictionary.map {try $0.mapValues { try $0.required(.String).stringValue } },
-            bytes: try json["bytes"].optional(.Dictionary).dictionary.map {try $0.mapValues { try $0.required(.String).stringValue } },
-            record: try json["record"].optional(.Dictionary).dictionary.map {try $0.mapValues { try $0.required(.String).stringValue } },
-            array: try json["array"].optional(.Dictionary).dictionary.map {try $0.mapValues { try $0.required(.String).stringValue } },
-            `enum`: try json["enum"].optional(.Dictionary).dictionary.map {try $0.mapValues { try $0.required(.String).stringValue } },
-            custom: try json["custom"].optional(.Dictionary).dictionary.map {try $0.mapValues { try $0.required(.String).stringValue } },
-            fixed: try json["fixed"].optional(.Dictionary).dictionary.map {try $0.mapValues { try $0.required(.String).stringValue } },
-            inlineRecord: try json["inlineRecord"].optional(.Dictionary).dictionary.map {try $0.mapValues { try $0.required(.String).stringValue } }
+            ints: try json["ints"].optional(.Dictionary).dictionary.map { try $0.mapValues { try $0.required(.String).stringValue } },
+            longs: try json["longs"].optional(.Dictionary).dictionary.map { try $0.mapValues { try $0.required(.String).stringValue } },
+            floats: try json["floats"].optional(.Dictionary).dictionary.map { try $0.mapValues { try $0.required(.String).stringValue } },
+            doubles: try json["doubles"].optional(.Dictionary).dictionary.map { try $0.mapValues { try $0.required(.String).stringValue } },
+            booleans: try json["booleans"].optional(.Dictionary).dictionary.map { try $0.mapValues { try $0.required(.String).stringValue } },
+            strings: try json["strings"].optional(.Dictionary).dictionary.map { try $0.mapValues { try $0.required(.String).stringValue } },
+            bytes: try json["bytes"].optional(.Dictionary).dictionary.map { try $0.mapValues { try $0.required(.String).stringValue } },
+            record: try json["record"].optional(.Dictionary).dictionary.map { try $0.mapValues { try $0.required(.String).stringValue } },
+            array: try json["array"].optional(.Dictionary).dictionary.map { try $0.mapValues { try $0.required(.String).stringValue } },
+            `enum`: try json["enum"].optional(.Dictionary).dictionary.map { try $0.mapValues { try $0.required(.String).stringValue } },
+            custom: try json["custom"].optional(.Dictionary).dictionary.map { try $0.mapValues { try $0.required(.String).stringValue } },
+            fixed: try json["fixed"].optional(.Dictionary).dictionary.map { try $0.mapValues { try $0.required(.String).stringValue } },
+            inlineRecord: try json["inlineRecord"].optional(.Dictionary).dictionary.map { try $0.mapValues { try $0.required(.String).stringValue } }
         )
     }
     public func writeData() -> [String: AnyObject] {

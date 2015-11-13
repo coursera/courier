@@ -3,7 +3,7 @@ import SwiftyJSON
 
 public struct WithCustomTypesArray: Serializable, Equatable {
     
-    public let ints: [Int]?
+    public let ints: [CustomInt]?
     
     public let arrays: [[Simple]]?
     
@@ -14,7 +14,7 @@ public struct WithCustomTypesArray: Serializable, Equatable {
     public let fixed: [String]?
     
     public init(
-        ints: [Int]?,
+        ints: [CustomInt]?,
         arrays: [[Simple]]?,
         maps: [[String: Simple]]?,
         unions: [WithCustomTypesArrayUnion]?,
@@ -29,17 +29,17 @@ public struct WithCustomTypesArray: Serializable, Equatable {
     
     public static func readJSON(json: JSON) throws -> WithCustomTypesArray {
         return WithCustomTypesArray(
-            ints: try json["ints"].optional(.Array).array.map {try $0.map { try $0.required(.Number).intValue } },
-            arrays: try json["arrays"].optional(.Array).array.map {try $0.map { try $0.required(.Array).arrayValue.map { try Simple.readJSON(try $0.required(.Dictionary).jsonValue) } } },
-            maps: try json["maps"].optional(.Array).array.map {try $0.map { try $0.required(.Dictionary).dictionaryValue.mapValues { try Simple.readJSON(try $0.required(.Dictionary).jsonValue) } } },
-            unions: try json["unions"].optional(.Array).array.map {try $0.map { try WithCustomTypesArrayUnion.readJSON(try $0.required(.Dictionary).jsonValue) } },
-            fixed: try json["fixed"].optional(.Array).array.map {try $0.map { try $0.required(.String).stringValue } }
+            ints: try json["ints"].optional(.Array).array.map { try $0.map { try CustomIntCoercer.coerceInput(try $0.required(.Number).intValue) } },
+            arrays: try json["arrays"].optional(.Array).array.map { try $0.map { try $0.required(.Array).arrayValue.map { try Simple.readJSON(try $0.required(.Dictionary).jsonValue) } } },
+            maps: try json["maps"].optional(.Array).array.map { try $0.map { try $0.required(.Dictionary).dictionaryValue.mapValues { try Simple.readJSON(try $0.required(.Dictionary).jsonValue) } } },
+            unions: try json["unions"].optional(.Array).array.map { try $0.map { try WithCustomTypesArrayUnion.readJSON(try $0.required(.Dictionary).jsonValue) } },
+            fixed: try json["fixed"].optional(.Array).array.map { try $0.map { try $0.required(.String).stringValue } }
         )
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]
         if let ints = self.ints {
-            dict["ints"] = ints
+            dict["ints"] = ints.map { CustomIntCoercer.coerceOutput($0) }
         }
         if let arrays = self.arrays {
             dict["arrays"] = arrays.map { $0.map { $0.writeData() } }

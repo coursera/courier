@@ -3,23 +3,23 @@ import SwiftyJSON
 
 public struct WithCustomIntWrapper: Serializable {
     
-    public let wrapper: Int?
+    public let wrapper: CustomInt?
     
     public init(
-        wrapper: Int?
+        wrapper: CustomInt?
     ) {
         self.wrapper = wrapper
     }
     
     public static func readJSON(json: JSON) throws -> WithCustomIntWrapper {
         return WithCustomIntWrapper(
-            wrapper: try json["wrapper"].optional(.Number).int
+            wrapper: try json["wrapper"].optional(.Number).int.map { try CustomIntCoercer.coerceInput($0) }
         )
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]
         if let wrapper = self.wrapper {
-            dict["wrapper"] = wrapper
+            dict["wrapper"] = CustomIntCoercer.coerceOutput(wrapper)
         }
         return dict
     }
