@@ -1,0 +1,14 @@
+{
+  "name": "WithDateTime",
+  "namespace": "org.coursera.records.test",
+  "type": "record",
+  "fields": [
+    {
+      "name": "createdAt",
+      "type": "org.coursera.customtypes.DateTime"
+    }
+  ],
+  "swift": {
+    "equatable": true
+  }
+}

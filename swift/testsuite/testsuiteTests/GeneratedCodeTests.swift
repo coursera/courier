@@ -195,6 +195,17 @@ class GeneratedCodeTests: XCTestCase {
         assertSameJsObject(json.rawString()!, actual: serialized.rawString()!)
     }
     
+    func testDateTimeCoercer() {
+        let json = try! jsonFile("WithDateTime.json");
+        let deserialized = try! WithDateTime.readJSON(json);
+        
+        let expected = WithDateTime(createdAt: NSDate(timeIntervalSince1970: 1420070400))
+        XCTAssertEqual(deserialized.createdAt, expected.createdAt)
+        
+        let serialized = deserialized.writeJSON();
+        assertSameJsObject(json.rawString()!, actual: serialized.rawString()!)
+    }
+    
     func testDataTreeWritable() {
         let anyObject = withComplexTypesFixture.writeData()
         if let record = anyObject["record"] as? [String: String] {

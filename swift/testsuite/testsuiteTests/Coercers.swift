@@ -47,10 +47,10 @@ public struct NSDateCoercer: Coercer {
     public typealias DirectType = Int
     
     public static func coerceInput(value: Int) throws -> NSDate {
-        return NSDate(timeIntervalSince1970: Double(value * 1000))
+        return NSDate(timeIntervalSince1970: Double(value) / 1000)
     }
     
     public static func coerceOutput(value: NSDate) -> Int {
-        return Int(value.timeIntervalSince1970) / 1000
+        return Int(value.timeIntervalSince1970 * 1000)
     }
 }
