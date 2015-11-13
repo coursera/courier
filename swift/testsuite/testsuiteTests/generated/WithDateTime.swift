@@ -3,23 +3,23 @@ import SwiftyJSON
 
 public struct WithDateTime: Serializable {
     
-    public let time: Int?
+    public let time: NSDate?
     
     public init(
-        time: Int?
+        time: NSDate?
     ) {
         self.time = time
     }
     
     public static func readJSON(json: JSON) throws -> WithDateTime {
         return WithDateTime(
-            time: try json["time"].optional(.Number).int
+            time: try json["time"].optional(.Number).int.map { try NSDateCoercer.coerceInput($0) }
         )
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]
         if let time = self.time {
-            dict["time"] = time
+            dict["time"] = NSDateCoercer.coerceOutput(time)
         }
         return dict
     }

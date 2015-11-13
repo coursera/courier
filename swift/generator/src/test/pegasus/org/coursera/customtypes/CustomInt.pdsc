@@ -3,10 +3,6 @@
   "namespace": "org.coursera.customtypes",
   "type": "typeref",
   "ref": "int",
-  "scala": {
-    "class": "org.coursera.courier.generator.customtypes.CustomInt",
-    "coercerClass": "org.coursera.courier.generator.customtypes.CustomIntCoercer"
-  },
   "swift": {
     "class": "Coercers.CustomInt",
     "coercerClass": "Coercers.CustomIntCoercer"

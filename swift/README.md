@@ -13,7 +13,7 @@ Then run the generator using:
 java -jar generator/build/libs/courier-swift-generator-<version>.jar targetPath resolverPath sourcePath1[:sourcePath2]+
 ```
 
-For example, if you have `.pdsc` or `.courier` files in a `pegasus` directory, and wish to generate 
+For example, if you have `.pdsc` or `.courier` files in a `pegasus` directory, and wish to generate
 `.swift` files into a `swift` directory, run:
 
 ```
@@ -29,7 +29,7 @@ Getting started with Xcode
 
 Add SwiftyJSON to your Xcode project (https://github.com/SwiftyJSON/SwiftyJSON#integration):
 
-If you use Cocopods, update your Podfile to include SwiftyJSON, e.g.: 
+If you use Cocopods, update your Podfile to include SwiftyJSON, e.g.:
 
 ```
 platform :osx, '10.10'
@@ -213,6 +213,86 @@ let user = example.User()
 
 Insignificant namespace parts (such as the "org" in the above example) are ignored.
 
+Custom Types and Coercers
+-------------------------
+
+Custom Types allow any Scala type to be bound to any pegasus primitive type.
+
+For example, say a schema has been defined to represent a "date time" as a unix timestamp long:
+
+```json
+{
+  "name": "DateTime",
+  "namespace": "org.example",
+  "type": "typeref",
+  "ref": "long"
+}
+```
+
+And we want to use `NSDate` in our Swift code to represent this type.
+
+First, we would write a coercer with the `Coercer` protocol does implements necessary conversion
+functions:
+
+```swift
+public struct NSDateCoercer: Coercer {
+    public typealias CustomType = NSDate
+    public typealias DirectType = Int
+
+    public static func coerceInput(value: Int) throws -> NSDate {
+        return NSDate(timeIntervalSince1970: Double(value * 1000))
+    }
+
+    public static func coerceOutput(value: NSDate) -> Int {
+        return Int(value.timeIntervalSince1970) / 1000
+    }
+}
+```
+
+Then we register both the coercer and the `NSDate` class in the schema:
+
+```json
+{
+  "name": "DateTime",
+  "namespace": "org.example",
+  "type": "typeref",
+  "ref": "long",
+  "swift": {
+    "class": "Foundation.NSDate",
+    "coercerClass": "Coercers.NSDateCoercer"
+  }
+}
+```
+
+Once this has been done, a schema using this type, e.g.:
+
+```json
+{
+  "name": "WithDateTime",
+  "namespace": "org.example",
+  "type": "record",
+  "fields": [
+    {
+      "name": "createdAt",
+      "type": "DateTime"
+    }
+  ]
+}
+```
+
+will be generated to Swift as:
+
+```swift
+public class WithDateTime: Serializable {
+  let createdAt: NSDate
+
+  // ...
+}
+```
+
+And `readJSON` and `writeJSON` will call the conversion methods on `NSDateCoercer` coercer when reading
+and writing JSON.
+
 JSON Serialization
 ------------------
 
@@ -231,10 +311,8 @@ NSCoding Serialization
 ----------------------
 
 ```swift
-let json = JSON("{ \"body\": \"Hello Pegasus!\"}")
-let message = Message.readJSON(json)
-
 // serialize to NSData:
+let message = Message(...)
 let archived = NSKeyedArchiver.archivedDataWithRootObject(message.writeData())
 
 // deserialize from NSData:
@@ -248,7 +326,7 @@ if let unarchived = NSKeyedUnarchiver.unarchiveObjectWithData(archived) as? [Str
 Binary Protocols
 ----------------
 
-TODO: Implement PSON or one of the other wire format binary protocols used by the Pegasus ecosystem. 
+TODO: Implement PSON or one of the other wire format binary protocols used by the Pegasus ecosystem.
 
 
 Runtime library
@@ -258,7 +336,7 @@ All generated swift bindings depend on a `CourierRuntime.swift` class. This clas
 SwiftyJSON and Foundation classes to define minimal set of functions used by the generator to
 produce clean source code.
 
-This 
+This
 
 Building from source
 --------------------
@@ -289,7 +367,7 @@ the project and run `Test` (command-U).
 TODO
 ----
 
-* [ ] Look into adding NSCoding support (see: 
+* [ ] Look into adding NSCoding support (see:
   http://swiftandpainless.com/nscoding-and-swift-structs/?utm_campaign=Swift+Developer+Weekly&utm_medium=email&utm_source=Swift_Developer_Weekly_27
   and https://github.com/nicklockwood/AutoCoding)
 * [ ] Implement namespace handling strategy (details below)

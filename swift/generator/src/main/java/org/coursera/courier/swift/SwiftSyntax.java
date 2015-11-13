@@ -249,7 +249,7 @@ public class SwiftSyntax {
         } else {
           // TODO(jbetz): try! should be avoided. Is there anything reasonable we can do instead
           // given that swift does not allow use to propagate errors in initializers?
-          return "try! " + SwiftyJSON.expr(coercer).coercerInput(SwiftyJSON.expr(uncoerced)).toSwiftCode();
+          return SwiftyJSON.expr(coercer).coercerInput(SwiftyJSON.expr(uncoerced)).toSwiftCode().replaceFirst("try", "try!");
         }
       } else {
         fieldType = field.getType();

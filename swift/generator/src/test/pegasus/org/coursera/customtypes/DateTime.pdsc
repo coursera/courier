@@ -3,12 +3,8 @@
   "namespace": "org.coursera.customtypes",
   "type": "typeref",
   "ref": "long",
-  "scala": {
-    "class": "org.joda.DateTime",
-    "coercerClass": "org.coursera.coercers.common.DateTimeCoercer"
-  },
-  "android": {
-    "class": "org.joda.time.DateTime",
-    "coercerClass": "org.coursera.courier.android.adapters.DateTimeAdapter"
+  "swift": {
+    "class": "Foundation.NSDate",
+    "coercerClass": "Coercers.NSDateCoercer"
   }
 }

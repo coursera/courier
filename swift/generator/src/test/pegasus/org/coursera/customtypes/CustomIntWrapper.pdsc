@@ -3,8 +3,8 @@
   "namespace": "org.coursera.customtypes",
   "type": "typeref",
   "ref": "org.coursera.customtypes.CustomInt",
-  "scala": {
-    "class": "org.coursera.courier.generator.customtypes.CustomIntWrapper",
-    "coercerClass": "org.coursera.courier.generator.customtypes.CustomIntWrapperCoercer"
+  "swift": {
+    "class": "Coercers.CustomIntWrapper",
+    "coercerClass": "Coercers.CustomIntWrapperCoercer"
   }
 }
