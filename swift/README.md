@@ -216,7 +216,7 @@ Insignificant namespace parts (such as the "org" in the above example) are ignor
 Custom Types and Coercers
 -------------------------
 
-Custom Types allow any Scala type to be bound to any pegasus primitive type.
+Custom Types allow any Swift type to be bound to any pegasus primitive type.
 
 For example, say a schema has been defined to represent a "date time" as a unix timestamp long:
 
