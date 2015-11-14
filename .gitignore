@@ -29,3 +29,7 @@ project/plugins/project/
 *.iml
 *.ipr
 *.iws
+
+#
+.arcconfig
+.arclint
