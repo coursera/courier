@@ -21,6 +21,7 @@ import Keys._
 import org.coursera.courier.sbt.Sonatype
 import play.twirl.sbt.SbtTwirl
 import play.twirl.sbt.Import.TwirlKeys
+import com.simplytyped.Antlr4Plugin._
 
 /**
  * SBT project for Courier.
@@ -91,22 +92,24 @@ object Courier extends Build with OverridablePublishSettings {
       dependencyOverrides += ExternalDependencies.ApacheCommons.io)
 
   lazy val grammar = Project(id = "courier-grammar", base = file("grammar"))
-    .settings(generatorVersionSettings)
+    .settings(antlr4Settings)
+    .settings(antlr4PackageName in Antlr4 := Some("org.coursera.courier.grammar"))
     .settings(
+      autoScalaLibrary := false,
+      crossPaths := false,
       libraryDependencies ++= Seq(
         ExternalDependencies.Pegasus.data,
         ExternalDependencies.JUnit.junit,
-        ExternalDependencies.Scalatest.scalatest,
+        ExternalDependencies.JUnitInterface.junitInterface,
         ExternalDependencies.ApacheCommons.lang),
       dependencyOverrides += ExternalDependencies.ApacheCommons.io,
+      testOptions in Test += Tests.Argument(TestFrameworks.JUnit, "-q", "-v"),
       testOptions in Test += Tests.Setup { () =>
-        System.setProperty("project.dir", baseDirectory.value.getAbsolutePath )
+        System.setProperty("project.dir", baseDirectory.value.getAbsolutePath)
       })
-    .settings(
-      libraryDependencies ++=
-        ExternalDependencies.ScalaParserCombinators.dependencies(scalaVersion.value))
 
   lazy val generatorApi = Project(id = "courier-generator-api", base = file("generator-api"))
+    .dependsOn(grammar)
     .settings(
       autoScalaLibrary := false,
       crossPaths := false,
@@ -138,7 +141,6 @@ object Courier extends Build with OverridablePublishSettings {
 
   lazy val courierSbtPlugin = Project(id = "courier-sbt-plugin", base = file("sbt-plugin"))
     .dependsOn(generator)
-    .aggregate(generator)
     .settings(pluginVersionSettings)
     //.settings(libraryDependencies += "com.github.eirslett" %% "sbt-slf4j" % "0.1")
     .settings(
@@ -152,16 +154,16 @@ object Courier extends Build with OverridablePublishSettings {
   // to avoid build failures that would happen if we tried to publish the sbt plugin with scala
   // 2.11.
   def publishCommands(publishCommand: String) =
-    s";++$sbtScalaVersion;project courier-sbt-plugin;$publishCommand" +
-    s";++$sbtScalaVersion;project courier-grammar;$publishCommand" +
-    s";++$currentScalaVersion;project courier-generator;$publishCommand" +
-    s";++$currentScalaVersion;project courier-grammar;$publishCommand" +
+    s";project courier-grammar;$publishCommand" + // java project, so we do not cross build
     s";project courier-generator-api;$publishCommand" + // java project, so we do not cross build
+    s";++$sbtScalaVersion;project courier-generator;$publishCommand" +
+    s";++$currentScalaVersion;project courier-generator;$publishCommand" +
+    s";++$sbtScalaVersion;project courier-sbt-plugin;$publishCommand" +
     s";++$sbtScalaVersion;project courier-runtime;$publishCommand" +
     s";++$currentScalaVersion;project courier-runtime;$publishCommand"
 
   lazy val root = Project(id = "courier", base = file("."))
-    .aggregate(generator, runtime, courierSbtPlugin, generatorTest)
+    .aggregate(generator, grammar, runtime, courierSbtPlugin, generatorTest)
     .settings(runtimeVersionSettings)
     .settings(packagedArtifacts := Map.empty) // disable publish for root aggregate module
     .settings(
@@ -205,6 +207,11 @@ object Courier extends Build with OverridablePublishSettings {
     object JUnit {
       val version = "4.11"
       val junit = "junit" % "junit" % version % "test"
+    }
+
+    object JUnitInterface {
+      val version = "0.10"
+      val junitInterface = "com.novocode" % "junit-interface" % version % "test"
     }
 
     object Scalatest {

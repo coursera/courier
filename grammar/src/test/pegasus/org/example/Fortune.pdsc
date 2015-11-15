@@ -16,6 +16,19 @@
     {
       "name": "createdAt",
       "type": "org.example.common.DateTime"
+    },
+    {
+      "name": "keyedMap",
+      "type": { "type": "map", "keys": "Note", "values": "Note" }
+    },
+    {
+      "name": "namespace",
+      "type": { "type": "array", "items": "string" },
+      "default": ["org", "example"]
+    },
+    {
+      "name": "escaped",
+      "type": "record"
     }
   ]
 }

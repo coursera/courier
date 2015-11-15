@@ -172,14 +172,14 @@ object InlineStringCodec {
   val instance = new InlineStringCodec()
 
   /**
-   * Returns the deserialized string value, either a primitive Scala type, a [[ByteString]],
-   * a [[DataMap]] or a [[DataList]], depending on the schema provided.
-   * Throws an [[IOException]] or [[NumberFormatException]] if deserialization
+   * Returns the deserialized string value, either a primitive Scala type, a `ByteString`,
+   * a `DataMap` or a `DataList`, depending on the schema provided.
+   * Throws an `IOException` or `NumberFormatException` if deserialization
    * fails.
    *
    * For primitive types Scala's built in primitive serializiation/deserialization is used.
-   * For [[ByteString]], "avro string" format is used.
-   * For complex types, [[InlineStringCodec]] is used.
+   * For `ByteString`, "avro string" format is used.
+   * For complex types, `InlineStringCodec` is used.
    */
   def stringToData(key: String, schema: DataSchema): AnyRef = {
     schema.getDereferencedDataSchema match {
@@ -220,12 +220,12 @@ object InlineStringCodec {
   }
 
   /**
-   * Returns the serialized value of the given data. Accepts primitive Scala types, [[ByteString]],
-   * [[DataMap]] and [[DataList]].
+   * Returns the serialized value of the given data. Accepts primitive Scala types, `ByteString`,
+   * `DataMap` and `DataList`.
    *
    * For primitive types Scala's built in primitive serializiation/deserialization is used.
-   * For [[ByteString]], "avro string" format is used.
-   * For complex types, [[InlineStringCodec]] is used.
+   * For `ByteString`, "avro string" format is used.
+   * For complex types, `InlineStringCodec` is used.
    */
   def dataToString(any: AnyRef): String = {
     any match {

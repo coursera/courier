@@ -14,9 +14,16 @@
  limitations under the License.
  */
 
-package org.coursera.courier.grammar
+package org.coursera.courier.grammar;
 
-import java.io.IOException
+import com.linkedin.data.schema.DataSchemaResolver;
+import com.linkedin.data.schema.SchemaParser;
+import com.linkedin.data.schema.SchemaParserFactory;
 
-case class CourierParseError(line: Int, column: Int, error: String)
-  extends IOException(s"$error [line: $line, " + s"column: $column]")
+public class CourierSchemaParserFactory extends SchemaParserFactory {
+
+  @Override
+  public SchemaParser create(DataSchemaResolver resolver) {
+    return new CourierSchemaParser(resolver);
+  }
+}

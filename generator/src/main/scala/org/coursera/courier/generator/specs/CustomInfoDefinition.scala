@@ -35,7 +35,7 @@ case class CustomInfoDefinition(spec: CustomInfoSpec) {
   /**
    * Returns all custom infos to register to initialize this custom info.
    *
-   * When [[SingleElementCaseClassCoercer]] is used, custom infos may depend on other custom infos.
+   * When `SingleElementCaseClassCoercer` is used, custom infos may depend on other custom infos.
    *
    * Dependent custom info are returned before custom infos that depend on them.
    */

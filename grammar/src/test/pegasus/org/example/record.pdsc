@@ -1,0 +1,7 @@
+{
+  "type": "record",
+  "name": "record",
+  "namespace": "org.example",
+  "fields": [
+  ]
+}

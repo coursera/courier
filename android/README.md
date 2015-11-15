@@ -308,6 +308,10 @@ TODO
 
 **DONE!** Add Immutable type bindings
 
+### Migrate to a streaming Jackson parser
+
+Jackson can easily outperform GSON, we should migrate to it.
+
 ### Add validation support
 
 Not sure how to do this yet. Delegate the heavy lifting back to Peagsus?  Just need

@@ -146,12 +146,21 @@ object CourierPlugin extends Plugin {
         } catch {
           case e: java.io.IOException => {
             e.getMessage match {
-              case ParseExceptionRegExp(source, line, column) =>
+              case JsonParseExceptionRegExp(source, line, column) =>
+                log.error(e.getMessage)
                 val message =
-                  s"Schema parse error in $source: line: ${line.toInt}, column:  ${column.toInt}"
+                  s"Json parse error in $source: line: ${line.toInt}, column:  ${column.toInt}"
                 throw new CourierCompilationException(
                   Some(file(source)),
                   message,
+                  Option(line.toInt),
+                  Option(column.toInt),
+                  Severity.Error)
+              case SchemaParseExceptionRegExp(source, line, column) =>
+                log.error(e.getMessage)
+                throw new CourierCompilationException(
+                  Some(file(source)),
+                  e.getMessage, // include all parse error results in the message
                   Option(line.toInt),
                   Option(column.toInt),
                   Severity.Error)
@@ -182,8 +191,11 @@ object CourierPlugin extends Plugin {
 
   private[this] val sourceFileFilter: FileFilter = ("*.pdsc" || "*.courier")
 
-  private[this] val ParseExceptionRegExp =
+  private[this] val JsonParseExceptionRegExp =
     """(?s).*\[Source: (.*?); line: (\d*), column: (\d*)\].*?""".r
+
+  private[this] val SchemaParseExceptionRegExp =
+    """(?s)\s*(.*?),(\d*),(\d*):.*?""".r
 
   /**
    * Returns an indication of whether `sourceFiles` and their modify dates differ from what is
