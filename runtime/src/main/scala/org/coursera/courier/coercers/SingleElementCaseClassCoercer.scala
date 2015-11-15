@@ -49,22 +49,22 @@ import org.coursera.courier.coercers.SingleElementCaseClassCoercer.ElementCoerce
  * ```
  *
  * The class to coerce to must:
- * - Be public and extend [[Product]]. All case classes extend [[Product]].
+ * - Be public and extend `Product`. All case classes extend `Product`.
  * - Have a single public constructor.
- * - Have a single public field/element. That is, [[Product.productArity]] must return 1.
+ * - Have a single public field/element. That is, `Product.productArity` must return 1.
  * - Have an element that is (a) a primitive, or (b) another Pegasus CustomType that has a
  *   registered coercer. `Product.productElement(0)` must return this element.
- * - (Case classes *may* extend [[AnyVal]] if desired)
+ * - (Case classes *may* extend `AnyVal` if desired)
  *
  * A primitive may be:
- * - Any Scala [[AnyVal]] type except [[Unit]]
+ * - Any Scala `AnyVal` type except `Unit`
  * - Any boxed primitive type (e.g. `java.lang.Integer`)
  *
  * A few primitives are handled as special cases by this coercer:
- * - [[Char]] is represented as a single char `string` Pegasus type (JSON string)
- * - [[Byte]] is represented as a single byte `bytes` Pegasus type (JSON string with avro byte
+ * - `Char` is represented as a single char `string` Pegasus type (JSON string)
+ * - `Byte` is represented as a single byte `bytes` Pegasus type (JSON string with avro byte
  *   encoding)
- * - [[Short]] is represented as a `int` pegasus type (JSON number).
+ * - `Short` is represented as a `int` pegasus type (JSON number).
  *
  *
  * "Chaining" is supported. For example, if the `SlugId` custom type is defined as shown in
@@ -212,9 +212,9 @@ object SingleElementCaseClassCoercer {
 
   /**
    * Wraps a element coercer with a pegasus data coercer.
-   * This will, for example, convert a string to a [[ByteString]] before applying the byteCoercer.
+   * This will, for example, convert a string to a `ByteString` before applying the byteCoercer.
    *
-   * See [[DataTemplateUtil.coerceOutput]] for details.
+   * See `DataTemplateUtil.coerceOutput` for details.
    */
   private[this] def dataTypeCoercer[T](
       wrapped: ElementCoercer,
@@ -254,7 +254,7 @@ object SingleElementCaseClassCoercer {
   //
 
   /**
-   * Coerces [[Short]] and [[java.lang.Short]] to [[java.lang.Integer]].
+   * Coerces `Short` and `java.lang.Short` to `java.lang.Integer`.
    */
   private[this] val shortCoercer = new ElementCoercer {
     def coerceInput(in: Any) = {
@@ -274,7 +274,7 @@ object SingleElementCaseClassCoercer {
   }
 
   /**
-   * Coerces [[Byte]] and [[java.lang.Byte]] to [[ByteString]].
+   * Coerces `Byte` and `java.lang.Byte` to `ByteString`.
    */
   private[this] val byteCoercer = new ElementCoercer {
     def coerceInput(in: Any) = {
@@ -298,7 +298,7 @@ object SingleElementCaseClassCoercer {
   }
 
   /**
-   * Coerces [[Char]] and [[java.lang.Character]] to [[String]].
+   * Coerces `Char` and `java.lang.Character` to `String`.
    */
   private[this] val charCoercer = new ElementCoercer {
     def coerceInput(in: Any) = {

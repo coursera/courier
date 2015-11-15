@@ -7,6 +7,9 @@ record Fortune {
   /**
    * The fortune telling.
    */
-  telling: union[FortuneCookie, MagicEightBall, string]
-  createdAt: org.example.common.DateTime
+  telling: union[FortuneCookie, MagicEightBall, string] // comment 1
+  createdAt: /* comment 2 */ org.example.common.DateTime
+  keyedMap: map[Note, Note]
+  `namespace`: array[string] = ["org", "example"]
+  escaped: `record`
 }

@@ -17,6 +17,7 @@
 package org.coursera.courier.api;
 
 import com.linkedin.data.schema.SchemaParserFactory;
+import org.coursera.courier.grammar.CourierSchemaParserFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +45,7 @@ public class GeneratorRunnerOptions {
     this.resolverPath = resolverPath;
     this.parsersForFileFormats = new ArrayList<ParserForFileFormat>();
     this.parsersForFileFormats.add(new ParserForFileFormat("pdsc", SchemaParserFactory.instance()));
+    this.parsersForFileFormats.add(new ParserForFileFormat("courier", new CourierSchemaParserFactory()));
   }
 
   public GeneratorRunnerOptions setDefaultPackage(String defaultPackage) {

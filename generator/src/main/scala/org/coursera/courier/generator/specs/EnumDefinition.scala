@@ -64,7 +64,7 @@ case class EnumDefinition(override val spec: EnumTemplateSpec) extends Definitio
   }
 
   /**
-   * Enumeration symbol strings, not including $UNKNOWN.
+   * Enumeration symbol strings, not including `UNKNOWN`.
    */
   def symbols: Seq[String] = enumSchema.getSymbols.asScala.map(ScalaEscaping.escapeSymbol)
 

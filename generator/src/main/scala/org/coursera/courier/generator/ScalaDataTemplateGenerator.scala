@@ -21,8 +21,6 @@ import com.linkedin.pegasus.generator.PegasusDataTemplateGenerator
 import org.coursera.courier.ScalaGenerator
 import org.coursera.courier.api.DefaultGeneratorRunner
 import org.coursera.courier.api.GeneratorRunnerOptions
-import org.coursera.courier.api.ParserForFileFormat
-import org.coursera.courier.grammar.CourierSchemaParserFactory
 
 import scala.collection.JavaConverters._
 
@@ -59,9 +57,7 @@ object ScalaDataTemplateGenerator {
         .setDataNamespace(CourierPredef.dataNamespace)
         .setGenerateImported(generateImported)
         .setGenerateTyperefs(generateTyperefs)
-        .setGeneratePredef(generatePredef)
-        .addParserForFileFormat(
-          new ParserForFileFormat("courier", new CourierSchemaParserFactory())))
+        .setGeneratePredef(generatePredef))
 
     result.getTargetFiles.asScala.foreach { file =>
       System.out.println(file.getAbsolutePath)
