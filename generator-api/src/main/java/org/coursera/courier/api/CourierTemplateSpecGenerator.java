@@ -41,7 +41,6 @@ import com.linkedin.pegasus.generator.spec.FixedTemplateSpec;
 import com.linkedin.pegasus.generator.spec.ModifierSpec;
 import com.linkedin.pegasus.generator.spec.PrimitiveTemplateSpec;
 import com.linkedin.pegasus.generator.spec.RecordTemplateSpec;
-import com.linkedin.pegasus.generator.spec.TyperefTemplateSpec;
 import com.linkedin.pegasus.generator.spec.UnionTemplateSpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,6 +106,7 @@ public class CourierTemplateSpecGenerator {
   private final SchemaParser _schemaParser;
   private final String _dataNamespace;
   private final String _customTypeLanguage;
+  private final boolean _generateTyperefs;
 
   /**
    * Return Java class name for a {@link com.linkedin.data.schema.NamedDataSchema}.
@@ -149,10 +149,20 @@ public class CourierTemplateSpecGenerator {
       String dataNamespace,
       String customTypeLanguage)
   {
+    this(schemaResolver, dataNamespace, customTypeLanguage, false);
+  }
+
+  public CourierTemplateSpecGenerator(
+    DataSchemaResolver schemaResolver,
+    String dataNamespace,
+    String customTypeLanguage,
+    boolean generateTyperefs)
+  {
     _schemaResolver = schemaResolver;
     _schemaParser = new SchemaParser(schemaResolver);
     _dataNamespace = dataNamespace;
     _customTypeLanguage = customTypeLanguage;
+    _generateTyperefs = generateTyperefs;
   }
 
   /**
@@ -164,7 +174,7 @@ public class CourierTemplateSpecGenerator {
   }
 
   /**
-   * Instead of generate spec for the specify {@link com.linkedin.data.schema.DataSchema}, assume it is already defined in the system.
+   * Instead of generateRecord spec for the specify {@link com.linkedin.data.schema.DataSchema}, assume it is already defined in the system.
    */
   public void registerDefinedSchema(DataSchema schema)
   {
@@ -372,32 +382,29 @@ public class CourierTemplateSpecGenerator {
     ClassTemplateSpec result = null;
 
     final CustomInfoSpec customInfo = getImmediateCustomInfo(schema);
-    while (schema.getType() == DataSchema.Type.TYPEREF)
-    {
-      final TyperefDataSchema typerefSchema = (TyperefDataSchema) schema;
-      final ClassTemplateSpec found = _schemaToClassMap.get(schema);
-      if (found == null)
-      {
-        if (typerefSchema.getRef().getType() == DataSchema.Type.UNION)
-        {
-          result = generateUnion((UnionDataSchema) typerefSchema.getRef(), typerefSchema);
+    if (_generateTyperefs && schema.getType() == DataSchema.Type.TYPEREF) {
+      result = generateTyperef((TyperefDataSchema) schema);
+    } else {
+      while (schema.getType() == DataSchema.Type.TYPEREF) {
+        final TyperefDataSchema typerefSchema = (TyperefDataSchema) schema;
+        final ClassTemplateSpec found = _schemaToClassMap.get(schema);
+        if (found == null) {
+          if (typerefSchema.getRef().getType() == DataSchema.Type.UNION) {
+            result = generateUnion((UnionDataSchema) typerefSchema.getRef(), typerefSchema);
+            break;
+          } else {
+            generateTyperef(typerefSchema);
+          }
+        } else if (typerefSchema.getRef().getType() == DataSchema.Type.UNION) {
+          result = found;
           break;
         }
-        else
-        {
-          generateTyperef(typerefSchema);
-        }
+        schema = typerefSchema.getRef();
       }
-      else if (typerefSchema.getRef().getType() == DataSchema.Type.UNION)
-      {
-        result = found;
-        break;
-      }
-      schema = typerefSchema.getRef();
     }
     if (result == null)
     {
-      assert schema == schema.getDereferencedDataSchema();
+      //assert schema == schema.getDereferencedDataSchema();
       if (schema instanceof ComplexDataSchema)
       {
         final ClassTemplateSpec found = _schemaToClassMap.get(schema);
@@ -725,7 +732,8 @@ public class CourierTemplateSpecGenerator {
     unionClass.setModifiers(ModifierSpec.PUBLIC);
     registerClassTemplateSpec(typerefDataSchema, unionClass);
 
-    final TyperefTemplateSpec typerefInfoClass = new TyperefTemplateSpec(typerefDataSchema);
+    final CourierTyperefTemplateSpec typerefInfoClass = new CourierTyperefTemplateSpec(typerefDataSchema);
+    typerefInfoClass.setRef(unionClass);
     typerefInfoClass.setEnclosingClass(unionClass);
     typerefInfoClass.setClassName("UnionTyperefInfo");
     typerefInfoClass.setModifiers(ModifierSpec.PRIVATE, ModifierSpec.STATIC, ModifierSpec.FINAL);
@@ -777,9 +785,12 @@ public class CourierTemplateSpecGenerator {
     return fixedClass;
   }
 
-  private TyperefTemplateSpec generateTyperef(TyperefDataSchema schema)
+  private CourierTyperefTemplateSpec generateTyperef(TyperefDataSchema schema)
   {
-    final TyperefTemplateSpec typerefClass = new TyperefTemplateSpec(schema);
+    final CourierTyperefTemplateSpec typerefClass = new CourierTyperefTemplateSpec(schema);
+
+    final ClassTemplateSpec ref = processSchema(schema.getRef(), typerefClass, "ref");
+    typerefClass.setRef(ref);
     typerefClass.setNamespace(schema.getNamespace());
     typerefClass.setClassName(schema.getName());
     typerefClass.setModifiers(ModifierSpec.PUBLIC);

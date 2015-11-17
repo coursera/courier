@@ -45,7 +45,7 @@ object ScalaDataTemplateGenerator {
         .exists(_.toBoolean)
     val defaultPackage = System.getProperty(JavaCodeGeneratorBase.GENERATOR_DEFAULT_PACKAGE)
     val generateTyperefs = false
-    val generatePredef = false // set to true temporarily to manually generate predef
+    val generatePredef = false // set to true temporarily to manually generateRecord predef
 
     val result = new DefaultGeneratorRunner().run(
       new ScalaGenerator(),

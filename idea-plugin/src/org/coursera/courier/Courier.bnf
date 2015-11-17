@@ -15,19 +15,33 @@
 
 document ::= topLevel
 
-topLevel ::= namespaceDeclaration namedTypeDeclaration
+topLevel ::= namespaceDeclaration importDeclarations namedTypeDeclaration
+
+importDeclarations ::= importDeclaration*
+
+importDeclaration ::= IMPORT_KEYWORD fullyQualifiedName  {
+  mixin="org.coursera.courier.psi.CourierNamedElementReference"
+  implements="org.coursera.courier.psi.CourierNamedElement"
+}
 
 namespaceDeclaration ::= NAMESPACE_KEYWORD namespace
 
 namespace ::= IDENTIFIER (DOT IDENTIFIER)*
 
-typeReference ::= fullyQualifiedName | simpleName
+typeReference ::= fullyQualifiedName {
+  mixin="org.coursera.courier.psi.CourierNamedElementReference"
+  implements="org.coursera.courier.psi.CourierNamedElement"
+}
 
-typeNameDeclaration ::= simpleName
+
+typeNameDeclaration ::= simpleName {
+  mixin="org.coursera.courier.psi.CourierNamedElementDeclaration"
+  implements="org.coursera.courier.psi.CourierNamedElement, com.intellij.navigation.NavigationItem"
+}
 
 simpleName ::= IDENTIFIER
 
-fullyQualifiedName ::= IDENTIFIER (DOT IDENTIFIER)+
+fullyQualifiedName ::= IDENTIFIER (DOT IDENTIFIER)*
 
 typeDeclaration ::= namedTypeDeclaration | anonymousTypeDeclaration
 
@@ -45,9 +59,12 @@ propDeclaration ::= propNameDeclaration propJsonValue?
 
 propNameDeclaration ::= AT propName
 
-propName ::= IDENTIFIER
+propName ::= IDENTIFIER (DOT IDENTIFIER)*
 
-propJsonValue ::= OPEN_PAREN jsonValue CLOSE_PAREN {pin=1}
+propJsonValue ::= EQUALS jsonValue | propJsonValueWithParams
+
+// TODO(jbetz): Remove this and use only equals form
+propJsonValueWithParams ::= OPEN_PAREN jsonValue CLOSE_PAREN {pin=1}
 
 recordDeclaration ::= RECORD_KEYWORD typeNameDeclaration fieldSelection {pin=1}
 
@@ -65,7 +82,9 @@ fixedDeclaration ::= FIXED_KEYWORD typeNameDeclaration NUMBER_LITERAL {pin=1} //
 
 unionDeclaration ::= UNION_KEYWORD unionTypeAssignments {pin=1}
 
-unionTypeAssignments ::= OPEN_BRACKET typeAssignment* CLOSE_BRACKET {pin=1}
+unionTypeAssignments ::= OPEN_BRACKET unionMemberDeclaration* CLOSE_BRACKET {pin=1}
+
+unionMemberDeclaration ::= annotations? typeAssignment
 
 arrayDeclaration ::= ARRAY_KEYWORD arrayTypeAssignments {pin=1}
 

@@ -55,7 +55,7 @@ object CourierPredef {
   val dataNamespace = "org.coursera.courier.data"
 
   // For typed map keys, these are the primitive types we believe will be used as keys commonly
-  // enough that we will generate predef types for them into courier-runtime.  Other primitive
+  // enough that we will generateRecord predef types for them into courier-runtime.  Other primitive
   // types may still be used as map keys with Courier, they will just be generated for the
   // applications where they are used, rather than being included in predef.
   private[this] val predefMapKeyTypes = Seq(

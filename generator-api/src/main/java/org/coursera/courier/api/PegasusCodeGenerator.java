@@ -30,14 +30,14 @@ public interface PegasusCodeGenerator {
    * Generates code for the given spec.
    *
    * Because ClassTemplateSpec can currently contain nested type declarations that should be
-   * generated into top level class files, a single call to generate can produce multiple files.
+   * generated into top level class files, a single call to generateRecord can produce multiple files.
    */
   public GeneratedCode generate(ClassTemplateSpec spec);
 
   /**
    * Generate all predefined types.
    *
-   * We only generate schemas for pre defined types when re-generating types in courier-runtime.
+   * We only generateRecord schemas for pre defined types when re-generating types in courier-runtime.
    */
   public Collection<GeneratedCode> generatePredef();
 

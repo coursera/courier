@@ -49,14 +49,14 @@ trait TemplateGenerator extends PegasusCodeGenerator {
    * Generates code for the given spec.
    *
    * Because Definitions can currently contain nested type declarations that should be
-   * generated into top level class files, a single call to generate can produce multiple files.
+   * generated into top level class files, a single call to generateRecord can produce multiple files.
    */
   def generate(definition: Definition): Option[ScalaGeneratedCode]
 
   /**
    * Generate all predefined types.
    *
-   * We only generate schemas for pre defined types when re-generating types in courier-runtime.
+   * We only generateRecord schemas for pre defined types when re-generating types in courier-runtime.
    */
   def generatePredefinedTypes(): Seq[ScalaGeneratedCode]
 

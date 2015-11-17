@@ -36,21 +36,31 @@ import static org.coursera.courier.psi.CourierTypes.CLOSE_PAREN;
 import static org.coursera.courier.psi.CourierTypes.COLON;
 import static org.coursera.courier.psi.CourierTypes.COMMA;
 import static org.coursera.courier.psi.CourierTypes.DOT;
+import static org.coursera.courier.psi.CourierTypes.ENUM_SYMBOL_DECLARATION;
 import static org.coursera.courier.psi.CourierTypes.ENUM_SYMBOL_DECLARATIONS;
+import static org.coursera.courier.psi.CourierTypes.EQUALS;
 import static org.coursera.courier.psi.CourierTypes.FIELD_SELECTION;
+import static org.coursera.courier.psi.CourierTypes.FIELD_SELECTION_ELEMENT;
+import static org.coursera.courier.psi.CourierTypes.IMPORT_DECLARATION;
+import static org.coursera.courier.psi.CourierTypes.IMPORT_DECLARATIONS;
+import static org.coursera.courier.psi.CourierTypes.IMPORT_KEYWORD;
 import static org.coursera.courier.psi.CourierTypes.JSON_ARRAY;
 import static org.coursera.courier.psi.CourierTypes.JSON_OBJECT;
 import static org.coursera.courier.psi.CourierTypes.LINE_COMMENT;
 import static org.coursera.courier.psi.CourierTypes.MAP_TYPE_ASSIGNMENTS;
+import static org.coursera.courier.psi.CourierTypes.NAMESPACE_DECLARATION;
+import static org.coursera.courier.psi.CourierTypes.NAMESPACE_KEYWORD;
 import static org.coursera.courier.psi.CourierTypes.OPEN_BRACE;
 import static org.coursera.courier.psi.CourierTypes.OPEN_BRACKET;
 import static org.coursera.courier.psi.CourierTypes.OPEN_PAREN;
 import static org.coursera.courier.psi.CourierTypes.PROP_JSON_VALUE;
+import static org.coursera.courier.psi.CourierTypes.QUESTION_MARK;
 import static org.coursera.courier.psi.CourierTypes.SCHEMADOC;
 import static org.coursera.courier.psi.CourierTypes.SCHEMADOC_CONTENT;
 import static org.coursera.courier.psi.CourierTypes.SCHEMADOC_END;
 import static org.coursera.courier.psi.CourierTypes.SCHEMADOC_START;
 import static org.coursera.courier.psi.CourierTypes.TOP_LEVEL;
+import static org.coursera.courier.psi.CourierTypes.TYPE_DECLARATION;
 import static org.coursera.courier.psi.CourierTypes.UNION_TYPE_ASSIGNMENTS;
 
 public class CourierFormattingModelBuilder implements FormattingModelBuilder {
@@ -63,16 +73,37 @@ public class CourierFormattingModelBuilder implements FormattingModelBuilder {
 
   @NotNull
   private static SpacingBuilder createSpacingBuilder(@NotNull CodeStyleSettings settings) {
+    // TODO: all the below hard coded values can potentially be replaced with code style config
+    // variables.
     return new SpacingBuilder(settings, CourierLanguage.INSTANCE)
-        .before(COMMA).spaceIf(false)
-        .after(COMMA).spaceIf(true)
-        .before(COLON).spaceIf(false)
-        .after(COLON).spaceIf(true)
-        .around(DOT).none()
-        .after(LINE_COMMENT).lineBreakInCode()
-        .after(BLOCK_COMMENT).lineBreakInCode()
-        .after(SCHEMADOC).lineBreakInCode()
-        ;
+      .before(COMMA).spaceIf(false)
+      .after(COMMA).spaceIf(true)
+      .before(COLON).spaceIf(false)
+      .after(COLON).spaceIf(true)
+      .before(EQUALS).spaceIf(true)
+      .after(EQUALS).spaceIf(true)
+      .before(QUESTION_MARK).spaceIf(false)
+      .after(QUESTION_MARK).spaceIf(true)
+      .around(DOT).none()
+
+      .before(NAMESPACE_DECLARATION).blankLines(0)
+      .after(NAMESPACE_DECLARATION).blankLines(1)
+      .after(NAMESPACE_KEYWORD).spaceIf(true)
+
+      .around(IMPORT_DECLARATIONS).blankLines(1)
+      .around(IMPORT_DECLARATION).lineBreakInCode()
+      .after(IMPORT_KEYWORD).spaceIf(true)
+
+      .before(TYPE_DECLARATION).lineBreakInCode()
+      .after(TYPE_DECLARATION).lineBreakInCode()
+      .after(FIELD_SELECTION_ELEMENT).lineBreakInCode()
+      .after(ENUM_SYMBOL_DECLARATION).lineBreakInCode()
+
+      .before(SCHEMADOC).blankLines(1)
+      .after(SCHEMADOC).lineBreakInCode()
+      .after(LINE_COMMENT).lineBreakInCode()
+      .after(BLOCK_COMMENT).lineBreakInCode()
+      ;
   }
 
   @Nullable

@@ -66,6 +66,7 @@ public class CourierSyntaxHighlighter extends SyntaxHighlighterBase {
   private static final Set<IElementType> KEYWORDS = new HashSet<IElementType>();
   static {
     KEYWORDS.add(CourierTypes.NAMESPACE_KEYWORD);
+    KEYWORDS.add(CourierTypes.IMPORT_KEYWORD);
     KEYWORDS.add(CourierTypes.ENUM_KEYWORD);
     KEYWORDS.add(CourierTypes.FIXED_KEYWORD);
     KEYWORDS.add(CourierTypes.RECORD_KEYWORD);

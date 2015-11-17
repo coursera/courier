@@ -12,8 +12,8 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'org.coursera.courier:gradle-plugin:0.7.1'
-        classpath 'org.coursera.courier:courier-android-generator:0.7.1'
+        classpath 'org.coursera.courier:courier-gradle-plugin:0.16.8'
+        classpath 'org.coursera.courier:courier-android-generator:0.16.8'
     }
 }
 ```
@@ -29,7 +29,7 @@ courier {
 
 dependencies {
     compile 'com.google.code.gson:gson:2.3.1'
-    courierCompile 'org.coursera.courier:courier-android-runtime:0.7.1'
+    courierCompile 'org.coursera.courier:courier-android-runtime:0.16.8'
 }
 ```
 

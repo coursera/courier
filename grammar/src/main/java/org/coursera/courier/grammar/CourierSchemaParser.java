@@ -23,6 +23,7 @@ import com.linkedin.data.codec.JacksonDataCodec;
 import com.linkedin.data.schema.ArrayDataSchema;
 import com.linkedin.data.schema.DataSchema;
 import com.linkedin.data.schema.DataSchemaResolver;
+import com.linkedin.data.schema.DataSchemaUtil;
 import com.linkedin.data.schema.EnumDataSchema;
 import com.linkedin.data.schema.FixedDataSchema;
 import com.linkedin.data.schema.JsonBuilder;
@@ -42,20 +43,31 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.Token;
+import org.coursera.courier.grammar.CourierParser.AnonymousTypeDeclarationContext;
 import org.coursera.courier.grammar.CourierParser.ArrayDeclarationContext;
 import org.coursera.courier.grammar.CourierParser.DocumentContext;
 import org.coursera.courier.grammar.CourierParser.EnumDeclarationContext;
+import org.coursera.courier.grammar.CourierParser.EnumSymbolDeclarationContext;
+import org.coursera.courier.grammar.CourierParser.FieldDeclarationContext;
+import org.coursera.courier.grammar.CourierParser.FieldDefaultContext;
+import org.coursera.courier.grammar.CourierParser.FieldSelectionContext;
+import org.coursera.courier.grammar.CourierParser.FieldSelectionElementContext;
 import org.coursera.courier.grammar.CourierParser.FixedDeclarationContext;
 import org.coursera.courier.grammar.CourierParser.JsonValueContext;
 import org.coursera.courier.grammar.CourierParser.MapDeclarationContext;
 import org.coursera.courier.grammar.CourierParser.NamedTypeDeclarationContext;
+import org.coursera.courier.grammar.CourierParser.ObjectEntryContext;
 import org.coursera.courier.grammar.CourierParser.PropDeclarationContext;
 import org.coursera.courier.grammar.CourierParser.RecordDeclarationContext;
 import org.coursera.courier.grammar.CourierParser.TypeAssignmentContext;
 import org.coursera.courier.grammar.CourierParser.TypeDeclarationContext;
 import org.coursera.courier.grammar.CourierParser.TypeNameDeclarationContext;
+import org.coursera.courier.grammar.CourierParser.TypeReferenceContext;
 import org.coursera.courier.grammar.CourierParser.TyperefDeclarationContext;
 import org.coursera.courier.grammar.CourierParser.UnionDeclarationContext;
+import org.coursera.courier.grammar.CourierParser.UnionMemberDeclarationContext;
+import org.coursera.courier.grammar.CourierParser.ImportDeclarationContext;
+import org.coursera.courier.grammar.CourierParser.ImportDeclarationsContext;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -63,6 +75,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -264,6 +277,7 @@ public class CourierSchemaParser extends SchemaParser {
   private void parse(DocumentContext document) throws ParseException {
     setCurrentNamespace(
       document.namespaceDeclaration().namespace().value);
+    setCurrentImports(document.importDeclarations());
     DataSchema schema = parseNamedType(document.namedTypeDeclaration());
     topLevelSchemas.add(schema);
   }
@@ -272,9 +286,9 @@ public class CourierSchemaParser extends SchemaParser {
     if (typ.namedTypeDeclaration() != null) {
       return parseNamedType(typ.namedTypeDeclaration());
     } else if (typ.anonymousTypeDeclaration() != null) {
-      CourierParser.AnonymousTypeDeclarationContext anon = typ.anonymousTypeDeclaration();
+      AnonymousTypeDeclarationContext anon = typ.anonymousTypeDeclaration();
       if (anon.unionDeclaration() != null) {
-        return parseUnion(anon.unionDeclaration());
+        return parseUnion(anon.unionDeclaration()).unionDataSchema;
       } else if (anon.mapDeclaration() != null) {
         return parseMap(anon.mapDeclaration());
       } else if (anon.arrayDeclaration() != null) {
@@ -326,10 +340,10 @@ public class CourierSchemaParser extends SchemaParser {
 
     bindNameToSchema(name, schema);
 
-    List<CourierParser.EnumSymbolDeclarationContext> symbolDecls = enumDecl.enumDecl.symbolDecls;
+    List<EnumSymbolDeclarationContext> symbolDecls = enumDecl.enumDecl.symbolDecls;
 
     List<String> symbols = new ArrayList<String>(symbolDecls.size());
-    for (CourierParser.EnumSymbolDeclarationContext symbolDecl : symbolDecls) {
+    for (EnumSymbolDeclarationContext symbolDecl : symbolDecls) {
       symbols.add(symbolDecl.symbol.value);
     }
     schema.setSymbols(symbols, errorMessageBuilder());
@@ -337,7 +351,7 @@ public class CourierSchemaParser extends SchemaParser {
     Map<String, Object> props = setAnnotations(context, schema);
 
     Map<String, String> symbolDocs = new HashMap<String, String>();
-    for (CourierParser.EnumSymbolDeclarationContext symbolDecl : symbolDecls) {
+    for (EnumSymbolDeclarationContext symbolDecl : symbolDecls) {
       if (symbolDecl.doc != null) {
         symbolDocs.put(symbolDecl.symbol.value, symbolDecl.doc.value);
       }
@@ -348,10 +362,10 @@ public class CourierSchemaParser extends SchemaParser {
 
     DataMap deprecatedSymbols = new DataMap();
     DataMap symbolProperties = new DataMap();
-    for (CourierParser.EnumSymbolDeclarationContext symbolDecl: symbolDecls) {
+    for (EnumSymbolDeclarationContext symbolDecl: symbolDecls) {
       for (PropDeclarationContext prop: symbolDecl.props) {
         String key = symbolDecl.symbol.value;
-        Object value = parseJsonValue(prop.propJsonValue().jsonValue());
+        Object value = parsePropValue(prop);
         if (prop.name.equals("deprecated")) {
           deprecatedSymbols.put(key, value);
         } else {
@@ -378,9 +392,46 @@ public class CourierSchemaParser extends SchemaParser {
     Name name = toName(typeref.name);
     TyperefDataSchema schema = new TyperefDataSchema(name);
     bindNameToSchema(name, schema);
-    schema.setReferencedType(toDataSchema(typeref.ref));
+    TypeAssignmentContext ref = typeref.ref;
+
+    UnionDataSchemaWithProperties unionWithProps =
+      lookupUnionDataSchema(ref.typeDeclaration());
+    DataSchema refSchema;
+    if (unionWithProps != null) {
+      refSchema = unionWithProps.unionDataSchema;
+      Map<String, Object> propsToAdd = new HashMap<String, Object>();
+      propsToAdd.putAll(schema.getProperties());
+      DataMap unionProps = unionWithProps.byNameByMemberProps;
+      if (unionProps != null && unionProps.size() > 0) {
+        propsToAdd.putAll(unionProps);
+      }
+
+      Map<String, String> unionSchemadoc = unionWithProps.schemadocByMember;
+      if (unionSchemadoc != null && unionSchemadoc.size() > 0) {
+        propsToAdd.put("memberDocs", new DataMap(unionSchemadoc));
+      }
+      schema.setProperties(propsToAdd);
+    } else {
+      refSchema = toDataSchema(typeref.ref);
+    }
+    schema.setReferencedType(refSchema);
+
     setAnnotations(context, schema);
     return schema;
+  }
+
+  private UnionDataSchemaWithProperties lookupUnionDataSchema(
+      TypeDeclarationContext typeDecl) throws ParseException {
+    if (typeDecl != null) {
+      AnonymousTypeDeclarationContext anonDecl = typeDecl.anonymousTypeDeclaration();
+      if (anonDecl != null) {
+        UnionDeclarationContext unionDecl = anonDecl.unionDeclaration();
+        if (unionDecl != null) {
+          return parseUnion(unionDecl);
+        }
+      }
+    }
+    return null;
   }
 
   private ArrayDataSchema parseArray(ArrayDeclarationContext array) throws ParseException {
@@ -416,18 +467,62 @@ public class CourierSchemaParser extends SchemaParser {
     return schema;
   }
 
-  private UnionDataSchema parseUnion(UnionDeclarationContext union) throws ParseException {
+  private static class UnionDataSchemaWithProperties {
+    public final UnionDataSchema unionDataSchema;
+    public final Map<String, String> schemadocByMember;
+    public final DataMap byNameByMemberProps;
+
+    public UnionDataSchemaWithProperties(
+        UnionDataSchema unionDataSchema,
+        Map<String, String> schemadocByMember,
+        DataMap byNameByMemberProps) {
+      this.unionDataSchema = unionDataSchema;
+      this.schemadocByMember = schemadocByMember;
+      this.byNameByMemberProps = byNameByMemberProps;
+    }
+  }
+
+  private UnionDataSchemaWithProperties parseUnion(UnionDeclarationContext union) throws ParseException {
+    Map<String, String> schemadocByMember = new HashMap<String, String>();
+    DataMap byNameByMemberProps = new DataMap();
+
     UnionDataSchema schema = new UnionDataSchema();
-    List<TypeAssignmentContext> members = union.typeParams.members;
+    List<UnionMemberDeclarationContext> members = union.typeParams.members;
     List<DataSchema> types = new ArrayList<DataSchema>(members.size());
-    for (TypeAssignmentContext memberType: members) {
+    for (UnionMemberDeclarationContext memberDecl: members) {
+      TypeAssignmentContext memberType = memberDecl.member;
       DataSchema dataSchema = toDataSchema(memberType);
       if (dataSchema != null) {
         types.add(dataSchema);
+        String memberKey = dataSchema.getUnionMemberKey();
+        if (memberDecl.schemadoc() != null) {
+          String schemadoc = memberDecl.schemadoc().value;
+          schemadocByMember.put(memberKey, schemadoc);
+        }
+        if (memberDecl.props != null) {
+          //Map<String, Object> properties = new HashMap<String, Object>();
+          for (PropDeclarationContext prop : memberDecl.props) {
+            String[] path = prop.name.split("\\.");
+            String[] pathWithMemberKey = Arrays.copyOf(path, path.length + 1);
+            pathWithMemberKey[path.length] = memberKey;
+            addToDataMap(prop, byNameByMemberProps, pathWithMemberKey, parsePropValue(prop));
+            /*DataMap byMemberProps;
+            if (!byNameByMemberProps.containsKey(prop.name)) {
+              byMemberProps = new DataMap();
+              byNameByMemberProps.put(prop.name, byMemberProps);
+            } else {
+              byMemberProps = byNameByMemberProps.getDataMap(prop.name);
+            }
+
+            byMemberProps.put(
+              memberKey,
+              parseJsonValue(prop.propJsonValue().jsonValue()));*/
+          }
+        }
       }
     }
     schema.setTypes(types, errorMessageBuilder());
-    return schema;
+    return new UnionDataSchemaWithProperties(schema, schemadocByMember, byNameByMemberProps);
   }
 
   private RecordDataSchema parseRecord(
@@ -454,29 +549,69 @@ public class CourierSchemaParser extends SchemaParser {
     }
 
     for (PropDeclarationContext prop: source.props) {
-      properties.put(
+      addToProperties(properties, prop);
+      /*properties.put(
         prop.name,
-        parseJsonValue(prop.propJsonValue().jsonValue()));
+        parseJsonValue(prop.propJsonValue().jsonValue()));*/
     }
 
     target.setProperties(properties);
     return properties;
   }
 
+  private void addToProperties(Map<String, Object> properties, PropDeclarationContext prop) throws ParseException{
+    String[] path = prop.name.split("\\.");
+    addToDataMap(prop, properties, path, parsePropValue(prop));
+  }
+
+  private void addToDataMap(
+      ParserRuleContext context,
+      Map<String, Object> properties,
+      String[] path,
+      Object value) throws ParseException {
+    Map<String, Object> current = properties;
+    for (int i = 0; i < path.length - 1; i++) {
+      String pathPart = path[i];
+      if (properties.containsKey(pathPart)) {
+        Object val = properties.get(pathPart);
+        if (!(val instanceof DataMap)) {
+          throw new ParseException(
+            new ParseError(
+              new ParseErrorLocation(context),
+              "Conflicting property: " + Arrays.toString(path)));
+        }
+        current = (DataMap)val;
+      } else {
+        DataMap next = new DataMap();
+        current.put(pathPart, next);
+        current = next;
+      }
+    }
+    String terminalPart = path[path.length-1];
+    if (current.containsKey(terminalPart)) {
+      throw new ParseException(
+        new ParseError(
+          new ParseErrorLocation(context),
+          "Property already defined: " + Arrays.toString(path)));
+    } else {
+      current.put(terminalPart, value);
+    }
+  }
+
   private List<RecordDataSchema.Field> parseFields(
       RecordDataSchema recordSchema,
-      CourierParser.FieldSelectionContext fieldGroup) throws ParseException {
+      FieldSelectionContext fieldGroup) throws ParseException {
 
     List<RecordDataSchema.Field> results = new ArrayList<RecordDataSchema.Field>();
-    for (CourierParser.FieldSelectionElementContext element : fieldGroup.fields) {
-      CourierParser.FieldDeclarationContext field = element.fieldDeclaration();
+    for (FieldSelectionElementContext element : fieldGroup.fields) {
+      FieldDeclarationContext field = element.fieldDeclaration();
       if (field != null) {
         Field result = new Field(toDataSchema(field.type));
         Map<String, Object> properties = new HashMap<String, Object>();
         result.setName(field.name, errorMessageBuilder());
         result.setOptional(field.isOptional);
 
-        CourierParser.FieldDefaultContext fieldDefault = field.fieldDefault();
+        FieldDefaultContext fieldDefault = field.fieldDefault();
         if (fieldDefault != null) {
           JsonValueContext defaultValue = fieldDefault.jsonValue();
           if (defaultValue != null) {
@@ -487,9 +622,10 @@ public class CourierSchemaParser extends SchemaParser {
         }
 
         for (PropDeclarationContext prop : field.props) {
-          properties.put(
+          addToProperties(properties, prop);
+          /*properties.put(
             prop.name,
-            parseJsonValue(prop.propJsonValue().jsonValue()));
+            parseJsonValue(prop.propJsonValue().jsonValue()));*/
         }
         if (field.doc != null) {
           result.setDoc(field.doc.value);
@@ -509,9 +645,7 @@ public class CourierSchemaParser extends SchemaParser {
   }
 
   private DataSchema toDataSchema(TypeAssignmentContext typeAssignment) throws ParseException {
-    // TODO(jbetz): Remove IOException throws. Errors should be written to the error message
-    // builder and parsing should not be halted at first error.
-    CourierParser.TypeReferenceContext typeReference = typeAssignment.typeReference();
+    TypeReferenceContext typeReference = typeAssignment.typeReference();
     if (typeReference != null) {
       DataSchema dataSchema = stringToDataSchema(typeReference.value);
       if (dataSchema != null) {
@@ -536,6 +670,15 @@ public class CourierSchemaParser extends SchemaParser {
     return new Name(name.value, getCurrentNamespace(), errorMessageBuilder());
   }
 
+  private Object parsePropValue(
+      CourierParser.PropDeclarationContext prop) throws ParseException {
+    if (prop.propJsonValue() != null) {
+      return parseJsonValue(prop.propJsonValue().jsonValue());
+    } else {
+      return Boolean.TRUE;
+    }
+  }
+
   private Object parseJsonValue(JsonValueContext jsonValue) throws ParseException {
     if (jsonValue.array() != null) {
       DataList dataList = new DataList();
@@ -545,7 +688,7 @@ public class CourierSchemaParser extends SchemaParser {
       return dataList;
     } else if (jsonValue.object() != null) {
       DataMap dataMap = new DataMap();
-      for (CourierParser.ObjectEntryContext entry: jsonValue.object().objectEntry()) {
+      for (ObjectEntryContext entry: jsonValue.object().objectEntry()) {
         dataMap.put(entry.key.value, parseJsonValue(entry.value));
       }
       return dataMap;
@@ -561,5 +704,50 @@ public class CourierSchemaParser extends SchemaParser {
       throw new ParseException(jsonValue,
         "Unrecognized JSON parse node: " + jsonValue.getText());
     }
+  }
+
+  // Extended fullname computation to handle imports
+  @Override
+  public String computeFullName(String name) {
+    String fullname;
+    DataSchema schema = DataSchemaUtil.typeStringToPrimitiveDataSchema(name);
+    if (schema != null)
+    {
+      fullname = name;
+    }
+    else if (Name.isFullName(name) || getCurrentNamespace().isEmpty())
+    {
+      fullname = name;  // already a fullname
+    }
+    else if (currentImports.containsKey(name)) {
+      // imported names are higher precedence than names in current namespace
+      fullname = currentImports.get(name).getFullName();
+    }
+    else
+    {
+      fullname = getCurrentNamespace() + "." + name; // assumed to be in current namespace
+    }
+    return fullname;
+  }
+
+  // simple name -> fullname
+  private Map<String, Name> currentImports;
+
+  private void setCurrentImports(ImportDeclarationsContext imports) {
+    Map<String, Name> importsBySimpleName = new HashMap<String, Name>();
+    for (ImportDeclarationContext importDecl: imports.importDeclaration()) {
+      String importedFullname = importDecl.type.value;
+      Name importedName = new Name(importedFullname);
+      String importedSimpleName = importedName.getName();
+      if (importsBySimpleName.containsKey(importedSimpleName)) {
+        startErrorMessage(importDecl)
+          .append("'")
+          .append(importsBySimpleName.get(importedSimpleName))
+          .append("' is already defined in an import.")
+          .append("\n");
+      }
+      importsBySimpleName.put(importedSimpleName, importedName);
+    }
+    this.currentImports = importsBySimpleName;
   }
 }

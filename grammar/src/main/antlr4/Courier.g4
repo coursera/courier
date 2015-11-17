@@ -4,13 +4,17 @@ grammar Courier;
   import org.coursera.courier.grammar.ParseUtils;
 }
 
-document: namespaceDeclaration namedTypeDeclaration;
+document: namespaceDeclaration importDeclarations namedTypeDeclaration;
 
 namespaceDeclaration: 'namespace' namespace;
 
 namespace returns [String value]: parts+=identifier ('.' parts+=identifier)* {
   $value = ParseUtils.join($parts);
 };
+
+importDeclarations: importDeclaration*;
+
+importDeclaration: 'import' type=fullyQualifiedTypeName;
 
 typeReference returns [String value]:
     fullyQualifiedTypeName { $value = $fullyQualifiedTypeName.value; } |
@@ -41,11 +45,14 @@ propDeclaration returns [String name]: propNameDeclaration propJsonValue? {
   $name = $propNameDeclaration.name;
 };
 
-propNameDeclaration returns [String name]: '@' propName { $name = $propName.name; };
+propNameDeclaration returns [String name]: '@' propName { $name = $propName.value; };
 
-propName returns [String name]: identifier { $name = $identifier.value; };
+propName returns [String value]: parts+=identifier ('.' parts+=identifier)* {
+  $value = ParseUtils.join($parts);
+};
 
-propJsonValue: '(' jsonValue ')';
+// TODO(jbetz): remove '( )' form once migrated to '=' form.
+propJsonValue: '(' jsonValue ')' | '=' jsonValue;
 
 recordDeclaration: 'record' name=typeNameDeclaration recordDecl=fieldSelection;
 
@@ -68,7 +75,9 @@ fixedDeclaration returns[int size]:
 
 unionDeclaration: 'union' typeParams=unionTypeAssignments;
 
-unionTypeAssignments: '[' members+=typeAssignment* ']';
+unionTypeAssignments: '[' members+=unionMemberDeclaration* ']';
+
+unionMemberDeclaration: doc=schemadoc? props+=propDeclaration* member=typeAssignment;
 
 arrayDeclaration: 'array' typeParams=arrayTypeAssignments;
 
