@@ -31,7 +31,7 @@ case class EnumDefinition(override val spec: EnumTemplateSpec) extends Definitio
   /**
    * The enumeration's type.
    *
-   * It's important to note that the type for the Enumerations we generate is
+   * It's important to note that the type for the Enumerations we generateRecord is
    * different than the enumeration object's name.
    *
    * A enumeration type is `SomeEnum.SomeEnum`, where the first `SomeEnum` is the name of the

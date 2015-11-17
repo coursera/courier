@@ -48,7 +48,7 @@ object CourierPlugin extends Plugin {
     "PegasusCodeGenerator implementation class run by this generator.")
 
   val courierSourceDirectory = settingKey[File](
-    "Directory with .pdsc and .courier files used to generate Scala bindings")
+    "Directory with .pdsc and .courier files used to generateRecord Scala bindings")
 
   val courierDestinationDirectory = settingKey[File]("Directory with the generated bindings")
 
@@ -60,7 +60,7 @@ object CourierPlugin extends Plugin {
   val packageDataModel = taskKey[File]("Produces a data model jar containing only pdsc files")
 
   val generateTyperefs = settingKey[Boolean](
-    "If set to true, generate 'TyperefInfo' classes for all typerefs.")
+    "If set to true, generateRecord 'TyperefInfo' classes for all typerefs.")
 
   /**
    * Settings that need to be added to the project to enable generation of Scala bindings for PDSC

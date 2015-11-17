@@ -41,7 +41,6 @@ See the idea-plugin project.
 
 TODO
 ----
-* [ ] Updated SBT plugin to highlight .courier file errors correctly in play error UI
 * [ ] Add full .pdsc -> .courier (and reverse) support, including build tool options.
 * [ ] Fix .courier parser to keep track of locations when parsing and include them in error
 messages produced.  Remove IOException throws once this is in place.
@@ -55,8 +54,4 @@ messages produced.  Remove IOException throws once this is in place.
 * [ ] Improve IntelliJ IDEA support: completion, references, go to... and a ton of other useful features
       (http://www.jetbrains.org/intellij/sdk/docs/tutorials/custom_language_support_tutorial.html).
 * [ ] Add HOCON style syntax to @annotations
-* [ ] Add a proper lexer
-* [ ] The current parser is written in Scala, and we need to figure out how to integrate it in with
-      the Java part of the Courier stack. Do we introduce a Scala dependency to the Java codebase,
-      or do we migrate to a non-Scala parser?
 * [ ] Add linter support as separate tool usable from arc
