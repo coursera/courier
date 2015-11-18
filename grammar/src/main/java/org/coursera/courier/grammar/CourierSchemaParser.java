@@ -23,6 +23,7 @@ import com.linkedin.data.codec.JacksonDataCodec;
 import com.linkedin.data.schema.ArrayDataSchema;
 import com.linkedin.data.schema.DataSchema;
 import com.linkedin.data.schema.DataSchemaResolver;
+import com.linkedin.data.schema.DataSchemaUtil;
 import com.linkedin.data.schema.EnumDataSchema;
 import com.linkedin.data.schema.FixedDataSchema;
 import com.linkedin.data.schema.JsonBuilder;
@@ -65,6 +66,8 @@ import org.coursera.courier.grammar.CourierParser.TypeReferenceContext;
 import org.coursera.courier.grammar.CourierParser.TyperefDeclarationContext;
 import org.coursera.courier.grammar.CourierParser.UnionDeclarationContext;
 import org.coursera.courier.grammar.CourierParser.UnionMemberDeclarationContext;
+import org.coursera.courier.grammar.CourierParser.ImportDeclarationContext;
+import org.coursera.courier.grammar.CourierParser.ImportDeclarationsContext;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -73,7 +76,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -275,6 +277,7 @@ public class CourierSchemaParser extends SchemaParser {
   private void parse(DocumentContext document) throws ParseException {
     setCurrentNamespace(
       document.namespaceDeclaration().namespace().value);
+    setCurrentImports(document.importDeclarations());
     DataSchema schema = parseNamedType(document.namedTypeDeclaration());
     topLevelSchemas.add(schema);
   }
@@ -701,5 +704,43 @@ public class CourierSchemaParser extends SchemaParser {
       throw new ParseException(jsonValue,
         "Unrecognized JSON parse node: " + jsonValue.getText());
     }
+  }
+
+  // Extend fullname computation to handle imports
+  @Override
+  public String computeFullName(String name) {
+    String fullname;
+    DataSchema schema = DataSchemaUtil.typeStringToPrimitiveDataSchema(name);
+    if (schema != null)
+    {
+      fullname = name; // primitive
+    }
+    else if (Name.isFullName(name) || getCurrentNamespace().isEmpty())
+    {
+      fullname = name;  // already a fullname
+    }
+    else if (currentImports.containsKey(name)) {
+      fullname = currentImports.get(name).getFullName(); // an imported name
+    }
+    else
+    {
+      fullname = getCurrentNamespace() + "." + name; // assumed to be a local name
+    }
+    return fullname;
+  }
+
+
+  // simple name -> fullname
+  private Map<String, Name> currentImports;
+
+  private void setCurrentImports(ImportDeclarationsContext imports) {
+    Map<String, Name> importsBySimpleName = new HashMap<String, Name>();
+    for (ImportDeclarationContext importDecl: imports.importDeclaration()) {
+      String importedFullname = importDecl.type.value;
+      Name importedName = new Name(importedFullname);
+      String importedSimpleName = importedName.getName();
+      importsBySimpleName.put(importedSimpleName, importedName);
+    }
+    this.currentImports = importsBySimpleName;
   }
 }

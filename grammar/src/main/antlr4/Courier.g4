@@ -4,13 +4,17 @@ grammar Courier;
   import org.coursera.courier.grammar.ParseUtils;
 }
 
-document: namespaceDeclaration namedTypeDeclaration;
+document: namespaceDeclaration importDeclarations namedTypeDeclaration;
 
 namespaceDeclaration: 'namespace' namespace;
 
 namespace returns [String value]: parts+=identifier ('.' parts+=identifier)* {
   $value = ParseUtils.join($parts);
 };
+
+importDeclarations: importDeclaration*;
+
+importDeclaration: 'import' type=fullyQualifiedTypeName;
 
 typeReference returns [String value]:
     fullyQualifiedTypeName { $value = $fullyQualifiedTypeName.value; } |

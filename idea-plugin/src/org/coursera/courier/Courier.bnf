@@ -15,7 +15,11 @@
 
 document ::= topLevel
 
-topLevel ::= namespaceDeclaration namedTypeDeclaration
+topLevel ::= namespaceDeclaration importDeclarations namedTypeDeclaration
+
+importDeclarations ::= importDeclaration*
+
+importDeclaration ::= IMPORT_KEYWORD fullyQualifiedName
 
 namespaceDeclaration ::= NAMESPACE_KEYWORD namespace
 

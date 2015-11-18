@@ -45,7 +45,6 @@ TODO
 * [ ] Fix .courier parser to keep track of locations when parsing and include them in error
 messages produced.  Remove IOException throws once this is in place.
 * [ ] Replace typedDefinition and flatTypedDefinition with @tag, @tagField and @memberField (or similar).
-* [ ] Switch to `@property = JSValue` syntax for properties.
 * [ ] Add “new courier file” support (set package and name of the top level record / data type in
       the file and keep them in sync).
 * [ ] Fix Auto-margin for doc strings.
@@ -54,5 +53,5 @@ messages produced.  Remove IOException throws once this is in place.
       namespace first, then included namespaces, then un-namespaced ?)
 * [ ] Improve IntelliJ IDEA support: completion, references, go to... and a ton of other useful features
       (http://www.jetbrains.org/intellij/sdk/docs/tutorials/custom_language_support_tutorial.html).
-* [ ] Add HOCON style syntax to @annotations
+* [ ] Add HOCON style syntax to @properties
 * [ ] Add linter support as separate tool usable from arc

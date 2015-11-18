@@ -1,5 +1,7 @@
 namespace org.example
 
+import org.example.common.DateTime
+
 /**
  * A fortune.
  */
@@ -8,7 +10,7 @@ record Fortune {
    * The fortune telling.
    */
   telling: FortuneTelling // comment 1
-  createdAt: /* comment 2 */ org.example.common.DateTime
+  createdAt: /* comment 2 */ DateTime
 
   @scala.omit
   keyedMap: map[Note, Note]

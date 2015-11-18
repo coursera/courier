@@ -48,7 +48,7 @@ StringLiteral = \" ( [^\"\\] | \\ ( [\"\\/bfnrt] | u[0-9]{4} ) )* \"
 <YYINITIAL> {
   /* keywords */
   "namespace"            { return CourierTypes.NAMESPACE_KEYWORD; }
-  //"import"             { return CourierTypes.IMPORT_KEYWORD; }
+  "import"               { return CourierTypes.IMPORT_KEYWORD; }
   "record"               { return CourierTypes.RECORD_KEYWORD; }
   "enum"                 { return CourierTypes.ENUM_KEYWORD; }
   "fixed"                { return CourierTypes.FIXED_KEYWORD; }
