@@ -7,11 +7,7 @@
     {
       "name": "telling",
       "doc": "The fortune telling.",
-      "type": [
-        "FortuneCookie",
-        "MagicEightBall",
-        "string"
-      ]
+      "type": "FortuneTelling"
     },
     {
       "name": "createdAt",
@@ -19,7 +15,8 @@
     },
     {
       "name": "keyedMap",
-      "type": { "type": "map", "keys": "Note", "values": "Note" }
+      "type": { "type": "map", "keys": "Note", "values": "Note" },
+      "scala": { "omit": true }
     },
     {
       "name": "namespace",

@@ -1,0 +1,18 @@
+{
+  "name": "FortuneTelling",
+  "namespace": "org.example",
+  "type": "typeref",
+  "ref": [
+    "FortuneCookie",
+    "MagicEightBall",
+    "string"
+  ],
+  "memberDocs": {
+    "org.example.FortuneCookie": "A fortune cookie."
+  },
+  "tag": {
+    "org.example.FortuneCookie": "fortuneCookie",
+    "org.example.MagicEightBall": "magicEightBall",
+    "string": "string"
+  }
+}

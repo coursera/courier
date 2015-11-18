@@ -28,6 +28,7 @@ import com.linkedin.pegasus.generator.JavaCodeGeneratorBase;
 import com.linkedin.pegasus.generator.spec.ArrayTemplateSpec;
 import com.linkedin.pegasus.generator.spec.ClassTemplateSpec;
 import com.linkedin.pegasus.generator.spec.EnumTemplateSpec;
+import com.linkedin.pegasus.generator.spec.FixedTemplateSpec;
 import com.linkedin.pegasus.generator.spec.PrimitiveTemplateSpec;
 import com.linkedin.pegasus.generator.spec.RecordTemplateSpec;
 import com.linkedin.pegasus.generator.spec.UnionTemplateSpec;
@@ -48,6 +49,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -85,6 +87,19 @@ public class FileFormatGenerator implements PegasusCodeGenerator {
     "record", "union", "enum", "typeref", "fixed", "array", "map", "namespace", "true", "false",
     "null", "nil"
   }));
+
+  private String escapeNamespaced(String namespaced) {
+    StringBuilder builder = new StringBuilder();
+    String[] parts = namespaced.split("\\.");
+    int len = parts.length;
+    for (int i = 0; i < len; i++) {
+      builder.append(escape(parts[i]));
+      if (i < len - 1) {
+        builder.append(".");
+      }
+    }
+    return builder.toString();
+  }
 
   private String escape(String identifier) {
     if (keywords.contains(identifier)) {
@@ -125,7 +140,7 @@ public class FileFormatGenerator implements PegasusCodeGenerator {
     if (!(spec.getSchema() instanceof NamedDataSchema)) return null;
 
     StringBuilder builder = new StringBuilder();
-    builder.append("namespace ").append(spec.getNamespace()).append("\n");
+    builder.append("namespace ").append(escapeNamespaced(spec.getNamespace())).append("\n");
     builder.append("\n");
     builder.append(generateType(null, spec));
     String code = PoorMansCStyleSourceFormatter.format(builder.toString());
@@ -138,12 +153,12 @@ public class FileFormatGenerator implements PegasusCodeGenerator {
   }
 
   public String generateRefOrDecl(ClassTemplateSpec container, ClassTemplateSpec spec) {
-    if ((spec.getSchema() instanceof NamedDataSchema) && (spec.getEnclosingClass() == null || !spec.getEnclosingClass().equals(container))) {
+    if ((spec.getSchema() instanceof NamedDataSchema) &&
+      (spec.getEnclosingClass() == null || !spec.getEnclosingClass().equals(container))) {
       if (Objects.equals(container.getNamespace(), spec.getNamespace())) {
         return escape(spec.getClassName());
       } else {
-        // TODO: escape fullname
-        return spec.getFullName();
+        return escapeNamespaced(spec.getFullName()) + " /*" + container + ", " + spec + "*/";
       }
     } else {
       return generateType(container, spec);
@@ -172,8 +187,11 @@ public class FileFormatGenerator implements PegasusCodeGenerator {
     } else if (spec instanceof CourierTyperefTemplateSpec) {
       CourierTyperefTemplateSpec typeref = (CourierTyperefTemplateSpec) spec;
       return generateTyperef(typeref);
+    } else if (spec instanceof FixedTemplateSpec) {
+      FixedTemplateSpec fixed = (FixedTemplateSpec) spec;
+      return generateFixed(fixed);
     } else {
-      return "unknown:" + spec;
+      throw new IllegalArgumentException("Unsupported type: " + spec.getSchema().getType());
     }
   }
 
@@ -194,9 +212,11 @@ public class FileFormatGenerator implements PegasusCodeGenerator {
     return schemadocAndProperties(schemaField.getDoc(), properties, false);
   }
 
-  public String schemadocAndProperties(String doc, Map<String, Object> properties, boolean multiline) {
+  public String schemadocAndProperties(
+    String doc, Map<String, Object> properties, boolean multiline) {
     StringBuilder builder = new StringBuilder();
     if (doc != null && doc.trim().length() > 0) {
+      builder.append("\n");
       builder.append(SchemadocEscaping.stringToSchemadoc(doc)).append("\n");
     }
     if (properties != null) {
@@ -204,9 +224,7 @@ public class FileFormatGenerator implements PegasusCodeGenerator {
         String key = property.getKey();
         Object value = property.getValue();
 
-        if (key.equals("defaultNone")) {
-          return "";
-        }
+        if (key.equals("defaultNone")) continue;
 
         builder.append("@").append(key);
         if (!value.equals(Boolean.TRUE)) {
@@ -218,22 +236,29 @@ public class FileFormatGenerator implements PegasusCodeGenerator {
     return builder.toString();
   }
 
-  // TODO: respect getEnclosingTask
   public String generateRecord(RecordTemplateSpec record) {
     StringBuilder builder = new StringBuilder();
     builder.append(schemadocAndProperties(record));
     builder.append("record ").append(escape(record.getClassName())).append(" {\n");
+    for (NamedDataSchema include: record.getSchema().getInclude()) {
+      builder.append("...").append(
+        generateRefOrDecl(record, ClassTemplateSpec.createFromDataSchema(include)));
+    }
     for (RecordTemplateSpec.Field field: record.getFields()) {
       if (!field.getSchemaField().getRecord().equals(record.getSchema())) continue;
       builder.append(schemadocAndProperties(field));
-      builder.append("  ").append(escape(field.getSchemaField().getName()));
+      builder.append(escape(field.getSchemaField().getName()));
       builder.append(": ").append(generateRefOrDecl(record, field.getType()));
       if (field.getSchemaField().getOptional()) {
         builder.append("?");
       }
+      Map<String, Object> props = field.getSchemaField().getProperties();
       if (field.getSchemaField().getDefault() != null) {
         builder.append(" = ");
         builder.append(toJson(field.getSchemaField().getDefault(), false));
+      } else if (props != null && Objects.equals(props.get("defaultNone"), Boolean.TRUE)) {
+        builder.append(" = ");
+        builder.append("nil");
       }
       builder.append("\n");
     }
@@ -262,6 +287,10 @@ public class FileFormatGenerator implements PegasusCodeGenerator {
     StringBuilder builder = new StringBuilder();
     builder
       .append("array[")
+
+      // TODO: getItemClass gets mapped to StringArray, which will be assigned the first
+      // typeref encountered the dereferences to the same type as this array.
+      // How to get the correct type back here? (also applies to map keys and values..)
       .append(generateRefOrDecl(array, array.getItemClass()))
       .append("]");
     return builder.toString();
@@ -271,16 +300,22 @@ public class FileFormatGenerator implements PegasusCodeGenerator {
     if (container == null) {
       container = union;
     }
+
     StringBuilder builder = new StringBuilder();
+    List<UnionTemplateSpec.Member> members = union.getMembers();
+    boolean multiline = members.size() > 3;
+    Iterator<UnionTemplateSpec.Member> iter = members.iterator();
     builder.append("union[");
-    Iterator<UnionTemplateSpec.Member> iter = union.getMembers().iterator();
+    if (multiline) builder.append("\n");
     while (iter.hasNext()) {
       UnionTemplateSpec.Member member = iter.next();
       builder.append(generateRefOrDecl(container, member.getClassTemplateSpec()));
       if (iter.hasNext()) {
-        builder.append(", ");
+        builder.append(",");
+        builder.append(multiline ? "\n" : " ");
       }
     }
+    if (multiline) builder.append("\n");
     builder.append("]");
     return builder.toString();
   }
@@ -289,10 +324,8 @@ public class FileFormatGenerator implements PegasusCodeGenerator {
     StringBuilder builder = new StringBuilder();
     builder.append(schemadocAndProperties(enumeration));
     builder.append("enum ").append(enumeration.getClassName()).append(" {\n");
-    Iterator<String> iter = enumeration.getSchema().getSymbols().iterator();
-    while (iter.hasNext()) {
-      String symbol = iter.next();
-      builder.append("  ").append(escape(symbol)).append("\n");
+    for (String symbol: enumeration.getSchema().getSymbols()) {
+      builder.append(escape(symbol)).append("\n");
     }
     builder.append("}");
     return builder.toString();
@@ -307,6 +340,15 @@ public class FileFormatGenerator implements PegasusCodeGenerator {
       generateRefOrDecl(
         typeref,
         typeref.getRef()));
+    return builder.toString();
+  }
+
+  public String generateFixed(FixedTemplateSpec fixed) {
+    StringBuilder builder = new StringBuilder();
+    builder
+      .append("fixed ")
+      .append(escape(fixed.getClassName()))
+      .append(fixed.getSchema().getSize());
     return builder.toString();
   }
 

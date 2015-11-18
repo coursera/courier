@@ -7,9 +7,12 @@ record Fortune {
   /**
    * The fortune telling.
    */
-  telling: union[FortuneCookie, MagicEightBall, string] // comment 1
+  telling: FortuneTelling // comment 1
   createdAt: /* comment 2 */ org.example.common.DateTime
+
+  @scala.omit
   keyedMap: map[Note, Note]
+
   `namespace`: array[string] = ["org", "example"]
   escaped: `record`
 }

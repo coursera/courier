@@ -44,6 +44,7 @@ TODO
 * [ ] Add full .pdsc -> .courier (and reverse) support, including build tool options.
 * [ ] Fix .courier parser to keep track of locations when parsing and include them in error
 messages produced.  Remove IOException throws once this is in place.
+* [ ] Replace typedDefinition and flatTypedDefinition with @tag, @tagField and @memberField (or similar).
 * [ ] Switch to `@property = JSValue` syntax for properties.
 * [ ] Add “new courier file” support (set package and name of the top level record / data type in
       the file and keep them in sync).

@@ -55,7 +55,7 @@ public class PoorMansCStyleSourceFormatter {
       boolean isEmpty = (line.length() == 0);
       if (isEmpty && (isPreviousLineEmpty || isPreviousLinePreamble)) continue;
 
-      if (line.startsWith("}")) {
+      if (line.startsWith("}") || line.startsWith("]")) {
         indentLevel--;
       }
       result.append(StringUtils.repeat("  ", indentLevel));
@@ -65,7 +65,7 @@ public class PoorMansCStyleSourceFormatter {
       result.append(line);
       result.append('\n');
 
-      if (line.endsWith("{")) {
+      if (line.endsWith("{") || line.endsWith("[")) {
         indentLevel++;
       }
 

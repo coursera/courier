@@ -1,71 +1,77 @@
 /*
- Copyright 2015 Coursera Inc.
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+ * Copyright 2015 Coursera Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
-package org.coursera.courier.grammar;
+package org.coursera.courier.api;
 
 import com.linkedin.data.DataMap;
 import com.linkedin.data.codec.JacksonDataCodec;
 import com.linkedin.data.codec.PrettyPrinterJacksonDataCodec;
-import com.linkedin.data.schema.*;
+import com.linkedin.data.schema.DataSchema;
+import com.linkedin.data.schema.DataSchemaLocation;
+import com.linkedin.data.schema.DataSchemaResolver;
+import com.linkedin.data.schema.JsonBuilder;
+import com.linkedin.data.schema.Name;
+import com.linkedin.data.schema.NamedDataSchema;
+import com.linkedin.data.schema.SchemaParserFactory;
+import com.linkedin.data.schema.SchemaToJsonEncoder;
+import com.linkedin.data.schema.StringDataSchemaLocation;
 import com.linkedin.data.schema.resolver.DefaultDataSchemaResolver;
 import com.linkedin.data.schema.resolver.FileDataSchemaLocation;
 import com.linkedin.data.schema.resolver.FileDataSchemaResolver;
 import com.linkedin.data.template.DataTemplateUtil;
-import org.junit.Assert;
-import org.junit.Test;
+import org.apache.commons.io.FileUtils;
+import org.coursera.courier.grammar.CourierSchemaParserFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.Objects;
 
 public class ConversionTest {
-  @Test
-  public void courierToPdsc() throws IOException {
-    String[] schemasNames = new String[] {
-      "org.example.Fortune",
-      "org.example.FortuneCookie",
-      "org.example.MagicEightBall",
-      "org.example.MagicEightBallAnswer",
-      "org.example.TyperefExample",
-      "org.example.common.DateTime",
-      "org.example.common.Timestamp",
-      "org.example.Note"};
-    for (String schemaName: schemasNames) {
+  public static void main(String[] args) throws IOException {
+    String path = TestSchema.pegasusPath.getAbsolutePath();
+    Iterator files = FileUtils.iterateFiles(TestSchema.pegasusPath, new String[]{"pdsc"}, true);
+    while (files.hasNext()) {
+      File file = (File)files.next();
+      String relativePath = file.getAbsolutePath().substring(path.length());
+      int idx = relativePath.lastIndexOf(".");
+      String schemaName = relativePath.substring(1, idx).replace(File.separator, ".");
+      System.err.println("schema:" + schemaName);
       NamedDataSchema pegasus = TestSchema.loadPegasus(schemaName).schema;
       NamedDataSchema courier = TestSchema.loadCourier(schemaName).schema;
-      assertSame(
-        pegasus,
-        courier);
+      assertSame(pegasus, courier);
     }
   }
 
-  private JacksonDataCodec dataCodec = new JacksonDataCodec();
-  private PrettyPrinterJacksonDataCodec prettyCodec = new PrettyPrinterJacksonDataCodec();
-  private DataMap readJsonToMap(String string) throws IOException {
+  private static JacksonDataCodec dataCodec = new JacksonDataCodec();
+  private static PrettyPrinterJacksonDataCodec prettyCodec = new PrettyPrinterJacksonDataCodec();
+  private static DataMap readJsonToMap(String string) throws IOException {
     return dataCodec.stringToMap(string);
   }
 
-  private void assertSame(DataSchema lhs, DataSchema rhs) throws IOException {
+  private static void assertSame(DataSchema lhs, DataSchema rhs) throws IOException {
+    //System.err.println("comparing " + lhs + " with " + rhs);
     DataMap lhsData = readJsonToMap(toJson(lhs));
     DataMap rhsData = readJsonToMap(toJson(rhs));
-    Assert.assertEquals(
-      prettyCodec.mapToString(lhsData) + "\n != \n" + prettyCodec.mapToString(rhsData),
-      lhsData, rhsData);
+    if (!Objects.equals(lhsData, rhsData)) {
+      System.err.println(prettyCodec.mapToString(lhsData) + "\n != \n" + prettyCodec.mapToString(rhsData));
+    }
   }
 
-  private String toJson(DataSchema schema) {
+  private static String toJson(DataSchema schema) {
     return SchemaToJsonEncoder.schemaToJson(schema, JsonBuilder.Pretty.INDENTED);
   }
 
@@ -80,7 +86,7 @@ public class ConversionTest {
       this.location = location;
     }
 
-    private static File pegasusPath = new File(System.getProperty("project.dir") + "/src/test/pegasus");
+    public static File pegasusPath = new File(System.getProperty("project.dir") + "/src/main/pegasus");
     private static FileDataSchemaResolver pegasusFileResolver = new FileDataSchemaResolver(
       SchemaParserFactory.instance(), pegasusPath.getAbsolutePath());
 
@@ -89,12 +95,10 @@ public class ConversionTest {
       NamedDataSchema schema = pegasusFileResolver.findDataSchema(schemaName, why);
       FileDataSchemaLocation location = new FileDataSchemaLocation(
         new File(pegasusPath + "/" + schemaName.replace('.', '/') + ".pdsc"));
-      Assert.assertTrue(why.toString(), schema != null);
       return new TestSchema(schema, pegasusFileResolver, location);
     }
 
-    private static File courierPath = new File(System.getProperty("project.dir") + "/src/test/courier");
-
+    private static File courierPath = new File(System.getProperty("project.dir") + "/src/main/courier");
     private static FileDataSchemaResolver courierFileResolver =
       new FileDataSchemaResolver(
         new CourierSchemaParserFactory(),
@@ -108,7 +112,6 @@ public class ConversionTest {
       NamedDataSchema schema = courierFileResolver.findDataSchema(schemaName, why);
       FileDataSchemaLocation location = new FileDataSchemaLocation(
         new File(pegasusPath + "/" + schemaName.replace('.', '/') + ".courier"));
-      Assert.assertTrue(why.toString(), schema != null);
       return new TestSchema(schema, courierFileResolver, location);
     }
 
