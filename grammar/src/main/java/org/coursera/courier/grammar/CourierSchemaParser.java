@@ -706,29 +706,29 @@ public class CourierSchemaParser extends SchemaParser {
     }
   }
 
-  // Extend fullname computation to handle imports
+  // Extended fullname computation to handle imports
   @Override
   public String computeFullName(String name) {
     String fullname;
     DataSchema schema = DataSchemaUtil.typeStringToPrimitiveDataSchema(name);
     if (schema != null)
     {
-      fullname = name; // primitive
+      fullname = name;
     }
     else if (Name.isFullName(name) || getCurrentNamespace().isEmpty())
     {
       fullname = name;  // already a fullname
     }
     else if (currentImports.containsKey(name)) {
-      fullname = currentImports.get(name).getFullName(); // an imported name
+      // imported names are higher precedence than names in current namespace
+      fullname = currentImports.get(name).getFullName();
     }
     else
     {
-      fullname = getCurrentNamespace() + "." + name; // assumed to be a local name
+      fullname = getCurrentNamespace() + "." + name; // assumed to be in current namespace
     }
     return fullname;
   }
-
 
   // simple name -> fullname
   private Map<String, Name> currentImports;
@@ -739,6 +739,13 @@ public class CourierSchemaParser extends SchemaParser {
       String importedFullname = importDecl.type.value;
       Name importedName = new Name(importedFullname);
       String importedSimpleName = importedName.getName();
+      if (importsBySimpleName.containsKey(importedSimpleName)) {
+        startErrorMessage(importDecl)
+          .append("'")
+          .append(importsBySimpleName.get(importedSimpleName))
+          .append("' is already defined in an import.")
+          .append("\n");
+      }
       importsBySimpleName.put(importedSimpleName, importedName);
     }
     this.currentImports = importsBySimpleName;
