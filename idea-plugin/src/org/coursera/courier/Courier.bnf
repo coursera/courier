@@ -19,19 +19,32 @@ topLevel ::= namespaceDeclaration importDeclarations namedTypeDeclaration
 
 importDeclarations ::= importDeclaration*
 
-importDeclaration ::= IMPORT_KEYWORD fullyQualifiedName
+importDeclaration ::= IMPORT_KEYWORD fullyQualifiedName  {
+  mixin="org.coursera.courier.psi.CourierNamedElementReference"
+  implements="org.coursera.courier.psi.CourierNamedElement"
+  methods=[getFullname getName setName getNameIdentifier]
+}
 
 namespaceDeclaration ::= NAMESPACE_KEYWORD namespace
 
 namespace ::= IDENTIFIER (DOT IDENTIFIER)*
 
-typeReference ::= fullyQualifiedName | simpleName
+typeReference ::= fullyQualifiedName {
+  mixin="org.coursera.courier.psi.CourierNamedElementReference"
+  implements="org.coursera.courier.psi.CourierNamedElement"
+  methods=[getFullname getName setName getNameIdentifier]
+}
 
-typeNameDeclaration ::= simpleName
+
+typeNameDeclaration ::= simpleName {
+  mixin="org.coursera.courier.psi.CourierNamedElementDeclaration"
+  implements="org.coursera.courier.psi.CourierNamedElement"
+  methods=[getFullname getName setName getNameIdentifier]
+}
 
 simpleName ::= IDENTIFIER
 
-fullyQualifiedName ::= IDENTIFIER (DOT IDENTIFIER)+
+fullyQualifiedName ::= IDENTIFIER (DOT IDENTIFIER)*
 
 typeDeclaration ::= namedTypeDeclaration | anonymousTypeDeclaration
 

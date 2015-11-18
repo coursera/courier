@@ -2,5 +2,7 @@ namespace org.example
 
 record MagicEightBall {
   question: string
-  answer: MagicEightBallAnswer
+  answer: org.example.MagicEightBallAnswer
+  foo: org.example.MagicEightBallAnswer
+  bar: MagicEightBall
 }

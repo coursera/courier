@@ -36,6 +36,11 @@
     <langCodeStyleSettingsProvider implementation="org.coursera.courier.CourierLanguageCodeStyleSettingsProvider"/>
     <commentCompleteHandler implementation="org.coursera.courier.CourierCommentCompleteHandler" />
     <lang.ast.factory language="Courier" implementationClass="org.coursera.courier.CourierASTFactory" />
+
+    <!-- psi.referenceProvider language="Courier" providerClass="org.coursera.courier.CourierReferenceProvider" / -->
+    <!-- psi.referenceContributor language="Courier" implementation="org.coursera.courier.CourierReferenceContributor"/ -->
+
+    <!-- lang.refactoringSupport language="Courier" implementationClass="org.coursera.courier.CourierRefactoringSupportProvider"/ -->
   </extensions>
 
   <application-components>
