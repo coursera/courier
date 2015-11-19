@@ -22,7 +22,6 @@ importDeclarations ::= importDeclaration*
 importDeclaration ::= IMPORT_KEYWORD fullyQualifiedName  {
   mixin="org.coursera.courier.psi.CourierNamedElementReference"
   implements="org.coursera.courier.psi.CourierNamedElement"
-  methods=[getFullname getName setName getNameIdentifier]
 }
 
 namespaceDeclaration ::= NAMESPACE_KEYWORD namespace

@@ -40,6 +40,8 @@
     <!-- psi.referenceProvider language="Courier" providerClass="org.coursera.courier.CourierReferenceProvider" / -->
     <!-- psi.referenceContributor language="Courier" implementation="org.coursera.courier.CourierReferenceContributor"/ -->
 
+    <completion.contributor language="Courier" implementationClass="org.coursera.courier.CourierCompletionContributor"/>
+
     <!-- lang.refactoringSupport language="Courier" implementationClass="org.coursera.courier.CourierRefactoringSupportProvider"/ -->
     <lang.findUsagesProvider language="Courier" implementationClass="org.coursera.courier.CourierFindUsagesProvider"/>
     <gotoClassContributor implementation="org.coursera.courier.CourierChooseByNameContributor"/>

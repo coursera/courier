@@ -39,22 +39,11 @@ public class CourierNamedElementReference extends CourierNamedElementBase {
     super(node);
   }
 
-  private static final Set<String> primitiveTypes = new HashSet<String>();
-  static {
-    primitiveTypes.add("string");
-    primitiveTypes.add("boolean");
-    primitiveTypes.add("int");
-    primitiveTypes.add("long");
-    primitiveTypes.add("float");
-    primitiveTypes.add("double");
-    primitiveTypes.add("bytes");
-  }
-
   public String getFullname() {
     CourierFullyQualifiedName qualifiedName = PsiTreeUtil.findChildOfType(this, CourierFullyQualifiedName.class);
     if (qualifiedName != null) {
       String rawName = qualifiedName.getText();
-      if (primitiveTypes.contains(rawName)) {
+      if (CourierTokenType.PRIMITIVE_TYPES.contains(rawName)) {
         return rawName;
       }
       if (rawName.contains(".")) {
@@ -88,7 +77,7 @@ public class CourierNamedElementReference extends CourierNamedElementBase {
   @Nullable
   @Override
   public PsiElement getNameIdentifier() {
-    if (primitiveTypes.contains(getFullname())) {
+    if (CourierTokenType.PRIMITIVE_TYPES.contains(getFullname())) {
       return null;
     }
     ASTNode qualifiedName = getNode().findChildByType(CourierTypes.FULLY_QUALIFIED_NAME);
@@ -100,7 +89,7 @@ public class CourierNamedElementReference extends CourierNamedElementBase {
 
   @Override
   public PsiReference getReference() {
-    if (primitiveTypes.contains(getFullname())) {
+    if (CourierTokenType.PRIMITIVE_TYPES.contains(getFullname())) {
       return null;
     }
     CourierTypeNameDeclaration declaration = CourierResolver.findTypeDeclaration(getProject(), getFullname());
