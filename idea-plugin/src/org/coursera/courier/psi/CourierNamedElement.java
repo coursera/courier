@@ -19,7 +19,7 @@ package org.coursera.courier.psi;
 import com.intellij.psi.PsiNameIdentifierOwner;
 
 public interface CourierNamedElement extends PsiNameIdentifierOwner {
-  String getFullname();
-  String getNamespace();
   String getName();
+  TypeName getFullname();
+  CourierFile getCourierFile();
 }

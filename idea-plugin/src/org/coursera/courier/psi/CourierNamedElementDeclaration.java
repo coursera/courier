@@ -16,17 +16,12 @@
 
 package org.coursera.courier.psi;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.navigation.NavigationItem;
-import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiReference;
-import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import org.coursera.courier.CourierIcons;
-import org.coursera.courier.CourierResolver;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -38,18 +33,19 @@ public class CourierNamedElementDeclaration extends CourierNamedElementBase impl
     super(node);
   }
 
-  public String getFullname() {
-    ASTNode simpleName = getNode().findChildByType(CourierTypes.SIMPLE_NAME);
-    if (simpleName != null) {
-      String rawName = simpleName.getText();
-      if (rawName.startsWith("`") && rawName.endsWith("`")) {
-        rawName = rawName.substring(1, rawName.length() - 1);
-      }
-      CourierNamespace namespace = PsiTreeUtil.findChildOfType(getContainingFile(), CourierNamespace.class);
-      if (namespace != null) {
-        return namespace.getText() + "." + rawName;
+  public TypeName getFullname() {
+    ASTNode nameNode = getNode().findChildByType(CourierTypes.SIMPLE_NAME);
+    if (nameNode != null) {
+      String unescapedName = nameNode.getText();
+      if (TypeName.isPrimitive(unescapedName)) {
+        return TypeName.escaped(unescapedName);
       } else {
-        return rawName;
+        CourierNamespace namespace = getCourierFile().getNamespace();
+        if (namespace != null) {
+          return TypeName.escaped(namespace.getText(), unescapedName);
+        } else {
+          return TypeName.escaped(unescapedName);
+        }
       }
     }
     return null;
@@ -59,7 +55,9 @@ public class CourierNamedElementDeclaration extends CourierNamedElementBase impl
   public PsiElement setName(@NonNls @NotNull String name) throws IncorrectOperationException {
     ASTNode identifierNode = getNode().findChildByType(CourierTypes.SIMPLE_NAME);
     if (identifierNode != null) {
-      // TODO(jbetz): figure out how to replace a node properly
+      // TODO(jbetz): figure out how to replace a node properly?
+      // Note that there may not be an active editor, so WriteCommandAction.runWriteCommandAction
+      // cannot be used..
     }
     return this;
   }
@@ -79,20 +77,15 @@ public class CourierNamedElementDeclaration extends CourierNamedElementBase impl
       @Nullable
       @Override
       public String getPresentableText() {
-        String namespace = getNamespace();
-        if (namespace != null) {
-          return getName() + " (" + namespace + ")";
-        } else {
-          return getName();
-        }
+        return getName();
       }
 
       @Nullable
       @Override
       public String getLocationString() {
-        String namespace = getNamespace();
+        String namespace = getFullname().getNamespace();
         if (namespace != null) {
-          return namespace;
+          return "(" + namespace + ")";
         } else {
           return "";
         }

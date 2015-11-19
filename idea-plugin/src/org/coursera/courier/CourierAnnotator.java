@@ -36,6 +36,11 @@ public class CourierAnnotator implements Annotator {
       public void visitTypeReference(@NotNull CourierTypeReference o) {
         super.visitTypeReference(o);
         setHighlighting(o, holder, CourierSyntaxHighlighter.TYPE_REFERENCE);
+        if (!o.getFullname().isPrimitive()) {
+          if (o.getReference() == null) {
+            holder.createErrorAnnotation(o, "Cannot resolve symbol '" + o.getText() + "'");
+          }
+        }
       }
     });
     element.accept(new CourierVisitor() {

@@ -27,36 +27,27 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
 public class CourierNamedElementReference extends CourierNamedElementBase {
   public CourierNamedElementReference(@NotNull ASTNode node) {
     super(node);
   }
 
-  public String getFullname() {
-    CourierFullyQualifiedName qualifiedName = PsiTreeUtil.findChildOfType(this, CourierFullyQualifiedName.class);
-    if (qualifiedName != null) {
-      String rawName = qualifiedName.getText();
-      if (rawName.startsWith("`") && rawName.endsWith("`")) {
-        rawName = rawName.substring(1, rawName.length() - 1);
-      }
-      if (CourierTokenType.PRIMITIVE_TYPES.contains(rawName)) {
-        return rawName;
-      }
-      if (rawName.contains(".")) {
-        return rawName;
+  public TypeName getFullname() {
+    CourierFullyQualifiedName nameNode = PsiTreeUtil.findChildOfType(this, CourierFullyQualifiedName.class);
+    if (nameNode != null) {
+      String unescapedName = nameNode.getText();
+      if (TypeName.isPrimitive(unescapedName) || unescapedName.contains(".")) {
+        return TypeName.escaped(unescapedName);
       } else {
-        Map<String, String> imports = importsByName(PsiTreeUtil.findChildrenOfType(getContainingFile(), CourierImportDeclaration.class));
-        String importedName = imports.get(rawName);
+        TypeName importedName = getCourierFile().lookupImport(TypeName.escape(unescapedName));
         if (importedName != null) {
           return importedName;
         } else {
-          CourierNamespace namespace = PsiTreeUtil.findChildOfType(getContainingFile(), CourierNamespace.class);
+          CourierNamespace namespace = getCourierFile().getNamespace();
           if (namespace != null) {
-            return namespace.getText() + "." + rawName;
+            return TypeName.escaped(namespace.getText(), unescapedName);
+          } else {
+            return TypeName.escaped(unescapedName);
           }
         }
       }
@@ -77,7 +68,7 @@ public class CourierNamedElementReference extends CourierNamedElementBase {
   @Nullable
   @Override
   public PsiElement getNameIdentifier() {
-    if (CourierTokenType.PRIMITIVE_TYPES.contains(getFullname())) {
+    if (getFullname().isPrimitive()) {
       return null;
     }
     ASTNode qualifiedName = getNode().findChildByType(CourierTypes.FULLY_QUALIFIED_NAME);
@@ -89,7 +80,7 @@ public class CourierNamedElementReference extends CourierNamedElementBase {
 
   @Override
   public PsiReference getReference() {
-    if (CourierTokenType.PRIMITIVE_TYPES.contains(getFullname())) {
+    if (getFullname().isPrimitive()) {
       return null;
     }
     CourierTypeNameDeclaration declaration = CourierResolver.findTypeDeclaration(getProject(), getFullname());
@@ -101,13 +92,5 @@ public class CourierNamedElementReference extends CourierNamedElementBase {
       return new CourierReference(this, declaration, new TextRange(start, end));
     }
     return null;
-  }
-
-  public static Map<String, String> importsByName(Collection<CourierImportDeclaration> imports) {
-    Map<String, String> byName = new HashMap<String, String>();
-    for (CourierImportDeclaration importDeclaration : imports) {
-      byName.put(importDeclaration.getName(), importDeclaration.getFullname());
-    }
-    return byName;
   }
 }

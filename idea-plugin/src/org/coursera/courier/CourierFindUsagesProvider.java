@@ -59,7 +59,7 @@ public class CourierFindUsagesProvider implements FindUsagesProvider {
   @Override
   public String getDescriptiveName(@NotNull PsiElement element) {
     if (element instanceof CourierTypeNameDeclaration) {
-      return ((CourierTypeNameDeclaration)element).getFullname();
+      return ((CourierTypeNameDeclaration)element).getFullname().toString();
     } else {
       return "";
     }

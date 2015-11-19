@@ -16,35 +16,33 @@
 
 package org.coursera.courier;
 
+import com.google.common.base.Function;
+import com.google.common.base.Predicates;
+import com.google.common.collect.Iterables;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.search.FileTypeIndex;
 import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.indexing.FileBasedIndex;
 import org.coursera.courier.psi.CourierFile;
-import org.coursera.courier.psi.CourierImportDeclaration;
-import org.coursera.courier.psi.CourierNamespace;
 import org.coursera.courier.psi.CourierTypeNameDeclaration;
 import org.coursera.courier.psi.CourierTypeReference;
+import org.coursera.courier.psi.TypeName;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+// TODO(jbetz): All the scans preformed here are obviously inefficient, we should replace with
+// a IntelliJ style index of some kind..
 public class CourierResolver {
   public static List<CourierTypeNameDeclaration> findTypeDeclarations(Project project) {
     List<CourierTypeNameDeclaration> results = new ArrayList<CourierTypeNameDeclaration>();
-    Collection<VirtualFile> virtualFiles =
-      FileBasedIndex.getInstance().getContainingFiles(FileTypeIndex.NAME, CourierFileType.INSTANCE, GlobalSearchScope.allScope(project));
-    for (VirtualFile virtualFile : virtualFiles) {
-      CourierFile simpleFile = (CourierFile) PsiManager.getInstance(project).findFile(virtualFile);
+    for (CourierFile simpleFile: getCourierFiles(project)) {
       if (simpleFile != null) {
-        CourierTypeNameDeclaration declaration = PsiTreeUtil.findChildOfType(simpleFile, CourierTypeNameDeclaration.class);
+        CourierTypeNameDeclaration declaration = simpleFile.getPrimaryTypeDeclaration();
         if (declaration != null) {
           results.add(declaration);
         }
@@ -53,58 +51,62 @@ public class CourierResolver {
     return results;
   }
 
-  public static List<CourierTypeNameDeclaration> findTypeDeclarations(Project project, String name) {
+  public static List<CourierTypeNameDeclaration> findTypeDeclarations(Project project, TypeName fullname) {
+    // TODO: Optimize. Only files in the namespace of the fullname need to be considered.
     List<CourierTypeNameDeclaration> results = new ArrayList<CourierTypeNameDeclaration>();
-    Collection<VirtualFile> virtualFiles =
-      FileBasedIndex.getInstance().getContainingFiles(FileTypeIndex.NAME, CourierFileType.INSTANCE, GlobalSearchScope.allScope(project));
-    for (VirtualFile virtualFile : virtualFiles) {
-      CourierFile simpleFile = (CourierFile) PsiManager.getInstance(project).findFile(virtualFile);
-      if (simpleFile != null) {
-        CourierTypeNameDeclaration declaration = PsiTreeUtil.findChildOfType(simpleFile, CourierTypeNameDeclaration.class);
-        if (declaration != null && declaration.getFullname().equals(name)) {
-          results.add(declaration);
-        }
+    for (CourierFile simpleFile: getCourierFiles(project)) {
+      CourierTypeNameDeclaration declaration = simpleFile.getPrimaryTypeDeclaration();
+      if (declaration != null && declaration.getFullname().equals(fullname)) {
+        results.add(declaration);
       }
     }
     return results;
   }
 
-  public static CourierTypeNameDeclaration findTypeDeclaration(Project project, String fullname) {
-    Collection<VirtualFile> virtualFiles =
-      FileBasedIndex.getInstance().getContainingFiles(FileTypeIndex.NAME, CourierFileType.INSTANCE, GlobalSearchScope.allScope(project));
-    for (VirtualFile virtualFile : virtualFiles) {
-      CourierFile simpleFile = (CourierFile) PsiManager.getInstance(project).findFile(virtualFile);
-      if (simpleFile != null) {
-        CourierTypeNameDeclaration declaration = PsiTreeUtil.findChildOfType(simpleFile, CourierTypeNameDeclaration.class);
-        if (declaration != null) {
-          String typeFullname = declaration.getFullname();
-          if (typeFullname.equals(fullname)) {
-            return declaration;
-          }
+  public static CourierTypeNameDeclaration findTypeDeclaration(Project project, TypeName fullname) {
+    // TODO: Optimize. Only files in the namespace of the fullname need to be considered.
+    for (CourierFile simpleFile: getCourierFiles(project)) {
+      CourierTypeNameDeclaration declaration = simpleFile.getPrimaryTypeDeclaration();
+      if (declaration != null) {
+        TypeName typeFullname = declaration.getFullname();
+        if (typeFullname.equals(fullname)) {
+          return declaration;
         }
       }
     }
     return null;
   }
 
-  public static List<CourierTypeReference> findTypeReferences(Project project, String fullname) {
+  public static List<CourierTypeReference> findTypeReferences(Project project, TypeName fullname) {
+    // TODO: Optimize. Only files in the namespace of the fullname need to be considered.
     List<CourierTypeReference> result = null;
-    Collection<VirtualFile> virtualFiles =
-      FileBasedIndex.getInstance().getContainingFiles(FileTypeIndex.NAME, CourierFileType.INSTANCE, GlobalSearchScope.allScope(project));
-    for (VirtualFile virtualFile : virtualFiles) {
-      CourierFile simpleFile = (CourierFile) PsiManager.getInstance(project).findFile(virtualFile);
-      if (simpleFile != null) {
-        Collection<CourierTypeReference> references = PsiTreeUtil.findChildrenOfType(simpleFile, CourierTypeReference.class);
-        for (CourierTypeReference reference : references) {
-          if (reference.getFullname().equals(fullname)) {
-            if (result == null) {
-              result = new ArrayList<CourierTypeReference>();
-            }
-            result.add(reference);
+    for (CourierFile simpleFile: getCourierFiles(project)) {
+      Collection<CourierTypeReference> references = simpleFile.getTypeReferences();
+      for (CourierTypeReference reference : references) {
+        if (reference.getFullname().equals(fullname)) {
+          if (result == null) {
+            result = new ArrayList<CourierTypeReference>();
           }
+          result.add(reference);
         }
       }
     }
     return result != null ? result : Collections.<CourierTypeReference>emptyList();
+  }
+
+  private static Iterable<CourierFile> getCourierFiles(final Project project) {
+    Collection<VirtualFile> virtualFiles =
+      FileBasedIndex.getInstance().getContainingFiles(
+        FileTypeIndex.NAME, CourierFileType.INSTANCE, GlobalSearchScope.allScope(project));
+
+    Iterable<CourierFile> files = Iterables.transform(
+      virtualFiles,
+      new Function<VirtualFile, CourierFile>() {
+      @Override
+      public CourierFile apply(VirtualFile virtualFile) {
+        return (CourierFile) PsiManager.getInstance(project).findFile(virtualFile);
+      }
+    });
+    return Iterables.filter(files, Predicates.notNull());
   }
 }

@@ -9,23 +9,12 @@ public abstract class CourierNamedElementBase extends ASTWrapperPsiElement imple
     super(node);
   }
 
+  @Override
   public String getName() {
-    String fullname = getFullname();
-    int idx = fullname.lastIndexOf('.');
-    if (idx > 0 && idx < fullname.length() - 2) {
-      return fullname.substring(idx + 1);
-    } else {
-      return fullname;
-    }
+    return getFullname().getName();
   }
 
-  public String getNamespace() {
-    String fullname = getFullname();
-    int idx = fullname.lastIndexOf('.');
-    if (idx > 1) {
-      return fullname.substring(0, idx);
-    } else {
-      return "";
-    }
+  public CourierFile getCourierFile() {
+    return (CourierFile)getContainingFile();
   }
 }
