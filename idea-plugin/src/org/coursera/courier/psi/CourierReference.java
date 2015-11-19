@@ -47,6 +47,7 @@ public class CourierReference extends PsiReferenceBase<PsiElement> {
 
   @Override
   public boolean isReferenceTo(PsiElement element) {
+    if (!(element instanceof  CourierTypeNameDeclaration)) return false;
     PsiElement resolved = resolve();
     if (resolved != null) {
       return resolved.equals(element);

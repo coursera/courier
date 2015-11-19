@@ -18,4 +18,14 @@ public abstract class CourierNamedElementBase extends ASTWrapperPsiElement imple
       return fullname;
     }
   }
+
+  public String getNamespace() {
+    String fullname = getFullname();
+    int idx = fullname.lastIndexOf('.');
+    if (idx > 1) {
+      return fullname.substring(0, idx);
+    } else {
+      return "";
+    }
+  }
 }

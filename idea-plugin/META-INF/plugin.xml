@@ -24,7 +24,7 @@
     <annotator language="Courier" implementationClass="org.coursera.courier.CourierAnnotator"/>
     <colorSettingsPage implementation="org.coursera.courier.CourierColorSettingsPage"/>
     <lang.parserDefinition language="Courier" implementationClass="org.coursera.courier.CourierParserDefinition"/>
-    <lang.syntaxHighlighterFactory key="Courier" implementationClass="org.coursera.courier.CourierSyntaxHighlighterFactory"/>
+    <lang.syntaxHighlighterFactory language="Courier" implementationClass="org.coursera.courier.CourierSyntaxHighlighterFactory"/>
     <lang.commenter language="Courier" implementationClass="org.coursera.courier.CourierCommenter"/>
     <lang.documentationProvider language="Courier" implementationClass="org.coursera.courier.CourierCodeDocumentationProvider"/>
     <lang.braceMatcher language="Courier" implementationClass="org.coursera.courier.CourierBraceMatcher"/>
@@ -41,6 +41,8 @@
     <!-- psi.referenceContributor language="Courier" implementation="org.coursera.courier.CourierReferenceContributor"/ -->
 
     <!-- lang.refactoringSupport language="Courier" implementationClass="org.coursera.courier.CourierRefactoringSupportProvider"/ -->
+    <lang.findUsagesProvider language="Courier" implementationClass="org.coursera.courier.CourierFindUsagesProvider"/>
+    <gotoClassContributor implementation="org.coursera.courier.CourierChooseByNameContributor"/>
   </extensions>
 
   <application-components>

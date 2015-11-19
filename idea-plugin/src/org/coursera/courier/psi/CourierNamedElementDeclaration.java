@@ -18,17 +18,22 @@ package org.coursera.courier.psi;
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
+import com.intellij.navigation.ItemPresentation;
+import com.intellij.navigation.NavigationItem;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
+import org.coursera.courier.CourierIcons;
 import org.coursera.courier.CourierResolver;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class CourierNamedElementDeclaration extends CourierNamedElementBase {
+import javax.swing.*;
+
+public class CourierNamedElementDeclaration extends CourierNamedElementBase implements NavigationItem {
   public CourierNamedElementDeclaration(@NotNull ASTNode node) {
     super(node);
   }
@@ -63,5 +68,37 @@ public class CourierNamedElementDeclaration extends CourierNamedElementBase {
       return simpleName.getFirstChildNode().getPsi();
     }
     return null;
+  }
+
+  public ItemPresentation getPresentation() {
+    return new ItemPresentation() {
+      @Nullable
+      @Override
+      public String getPresentableText() {
+        String namespace = getNamespace();
+        if (namespace != null) {
+          return getName() + " (" + namespace + ")";
+        } else {
+          return getName();
+        }
+      }
+
+      @Nullable
+      @Override
+      public String getLocationString() {
+        String namespace = getNamespace();
+        if (namespace != null) {
+          return namespace;
+        } else {
+          return "";
+        }
+      }
+
+      @Nullable
+      @Override
+      public Icon getIcon(boolean unused) {
+        return CourierIcons.FILE;
+      }
+    };
   }
 }

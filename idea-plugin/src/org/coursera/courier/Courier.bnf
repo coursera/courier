@@ -32,14 +32,12 @@ namespace ::= IDENTIFIER (DOT IDENTIFIER)*
 typeReference ::= fullyQualifiedName {
   mixin="org.coursera.courier.psi.CourierNamedElementReference"
   implements="org.coursera.courier.psi.CourierNamedElement"
-  methods=[getFullname getName setName getNameIdentifier]
 }
 
 
 typeNameDeclaration ::= simpleName {
   mixin="org.coursera.courier.psi.CourierNamedElementDeclaration"
-  implements="org.coursera.courier.psi.CourierNamedElement"
-  methods=[getFullname getName setName getNameIdentifier]
+  implements="org.coursera.courier.psi.CourierNamedElement, com.intellij.navigation.NavigationItem"
 }
 
 simpleName ::= IDENTIFIER

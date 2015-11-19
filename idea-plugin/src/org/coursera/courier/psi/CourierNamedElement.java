@@ -20,5 +20,6 @@ import com.intellij.psi.PsiNameIdentifierOwner;
 
 public interface CourierNamedElement extends PsiNameIdentifierOwner {
   String getFullname();
+  String getNamespace();
   String getName();
 }

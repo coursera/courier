@@ -37,6 +37,38 @@ import java.util.List;
 import java.util.Map;
 
 public class CourierResolver {
+  public static List<CourierTypeNameDeclaration> findTypeDeclarations(Project project) {
+    List<CourierTypeNameDeclaration> results = new ArrayList<CourierTypeNameDeclaration>();
+    Collection<VirtualFile> virtualFiles =
+      FileBasedIndex.getInstance().getContainingFiles(FileTypeIndex.NAME, CourierFileType.INSTANCE, GlobalSearchScope.allScope(project));
+    for (VirtualFile virtualFile : virtualFiles) {
+      CourierFile simpleFile = (CourierFile) PsiManager.getInstance(project).findFile(virtualFile);
+      if (simpleFile != null) {
+        CourierTypeNameDeclaration declaration = PsiTreeUtil.findChildOfType(simpleFile, CourierTypeNameDeclaration.class);
+        if (declaration != null) {
+          results.add(declaration);
+        }
+      }
+    }
+    return results;
+  }
+
+  public static List<CourierTypeNameDeclaration> findTypeDeclarations(Project project, String name) {
+    List<CourierTypeNameDeclaration> results = new ArrayList<CourierTypeNameDeclaration>();
+    Collection<VirtualFile> virtualFiles =
+      FileBasedIndex.getInstance().getContainingFiles(FileTypeIndex.NAME, CourierFileType.INSTANCE, GlobalSearchScope.allScope(project));
+    for (VirtualFile virtualFile : virtualFiles) {
+      CourierFile simpleFile = (CourierFile) PsiManager.getInstance(project).findFile(virtualFile);
+      if (simpleFile != null) {
+        CourierTypeNameDeclaration declaration = PsiTreeUtil.findChildOfType(simpleFile, CourierTypeNameDeclaration.class);
+        if (declaration != null && declaration.getFullname().equals(name)) {
+          results.add(declaration);
+        }
+      }
+    }
+    return results;
+  }
+
   public static CourierTypeNameDeclaration findTypeDeclaration(Project project, String fullname) {
     Collection<VirtualFile> virtualFiles =
       FileBasedIndex.getInstance().getContainingFiles(FileTypeIndex.NAME, CourierFileType.INSTANCE, GlobalSearchScope.allScope(project));
