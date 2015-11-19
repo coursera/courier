@@ -1,0 +1,4 @@
+namespace ${PACKAGE_NAME}
+
+record ${NAME} {
+}

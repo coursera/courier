@@ -61,7 +61,7 @@ public class CourierReference extends PsiReferenceBase<PsiElement> {
     Project project = myElement.getProject();
     List<CourierTypeReference> reference = CourierResolver.findTypeReferences(project, target.getFullname());
     List<LookupElement> variants = new ArrayList<LookupElement>();
-    for (final CourierTypeReference property : reference) {
+    for (final CourierTypeReference property: reference) {
       variants.add(LookupElementBuilder.create(property).
         withIcon(CourierIcons.FILE).
         withTypeText(property.getContainingFile().getName())

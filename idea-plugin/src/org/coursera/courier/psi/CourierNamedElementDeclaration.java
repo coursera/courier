@@ -41,11 +41,15 @@ public class CourierNamedElementDeclaration extends CourierNamedElementBase impl
   public String getFullname() {
     ASTNode simpleName = getNode().findChildByType(CourierTypes.SIMPLE_NAME);
     if (simpleName != null) {
+      String rawName = simpleName.getText();
+      if (rawName.startsWith("`") && rawName.endsWith("`")) {
+        rawName = rawName.substring(1, rawName.length() - 1);
+      }
       CourierNamespace namespace = PsiTreeUtil.findChildOfType(getContainingFile(), CourierNamespace.class);
       if (namespace != null) {
-        return namespace.getText() + "." + simpleName.getText();
+        return namespace.getText() + "." + rawName;
       } else {
-        return simpleName.getText();
+        return rawName;
       }
     }
     return null;

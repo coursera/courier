@@ -21,9 +21,7 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.refactoring.RefactoringFactory;
 import com.intellij.util.IncorrectOperationException;
-import com.intellij.util.containers.HashSet;
 import org.coursera.courier.CourierResolver;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -32,7 +30,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 public class CourierNamedElementReference extends CourierNamedElementBase {
   public CourierNamedElementReference(@NotNull ASTNode node) {
@@ -43,6 +40,9 @@ public class CourierNamedElementReference extends CourierNamedElementBase {
     CourierFullyQualifiedName qualifiedName = PsiTreeUtil.findChildOfType(this, CourierFullyQualifiedName.class);
     if (qualifiedName != null) {
       String rawName = qualifiedName.getText();
+      if (rawName.startsWith("`") && rawName.endsWith("`")) {
+        rawName = rawName.substring(1, rawName.length() - 1);
+      }
       if (CourierTokenType.PRIMITIVE_TYPES.contains(rawName)) {
         return rawName;
       }

@@ -45,6 +45,7 @@
     <!-- lang.refactoringSupport language="Courier" implementationClass="org.coursera.courier.CourierRefactoringSupportProvider"/ -->
     <lang.findUsagesProvider language="Courier" implementationClass="org.coursera.courier.CourierFindUsagesProvider"/>
     <gotoClassContributor implementation="org.coursera.courier.CourierChooseByNameContributor"/>
+    <fileTemplateGroup implementation="org.coursera.courier.CourierFileTemplateGroupFactory" />
   </extensions>
 
   <application-components>
@@ -57,6 +58,10 @@
 
   <actions>
     <!-- Add your actions here -->
+    <action id="Courier.NewType" class="org.coursera.courier.NewCourierTypeAction"
+            text="Courier Data Schema" description="Create a new data schema">
+      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="NewFile"/>
+    </action>
   </actions>
 
 </idea-plugin>
