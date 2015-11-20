@@ -107,7 +107,7 @@ Add the generator dependencies to your SBT plugins:
 ##### project/plugins.sbt
 
 ```scala
-addSbtPlugin("org.coursera.courier" % "courier-sbt-plugin" % "0.4.1")
+addSbtPlugin("org.coursera.courier" % "courier-sbt-plugin" % "{{site.data.version.courier}}")
 ```
 
 Next, add `courierSettings` to your SBT project to enable the generator:
@@ -121,7 +121,7 @@ import org.coursera.courier.sbt.CourierPlugin._
 
 object Example extends Build {
 
-  val courierVersion = "0.4.1"
+  val courierVersion = "{{site.data.version.courier}}"
 
   lazy val example = Project("example", file("example"))
     .dependsOn(schemas)
