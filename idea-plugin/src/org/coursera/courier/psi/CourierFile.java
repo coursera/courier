@@ -1,8 +1,11 @@
 package org.coursera.courier.psi;
 
 import com.intellij.extapi.psi.PsiFileBase;
+import com.intellij.formatting.Spacing;
+import com.intellij.lang.ASTNode;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.psi.FileViewProvider;
+import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.coursera.courier.CourierFileType;
 import org.coursera.courier.CourierLanguage;
@@ -43,6 +46,17 @@ public class CourierFile extends PsiFileBase {
 
   public CourierNamespace getNamespace() {
     return PsiTreeUtil.findChildOfType(this, CourierNamespace.class);
+  }
+
+  public void addImport(CourierImportDeclaration importDecl) {
+    CourierImportDeclarations importDecls = PsiTreeUtil.findChildOfType(getContainingFile(), CourierImportDeclarations.class);
+    ASTNode node = importDecls.getNode();
+    if (node != null) {
+      importDecls
+        .add(importDecl);
+    }
+    CodeStyleManager.getInstance(importDecls.getProject()).reformat(importDecls);
+
   }
 
   public Collection<CourierImportDeclaration> getImports() {

@@ -1,6 +1,7 @@
 namespace org.example
 
 import org.example.common.DateTime
+import org.example.common.Timestamp
 
 /**
  * A fortune.
@@ -9,11 +10,12 @@ record Fortune {
   /**
    * The fortune telling.
    */
-  telling: FortuneTelling // comment 1
-  createdAt: /* comment 2 */ DateTime
+  telling: FortuneTelling
+  // comment 1
+   createdAt: /* comment 2 */ DateTime
 
   @scala.omit
-  keyedMap: map[Note, Note]
+  keyedMap: map[Note, Timestamp]
 
   `namespace`: array[string] = ["org", "example"]
   escaped: `record`

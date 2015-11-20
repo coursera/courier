@@ -53,12 +53,12 @@ public class CourierNamedElementDeclaration extends CourierNamedElementBase impl
 
   @Override
   public PsiElement setName(@NonNls @NotNull String name) throws IncorrectOperationException {
-    ASTNode identifierNode = getNode().findChildByType(CourierTypes.SIMPLE_NAME);
+    // TODO: figure out how to implement properly
+    /*ASTNode identifierNode = getNode().findChildByType(CourierTypes.SIMPLE_NAME);
     if (identifierNode != null) {
-      // TODO(jbetz): figure out how to replace a node properly?
-      // Note that there may not be an active editor, so WriteCommandAction.runWriteCommandAction
-      // cannot be used..
-    }
+      CourierTypeNameDeclaration replacement = CourierElementFactory.createTypeNameDeclaration(this.getProject(), TypeName.escape(name));
+      identifierNode.getTreeParent().replaceChild(identifierNode, replacement.getSimpleName().getNode());
+    }*/
     return this;
   }
 

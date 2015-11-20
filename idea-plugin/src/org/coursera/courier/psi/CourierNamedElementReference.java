@@ -35,33 +35,39 @@ public class CourierNamedElementReference extends CourierNamedElementBase {
   public TypeName getFullname() {
     CourierFullyQualifiedName nameNode = PsiTreeUtil.findChildOfType(this, CourierFullyQualifiedName.class);
     if (nameNode != null) {
-      String unescapedName = nameNode.getText();
-      if (TypeName.isPrimitive(unescapedName) || unescapedName.contains(".")) {
-        return TypeName.escaped(unescapedName);
-      } else {
-        TypeName importedName = getCourierFile().lookupImport(TypeName.escape(unescapedName));
-        if (importedName != null) {
-          return importedName;
-        } else {
-          CourierNamespace namespace = getCourierFile().getNamespace();
-          if (namespace != null) {
-            return TypeName.escaped(namespace.getText(), unescapedName);
-          } else {
-            return TypeName.escaped(unescapedName);
-          }
-        }
-      }
+      return toFullname(getCourierFile(), nameNode.getText());
     }
     return null;
   }
 
+  public static TypeName toFullname(CourierFile courieFile, String unescapedName) {
+    if (TypeName.isPrimitive(unescapedName) || unescapedName.contains(".")) {
+      return TypeName.escaped(unescapedName);
+    } else {
+      TypeName importedName = courieFile.lookupImport(TypeName.escape(unescapedName));
+      if (importedName != null) {
+        return importedName;
+      } else {
+        CourierNamespace namespace = courieFile.getNamespace();
+        if (namespace != null) {
+          return TypeName.escaped(namespace.getText(), unescapedName);
+        } else {
+          return TypeName.escaped(unescapedName);
+        }
+      }
+    }
+  }
+
   @Override
   public PsiElement setName(@NonNls @NotNull String name) throws IncorrectOperationException {
-    ASTNode qualifiedName = getNode().findChildByType(CourierTypes.FULLY_QUALIFIED_NAME);
-    if (qualifiedName != null) {
-      //qualifiedName.getLastChildNode().getPsi()
-      // TODO(jbetz): figure out how to replace a node properly
-    }
+    // TODO: figure out how to implement properly
+    /*ASTNode nameNode = getNode().findChildByType(CourierTypes.FULLY_QUALIFIED_NAME);
+    if (nameNode != null) {
+      //TypeName originalFullname = toFullname(this.getCourierFile(), nameNode.getText());
+      //TypeName replacementFullname = toFullname(this.getCourierFile(), name);
+      CourierTypeReference replacement = CourierElementFactory.createCourierTypeReference(this.getProject(), nameNode.getText());
+      nameNode.getTreeParent().replaceChild(nameNode, replacement.getFullyQualifiedName().getNode());
+    }*/
     return this;
   }
 

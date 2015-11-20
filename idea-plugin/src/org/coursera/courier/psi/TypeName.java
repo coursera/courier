@@ -22,6 +22,11 @@ public class TypeName {
     return name.replaceAll("`", "");
   }
 
+  public static String unescape(String name) {
+    // TODO: Implement.  We'll need to use the full keyword list here.
+    return name;
+  }
+
   public TypeName(String fullname) {
     this.fullname = fullname;
   }
@@ -70,5 +75,9 @@ public class TypeName {
   @Override
   public String toString() {
     return fullname;
+  }
+
+  public String unescape() {
+    return unescape(fullname);
   }
 }
