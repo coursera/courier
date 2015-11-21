@@ -985,6 +985,9 @@ public class CourierTemplateSpecGenerator {
     if (keysSchemaData != null)
     {
       DataSchema keySchema = _schemaParser.parseObject(keysSchemaData);
+      if (keySchema == null) {
+        throw unrecognizedSchemaType(enclosingClass, "keys", mapSchema);
+      }
       final ClassInfo keyClassInfo = classNameForUnnamedTraverse(enclosingClass, memberName, keySchema);
       final CustomInfoSpec keyCustomInfo = getImmediateCustomInfo(keySchema);
 

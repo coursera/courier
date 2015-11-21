@@ -48,17 +48,17 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures {
   private val primitiveRecordFieldsJson =
     s"""{
        |  "floatField" : 3.3,
-       |  "doubleField" : 4.4,
+       |  "doubleField" : 4.4e38,
        |  "intField" : 1,
        |  "bytesField" : "${'\\'}u0000${'\\'}u0001${'\\'}u0002",
-       |  "longField" : 2,
+       |  "longField" : 3000000000,
        |  "booleanField" : true,
        |  "stringField" : "str"
        |}""".stripMargin
 
   @Test
   def testWithPrimitives(): Unit = {
-    val original = WithPrimitives(1, 2L, 3.3f, 4.4d, true, "str", bytes1)
+    val original = WithPrimitives(1, 3000000000L, 3.3f, 4.4e38d, true, "str", bytes1)
     val roundTripped = WithPrimitives(roundTrip(original.data()), DataConversion.SetReadOnly)
     val WithPrimitives(int, long, float, double, boolean, string, b) = original
     val reconstructed = WithPrimitives(int, long, float, double, boolean, string, b)
@@ -68,9 +68,9 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures {
 
     Seq(original, roundTripped, reconstructed) foreach { primitives =>
       assert(primitives.intField === 1)
-      assert(primitives.longField === 2L)
+      assert(primitives.longField === 3000000000L)
       assert(primitives.floatField === 3.3f)
-      assert(primitives.doubleField === 4.4d)
+      assert(primitives.doubleField === 4.4e38d)
       assert(primitives.booleanField === true)
       assert(primitives.stringField === "str")
       assert(primitives.bytesField === bytes1)
@@ -82,7 +82,7 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testWithOptionalPrimitives_Some(): Unit = {
     val original = WithOptionalPrimitives(
-      Some(1), Some(2L), Some(3.3f), Some(4.4d), Some(true), Some("str"), Some(bytes1))
+      Some(1), Some(3000000000L), Some(3.3f), Some(4.4e38d), Some(true), Some("str"), Some(bytes1))
     val roundTripped = WithOptionalPrimitives(
       roundTrip(original.data()), DataConversion.SetReadOnly)
     val WithOptionalPrimitives(int, long, float, double, boolean, string, b) = original
@@ -93,9 +93,9 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures {
 
     Seq(original, roundTripped, reconstructed) foreach { primitives =>
       assert(primitives.intField === Some(1))
-      assert(primitives.longField === Some(2L))
+      assert(primitives.longField === Some(3000000000L))
       assert(primitives.floatField === Some(3.3f))
-      assert(primitives.doubleField === Some(4.4d))
+      assert(primitives.doubleField === Some(4.4e38d))
       assert(primitives.booleanField === Some(true))
       assert(primitives.stringField === Some("str"))
       assert(primitives.bytesField.get === bytes1)
@@ -131,16 +131,16 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures {
 
       assertJson(primitives, "{ }")
 
-      val copy = primitives.copy(longField = Some(2L))
+      val copy = primitives.copy(longField = Some(3000000000L))
       assert(copy.intField === None)
-      assert(copy.longField === Some(2L))
+      assert(copy.longField === Some(3000000000L))
       assert(copy.bytesField === None)
     }
   }
 
   @Test
   def testWithPrimitiveTyperefs(): Unit = {
-    val original = WithPrimitiveTyperefs(1, 2L, 3.3f, 4.4d, true, "str", bytes1)
+    val original = WithPrimitiveTyperefs(1, 3000000000L, 3.3f, 4.4e38d, true, "str", bytes1)
     val roundTripped = WithPrimitiveTyperefs(
       roundTrip(original.data()), DataConversion.SetReadOnly)
     val WithPrimitiveTyperefs(int, long, float, double, boolean, string, b) = original
@@ -151,9 +151,9 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures {
 
     Seq(original, roundTripped, reconstructed) foreach { primitives =>
       assert(primitives.intField === 1)
-      assert(primitives.longField === 2L)
+      assert(primitives.longField === 3000000000L)
       assert(primitives.floatField === 3.3f)
-      assert(primitives.doubleField === 4.4d)
+      assert(primitives.doubleField === 4.4e38d)
       assert(primitives.booleanField === true)
       assert(primitives.stringField === "str")
       assert(primitives.bytesField === bytes1)
@@ -165,7 +165,7 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testWithOptionalPrimitiveTyperefs_Some(): Unit = {
     val original = WithOptionalPrimitiveTyperefs(
-      Some(1), Some(2L), Some(3.3f), Some(4.4d), Some(true), Some("str"),
+      Some(1), Some(3000000000L), Some(3.3f), Some(4.4e38d), Some(true), Some("str"),
       Some(bytes1))
     val roundTripped = WithOptionalPrimitiveTyperefs(
       roundTrip(original.data()), DataConversion.SetReadOnly)
@@ -177,9 +177,9 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures {
 
     Seq(original, roundTripped, reconstructed) foreach { primitives =>
       assert(primitives.intField === Some(1))
-      assert(primitives.longField === Some(2L))
+      assert(primitives.longField === Some(3000000000L))
       assert(primitives.floatField === Some(3.3f))
-      assert(primitives.doubleField === Some(4.4d))
+      assert(primitives.doubleField === Some(4.4e38d))
       assert(primitives.booleanField === Some(true))
       assert(primitives.stringField === Some("str"))
       assert(primitives.bytesField.get === bytes1)
@@ -358,9 +358,9 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures {
   def testWithPrimitiveDefaults(): Unit = {
     val withDefaults = WithPrimitiveDefaults()
     assert(withDefaults.intWithDefault === 1)
-    assert(withDefaults.longWithDefault === 2L)
+    assert(withDefaults.longWithDefault === 3000000000L)
     assert(withDefaults.floatWithDefault === 3.3f)
-    assert(withDefaults.doubleWithDefault === 4.4d)
+    assert(withDefaults.doubleWithDefault === 4.4e38d)
     assert(withDefaults.booleanWithDefault === true)
     assert(withDefaults.stringWithDefault === "DEFAULT")
   }
@@ -369,9 +369,9 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures {
   def testWithOptionalPrimitiveDefaults(): Unit = {
     val withDefaults = WithOptionalPrimitiveDefaults()
     assert(withDefaults.intWithDefault === Some(1))
-    assert(withDefaults.longWithDefault === Some(2L))
+    assert(withDefaults.longWithDefault === Some(3000000000L))
     assert(withDefaults.floatWithDefault === Some(3.3f))
-    assert(withDefaults.doubleWithDefault === Some(4.4d))
+    assert(withDefaults.doubleWithDefault === Some(4.4e38d))
     assert(withDefaults.booleanWithDefault === Some(true))
     assert(withDefaults.stringWithDefault === Some("DEFAULT"))
   }

@@ -94,9 +94,14 @@ object TypeConversions {
   def anyToLiteral(any: AnyRef): String = {
     any match {
         case int: java.lang.Integer => toLiteral(int)
+        case long: java.lang.Long if Int.MinValue <= long && long <= Int.MaxValue =>
+          toLiteral(java.lang.Integer.valueOf(long.intValue()))
         case long: java.lang.Long => toLiteral(long)
         case float: java.lang.Float => toLiteral(float)
-        case double: java.lang.Double => toLiteral(double)
+        case double: java.lang.Double if Float.MinValue <= double && double <= Float.MaxValue =>
+          toLiteral(java.lang.Float.valueOf(double.floatValue()))
+        case double: java.lang.Double =>
+          toLiteral(double)
         case boolean: java.lang.Boolean => toLiteral(boolean)
         case string: String => toLiteral(string)
         case bytes: ByteString => toLiteral(bytes)
