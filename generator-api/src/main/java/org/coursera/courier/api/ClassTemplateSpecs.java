@@ -57,12 +57,6 @@ public class ClassTemplateSpecs {
     } else if (spec instanceof ArrayTemplateSpec) {
       ArrayTemplateSpec arraySpec = (ArrayTemplateSpec)spec;
       results.add(arraySpec.getItemClass());
-    } else if (spec instanceof TyperefTemplateSpec) {
-      CourierTyperefTemplateSpec typerefSpec = (CourierTyperefTemplateSpec)spec;
-      ClassTemplateSpec ref = typerefSpec.getRef();
-      if (ref != null) {
-        results.add(ref);
-      }
     }
     return results;
   }

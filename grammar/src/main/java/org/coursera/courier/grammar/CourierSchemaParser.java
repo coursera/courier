@@ -449,7 +449,7 @@ public class CourierSchemaParser extends SchemaParser {
     if (keyType.typeReference() != null) {
       String typeName = keyType.typeReference().value;
       if (!typeName.equals("string")) {
-        propsToAdd.put("keys", computeFullName(typeName));
+        propsToAdd.put("keys", typeName);
       }
     } else if (keyType.typeDeclaration() != null) {
       DataSchema keySchema = parseType(keyType.typeDeclaration());

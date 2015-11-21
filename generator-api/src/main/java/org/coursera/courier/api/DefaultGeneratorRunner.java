@@ -50,8 +50,7 @@ public class DefaultGeneratorRunner implements GeneratorRunner {
     CourierTemplateSpecGenerator specGenerator = new CourierTemplateSpecGenerator(
         schemaParser.getSchemaResolver(),
         options.getDataNamespace(),
-        generator.customTypeLanguage(),
-        options.isGenerateTyperefs());
+        generator.customTypeLanguage());
 
     File targetDirectory = new File(options.getTargetDirectoryPath());
 
@@ -74,7 +73,7 @@ public class DefaultGeneratorRunner implements GeneratorRunner {
       specGenerator.generate(pair.first, location);
     }
 
-    // Build a set of top level types so that we only generateRecord each class file exactly once
+    // Build a set of top level types so that we only generate each class file exactly once
     // and so that we don't accidentally stack overflow if types are recursively defined.
     Set<ClassTemplateSpec> topLevelSpecs = new HashSet<ClassTemplateSpec>();
     for(ClassTemplateSpec generatedSpec: specGenerator.getGeneratedSpecs()) {

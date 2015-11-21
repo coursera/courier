@@ -55,7 +55,7 @@ class ScalaGenerator()
   override def generate(topLevelSpec: Definition): Option[ScalaGeneratedCode] = {
     val maybeCode = topLevelSpec match {
       case predef: Definition if CourierPredef.definitions.contains(predef) =>
-        None // Predefined types should already exist, so we don't generateRecord them
+        None // Predefined types should already exist, so we don't generate them
       case record: RecordDefinition =>
         Some(RecordClass(record).body)
       case union: UnionDefinition =>
@@ -75,7 +75,7 @@ class ScalaGenerator()
       case fixed: FixedDefinition =>
         Some(FixedClass(fixed).body)
       case primitive: PrimitiveDefinition =>
-        None // nothing to generateRecord for primitives
+        None // nothing to generate for primitives
       case _ =>
         None
         //throw new IllegalArgumentException(s"Unsupported schema type: ${topLevelSpec.getClass} " +
@@ -102,7 +102,7 @@ class ScalaGenerator()
   /**
    * Generate predefined types.
    *
-   * We only generateRecord schemas for pre defined types when re-generating types in courier-runtime.
+   * We only generate schemas for pre defined types when re-generating types in courier-runtime.
    */
   override def generatePredefinedTypes(): Seq[ScalaGeneratedCode] = {
     CourierPredef.bySchema.flatMap { case (schema, definition) =>
