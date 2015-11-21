@@ -63,6 +63,18 @@ public class CourierResolver {
     return results;
   }
 
+  public static List<CourierTypeNameDeclaration> findTypeDeclarationsByName(Project project, String name) {
+    // TODO: Optimize. Only files in the namespace of the fullname need to be considered.
+    List<CourierTypeNameDeclaration> results = new ArrayList<CourierTypeNameDeclaration>();
+    for (CourierFile simpleFile: getCourierFiles(project)) {
+      CourierTypeNameDeclaration declaration = simpleFile.getPrimaryTypeDeclaration();
+      if (declaration != null && declaration.getName().equals(name)) {
+        results.add(declaration);
+      }
+    }
+    return results;
+  }
+
   public static CourierTypeNameDeclaration findTypeDeclaration(Project project, TypeName fullname) {
     // TODO: Optimize. Only files in the namespace of the fullname need to be considered.
     for (CourierFile simpleFile: getCourierFiles(project)) {
