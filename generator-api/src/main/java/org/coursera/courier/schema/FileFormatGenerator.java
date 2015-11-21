@@ -20,9 +20,12 @@ import com.linkedin.data.DataList;
 import com.linkedin.data.DataMap;
 import com.linkedin.data.codec.JacksonDataCodec;
 import com.linkedin.data.codec.PrettyPrinterJacksonDataCodec;
+import com.linkedin.data.schema.ArrayDataSchema;
 import com.linkedin.data.schema.DataSchema;
+import com.linkedin.data.schema.MapDataSchema;
 import com.linkedin.data.schema.NamedDataSchema;
 import com.linkedin.data.schema.RecordDataSchema;
+import com.linkedin.data.schema.TyperefDataSchema;
 import com.linkedin.pegasus.generator.GeneratorResult;
 import com.linkedin.pegasus.generator.JavaCodeGeneratorBase;
 import com.linkedin.pegasus.generator.spec.ArrayTemplateSpec;
@@ -109,6 +112,10 @@ public class FileFormatGenerator implements PegasusCodeGenerator {
     }
   }
 
+  private String unescapeDoc(String docstring) {
+    return StringEscapeUtils.unescapeHtml4(docstring);
+  }
+
   private static JacksonDataCodec singleLineCodec = new JacksonDataCodec();
   private static JacksonDataCodec multiLineCodec = new PrettyPrinterJacksonDataCodec();
 
@@ -139,10 +146,18 @@ public class FileFormatGenerator implements PegasusCodeGenerator {
   public GeneratedCode generate(ClassTemplateSpec spec) {
     if (!(spec.getSchema() instanceof NamedDataSchema)) return null;
 
+    GeneratedType generatedType = generateType(null, spec, spec.getSchema());
+
     StringBuilder builder = new StringBuilder();
     builder.append("namespace ").append(escapeNamespaced(spec.getNamespace())).append("\n");
     builder.append("\n");
-    builder.append(generateType(null, spec));
+
+    for (String importNamespace: generatedType.importedTypes) {
+      builder.append("import ").append(importNamespace).append("\n");
+    }
+    builder.append("\n");
+
+    builder.append(generatedType.code);
     String code = PoorMansCStyleSourceFormatter.format(builder.toString());
     return new GeneratedCode(
       new GeneratedCodeTargetFile(
@@ -152,26 +167,57 @@ public class FileFormatGenerator implements PegasusCodeGenerator {
       code);
   }
 
-  public String generateRefOrDecl(ClassTemplateSpec container, ClassTemplateSpec spec) {
-    if ((spec.getSchema() instanceof NamedDataSchema) &&
-      (spec.getEnclosingClass() == null || !spec.getEnclosingClass().equals(container))) {
-      if (Objects.equals(container.getNamespace(), spec.getNamespace())) {
-        return escape(spec.getClassName());
-      } else {
-        return escapeNamespaced(spec.getFullName()) + " /*" + container + ", " + spec + "*/";
-      }
+  public GeneratedType generateRefOrDecl(ClassTemplateSpec container, ClassTemplateSpec spec, DataSchema dataSchema) {
+    if (isRef(container, spec) && dataSchema instanceof NamedDataSchema) {
+      NamedDataSchema named = (NamedDataSchema)dataSchema;
+      return generated(escape(named.getName()), escapeNamespaced(named.getFullName()));
+      //return escape(spec.getClassName());
     } else {
-      return generateType(container, spec);
+      return generateType(container, spec, dataSchema);
     }
   }
 
-  public String generateType(ClassTemplateSpec container, ClassTemplateSpec spec) {
+  public boolean isRef(ClassTemplateSpec container, ClassTemplateSpec spec) {
+    return
+      ((spec.getSchema() instanceof NamedDataSchema) &&
+      (spec.getEnclosingClass() == null || !spec.getEnclosingClass().equals(container)));
+  }
+
+  public static class GeneratedType {
+    public final String code;
+    public final Set<String> importedTypes;
+
+    public GeneratedType(String code, Set<String> importedTypes) {
+      this.code = code;
+      this.importedTypes = importedTypes;
+    }
+
+    @Override
+    public String toString() {
+      throw new RuntimeException();
+    }
+  }
+
+  public static GeneratedType generated(String code) {
+    return new GeneratedType(code, Collections.<String>emptySet());
+  }
+
+  public static GeneratedType generated(String code, Set<String> importedTypes) {
+    return new GeneratedType(code, importedTypes);
+  }
+
+  public static GeneratedType generated(String code, String... importedTypes) {
+    return new GeneratedType(code, new HashSet<String>(Arrays.asList(importedTypes)));
+  }
+
+  public GeneratedType generateType(ClassTemplateSpec container, ClassTemplateSpec spec, DataSchema schema) {
     if (spec instanceof PrimitiveTemplateSpec) {
       PrimitiveTemplateSpec primitive = (PrimitiveTemplateSpec) spec;
-      return primitive.getSchema().getUnionMemberKey();
+      return generated(primitive.getSchema().getUnionMemberKey());
     } else if (spec instanceof RecordTemplateSpec) {
       RecordTemplateSpec record = (RecordTemplateSpec)spec;
-      return generateRecord(record);
+      RecordDataSchema recordSchema = (RecordDataSchema)schema;
+      return generateRecord(record, recordSchema);
     } else if (spec instanceof EnumTemplateSpec) {
       EnumTemplateSpec enumeration = (EnumTemplateSpec)spec;
       return generateEnumeration(enumeration);
@@ -180,13 +226,16 @@ public class FileFormatGenerator implements PegasusCodeGenerator {
       return generateUnion(container, union);
     } else if (spec instanceof CourierMapTemplateSpec) {
       CourierMapTemplateSpec map = (CourierMapTemplateSpec) spec;
-      return generateMap(map);
+      MapDataSchema mapSchema = (MapDataSchema) schema;
+      return generateMap(map, mapSchema);
     } else if (spec instanceof ArrayTemplateSpec) {
       ArrayTemplateSpec array = (ArrayTemplateSpec) spec;
-      return generateArray(array);
+      ArrayDataSchema arraySchema = (ArrayDataSchema) schema;
+      return generateArray(array, arraySchema);
     } else if (spec instanceof CourierTyperefTemplateSpec) {
       CourierTyperefTemplateSpec typeref = (CourierTyperefTemplateSpec) spec;
-      return generateTyperef(typeref);
+      //TyperefDataSchema typerefSchema = (TyperefDataSchema) schema;
+      return generateTyperef(typeref, schema);
     } else if (spec instanceof FixedTemplateSpec) {
       FixedTemplateSpec fixed = (FixedTemplateSpec) spec;
       return generateFixed(fixed);
@@ -236,19 +285,23 @@ public class FileFormatGenerator implements PegasusCodeGenerator {
     return builder.toString();
   }
 
-  public String generateRecord(RecordTemplateSpec record) {
+  public GeneratedType generateRecord(RecordTemplateSpec record, RecordDataSchema schema) {
     StringBuilder builder = new StringBuilder();
     builder.append(schemadocAndProperties(record));
     builder.append("record ").append(escape(record.getClassName())).append(" {\n");
     for (NamedDataSchema include: record.getSchema().getInclude()) {
       builder.append("...").append(
-        generateRefOrDecl(record, ClassTemplateSpec.createFromDataSchema(include)));
+        include.getName()); // TODO: make sure include namespaces are added
     }
+    Set<String> importedTypes = new HashSet<String>();
     for (RecordTemplateSpec.Field field: record.getFields()) {
+      RecordDataSchema.Field fieldSchema = schema.getField(field.getSchemaField().getName());
       if (!field.getSchemaField().getRecord().equals(record.getSchema())) continue;
       builder.append(schemadocAndProperties(field));
       builder.append(escape(field.getSchemaField().getName()));
-      builder.append(": ").append(generateRefOrDecl(record, field.getType()));
+      GeneratedType generatedFieldType = generateRefOrDecl(record, field.getType(), fieldSchema.getType());
+      importedTypes.addAll(generatedFieldType.importedTypes);
+      builder.append(": ").append(generatedFieldType.code);
       if (field.getSchemaField().getOptional()) {
         builder.append("?");
       }
@@ -263,44 +316,52 @@ public class FileFormatGenerator implements PegasusCodeGenerator {
       builder.append("\n");
     }
     builder.append("}");
-    return builder.toString();
+    return generated(builder.toString(), importedTypes);
   }
 
-  public String generateMap(CourierMapTemplateSpec map) {
+  public GeneratedType generateMap(CourierMapTemplateSpec map, MapDataSchema mapSchema) {
     StringBuilder builder = new StringBuilder();
+    Set<String> importedTypes = new HashSet<String>();
     builder
       .append("map[");
     if (map.getKeyClass() != null) {
+      GeneratedType generatedKeyType = generateRefOrDecl(map, map.getKeyClass(), map.getKeySchema());
+      importedTypes.addAll(generatedKeyType.importedTypes);
       builder
-        .append(generateRefOrDecl(map, map.getKeyClass()))
+        .append(generatedKeyType.code)
         .append(", ");
     } else {
       builder.append("string, ");
     }
+    GeneratedType generatedValueType = generateRefOrDecl(map, map.getValueClass(), mapSchema.getValues());
+    importedTypes.addAll(generatedValueType.importedTypes);
     builder
-      .append(generateRefOrDecl(map, map.getValueClass()))
+      .append(generatedValueType.code)
       .append("]");
-    return builder.toString();
+    return generated(builder.toString(), importedTypes);
   }
 
-  public String generateArray(ArrayTemplateSpec array) {
+  public GeneratedType generateArray(ArrayTemplateSpec array, ArrayDataSchema arraySchema) {
+    Set<String> importedTypes = new HashSet<String>();
     StringBuilder builder = new StringBuilder();
+    GeneratedType generatedItemType = generateRefOrDecl(array, array.getItemClass(), arraySchema.getItems());
+    importedTypes.addAll(generatedItemType.importedTypes);
     builder
       .append("array[")
-
       // TODO: getItemClass gets mapped to StringArray, which will be assigned the first
       // typeref encountered the dereferences to the same type as this array.
       // How to get the correct type back here? (also applies to map keys and values..)
-      .append(generateRefOrDecl(array, array.getItemClass()))
+      .append(generatedItemType.code)
       .append("]");
-    return builder.toString();
+    return generated(builder.toString(), importedTypes);
   }
 
-  public String generateUnion(ClassTemplateSpec container, UnionTemplateSpec union) {
+  public GeneratedType generateUnion(ClassTemplateSpec container, UnionTemplateSpec union) {
     if (container == null) {
       container = union;
     }
 
+    Set<String> importedTypes = new HashSet<String>();
     StringBuilder builder = new StringBuilder();
     List<UnionTemplateSpec.Member> members = union.getMembers();
     boolean multiline = members.size() > 3;
@@ -309,7 +370,9 @@ public class FileFormatGenerator implements PegasusCodeGenerator {
     if (multiline) builder.append("\n");
     while (iter.hasNext()) {
       UnionTemplateSpec.Member member = iter.next();
-      builder.append(generateRefOrDecl(container, member.getClassTemplateSpec()));
+      GeneratedType generatedMemberType = generateRefOrDecl(container, member.getClassTemplateSpec(), member.getSchema());
+      importedTypes.addAll(generatedMemberType.importedTypes);
+      builder.append(generatedMemberType.code);
       if (iter.hasNext()) {
         builder.append(",");
         builder.append(multiline ? "\n" : " ");
@@ -317,10 +380,10 @@ public class FileFormatGenerator implements PegasusCodeGenerator {
     }
     if (multiline) builder.append("\n");
     builder.append("]");
-    return builder.toString();
+    return generated(builder.toString(), importedTypes);
   }
 
-  public String generateEnumeration(EnumTemplateSpec enumeration) {
+  public GeneratedType generateEnumeration(EnumTemplateSpec enumeration) {
     StringBuilder builder = new StringBuilder();
     builder.append(schemadocAndProperties(enumeration));
     builder.append("enum ").append(enumeration.getClassName()).append(" {\n");
@@ -328,28 +391,38 @@ public class FileFormatGenerator implements PegasusCodeGenerator {
       builder.append(escape(symbol)).append("\n");
     }
     builder.append("}");
-    return builder.toString();
+    return generated(builder.toString());
   }
 
-  public String generateTyperef(CourierTyperefTemplateSpec typeref) {
+  public GeneratedType generateTyperef(CourierTyperefTemplateSpec typeref, DataSchema schema) {
     StringBuilder builder = new StringBuilder();
+    // TODO:
+    // `typeref.getRef()` may return the incorrect type for maps and arrays
+    // because the TemplateSpec system is designed to only generate one type per dereferenced
+    // type (e.g. StringArray).  As a result, any non-custom typerefs that deference to that
+    // type all return the same ClassTemplateSpec for `typeref.getRef()`.
+    // What we need is:
+    //  some hint, either as part of `typeref.getRef()` or a sibling method, that indicates the
+    //  actual type.
+    GeneratedType generatedRefType = generateRefOrDecl(
+      typeref,
+      typeref.getRef(),
+      typeref.getSchema().getRef());
+    Set<String> importedTypes = generatedRefType.importedTypes;
     builder.append(schemadocAndProperties(typeref));
     builder.append("typeref ").append(escape(typeref.getClassName()));
     builder.append(" = ");
-    builder.append(
-      generateRefOrDecl(
-        typeref,
-        typeref.getRef()));
-    return builder.toString();
+    builder.append(generatedRefType.code);
+    return generated(builder.toString(), importedTypes);
   }
 
-  public String generateFixed(FixedTemplateSpec fixed) {
+  public GeneratedType generateFixed(FixedTemplateSpec fixed) {
     StringBuilder builder = new StringBuilder();
     builder
       .append("fixed ")
       .append(escape(fixed.getClassName()))
       .append(fixed.getSchema().getSize());
-    return builder.toString();
+    return generated(builder.toString());
   }
 
   @Override

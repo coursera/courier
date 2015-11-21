@@ -23,7 +23,16 @@ import java.util.List;
 
 public class ParseUtils {
   public static String extractMarkdown(String schemaDoc) {
-    return stripMargin(schemaDoc.substring(3, schemaDoc.length() -2)).trim();
+    return unescapeDocstring(
+      stripMargin(schemaDoc.substring(3, schemaDoc.length() -2)).trim());
+  }
+
+  private static String unescapeDocstring(String escaped) {
+    // unescape "/*" and "*/"
+    String commentUnescaped = escaped
+      .replace("&#47;&#42;", "/*")
+      .replace("&#42;&#47;", "*/");
+    return StringEscapeUtils.unescapeHtml4(commentUnescaped);
   }
 
   public static String extractString(String stringLiteral) {
