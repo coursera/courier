@@ -44,6 +44,7 @@
     <fileTemplateGroup implementation="org.coursera.courier.CourierFileTemplateGroupFactory" />
 
     <lang.foldingBuilder language="Courier" implementationClass="org.coursera.courier.CourierFoldingBuilder" />
+    <lang.importOptimizer language="Courier" implementationClass="org.coursera.courier.CourierImportOptimizer" />
 
     <stubElementTypeHolder class="org.coursera.courier.psi.CourierTypes" />
     <stubIndex implementation="org.coursera.courier.psi.CourierNameStubIndex" />
