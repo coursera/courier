@@ -23,7 +23,7 @@ public class CourierCodeDocumentationProvider extends AbstractDocumentationProvi
   @Nullable
   @Override
   public PsiComment findExistingDocComment(PsiComment contextElement) {
-    return contextElement; // TODO: implement
+    return null; // TODO: implement
   }
 
   /**
