@@ -1,18 +1,22 @@
 package org.coursera.courier;
 
 import com.intellij.navigation.ChooseByNameContributor;
+import com.intellij.navigation.ChooseByNameContributorEx;
+import com.intellij.navigation.GotoClassContributor;
 import com.intellij.navigation.NavigationItem;
 import com.intellij.openapi.project.Project;
 import org.coursera.courier.psi.CourierTypeNameDeclaration;
 import org.coursera.courier.psi.TypeName;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-public class CourierChooseByNameContributor implements ChooseByNameContributor {
+// TODO(jbetz): Implement ChooseByNameContributorEx ?
+public class CourierChooseByNameContributor implements GotoClassContributor {
   @NotNull
   @Override
   public String[] getNames(Project project, boolean includeNonProjectItems) {
@@ -47,5 +51,22 @@ public class CourierChooseByNameContributor implements ChooseByNameContributor {
       if (lhs == rhs) return 0;
       else return lhs.getFullname().toString().compareTo(rhs.getFullname().toString());
     }
+  }
+
+  @Nullable
+  @Override
+  public String getQualifiedName(NavigationItem item) {
+    if (item instanceof CourierTypeNameDeclaration) {
+      CourierTypeNameDeclaration decl = (CourierTypeNameDeclaration)item;
+      return decl.getFullname().toString();
+    }
+    return null;
+  }
+
+  private static final String separator = ".";
+  @Nullable
+  @Override
+  public String getQualifiedNameSeparator() {
+    return separator;
   }
 }
