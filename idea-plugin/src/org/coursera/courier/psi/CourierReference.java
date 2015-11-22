@@ -58,15 +58,7 @@ public class CourierReference extends PsiReferenceBase<PsiElement> {
   @NotNull
   @Override
   public Object[] getVariants() {
-    Project project = myElement.getProject();
-    List<CourierTypeReference> reference = CourierResolver.findTypeReferences(project, target.getFullname());
-    List<LookupElement> variants = new ArrayList<LookupElement>();
-    for (final CourierTypeReference property: reference) {
-      variants.add(LookupElementBuilder.create(property).
-        withIcon(CourierIcons.FILE).
-        withTypeText(property.getContainingFile().getName())
-      );
-    }
-    return variants.toArray();
+
+    return new Object[] {};
   }
 }

@@ -13,6 +13,10 @@ public class TypeName {
     return new TypeName(escape(unescapedFullname));
   }
 
+  public static TypeName unescaped(String escapedFullname) {
+    return new TypeName(unescape(escapedFullname));
+  }
+
   public static TypeName escaped(String unescapedNamespace, String unescapedName) {
     return new TypeName(escape(unescapedNamespace), escape(unescapedName));
   }

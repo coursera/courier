@@ -57,7 +57,7 @@ public class CourierCompletionContributor extends CompletionContributor {
                     CourierFile referenceCourierFile = (CourierFile) referenceFile;
                     CourierFile declarationCourierFile = (CourierFile) declarationFile;
                     TypeName fullname = CourierNamedElementReference.toFullname(declarationCourierFile, item.getLookupString());
-                    if (fullname != null) {
+                    if (fullname != null && !fullname.getNamespace().equals(TypeName.unescape(referenceCourierFile.getNamespace().getText()))) {
                       CourierImportDeclaration importDecl = CourierElementFactory.createImport(declarationCourierFile.getProject(), fullname);
                       if (referenceCourierFile.lookupImport(fullname.getName()) == null) {
                         referenceCourierFile.addImport(importDecl);

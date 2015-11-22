@@ -20,7 +20,7 @@ topLevel ::= namespaceDeclaration importDeclarations namedTypeDeclaration
 importDeclarations ::= importDeclaration*
 
 importDeclaration ::= IMPORT_KEYWORD fullyQualifiedName  {
-  mixin="org.coursera.courier.psi.CourierNamedElementReference"
+  extends="org.coursera.courier.psi.CourierNamedElementImport"
   implements="org.coursera.courier.psi.CourierNamedElement"
 }
 
@@ -29,15 +29,15 @@ namespaceDeclaration ::= NAMESPACE_KEYWORD namespace
 namespace ::= IDENTIFIER (DOT IDENTIFIER)*
 
 typeReference ::= fullyQualifiedName {
-  mixin="org.coursera.courier.psi.CourierNamedElementReference"
+  extends="org.coursera.courier.psi.CourierNamedElementReference"
   implements="org.coursera.courier.psi.CourierNamedElement"
 }
 
 
 typeNameDeclaration ::= simpleName {
   extends="org.coursera.courier.psi.CourierTypeNameDeclarationBase"
-  stubClass="org.coursera.courier.psi.CourierTypeNameDeclarationStub"
   implements="org.coursera.courier.psi.CourierTypeNameDeclarationInterface"
+  stubClass="org.coursera.courier.psi.CourierTypeNameDeclarationStub"
   elementTypeClass="org.coursera.courier.psi.CourierTypeDeclarationStubType"
 }
 

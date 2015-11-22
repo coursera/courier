@@ -16,25 +16,15 @@
 
 package org.coursera.courier;
 
-import com.google.common.base.Function;
-import com.google.common.base.Predicates;
-import com.google.common.collect.Iterables;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiManager;
-import com.intellij.psi.search.FileTypeIndex;
 import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.util.indexing.FileBasedIndex;
-import org.coursera.courier.psi.CourierFile;
 import org.coursera.courier.psi.CourierFullnameStubIndex;
 import org.coursera.courier.psi.CourierNameStubIndex;
 import org.coursera.courier.psi.CourierTypeNameDeclaration;
-import org.coursera.courier.psi.CourierTypeReference;
 import org.coursera.courier.psi.TypeName;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 public class CourierResolver {
@@ -63,38 +53,5 @@ public class CourierResolver {
     } else {
       return null;
     }
-  }
-
-  public static List<CourierTypeReference> findTypeReferences(Project project, TypeName fullname) {
-    // TODO: Add references to the stub indices as well?
-    List<CourierTypeReference> result = null;
-    for (CourierFile simpleFile: getCourierFiles(project)) {
-      Collection<CourierTypeReference> references = simpleFile.getTypeReferences();
-      for (CourierTypeReference reference : references) {
-        if (reference.getFullname().equals(fullname)) {
-          if (result == null) {
-            result = new ArrayList<CourierTypeReference>();
-          }
-          result.add(reference);
-        }
-      }
-    }
-    return result != null ? result : Collections.<CourierTypeReference>emptyList();
-  }
-
-  private static Iterable<CourierFile> getCourierFiles(final Project project) {
-    Collection<VirtualFile> virtualFiles =
-      FileBasedIndex.getInstance().getContainingFiles(
-        FileTypeIndex.NAME, CourierFileType.INSTANCE, GlobalSearchScope.allScope(project));
-
-    Iterable<CourierFile> files = Iterables.transform(
-      virtualFiles,
-      new Function<VirtualFile, CourierFile>() {
-      @Override
-      public CourierFile apply(VirtualFile virtualFile) {
-        return (CourierFile) PsiManager.getInstance(project).findFile(virtualFile);
-      }
-    });
-    return Iterables.filter(files, Predicates.notNull());
   }
 }
