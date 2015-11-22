@@ -30,7 +30,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
-public class CourierTypeNameDeclarationBase extends StubBasedPsiElementBase<CourierTypeNameDeclarationStub> implements CourierTypeNameDeclarationInterface, NavigationItem {
+public abstract class CourierTypeNameDeclarationBase extends StubBasedPsiElementBase<CourierTypeNameDeclarationStub> implements CourierTypeNameDeclarationInterface, CourierTypeNameDeclaration, NavigationItem {
   public CourierTypeNameDeclarationBase(@NotNull ASTNode node) {
     super(node);
   }
@@ -68,12 +68,8 @@ public class CourierTypeNameDeclarationBase extends StubBasedPsiElementBase<Cour
 
   @Override
   public PsiElement setName(@NonNls @NotNull String name) throws IncorrectOperationException {
-    // TODO: figure out how to implement properly
-    /*ASTNode identifierNode = getNode().findChildByType(CourierTypes.SIMPLE_NAME);
-    if (identifierNode != null) {
-      CourierTypeNameDeclaration replacement = CourierElementFactory.createTypeNameDeclaration(this.getProject(), TypeName.escape(name));
-      identifierNode.getTreeParent().replaceChild(identifierNode, replacement.getSimpleName().getNode());
-    }*/
+    CourierTypeNameDeclaration replacement = CourierElementFactory.createTypeNameDeclaration(this.getProject(), name);
+    getSimpleName().replace(replacement.getSimpleName());
     return this;
   }
 

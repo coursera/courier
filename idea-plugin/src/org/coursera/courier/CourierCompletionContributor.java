@@ -17,7 +17,7 @@ import com.intellij.util.ProcessingContext;
 import org.coursera.courier.psi.CourierElementFactory;
 import org.coursera.courier.psi.CourierFile;
 import org.coursera.courier.psi.CourierImportDeclaration;
-import org.coursera.courier.psi.CourierNamedElementReference;
+import org.coursera.courier.psi.CourierNamedElementReferenceBase;
 import org.coursera.courier.psi.CourierTokenType;
 import org.coursera.courier.psi.CourierTypeNameDeclaration;
 import org.coursera.courier.psi.CourierTypes;
@@ -56,7 +56,7 @@ public class CourierCompletionContributor extends CompletionContributor {
                   if (declarationFile instanceof CourierFile && referenceFile instanceof CourierFile) {
                     CourierFile referenceCourierFile = (CourierFile) referenceFile;
                     CourierFile declarationCourierFile = (CourierFile) declarationFile;
-                    TypeName fullname = CourierNamedElementReference.toFullname(declarationCourierFile, item.getLookupString());
+                    TypeName fullname = CourierNamedElementReferenceBase.toFullname(declarationCourierFile, item.getLookupString());
                     if (fullname != null && !fullname.getNamespace().equals(TypeName.unescape(referenceCourierFile.getNamespace().getText()))) {
                       CourierImportDeclaration importDecl = CourierElementFactory.createImport(declarationCourierFile.getProject(), fullname);
                       if (referenceCourierFile.lookupImport(fullname.getName()) == null) {

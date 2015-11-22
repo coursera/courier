@@ -39,7 +39,11 @@ public class TypeName {
   }
 
   public TypeName(String namespace, String name) {
-    this.fullname = namespace + "." + name;
+    if (namespace == null || namespace.isEmpty()) {
+      this.fullname = name;
+    } else {
+      this.fullname = namespace + "." + name;
+    }
   }
 
   public String getName() {

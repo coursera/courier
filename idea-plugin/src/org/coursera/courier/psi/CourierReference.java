@@ -22,6 +22,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
+import com.intellij.util.IncorrectOperationException;
 import org.coursera.courier.CourierIcons;
 import org.coursera.courier.CourierResolver;
 import org.jetbrains.annotations.NotNull;
@@ -53,6 +54,20 @@ public class CourierReference extends PsiReferenceBase<PsiElement> {
       return resolved.equals(element);
     }
     return false;
+  }
+
+  @Override
+  public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
+    PsiElement element = getElement();
+    if (element instanceof CourierImportDeclaration) {
+      CourierImportDeclaration importDecl = (CourierImportDeclaration) element;
+      return importDecl.setName(newElementName);
+    } else if (element instanceof CourierTypeReference) {
+      CourierTypeReference reference = (CourierTypeReference) element;
+      return reference.setName(newElementName);
+    } else {
+      return element;
+    }
   }
 
   @NotNull
