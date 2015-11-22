@@ -1,5 +1,6 @@
 package org.coursera.courier;
 
+import com.intellij.codeInsight.daemon.impl.HighlightInfoType;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
@@ -8,6 +9,7 @@ import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.psi.PsiElement;
 import org.coursera.courier.psi.CourierEnumSymbol;
 import org.coursera.courier.psi.CourierFieldName;
+import org.coursera.courier.psi.CourierImportDeclaration;
 import org.coursera.courier.psi.CourierPropNameDeclaration;
 import org.coursera.courier.psi.CourierTypeNameDeclaration;
 import org.coursera.courier.psi.CourierTypeReference;
@@ -55,6 +57,22 @@ public class CourierAnnotator implements Annotator {
       public void visitEnumSymbol(@NotNull CourierEnumSymbol o) {
         super.visitEnumSymbol(o);
         setHighlighting(o, holder, CourierSyntaxHighlighter.FIELD);
+      }
+    });
+    element.accept(new CourierVisitor() {
+      @Override
+      public void visitImportDeclaration(@NotNull CourierImportDeclaration o) {
+        super.visitImportDeclaration(o);
+        boolean found = false;
+        for (CourierTypeReference ref: o.getCourierFile().getTypeReferences()) {
+          if (ref.getFullname().equals(o.getFullname())) {
+            found = true;
+            break;
+          }
+        }
+        if (!found) {
+          setHighlighting(o, holder, HighlightInfoType.UNUSED_SYMBOL.getAttributesKey());
+        }
       }
     });
   }
