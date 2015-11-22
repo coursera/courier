@@ -35,8 +35,10 @@ typeReference ::= fullyQualifiedName {
 
 
 typeNameDeclaration ::= simpleName {
-  mixin="org.coursera.courier.psi.CourierNamedElementDeclaration"
-  implements="org.coursera.courier.psi.CourierNamedElement, com.intellij.navigation.NavigationItem"
+  extends="org.coursera.courier.psi.CourierTypeNameDeclarationBase"
+  stubClass="org.coursera.courier.psi.CourierTypeNameDeclarationStub"
+  implements="org.coursera.courier.psi.CourierTypeNameDeclarationInterface"
+  elementTypeClass="org.coursera.courier.psi.CourierTypeDeclarationStubType"
 }
 
 simpleName ::= IDENTIFIER

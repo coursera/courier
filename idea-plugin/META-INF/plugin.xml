@@ -42,6 +42,10 @@
     <lang.findUsagesProvider language="Courier" implementationClass="org.coursera.courier.CourierFindUsagesProvider"/>
     <gotoClassContributor implementation="org.coursera.courier.CourierChooseByNameContributor"/>
     <fileTemplateGroup implementation="org.coursera.courier.CourierFileTemplateGroupFactory" />
+
+    <stubElementTypeHolder class="org.coursera.courier.psi.CourierTypes" />
+    <stubIndex implementation="org.coursera.courier.psi.CourierNameStubIndex" />
+    <stubIndex implementation="org.coursera.courier.psi.CourierFullnameStubIndex" />
   </extensions>
 
   <application-components>

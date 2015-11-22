@@ -26,6 +26,8 @@ import com.intellij.psi.search.FileTypeIndex;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.util.indexing.FileBasedIndex;
 import org.coursera.courier.psi.CourierFile;
+import org.coursera.courier.psi.CourierFullnameStubIndex;
+import org.coursera.courier.psi.CourierNameStubIndex;
 import org.coursera.courier.psi.CourierTypeNameDeclaration;
 import org.coursera.courier.psi.CourierTypeReference;
 import org.coursera.courier.psi.TypeName;
@@ -35,62 +37,36 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-// TODO(jbetz): All the scans preformed here are obviously inefficient, we should replace with
-// a IntelliJ style index of some kind..
 public class CourierResolver {
   public static List<CourierTypeNameDeclaration> findTypeDeclarations(Project project) {
-    List<CourierTypeNameDeclaration> results = new ArrayList<CourierTypeNameDeclaration>();
-    for (CourierFile simpleFile: getCourierFiles(project)) {
-      if (simpleFile != null) {
-        CourierTypeNameDeclaration declaration = simpleFile.getPrimaryTypeDeclaration();
-        if (declaration != null) {
-          results.add(declaration);
-        }
-      }
-    }
-    return results;
-  }
+    CourierFullnameStubIndex index = CourierFullnameStubIndex.EP_NAME.findExtension(CourierFullnameStubIndex.class);
+    Collection<String> fullnames = index.getAllKeys(project);
 
-  public static List<CourierTypeNameDeclaration> findTypeDeclarations(Project project, TypeName fullname) {
-    // TODO: Optimize. Only files in the namespace of the fullname need to be considered.
     List<CourierTypeNameDeclaration> results = new ArrayList<CourierTypeNameDeclaration>();
-    for (CourierFile simpleFile: getCourierFiles(project)) {
-      CourierTypeNameDeclaration declaration = simpleFile.getPrimaryTypeDeclaration();
-      if (declaration != null && declaration.getFullname().equals(fullname)) {
-        results.add(declaration);
-      }
+    for (String fullname: fullnames) {
+      results.addAll(index.get(fullname, project, GlobalSearchScope.allScope(project)));
     }
     return results;
   }
 
   public static List<CourierTypeNameDeclaration> findTypeDeclarationsByName(Project project, String name) {
-    // TODO: Optimize. Only files in the namespace of the fullname need to be considered.
-    List<CourierTypeNameDeclaration> results = new ArrayList<CourierTypeNameDeclaration>();
-    for (CourierFile simpleFile: getCourierFiles(project)) {
-      CourierTypeNameDeclaration declaration = simpleFile.getPrimaryTypeDeclaration();
-      if (declaration != null && declaration.getName().equals(name)) {
-        results.add(declaration);
-      }
-    }
-    return results;
+    CourierNameStubIndex index = CourierFullnameStubIndex.EP_NAME.findExtension(CourierNameStubIndex.class);
+    Collection<CourierTypeNameDeclaration> decls = index.get(name, project, GlobalSearchScope.allScope(project));
+    return new ArrayList<CourierTypeNameDeclaration>(decls);
   }
 
   public static CourierTypeNameDeclaration findTypeDeclaration(Project project, TypeName fullname) {
-    // TODO: Optimize. Only files in the namespace of the fullname need to be considered.
-    for (CourierFile simpleFile: getCourierFiles(project)) {
-      CourierTypeNameDeclaration declaration = simpleFile.getPrimaryTypeDeclaration();
-      if (declaration != null) {
-        TypeName typeFullname = declaration.getFullname();
-        if (typeFullname.equals(fullname)) {
-          return declaration;
-        }
-      }
+    CourierFullnameStubIndex index = CourierFullnameStubIndex.EP_NAME.findExtension(CourierFullnameStubIndex.class);
+    Collection<CourierTypeNameDeclaration> results = index.get(fullname.toString(), project, GlobalSearchScope.allScope(project));
+    if (results.size() > 0) {
+      return results.iterator().next();
+    } else {
+      return null;
     }
-    return null;
   }
 
   public static List<CourierTypeReference> findTypeReferences(Project project, TypeName fullname) {
-    // TODO: Optimize. Only files in the namespace of the fullname need to be considered.
+    // TODO: Add references to the stub indices as well?
     List<CourierTypeReference> result = null;
     for (CourierFile simpleFile: getCourierFiles(project)) {
       Collection<CourierTypeReference> references = simpleFile.getTypeReferences();

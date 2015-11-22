@@ -12,12 +12,18 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.IFileElementType;
+import com.intellij.psi.tree.IStubFileElementType;
 import com.intellij.psi.tree.TokenSet;
 import org.coursera.courier.parser.CourierParser;
 import org.coursera.courier.psi.CourierElementType;
 import org.coursera.courier.psi.CourierFile;
 import org.coursera.courier.psi.CourierSchemadocComment;
+import org.coursera.courier.psi.CourierTypeDeclarationStubType;
+import org.coursera.courier.psi.CourierTypeNameDeclaration;
+import org.coursera.courier.psi.CourierTypeNameDeclarationStub;
+import org.coursera.courier.psi.CourierTypeNameDeclarationStubImpl;
 import org.coursera.courier.psi.CourierTypes;
+import org.coursera.courier.psi.impl.CourierTypeNameDeclarationImpl;
 import org.jetbrains.annotations.NotNull;
 
 public class CourierParserDefinition implements ParserDefinition {
@@ -29,7 +35,7 @@ public class CourierParserDefinition implements ParserDefinition {
       CourierTypes.COMMA);
   public static final TokenSet STRING = TokenSet.create(CourierTypes.STRING);
 
-  public static final IFileElementType FILE = new IFileElementType(Language.<CourierLanguage>findInstance(CourierLanguage.class));
+  public static final IStubFileElementType FILE = new CourierStubFileElementType(CourierFileType.INSTANCE.getLanguage());
 
   @NotNull
   @Override
@@ -75,6 +81,8 @@ public class CourierParserDefinition implements ParserDefinition {
     final IElementType type = node.getElementType();
     if (type instanceof CourierElementType) {
       return ((CourierElementType)type).createPsi(node);
+    } else if (type == CourierTypes.TYPE_NAME_DECLARATION) {
+      return new CourierTypeNameDeclarationImpl(node);
     }
     throw new IllegalStateException("Incorrect node for CourierParserDefinition: " + node + " (" + type + ")");
   }

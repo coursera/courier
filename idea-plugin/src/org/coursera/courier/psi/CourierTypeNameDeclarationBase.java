@@ -16,10 +16,12 @@
 
 package org.coursera.courier.psi;
 
+import com.intellij.extapi.psi.StubBasedPsiElementBase;
 import com.intellij.lang.ASTNode;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.navigation.NavigationItem;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.util.IncorrectOperationException;
 import org.coursera.courier.CourierIcons;
 import org.jetbrains.annotations.NonNls;
@@ -28,9 +30,22 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
-public class CourierNamedElementDeclaration extends CourierNamedElementBase implements NavigationItem {
-  public CourierNamedElementDeclaration(@NotNull ASTNode node) {
+public class CourierTypeNameDeclarationBase extends StubBasedPsiElementBase<CourierTypeNameDeclarationStub> implements CourierTypeNameDeclarationInterface, NavigationItem {
+  public CourierTypeNameDeclarationBase(@NotNull ASTNode node) {
     super(node);
+  }
+
+  public CourierTypeNameDeclarationBase(CourierTypeNameDeclarationStub stub, IStubElementType nodeType) {
+    super(stub, nodeType);
+  }
+
+  @Override
+  public String getName() {
+    return getFullname().getName();
+  }
+
+  public CourierFile getCourierFile() {
+    return (CourierFile)getContainingFile();
   }
 
   public TypeName getFullname() {
