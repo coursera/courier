@@ -5,6 +5,7 @@ import com.intellij.formatting.Spacing;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.psi.FileViewProvider;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.coursera.courier.CourierFileType;
@@ -52,8 +53,18 @@ public class CourierFile extends PsiFileBase {
     CourierImportDeclarations importDecls = PsiTreeUtil.findChildOfType(getContainingFile(), CourierImportDeclarations.class);
     ASTNode node = importDecls.getNode();
     if (node != null) {
-      importDecls
-        .add(importDecl);
+      boolean added = false;
+      for (CourierImportDeclaration existing: importDecls.getImportDeclarationList()) {
+        if (importDecl.getFullname().toString().compareTo(existing.getFullname().toString()) < 0) {
+          importDecls.addBefore(importDecl, existing);
+          added = true;
+          break;
+        }
+      }
+      if (!added) {
+        importDecls
+          .add(importDecl);
+      }
     }
     CodeStyleManager.getInstance(importDecls.getProject()).reformat(importDecls);
     // TODO: sort imports, should this be an action called after the code formatter is called?
