@@ -15,7 +15,7 @@ public class CourierFoldingBuilder extends FoldingBuilderEx {
   @Override
   public FoldingDescriptor[] buildFoldRegions(@NotNull PsiElement root, @NotNull Document document, boolean quick) {
     CourierImportDeclarations imports = PsiTreeUtil.findChildOfType(root, CourierImportDeclarations.class);
-    if (imports.getImportDeclarationList().size() > 0) {
+    if (imports != null && imports.getImportDeclarationList().size() > 0) {
       return new FoldingDescriptor[] {
         new FoldingDescriptor(imports, imports.getTextRange())
       };
