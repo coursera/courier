@@ -12,6 +12,12 @@ public class CourierFileTemplateGroupFactory implements FileTemplateGroupDescrip
       new FileTemplateGroupDescriptor("Courier", CourierIcons.FILE);
     group.addTemplate(
       new FileTemplateDescriptor("Record.courier", CourierIcons.FILE));
+    group.addTemplate(
+      new FileTemplateDescriptor("Enum.courier", CourierIcons.FILE));
+    group.addTemplate(
+      new FileTemplateDescriptor("Typeref.courier", CourierIcons.FILE));
+    group.addTemplate(
+      new FileTemplateDescriptor("Union.courier", CourierIcons.FILE));
     return group;
   }
 }
