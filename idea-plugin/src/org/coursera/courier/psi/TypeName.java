@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * A namespaced courier type name.
  */
-public class TypeName {
+public class TypeName implements Comparable<TypeName> {
   private final String fullname;
 
   public static TypeName escaped(String unescapedFullname) {
@@ -94,5 +94,11 @@ public class TypeName {
 
   public String unescape() {
     return unescape(fullname);
+  }
+
+  @Override
+  public int compareTo(TypeName o) {
+    if (o == null) return 1;
+    return this.fullname.compareTo(o.fullname);
   }
 }

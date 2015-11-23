@@ -5,6 +5,7 @@ import com.intellij.extapi.psi.PsiFileBase;
 import com.intellij.formatting.Spacing;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.fileTypes.FileType;
+import com.intellij.openapi.project.Project;
 import com.intellij.psi.FileViewProvider;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.codeStyle.CodeStyleManager;
@@ -93,15 +94,32 @@ public class CourierFile extends PsiFileBase {
 
   public void optimizeImports() {
     CourierImportDeclarations importGroup = PsiTreeUtil.findChildOfType(getContainingFile(), CourierImportDeclarations.class);
-    if (importGroup.getImportDeclarationList().size() > 0) {
-      Collection<CourierImportDeclaration> importDecls = getImports();
-      for (CourierImportDeclaration importDecl : importDecls) {
-        if (!isUsedImport(importDecl)) {
-          importDecl.delete();
+    if (importGroup != null) {
+      List<CourierImportDeclaration> importDecls = importGroup.getImportDeclarationList();
+      if (importDecls.size() > 0) {
+        for (CourierImportDeclaration importDecl : importDecls) {
+          if (!isUsedImport(importDecl)) {
+            importDecl.delete();
+          }
+        }
+
+        List<CourierImportDeclaration> remaining = importGroup.getImportDeclarationList();
+        if (remaining.size() > 0) {
+          List<TypeName> typeNames = new ArrayList<TypeName>();
+          for (CourierImportDeclaration importDecl: remaining) {
+            typeNames.add(importDecl.getFullname());
+          }
+          Collections.sort(typeNames);
+          importGroup.replace(CourierElementFactory.createImports(getProject(), typeNames));
         }
       }
+    }
+  }
 
-      // TODO(jbetz): sort imports
+  private static class ImportComparitor implements Comparator<CourierImportDeclaration> {
+    @Override
+    public int compare(CourierImportDeclaration o1, CourierImportDeclaration o2) {
+      return o1.getFullyQualifiedName().toString().compareTo(o2.getFullyQualifiedName().toString());
     }
   }
 

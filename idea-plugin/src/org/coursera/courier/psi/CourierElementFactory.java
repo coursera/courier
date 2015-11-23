@@ -22,6 +22,17 @@ public class CourierElementFactory {
     return PsiTreeUtil.findChildOfType(file, CourierImportDeclaration.class);
   }
 
+  public static CourierImportDeclarations createImports(@NotNull Project project, @NonNls @NotNull Collection<TypeName> typeNames) {
+    StringBuilder builder = new StringBuilder();
+    builder.append("namespace dummynamespace\n");
+    for (TypeName typeName: typeNames) {
+      builder.append("import " + typeName.unescape() + "\n");
+    }
+    builder.append("record Dummy {}");
+    CourierFile file = createCourierFile(project, builder.toString());
+    return PsiTreeUtil.findChildOfType(file, CourierImportDeclarations.class);
+  }
+
   public static CourierTypeNameDeclaration createTypeNameDeclaration(@NotNull Project project, @NonNls @NotNull String simpleName) {
     CourierFile file = createCourierFile(project, "namespace dummynamespace\nrecord " + simpleName + " {}");
     return PsiTreeUtil.findChildOfType(file, CourierTypeNameDeclaration.class);
