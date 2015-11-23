@@ -1,7 +1,5 @@
 package org.coursera.courier;
 
-import com.intellij.navigation.ChooseByNameContributor;
-import com.intellij.navigation.ChooseByNameContributorEx;
 import com.intellij.navigation.GotoClassContributor;
 import com.intellij.navigation.NavigationItem;
 import com.intellij.openapi.project.Project;
@@ -15,7 +13,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-// TODO(jbetz): Implement ChooseByNameContributorEx ?
 public class CourierChooseByNameContributor implements GotoClassContributor {
   @NotNull
   @Override

@@ -46,22 +46,7 @@ public class CourierColorSettingsPage implements ColorSettingsPage {
   @NotNull
   @Override
   public String getDemoText() {
-    return "namespace org.example\n" +
-        "\n" +
-        "/** \n" +
-        " * A Fortune.\n" +
-        " */\n" +
-        "@property1(\"property value\")\n" +
-        "record Fortune {\n" +
-        "  field1: int? = nil // comment 1\n" +
-        "  field2: array[int] = [1, 2, 3]\n" +
-        "  /* comment 2 */\n" +
-        "  @deprecated\n" +
-        "  field3: map[string, int] = { \"a\": 1, \"b\": 2 }\n" +
-        "  inline: record Inline {\n" +
-        "    inlineField1: union[Member1, Member2]\n" +
-        "  }\n" +
-        "}\n";
+    return CourierFileType.SAMPLE_CODE;
   }
 
   @Nullable

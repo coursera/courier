@@ -1,7 +1,6 @@
 package org.coursera.courier;
 
 import com.intellij.lang.ASTNode;
-import com.intellij.lang.Language;
 import com.intellij.lang.ParserDefinition;
 import com.intellij.lang.PsiParser;
 import com.intellij.lexer.Lexer;
@@ -17,11 +16,6 @@ import com.intellij.psi.tree.TokenSet;
 import org.coursera.courier.parser.CourierParser;
 import org.coursera.courier.psi.CourierElementType;
 import org.coursera.courier.psi.CourierFile;
-import org.coursera.courier.psi.CourierSchemadocComment;
-import org.coursera.courier.psi.CourierTypeDeclarationStubType;
-import org.coursera.courier.psi.CourierTypeNameDeclaration;
-import org.coursera.courier.psi.CourierTypeNameDeclarationStub;
-import org.coursera.courier.psi.CourierTypeNameDeclarationStubImpl;
 import org.coursera.courier.psi.CourierTypes;
 import org.coursera.courier.psi.impl.CourierTypeNameDeclarationImpl;
 import org.jetbrains.annotations.NotNull;

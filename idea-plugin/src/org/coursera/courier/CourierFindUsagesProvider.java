@@ -6,8 +6,6 @@ import com.intellij.lang.findUsages.FindUsagesProvider;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.tree.TokenSet;
-import org.coursera.courier.psi.CourierNamedTypeDeclaration;
-import org.coursera.courier.psi.CourierTypeDeclaration;
 import org.coursera.courier.psi.CourierTypeNameDeclaration;
 import org.coursera.courier.psi.CourierTypes;
 import org.jetbrains.annotations.NotNull;
@@ -69,7 +67,13 @@ public class CourierFindUsagesProvider implements FindUsagesProvider {
   @Override
   public String getNodeText(@NotNull PsiElement element, boolean useFullName) {
     if (element instanceof CourierTypeNameDeclaration) {
-      return ((CourierTypeNameDeclaration)element).getName();
+      CourierTypeNameDeclaration declaration = (CourierTypeNameDeclaration) element;
+      String name = declaration.getName();
+      if (name != null) {
+        return name;
+      } else {
+        return "";
+      }
     } else {
       return "";
     }

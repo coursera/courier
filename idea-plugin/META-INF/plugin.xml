@@ -28,20 +28,17 @@
     <lang.commenter language="Courier" implementationClass="org.coursera.courier.CourierCommenter"/>
     <lang.documentationProvider language="Courier" implementationClass="org.coursera.courier.CourierCodeDocumentationProvider"/>
     <lang.braceMatcher language="Courier" implementationClass="org.coursera.courier.CourierBraceMatcher"/>
-    <!-- TODO: review before reactivating -->
-    <!-- quoteHandler fileType="Courier" className="org.coursera.courier.CourierQuoteHandler" /-->
+    <quoteHandler fileType="Courier" className="org.coursera.courier.CourierQuoteHandler" />
 
     <lang.formatter language="Courier" implementationClass="org.coursera.courier.CourierFormattingModelBuilder"/>
     <codeStyleSettingsProvider implementation="org.coursera.courier.CourierCodeStyleSettingsProvider" />
     <langCodeStyleSettingsProvider implementation="org.coursera.courier.CourierLanguageCodeStyleSettingsProvider"/>
     <commentCompleteHandler implementation="org.coursera.courier.CourierCommentCompleteHandler" />
-    <lang.ast.factory language="Courier" implementationClass="org.coursera.courier.CourierASTFactory" />
     <completion.contributor language="Courier" implementationClass="org.coursera.courier.CourierCompletionContributor"/>
 
     <lang.refactoringSupport language="Courier" implementationClass="org.coursera.courier.CourierRefactoringSupportProvider"/>
     <lang.findUsagesProvider language="Courier" implementationClass="org.coursera.courier.CourierFindUsagesProvider"/>
     <gotoClassContributor implementation="org.coursera.courier.CourierChooseByNameContributor"/>
-    <fileTemplateGroup implementation="org.coursera.courier.CourierFileTemplateGroupFactory" />
 
     <lang.foldingBuilder language="Courier" implementationClass="org.coursera.courier.CourierFoldingBuilder" />
     <lang.importOptimizer language="Courier" implementationClass="org.coursera.courier.CourierImportOptimizer" />

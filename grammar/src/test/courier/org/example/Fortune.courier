@@ -1,7 +1,7 @@
 namespace org.example
 
-import org.example.common.Timestamp
 import org.example.common.DateTime
+import org.example.common.Timestamp
 
 /**
  * A fortune.

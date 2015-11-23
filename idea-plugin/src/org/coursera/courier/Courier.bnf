@@ -20,8 +20,8 @@ topLevel ::= namespaceDeclaration importDeclarations namedTypeDeclaration
 importDeclarations ::= importDeclaration*
 
 importDeclaration ::= IMPORT_KEYWORD fullyQualifiedName  {
-  extends="org.coursera.courier.psi.CourierNamedElementImport"
-  implements="org.coursera.courier.psi.CourierNamedElement"
+  extends="org.coursera.courier.psi.CourierNamedElementImportBase"
+  implements="org.coursera.courier.psi.CourierNamedElementImport"
 }
 
 namespaceDeclaration ::= NAMESPACE_KEYWORD namespace

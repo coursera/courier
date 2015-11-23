@@ -43,17 +43,6 @@ public class CourierSyntaxHighlighter extends SyntaxHighlighterBase {
   private static final TextAttributesKey[] STRING_KEYS = new TextAttributesKey[]{STRING};
   private static final TextAttributesKey[] NUMBER_KEYS = new TextAttributesKey[]{NUMBER};
   private static final TextAttributesKey[] BUILTIN_TYPE_NAME_KEYS = new TextAttributesKey[]{BUILTIN_TYPE_NAME};
-
-  // See CourierAnnotator for highlighting of elements.
-  // Only tokens may be highlighted in this class.
-  /*
-  private static final TextAttributesKey[] TYPE_NAME_KEYS = new TextAttributesKey[]{TYPE_NAME};
-  private static final TextAttributesKey[] TYPE_REFERENCE_KEYS = new TextAttributesKey[]{TYPE_REFERENCE};
-  private static final TextAttributesKey[] FIELD_KEYS = new TextAttributesKey[]{FIELD};
-  private static final TextAttributesKey[] PROPERTY_KEYS = new TextAttributesKey[]{PROPERTY};
-  private static final TextAttributesKey[] ENUM_SYMBOL_KEYS = new TextAttributesKey[]{ENUM_SYMBOL};
-  */
-
   private static final TextAttributesKey[] COMMENT_KEYS = new TextAttributesKey[]{COMMENT};
   private static final TextAttributesKey[] COLON_KEYS = new TextAttributesKey[]{COLON};
   private static final TextAttributesKey[] OPTIONAL_KEYS = new TextAttributesKey[]{OPTIONAL};
@@ -71,10 +60,6 @@ public class CourierSyntaxHighlighter extends SyntaxHighlighterBase {
     KEYWORDS.add(CourierTypes.FIXED_KEYWORD);
     KEYWORDS.add(CourierTypes.RECORD_KEYWORD);
     KEYWORDS.add(CourierTypes.TYPEREF_KEYWORD);
-    // Highlight built in collection types?
-    //KEYWORDS.add(CourierTypes.ARRAY_KEYWORD);
-    //KEYWORDS.add(CourierTypes.MAP_KEYWORD);
-    //KEYWORDS.add(CourierTypes.UNION_KEYWORD);
     KEYWORDS.add(CourierTypes.TRUE);
     KEYWORDS.add(CourierTypes.FALSE);
     KEYWORDS.add(CourierTypes.NIL);
@@ -97,22 +82,6 @@ public class CourierSyntaxHighlighter extends SyntaxHighlighterBase {
   @NotNull
   @Override
   public TextAttributesKey[] getTokenHighlights(IElementType tokenType) {
-
-    // See CourierAnnotator for highlighting of elements.
-    // Only tokens may be highlighted in this class.
-    /*
-    } else if (tokenType.equals(CourierTypes.TYPE_NAME_DECLARATION)) {
-      return TYPE_NAME_KEYS;
-    } else if (tokenType.equals(CourierTypes.TYPE_REFERENCE)) {
-      return TYPE_REFERENCE_KEYS;
-    } else if (tokenType.equals(CourierTypes.FIELD_NAME)) {
-      return FIELD_KEYS;
-    } else if (tokenType.equals(CourierTypes.PROP_NAME_DECLARATION)) {
-      return PROPERTY_KEYS;
-    } else if (tokenType.equals(CourierTypes.ENUM_SYMBOL)) {
-      return ENUM_SYMBOL_KEYS;
-    */
-
     if (KEYWORDS.contains(tokenType)) {
       return KEYWORD_KEYS;
     } else if (
@@ -134,8 +103,6 @@ public class CourierSyntaxHighlighter extends SyntaxHighlighterBase {
       return COMMENT_KEYS;
     } else if (tokenType.equals(TokenType.BAD_CHARACTER)) {
       return BAD_CHAR_KEYS;
-    //} else if (tokenType.equals(CourierTypes.COMMA)) {
-    //  return COMMA_KEYS;
     } else if (tokenType.equals(CourierTypes.COLON)) {
       return COLON_KEYS;
     } else if (tokenType.equals(CourierTypes.QUESTION_MARK)) {

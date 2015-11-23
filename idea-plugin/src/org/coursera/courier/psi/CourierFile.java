@@ -1,16 +1,11 @@
 package org.coursera.courier.psi;
 
-import com.intellij.codeInsight.daemon.impl.HighlightInfoType;
 import com.intellij.extapi.psi.PsiFileBase;
-import com.intellij.formatting.Spacing;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.fileTypes.FileType;
-import com.intellij.openapi.project.Project;
 import com.intellij.psi.FileViewProvider;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.util.SmartList;
 import org.coursera.courier.CourierFileType;
 import org.coursera.courier.CourierLanguage;
 import org.jetbrains.annotations.NotNull;
@@ -19,9 +14,7 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 public class CourierFile extends PsiFileBase {
   public CourierFile(@NotNull FileViewProvider viewProvider) {
@@ -58,23 +51,24 @@ public class CourierFile extends PsiFileBase {
 
   public void addImport(CourierImportDeclaration importDecl) {
     CourierImportDeclarations importDecls = PsiTreeUtil.findChildOfType(getContainingFile(), CourierImportDeclarations.class);
-    ASTNode node = importDecls.getNode();
-    if (node != null) {
-      boolean added = false;
-      for (CourierImportDeclaration existing: importDecls.getImportDeclarationList()) {
-        if (importDecl.getFullname().toString().compareTo(existing.getFullname().toString()) < 0) {
-          importDecls.addBefore(importDecl, existing);
-          added = true;
-          break;
+    if (importDecls != null) {
+      ASTNode node = importDecls.getNode();
+      if (node != null) {
+        boolean added = false;
+        for (CourierImportDeclaration existing : importDecls.getImportDeclarationList()) {
+          if (importDecl.getFullname().toString().compareTo(existing.getFullname().toString()) < 0) {
+            importDecls.addBefore(importDecl, existing);
+            added = true;
+            break;
+          }
+        }
+        if (!added) {
+          importDecls
+            .add(importDecl);
         }
       }
-      if (!added) {
-        importDecls
-          .add(importDecl);
-      }
+      CodeStyleManager.getInstance(importDecls.getProject()).reformat(importDecls);
     }
-    CodeStyleManager.getInstance(importDecls.getProject()).reformat(importDecls);
-    // TODO: sort imports, should this be an action called after the code formatter is called?
   }
 
   public Collection<CourierImportDeclaration> getImports() {
@@ -98,7 +92,7 @@ public class CourierFile extends PsiFileBase {
       List<CourierImportDeclaration> importDecls = importGroup.getImportDeclarationList();
       if (importDecls.size() > 0) {
         for (CourierImportDeclaration importDecl : importDecls) {
-          if (!isUsedImport(importDecl)) {
+          if (!importDecl.isUsed()) {
             importDecl.delete();
           }
         }
@@ -113,13 +107,6 @@ public class CourierFile extends PsiFileBase {
           importGroup.replace(CourierElementFactory.createImports(getProject(), typeNames));
         }
       }
-    }
-  }
-
-  private static class ImportComparitor implements Comparator<CourierImportDeclaration> {
-    @Override
-    public int compare(CourierImportDeclaration o1, CourierImportDeclaration o2) {
-      return o1.getFullyQualifiedName().toString().compareTo(o2.getFullyQualifiedName().toString());
     }
   }
 

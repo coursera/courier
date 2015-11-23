@@ -40,6 +40,7 @@ public class CourierAnnotator implements Annotator {
         setHighlighting(o, holder, CourierSyntaxHighlighter.TYPE_REFERENCE);
         if (!o.getFullname().isPrimitive()) {
           if (o.getReference() == null) {
+            // TODO(jbetz): replace with code inspection that uses LIKE_UNKNOWN_SYMBOL
             holder.createErrorAnnotation(o, "Cannot resolve symbol '" + o.getText() + "'");
           }
         }
@@ -63,14 +64,7 @@ public class CourierAnnotator implements Annotator {
       @Override
       public void visitImportDeclaration(@NotNull CourierImportDeclaration o) {
         super.visitImportDeclaration(o);
-        boolean found = false;
-        for (CourierTypeReference ref: o.getCourierFile().getTypeReferences()) {
-          if (ref.getFullname().equals(o.getFullname())) {
-            found = true;
-            break;
-          }
-        }
-        if (!found) {
+        if (!o.isUsed()) {
           setHighlighting(o, holder, HighlightInfoType.UNUSED_SYMBOL.getAttributesKey());
         }
       }
