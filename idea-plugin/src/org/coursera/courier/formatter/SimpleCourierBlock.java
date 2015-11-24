@@ -14,6 +14,7 @@ import com.intellij.psi.formatter.FormatterUtil;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -101,18 +102,14 @@ public class SimpleCourierBlock extends AbstractCourierBlock {
     }
   }
 
-  @NotNull
-  @Override
-  public ChildAttributes getChildAttributes(int newChildIndex) {
-    Alignment alignment = null;
+  @Nullable
+  protected Indent getChildIndent() {
     IElementType parentType = myNode.getElementType(); // always the parent since isIncomplete is false
 
-    Indent childIndent;
     if (BLOCKS_TOKEN_SET.contains(parentType)) {
-      childIndent = Indent.getNormalIndent();
+      return Indent.getNormalIndent();
     } else {
-      childIndent = Indent.getNoneIndent();
+      return Indent.getNoneIndent();
     }
-    return new ChildAttributes(childIndent, alignment);
   }
 }

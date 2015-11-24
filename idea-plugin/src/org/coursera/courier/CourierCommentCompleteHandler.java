@@ -20,8 +20,6 @@ public class CourierCommentCompleteHandler implements CommentCompleteHandler {
 
   @Override
   public boolean isApplicable(PsiComment psiComment, CodeDocumentationAwareCommenter codeDocumentationAwareCommenter) {
-    IElementType type = psiComment.getTokenType();
-    return SchemadocTokenType.DOC_COMMENT_TOKENS.contains(type); // ||
-      //psiComment.getTokenType() == CourierTypes.SCHEMADOC;
+    return psiComment.getTokenType() == CourierElementType.DOC_COMMENT;
   }
 }

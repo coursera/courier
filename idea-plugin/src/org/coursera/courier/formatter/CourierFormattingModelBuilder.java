@@ -46,6 +46,8 @@ public class CourierFormattingModelBuilder implements FormattingModelBuilder {
         settings,
         createSpacingBuilder(settings));
 
+    /*FormattingDocumentModelImpl model = FormattingDocumentModelImpl.createOn(element.getContainingFile());
+    return new PsiBasedFormatterModelWithShiftIndentInside(element.getContainingFile(), block, model);*/
     return FormattingModelProvider.createFormattingModelForPsiFile(
       element.getContainingFile(), block, settings);
   }

@@ -2,7 +2,6 @@ package org.coursera.courier.formatter;
 
 import com.intellij.formatting.Alignment;
 import com.intellij.formatting.Block;
-import com.intellij.formatting.ChildAttributes;
 import com.intellij.formatting.Indent;
 import com.intellij.formatting.SpacingBuilder;
 import com.intellij.formatting.Wrap;
@@ -13,18 +12,18 @@ import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.formatter.FormatterUtil;
 import com.intellij.psi.tree.IElementType;
 import org.coursera.courier.schemadoc.psi.SchemadocTypes;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SchemadocBlock extends AbstractCourierBlock {
   public SchemadocBlock(ASTNode node,
-      Wrap wrap,
-      Alignment alignment,
-      Indent indent,
-      CodeStyleSettings settings,
-      SpacingBuilder spacingBuilder) {
+                        Wrap wrap,
+                        Alignment alignment,
+                        Indent indent,
+                        CodeStyleSettings settings,
+                        SpacingBuilder spacingBuilder) {
     super(node, wrap, alignment, indent, settings, spacingBuilder);
   }
 
@@ -50,9 +49,8 @@ public class SchemadocBlock extends AbstractCourierBlock {
     return result;
   }
 
-  @Override
-  @NotNull
-  public ChildAttributes getChildAttributes(final int newChildIndex) {
-    return new ChildAttributes(Indent.getSpaceIndent(1), null);
+  @Nullable
+  protected Indent getChildIndent() {
+    return Indent.getSpaceIndent(1);
   }
 }
