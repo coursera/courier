@@ -26,14 +26,14 @@
     <lang.parserDefinition language="Courier" implementationClass="org.coursera.courier.CourierParserDefinition"/>
     <lang.syntaxHighlighterFactory language="Courier" implementationClass="org.coursera.courier.CourierSyntaxHighlighterFactory"/>
     <lang.commenter language="Courier" implementationClass="org.coursera.courier.CourierCommenter"/>
-    <lang.documentationProvider language="Courier" implementationClass="org.coursera.courier.CourierCodeDocumentationProvider"/>
+    <!-- lang.documentationProvider language="Courier" implementationClass="org.coursera.courier.CourierCodeDocumentationProvider"/-->
     <lang.braceMatcher language="Courier" implementationClass="org.coursera.courier.CourierBraceMatcher"/>
     <quoteHandler fileType="Courier" className="org.coursera.courier.CourierQuoteHandler" />
 
     <lang.formatter language="Courier" implementationClass="org.coursera.courier.CourierFormattingModelBuilder"/>
     <codeStyleSettingsProvider implementation="org.coursera.courier.CourierCodeStyleSettingsProvider" />
     <langCodeStyleSettingsProvider implementation="org.coursera.courier.CourierLanguageCodeStyleSettingsProvider"/>
-    <commentCompleteHandler implementation="org.coursera.courier.CourierCommentCompleteHandler" />
+    <!-- commentCompleteHandler implementation="org.coursera.courier.CourierCommentCompleteHandler" /-->
     <completion.contributor language="Courier" implementationClass="org.coursera.courier.CourierCompletionContributor"/>
 
     <lang.refactoringSupport language="Courier" implementationClass="org.coursera.courier.CourierRefactoringSupportProvider"/>

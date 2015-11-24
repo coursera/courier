@@ -7,6 +7,7 @@ import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
+import org.coursera.courier.psi.CourierElementType;
 import org.coursera.courier.psi.CourierTypes;
 import org.jetbrains.annotations.NotNull;
 
@@ -85,9 +86,7 @@ public class CourierSyntaxHighlighter extends SyntaxHighlighterBase {
     if (KEYWORDS.contains(tokenType)) {
       return KEYWORD_KEYS;
     } else if (
-      tokenType.equals(CourierTypes.SCHEMADOC_START) ||
-      tokenType.equals(CourierTypes.SCHEMADOC_CONTENT) ||
-      tokenType.equals(CourierTypes.SCHEMADOC_END)) {
+      tokenType.equals(CourierElementType.DOC_COMMENT)) {
       return DOC_COMMENT_KEYS;
     } else if (tokenType.equals(CourierTypes.STRING)) {
       return STRING_KEYS;

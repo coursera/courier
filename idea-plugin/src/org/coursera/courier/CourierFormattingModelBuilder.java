@@ -21,6 +21,9 @@ import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
 import com.intellij.util.containers.ContainerUtil;
+import org.coursera.courier.psi.CourierElementType;
+import org.coursera.courier.psi.CourierTypes;
+import org.coursera.courier.schemadoc.psi.SchemadocTypes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -54,10 +57,6 @@ import static org.coursera.courier.psi.CourierTypes.OPEN_BRACKET;
 import static org.coursera.courier.psi.CourierTypes.OPEN_PAREN;
 import static org.coursera.courier.psi.CourierTypes.PROP_JSON_VALUE;
 import static org.coursera.courier.psi.CourierTypes.QUESTION_MARK;
-import static org.coursera.courier.psi.CourierTypes.SCHEMADOC;
-import static org.coursera.courier.psi.CourierTypes.SCHEMADOC_CONTENT;
-import static org.coursera.courier.psi.CourierTypes.SCHEMADOC_END;
-import static org.coursera.courier.psi.CourierTypes.SCHEMADOC_START;
 import static org.coursera.courier.psi.CourierTypes.TOP_LEVEL;
 import static org.coursera.courier.psi.CourierTypes.TYPE_DECLARATION;
 import static org.coursera.courier.psi.CourierTypes.UNION_TYPE_ASSIGNMENTS;
@@ -98,8 +97,8 @@ public class CourierFormattingModelBuilder implements FormattingModelBuilder {
       .after(FIELD_SELECTION_ELEMENT).lineBreakInCode()
       .after(ENUM_SYMBOL_DECLARATION).lineBreakInCode()
 
-      .before(SCHEMADOC).blankLines(1)
-      .after(SCHEMADOC).lineBreakInCode()
+      //.before(SCHEMADOC).blankLines(1)
+      //.after(SCHEMADOC).lineBreakInCode()
       .after(LINE_COMMENT).lineBreakInCode()
       .after(BLOCK_COMMENT).lineBreakInCode()
       ;
@@ -129,9 +128,7 @@ public class CourierFormattingModelBuilder implements FormattingModelBuilder {
         OPEN_BRACKET,
         CLOSE_BRACKET,
         OPEN_PAREN,
-        CLOSE_PAREN,
-        SCHEMADOC_START,
-        SCHEMADOC_END
+        CLOSE_PAREN
     );
 
     @NotNull private final ASTNode myNode;
@@ -219,8 +216,11 @@ public class CourierFormattingModelBuilder implements FormattingModelBuilder {
       IElementType parentType = myNode.getElementType();
       IElementType type = child.getElementType();
       if (type == TOP_LEVEL) return Indent.getAbsoluteNoneIndent();
-      if (type == SCHEMADOC_CONTENT || type == SCHEMADOC_END) {
-        return Indent.getIndent(Indent.Type.SPACES, 1, true, true);
+      if (type == SchemadocTypes.DOC_COMMENT_CONTENT) {
+        return Indent.getSpaceIndent(1);
+      }
+      if (type == SchemadocTypes.DOC_COMMENT_END) {
+        return Indent.getSpaceIndent(2);
       }
       if (BLOCKS_TOKEN_SET.contains(parentType)) return indentIfNotBrace(child);
       return Indent.getNoneIndent();
@@ -243,8 +243,8 @@ public class CourierFormattingModelBuilder implements FormattingModelBuilder {
       IElementType parentType = myNode.getElementType(); // always the parent since isIncomplete is false
       if (BLOCKS_TOKEN_SET.contains(parentType)) {
         childIndent = Indent.getNormalIndent();
-      } else if (parentType == SCHEMADOC) {
-        childIndent = Indent.getIndent(Indent.Type.SPACES, 1, true, true);
+      } else if (parentType == CourierElementType.DOC_COMMENT) {
+        childIndent = Indent.getSpaceIndent(1);
       }
       return new ChildAttributes(childIndent, null);
     }

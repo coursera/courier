@@ -21,7 +21,12 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.tree.IElementType;
+import org.coursera.courier.psi.CourierElementType;
+import org.coursera.courier.psi.CourierSchemadoc;
 import org.coursera.courier.psi.CourierTypes;
+import org.coursera.courier.schemadoc.psi.PsiSchemadocElement;
+import org.coursera.courier.schemadoc.psi.SchemadocElementType;
+import org.coursera.courier.schemadoc.psi.SchemadocTokenType;
 import org.jetbrains.annotations.Nullable;
 
 public class CourierCommenter implements CodeDocumentationAwareCommenterEx {
@@ -76,7 +81,7 @@ public class CourierCommenter implements CodeDocumentationAwareCommenterEx {
   @Nullable
   @Override
   public IElementType getDocumentationCommentTokenType() {
-    return CourierTypes.SCHEMADOC;
+    return CourierElementType.DOC_COMMENT;
   }
 
   @Nullable
@@ -99,13 +104,14 @@ public class CourierCommenter implements CodeDocumentationAwareCommenterEx {
 
   @Override
   public boolean isDocumentationComment(PsiComment comment) {
-    if (comment == null) return false;
-    return comment.getNode().getElementType() == CourierTypes.SCHEMADOC;
+    //return (comment instanceof CourierSchemadoc);
+    return (comment instanceof PsiSchemadocElement);
+    //return true; // TODO: fix
   }
 
   @Override
   public boolean isDocumentationCommentText(PsiElement element) {
-    if (element == null) return false;
-    return element.getNode().getElementType() == CourierTypes.SCHEMADOC_CONTENT;
+    return element instanceof PsiComment; // TODO: fix
+    //return SchemadocTokenType.DOC_COMMENT_TOKENS.contains(element.getNode().getElementType());
   }
 }

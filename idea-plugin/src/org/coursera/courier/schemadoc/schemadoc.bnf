@@ -1,0 +1,18 @@
+{
+  parserClass="org.coursera.courier.schemadoc.parser.SchemadocParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="Schemadoc"
+  psiImplClassSuffix="Impl"
+  psiPackage="org.coursera.courier.schemadoc.psi"
+  psiImplPackage="org.coursera.courier.schemadoc.psi.impl"
+
+  elementTypeHolderClass="org.coursera.courier.schemadoc.psi.SchemadocTypes"
+  elementTypeClass="org.coursera.courier.schemadoc.psi.SchemadocElementType"
+  tokenTypeClass="org.coursera.courier.schemadoc.psi.SchemadocTokenType"
+}
+
+file ::= comment
+
+comment ::= DOC_COMMENT_START DOC_COMMENT_CONTENT* DOC_COMMENT_END?

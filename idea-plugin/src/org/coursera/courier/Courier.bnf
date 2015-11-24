@@ -53,9 +53,9 @@ anonymousTypeDeclaration ::= unionDeclaration | arrayDeclaration | mapDeclaratio
 
 typeAssignment ::= typeReference | typeDeclaration
 
-annotations ::= schemadoc? propDeclaration*
+annotations ::= /*schemadoc?*/ propDeclaration*
 
-schemadoc ::= SCHEMADOC_START SCHEMADOC_CONTENT* SCHEMADOC_END {pin=1}
+//schemadoc ::= DOC_COMMENT
 
 propDeclaration ::= propNameDeclaration propJsonValue?
 
