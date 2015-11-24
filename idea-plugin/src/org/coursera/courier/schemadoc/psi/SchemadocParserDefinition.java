@@ -56,6 +56,12 @@ public class SchemadocParserDefinition implements ParserDefinition {
     return null;
   }
 
+  /**
+   *
+   * @param left
+   * @param right
+   * @return
+   */
   public SpaceRequirements spaceExistanceTypeBetweenTokens(ASTNode left, ASTNode right) {
     return SpaceRequirements.MAY;
   }

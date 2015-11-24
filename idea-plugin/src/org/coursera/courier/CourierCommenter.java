@@ -16,6 +16,7 @@
 
 package org.coursera.courier;
 
+import com.intellij.lang.ASTNode;
 import com.intellij.lang.CodeDocumentationAwareCommenterEx;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.psi.PsiComment;
@@ -27,6 +28,7 @@ import org.coursera.courier.psi.CourierTypes;
 import org.coursera.courier.schemadoc.psi.PsiSchemadocElement;
 import org.coursera.courier.schemadoc.psi.SchemadocElementType;
 import org.coursera.courier.schemadoc.psi.SchemadocTokenType;
+import org.coursera.courier.schemadoc.psi.SchemadocTypes;
 import org.jetbrains.annotations.Nullable;
 
 public class CourierCommenter implements CodeDocumentationAwareCommenterEx {
@@ -104,14 +106,13 @@ public class CourierCommenter implements CodeDocumentationAwareCommenterEx {
 
   @Override
   public boolean isDocumentationComment(PsiComment comment) {
-    //return (comment instanceof CourierSchemadoc);
     return (comment instanceof PsiSchemadocElement);
-    //return true; // TODO: fix
   }
 
   @Override
   public boolean isDocumentationCommentText(PsiElement element) {
-    return element instanceof PsiComment; // TODO: fix
-    //return SchemadocTokenType.DOC_COMMENT_TOKENS.contains(element.getNode().getElementType());
+    if (element == null) return false;
+    final ASTNode node = element.getNode();
+    return node != null && node.getElementType() == SchemadocTypes.DOC_COMMENT_CONTENT;
   }
 }

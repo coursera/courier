@@ -30,7 +30,7 @@
     <lang.braceMatcher language="Courier" implementationClass="org.coursera.courier.CourierBraceMatcher"/>
     <quoteHandler fileType="Courier" className="org.coursera.courier.CourierQuoteHandler" />
 
-    <lang.formatter language="Courier" implementationClass="org.coursera.courier.CourierFormattingModelBuilder"/>
+    <lang.formatter language="Courier" implementationClass="org.coursera.courier.formatter.CourierFormattingModelBuilder"/>
     <codeStyleSettingsProvider implementation="org.coursera.courier.CourierCodeStyleSettingsProvider" />
     <langCodeStyleSettingsProvider implementation="org.coursera.courier.CourierLanguageCodeStyleSettingsProvider"/>
     <!-- commentCompleteHandler implementation="org.coursera.courier.CourierCommentCompleteHandler" /-->
