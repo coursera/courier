@@ -1,4 +1,7 @@
 namespace ${PACKAGE_NAME}
 
+/**
+ *
+ */
 enum ${NAME} {
 }

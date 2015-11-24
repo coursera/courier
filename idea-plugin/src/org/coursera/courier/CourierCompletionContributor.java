@@ -55,6 +55,9 @@ public class CourierCompletionContributor extends CompletionContributor {
     );
   }
 
+  /**
+   *
+   */
   private static AddImportHandler addImportHandler = new AddImportHandler();
 
   /**

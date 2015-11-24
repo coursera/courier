@@ -7,6 +7,7 @@ import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.psi.PsiElement;
+import org.coursera.courier.codestyle.CourierSyntaxHighlighter;
 import org.coursera.courier.psi.CourierEnumSymbol;
 import org.coursera.courier.psi.CourierFieldName;
 import org.coursera.courier.psi.CourierImportDeclaration;

@@ -5,6 +5,7 @@ import com.intellij.lang.PairedBraceMatcher;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.tree.IElementType;
 import org.coursera.courier.psi.CourierTypes;
+import org.coursera.courier.schemadoc.psi.SchemadocTypes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,9 +20,10 @@ public class CourierBraceMatcher implements PairedBraceMatcher {
   @Override
   public BracePair[] getPairs() {
     return new BracePair[] {
-        new BracePair(CourierTypes.OPEN_BRACE, CourierTypes.CLOSE_BRACE, true),
-        new BracePair(CourierTypes.OPEN_BRACKET, CourierTypes.CLOSE_BRACKET, false),
-        new BracePair(CourierTypes.OPEN_PAREN, CourierTypes.CLOSE_PAREN, false)
+      new BracePair(CourierTypes.OPEN_BRACE, CourierTypes.CLOSE_BRACE, true),
+      new BracePair(CourierTypes.OPEN_BRACKET, CourierTypes.CLOSE_BRACKET, false),
+      new BracePair(CourierTypes.OPEN_PAREN, CourierTypes.CLOSE_PAREN, false)
+      //new BracePair(SchemadocTypes.DOC_COMMENT_START, SchemadocTypes.DOC_COMMENT_END, false)
     };
   }
 

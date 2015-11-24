@@ -1,10 +1,12 @@
-package org.coursera.courier;
+package org.coursera.courier.codestyle;
 
 import com.intellij.application.options.IndentOptionsEditor;
 import com.intellij.application.options.SmartIndentOptionsEditor;
 import com.intellij.lang.Language;
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings;
 import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider;
+import org.coursera.courier.CourierFileType;
+import org.coursera.courier.CourierLanguage;
 import org.jetbrains.annotations.NotNull;
 
 public class CourierLanguageCodeStyleSettingsProvider extends LanguageCodeStyleSettingsProvider {

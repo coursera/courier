@@ -18,15 +18,21 @@ import org.coursera.courier.psi.CourierElementType;
 import org.coursera.courier.psi.CourierFile;
 import org.coursera.courier.psi.CourierTypes;
 import org.coursera.courier.psi.impl.CourierTypeNameDeclarationImpl;
+import org.coursera.courier.schemadoc.psi.SchemadocTypes;
 import org.jetbrains.annotations.NotNull;
 
 public class CourierParserDefinition implements ParserDefinition {
+  public static CourierParserDefinition INSTANCE = new CourierParserDefinition();
   public static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
   public static final TokenSet COMMENTS = TokenSet.create(
-      CourierTypes.SINGLE_LINE_COMMENT,
-      CourierTypes.BLOCK_COMMENT_EMPTY,
-      CourierTypes.BLOCK_COMMENT_NON_EMPTY,
-      CourierTypes.COMMA);
+    CourierTypes.SINGLE_LINE_COMMENT,
+    CourierTypes.BLOCK_COMMENT_EMPTY,
+    CourierTypes.BLOCK_COMMENT_NON_EMPTY,
+    CourierTypes.COMMA,
+    CourierElementType.DOC_COMMENT,
+    SchemadocTypes.DOC_COMMENT_START,
+    SchemadocTypes.DOC_COMMENT_CONTENT,
+    SchemadocTypes.DOC_COMMENT_END);
   public static final TokenSet STRING = TokenSet.create(CourierTypes.STRING);
 
   public static final IStubFileElementType FILE = new CourierStubFileElementType(CourierFileType.INSTANCE.getLanguage());
@@ -67,6 +73,9 @@ public class CourierParserDefinition implements ParserDefinition {
   }
 
   public SpaceRequirements spaceExistanceTypeBetweenTokens(ASTNode left, ASTNode right) {
+    if (left.getElementType() == CourierTypes.SINGLE_LINE_COMMENT) {
+      return SpaceRequirements.MUST_LINE_BREAK;
+    }
     return SpaceRequirements.MAY;
   }
 

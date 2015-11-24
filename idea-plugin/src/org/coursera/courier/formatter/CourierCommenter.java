@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package org.coursera.courier;
+package org.coursera.courier.formatter;
 
+import com.intellij.lang.ASTNode;
 import com.intellij.lang.CodeDocumentationAwareCommenterEx;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.tree.IElementType;
+import org.coursera.courier.psi.CourierElementType;
 import org.coursera.courier.psi.CourierTypes;
+import org.coursera.courier.schemadoc.psi.PsiSchemadocElement;
+import org.coursera.courier.schemadoc.psi.SchemadocTypes;
 import org.jetbrains.annotations.Nullable;
 
 public class CourierCommenter implements CodeDocumentationAwareCommenterEx {
@@ -76,7 +80,7 @@ public class CourierCommenter implements CodeDocumentationAwareCommenterEx {
   @Nullable
   @Override
   public IElementType getDocumentationCommentTokenType() {
-    return CourierTypes.SCHEMADOC;
+    return CourierElementType.DOC_COMMENT;
   }
 
   @Nullable
@@ -99,13 +103,13 @@ public class CourierCommenter implements CodeDocumentationAwareCommenterEx {
 
   @Override
   public boolean isDocumentationComment(PsiComment comment) {
-    if (comment == null) return false;
-    return comment.getNode().getElementType() == CourierTypes.SCHEMADOC;
+    return (comment instanceof PsiSchemadocElement);
   }
 
   @Override
   public boolean isDocumentationCommentText(PsiElement element) {
     if (element == null) return false;
-    return element.getNode().getElementType() == CourierTypes.SCHEMADOC_CONTENT;
+    final ASTNode node = element.getNode();
+    return node != null && node.getElementType() == SchemadocTypes.DOC_COMMENT_CONTENT;
   }
 }

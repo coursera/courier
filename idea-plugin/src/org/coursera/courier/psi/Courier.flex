@@ -4,6 +4,7 @@ import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
 import org.coursera.courier.psi.CourierTypes;
 import com.intellij.psi.TokenType;
+import org.coursera.courier.psi.CourierElementType;
 
 %%
 
@@ -25,11 +26,13 @@ BlockCommentNonEmpty = "/*" [^*] ~ "*/"
 // Comment can be the last line of the file, without line terminator.
 LineComment = "//" {InputCharacter}* {LineTerminator}?
 
-SchemadocStart = "/**"
-//SchemadocContent = ( [^*] | \*+ [^/*] )* // multi-line rule
-SchemadocContent = [^\r\n \t\f]*
-SchemadocLeadingAstrisks = "*"
-SchemadocEnd = "*/"
+//SchemadocStart = "/**"
+//SchemadocContent = ( [^*] | \*+ [^/*] )*
+//SchemadocEnd = "*/"
+
+// Based on _JavaLexer.flex:
+DOC_COMMENT="/*""*"+("/"|([^"/""*"]{COMMENT_TAIL}))?
+COMMENT_TAIL=([^"*"]*("*"+[^"*""/"])?)*("*"+"/")?
 
 Identifier = [A-Za-z_] [A-Za-z0-9_]* // Avro/Pegasus identifiers
 
@@ -76,8 +79,6 @@ StringLiteral = \" ( [^\"\\] | \\ ( [\"\\/bfnrt] | u[0-9]{4} ) )* \"
   "?"                    { return CourierTypes.QUESTION_MARK; }
   //","                  { return CourierTypes.COMMA; }
 
-  {SchemadocStart}       { yybegin(SCHEMADOC_CONT); return CourierTypes.SCHEMADOC_START; }
-
   /* identifiers */
   {Identifier}           { return CourierTypes.IDENTIFIER; }
   {EscapedIdentifier}    { return CourierTypes.IDENTIFIER; }
@@ -87,11 +88,8 @@ StringLiteral = \" ( [^\"\\] | \\ ( [\"\\/bfnrt] | u[0-9]{4} ) )* \"
   {StringLiteral}        { return CourierTypes.STRING; }
 }
 
-<SCHEMADOC_CONT> {
-  {SchemadocEnd}         { yybegin(YYINITIAL); return CourierTypes.SCHEMADOC_END; }
-  {WhiteSpace}+          { yybegin(SCHEMADOC_CONT); return TokenType.WHITE_SPACE; }
-  {SchemadocContent}     { yybegin(SCHEMADOC_CONT); return CourierTypes.SCHEMADOC_CONTENT; }
-}
+{DOC_COMMENT}? { yybegin(YYINITIAL); return CourierElementType.DOC_COMMENT; }
+
 
 {LineComment}            { yybegin(YYINITIAL); return CourierTypes.SINGLE_LINE_COMMENT; }
 {BlockCommentEmpty}      { yybegin(YYINITIAL); return CourierTypes.BLOCK_COMMENT_EMPTY; }

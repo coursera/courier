@@ -1,4 +1,4 @@
-package org.coursera.courier;
+package org.coursera.courier.codestyle;
 
 import com.intellij.openapi.options.Configurable;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
