@@ -5,6 +5,7 @@ import com.intellij.application.options.CodeStyleAbstractPanel;
 import com.intellij.application.options.TabbedLanguageCodeStylePanel;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
+import org.coursera.courier.formatter.CourierCommenter;
 import org.jetbrains.annotations.NotNull;
 
 public class CourierCodeStyleConfigurable extends CodeStyleAbstractConfigurable {

@@ -25,15 +25,14 @@
     <colorSettingsPage implementation="org.coursera.courier.CourierColorSettingsPage"/>
     <lang.parserDefinition language="Courier" implementationClass="org.coursera.courier.CourierParserDefinition"/>
     <lang.syntaxHighlighterFactory language="Courier" implementationClass="org.coursera.courier.CourierSyntaxHighlighterFactory"/>
-    <lang.commenter language="Courier" implementationClass="org.coursera.courier.CourierCommenter"/>
-    <!-- lang.documentationProvider language="Courier" implementationClass="org.coursera.courier.CourierCodeDocumentationProvider"/-->
+    <lang.commenter language="Courier" implementationClass="org.coursera.courier.formatter.CourierCommenter"/>
     <lang.braceMatcher language="Courier" implementationClass="org.coursera.courier.CourierBraceMatcher"/>
     <quoteHandler fileType="Courier" className="org.coursera.courier.CourierQuoteHandler" />
 
     <lang.formatter language="Courier" implementationClass="org.coursera.courier.formatter.CourierFormattingModelBuilder"/>
     <codeStyleSettingsProvider implementation="org.coursera.courier.CourierCodeStyleSettingsProvider" />
     <langCodeStyleSettingsProvider implementation="org.coursera.courier.CourierLanguageCodeStyleSettingsProvider"/>
-    <!-- commentCompleteHandler implementation="org.coursera.courier.CourierCommentCompleteHandler" /-->
+    <!-- commentCompleteHandler implementation="org.coursera.courier.formatter.CourierCommentCompleteHandler" /-->
     <completion.contributor language="Courier" implementationClass="org.coursera.courier.CourierCompletionContributor"/>
 
     <lang.refactoringSupport language="Courier" implementationClass="org.coursera.courier.CourierRefactoringSupportProvider"/>

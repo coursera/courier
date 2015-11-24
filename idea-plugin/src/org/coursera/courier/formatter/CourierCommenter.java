@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.coursera.courier;
+package org.coursera.courier.formatter;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.CodeDocumentationAwareCommenterEx;
@@ -23,11 +23,8 @@ import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.tree.IElementType;
 import org.coursera.courier.psi.CourierElementType;
-import org.coursera.courier.psi.CourierSchemadoc;
 import org.coursera.courier.psi.CourierTypes;
 import org.coursera.courier.schemadoc.psi.PsiSchemadocElement;
-import org.coursera.courier.schemadoc.psi.SchemadocElementType;
-import org.coursera.courier.schemadoc.psi.SchemadocTokenType;
 import org.coursera.courier.schemadoc.psi.SchemadocTypes;
 import org.jetbrains.annotations.Nullable;
 
