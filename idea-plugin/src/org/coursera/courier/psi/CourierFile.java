@@ -1,9 +1,9 @@
 package org.coursera.courier.psi;
 
 import com.intellij.extapi.psi.PsiFileBase;
-import com.intellij.lang.ASTNode;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.psi.FileViewProvider;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.coursera.courier.CourierFileType;
@@ -50,25 +50,72 @@ public class CourierFile extends PsiFileBase {
   }
 
   public void addImport(CourierImportDeclaration importDecl) {
-    CourierImportDeclarations importDecls = PsiTreeUtil.findChildOfType(getContainingFile(), CourierImportDeclarations.class);
-    if (importDecls != null) {
-      ASTNode node = importDecls.getNode();
-      if (node != null) {
-        boolean added = false;
-        for (CourierImportDeclaration existing : importDecls.getImportDeclarationList()) {
-          if (importDecl.getFullname().toString().compareTo(existing.getFullname().toString()) < 0) {
-            importDecls.addBefore(importDecl, existing);
-            added = true;
-            break;
-          }
-        }
-        if (!added) {
-          importDecls
-            .add(importDecl);
+    CourierTopLevel root = getRoot();
+    CourierImportDeclarations importDecls = root.getImportDeclarations();
+    if (importDecls.getImportDeclarationList().size() == 0) {
+      importDecls = addFirstImport(importDecl);
+    } else {
+      importDecls = addNthImport(importDecl);
+    }
+    CodeStyleManager.getInstance(importDecls.getProject()).reformat(importDecls);
+  }
+
+  public CourierTopLevel getRoot() {
+    return PsiTreeUtil.findChildOfType(this, CourierTopLevel.class);
+  }
+
+  /**
+   * Position imports correctly when adding the first import.
+   */
+  private CourierImportDeclarations addFirstImport(CourierImportDeclaration importDecl) {
+    TypeName first = importDecl.getFullname();
+    CourierTopLevel root = getRoot();
+    CourierImportDeclarations importDecls = root.getImportDeclarations();
+    if (importDecls.getImportDeclarationList().size() == 0) {
+      importDecls.delete();
+      CourierImportDeclarations emptyImports =
+        CourierElementFactory.createImports(getProject(), Collections.singleton(first));
+
+      CourierNamespaceDeclaration namespaceDecl = root.getNamespaceDeclaration();
+      if (namespaceDecl != null) {
+        root.addAfter(emptyImports, namespaceDecl);
+      } else {
+        PsiElement firstChild = root.getFirstChild();
+        if (firstChild != null) {
+          root.addBefore(emptyImports, firstChild);
+        } else {
+          root.add(emptyImports);
         }
       }
-      CodeStyleManager.getInstance(importDecls.getProject()).reformat(importDecls);
+      return emptyImports;
+    } else {
+      return importDecls;
     }
+  }
+
+  /**
+   * Add an import to an existing import list, attempting to keep the list sorted.
+   *
+   * Note: this does not change the sort order of the existing import list.  It only attempts
+   * to keep the list sorted if it already is by adding the import at the correct position.
+   *
+   */
+  private CourierImportDeclarations addNthImport(CourierImportDeclaration importDecl) {
+    CourierTopLevel root = getRoot();
+    CourierImportDeclarations importDecls = root.getImportDeclarations();
+
+    boolean added = false;
+    for (CourierImportDeclaration existing : importDecls.getImportDeclarationList()) {
+      if (importDecl.getFullname().toString().compareTo(existing.getFullname().toString()) < 0) {
+        importDecls.addBefore(importDecl, existing);
+        added = true;
+        break;
+      }
+    }
+    if (!added) {
+      importDecls.add(importDecl);
+    }
+    return importDecls;
   }
 
   public Collection<CourierImportDeclaration> getImports() {
