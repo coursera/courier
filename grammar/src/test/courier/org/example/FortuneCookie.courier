@@ -4,6 +4,7 @@ namespace org.example
  * A fortune cookie.
  */
 record FortuneCookie {
+  ...Note
   /** A fortune cookie message. */
   message: string
   certainty: float?

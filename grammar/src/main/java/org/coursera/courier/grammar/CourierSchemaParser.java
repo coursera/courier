@@ -539,7 +539,9 @@ public class CourierSchemaParser extends SchemaParser {
     RecordDataSchema schema = new RecordDataSchema(name, RecordDataSchema.RecordType.RECORD);
 
     bindNameToSchema(name, schema);
-    schema.setFields(parseFields(schema, record.recordDecl), errorMessageBuilder());
+    FieldsAndIncludes fieldsAndIncludes = parseFields(schema, record.recordDecl);
+    schema.setFields(fieldsAndIncludes.fields, errorMessageBuilder());
+    schema.setInclude(fieldsAndIncludes.includes);
     setAnnotations(context, schema);
     topLevelSchemas.add(schema);
     return schema;
@@ -557,9 +559,6 @@ public class CourierSchemaParser extends SchemaParser {
 
     for (PropDeclarationContext prop: source.props) {
       addToProperties(properties, prop);
-      /*properties.put(
-        prop.name,
-        parseJsonValue(prop.propJsonValue().jsonValue()));*/
     }
 
     target.setProperties(properties);
@@ -605,11 +604,22 @@ public class CourierSchemaParser extends SchemaParser {
     }
   }
 
-  private List<RecordDataSchema.Field> parseFields(
+  private static class FieldsAndIncludes {
+    public final List<RecordDataSchema.Field> fields;
+    public final List<NamedDataSchema> includes;
+
+    public FieldsAndIncludes(List<Field> fields, List<NamedDataSchema> includes) {
+      this.fields = fields;
+      this.includes = includes;
+    }
+  }
+
+  private FieldsAndIncludes parseFields(
       RecordDataSchema recordSchema,
       FieldSelectionContext fieldGroup) throws ParseException {
 
     List<RecordDataSchema.Field> results = new ArrayList<RecordDataSchema.Field>();
+    List<NamedDataSchema> includes = new ArrayList<NamedDataSchema>();
     for (FieldSelectionElementContext element : fieldGroup.fields) {
       FieldDeclarationContext field = element.fieldDeclaration();
       if (field != null) {
@@ -630,9 +640,6 @@ public class CourierSchemaParser extends SchemaParser {
 
         for (PropDeclarationContext prop : field.props) {
           addToProperties(properties, prop);
-          /*properties.put(
-            prop.name,
-            parseJsonValue(prop.propJsonValue().jsonValue()));*/
         }
         if (field.doc != null) {
           result.setDoc(field.doc.value);
@@ -641,30 +648,44 @@ public class CourierSchemaParser extends SchemaParser {
         result.setRecord(recordSchema);
         results.add(result);
       } else if (element.fieldInclude() != null) {
-        throw new UnsupportedOperationException();
+        TypeReferenceContext includeRef = element.fieldInclude().typeReference();
+        DataSchema includedSchema = toDataSchema(includeRef);
+        if (includedSchema != null) {
+          if (includedSchema instanceof NamedDataSchema) {
+            includes.add((NamedDataSchema) includedSchema);
+          } else {
+            startErrorMessage(element)
+              .append("Include is not a named type: ")
+              .append(includeRef.value).append("\n");
+          }
+        }
       } else {
         startErrorMessage(element)
           .append("Unrecognized field element parse node: ")
           .append(element.getText()).append("\n");
       }
     }
-    return results;
+    return new FieldsAndIncludes(results, includes);
+  }
+
+  private DataSchema toDataSchema(TypeReferenceContext typeReference) throws ParseException {
+    DataSchema dataSchema = stringToDataSchema(typeReference.value);
+    if (dataSchema != null) {
+      return dataSchema;
+    } else {
+      startErrorMessage(typeReference)
+        .append("Type not found: ")
+        .append(typeReference.value).append("\n");
+      // Pegasus is designed to track null data schema references as errors, so we intentionally
+      // return null here.
+      return null;
+    }
   }
 
   private DataSchema toDataSchema(TypeAssignmentContext typeAssignment) throws ParseException {
     TypeReferenceContext typeReference = typeAssignment.typeReference();
     if (typeReference != null) {
-      DataSchema dataSchema = stringToDataSchema(typeReference.value);
-      if (dataSchema != null) {
-        return dataSchema;
-      } else {
-        startErrorMessage(typeReference)
-          .append("Type not found: ")
-          .append(typeReference.value).append("\n");
-        // Pegasus is designed to track null data schema references as errors, so we intentionally
-        // return null here.
-        return null;
-      }
+      return toDataSchema(typeReference);
     }  else if (typeAssignment.typeDeclaration() != null) {
       return parseType(typeAssignment.typeDeclaration());
     } else {

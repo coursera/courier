@@ -3,6 +3,7 @@
   "name": "FortuneCookie",
   "namespace": "org.example",
   "doc": "A fortune cookie.",
+  "include": ["Note"],
   "fields": [
     {
       "name": "message",
