@@ -17,6 +17,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Based on DocCommentBlock.
+ */
 public class SchemadocBlock extends AbstractCourierBlock {
   public SchemadocBlock(ASTNode node,
                         Wrap wrap,

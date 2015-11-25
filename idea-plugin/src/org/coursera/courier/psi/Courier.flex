@@ -26,9 +26,13 @@ BlockCommentNonEmpty = "/*" [^*] ~ "*/"
 // Comment can be the last line of the file, without line terminator.
 LineComment = "//" {InputCharacter}* {LineTerminator}?
 
-SchemadocStart = "/**"
-SchemadocContent = ( [^*] | \*+ [^/*] )*
-SchemadocEnd = "*/"
+//SchemadocStart = "/**"
+//SchemadocContent = ( [^*] | \*+ [^/*] )*
+//SchemadocEnd = "*/"
+
+// Based on _JavaLexer.flex:
+DOC_COMMENT="/*""*"+("/"|([^"/""*"]{COMMENT_TAIL}))?
+COMMENT_TAIL=([^"*"]*("*"+[^"*""/"])?)*("*"+"/")?
 
 Identifier = [A-Za-z_] [A-Za-z0-9_]* // Avro/Pegasus identifiers
 
@@ -84,7 +88,7 @@ StringLiteral = \" ( [^\"\\] | \\ ( [\"\\/bfnrt] | u[0-9]{4} ) )* \"
   {StringLiteral}        { return CourierTypes.STRING; }
 }
 
-{SchemadocStart} {SchemadocContent} {SchemadocEnd}? { yybegin(YYINITIAL); return CourierElementType.DOC_COMMENT; }
+{DOC_COMMENT}? { yybegin(YYINITIAL); return CourierElementType.DOC_COMMENT; }
 
 
 {LineComment}            { yybegin(YYINITIAL); return CourierTypes.SINGLE_LINE_COMMENT; }

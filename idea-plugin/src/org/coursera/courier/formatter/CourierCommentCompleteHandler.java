@@ -17,8 +17,8 @@ public class CourierCommentCompleteHandler implements CommentCompleteHandler {
     if (psiComment.getTokenType() == CourierElementType.DOC_COMMENT) {
       PsiElement last = psiComment.getLastChild();
       String text = psiComment.getText();
-      int firstDocCommentStart = text.indexOf("/*");
-      int lastDocCommentStart = text.lastIndexOf("/*");
+      int firstDocCommentStart = text.indexOf("/**");
+      int lastDocCommentStart = text.lastIndexOf("/**");
       boolean hasNestedDocCommentStart = (firstDocCommentStart > -1 && lastDocCommentStart > -1 && firstDocCommentStart != lastDocCommentStart);
       return (!hasNestedDocCommentStart && last != null && last.getNode().getElementType() == SchemadocTypes.DOC_COMMENT_END);
     }

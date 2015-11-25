@@ -22,6 +22,7 @@ import org.coursera.courier.schemadoc.psi.SchemadocTypes;
 import org.jetbrains.annotations.NotNull;
 
 public class CourierParserDefinition implements ParserDefinition {
+  public static CourierParserDefinition INSTANCE = new CourierParserDefinition();
   public static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
   public static final TokenSet COMMENTS = TokenSet.create(
     CourierTypes.SINGLE_LINE_COMMENT,
@@ -72,6 +73,9 @@ public class CourierParserDefinition implements ParserDefinition {
   }
 
   public SpaceRequirements spaceExistanceTypeBetweenTokens(ASTNode left, ASTNode right) {
+    if (left.getElementType() == CourierTypes.SINGLE_LINE_COMMENT) {
+      return SpaceRequirements.MUST_LINE_BREAK;
+    }
     return SpaceRequirements.MAY;
   }
 

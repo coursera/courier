@@ -36,7 +36,7 @@ public class CourierFormattingModelBuilder implements FormattingModelBuilder {
   @NotNull
   @Override
   public FormattingModel createModel(
-      @NotNull PsiElement element, @NotNull CodeStyleSettings settings) {
+    @NotNull PsiElement element, @NotNull CodeStyleSettings settings) {
     Block block =
       AbstractCourierBlock.createBlock(
         element.getNode(),
@@ -88,25 +88,4 @@ public class CourierFormattingModelBuilder implements FormattingModelBuilder {
   public TextRange getRangeAffectingIndent(PsiFile file, int offset, ASTNode elementAtOffset) {
     return null;
   }
-
-  /*
-  @Nullable
-  @Override
-  public TextRange getRangeAffectingIndent(PsiFile file, int offset, ASTNode elementAtOffset) {
-    ASTNode current = elementAtOffset;
-    while (current != null) {
-      if (current.getElementType() == CourierElementType.DOC_COMMENT) {
-        String text = current.getText();
-        int firstDocCommentStart = text.indexOf("/*");
-        int lastDocCommentStart = text.lastIndexOf("/*");
-        if (firstDocCommentStart > -1 && lastDocCommentStart > -1 && firstDocCommentStart != lastDocCommentStart) {
-          TextRange originalRange = current.getTextRange();
-          int end = originalRange.getEndOffset() - (text.length() - lastDocCommentStart);
-          return new TextRange(originalRange.getStartOffset(), end);
-        }
-      }
-      current = current.getTreeParent();
-    }
-    return null;
-  }*/
 }

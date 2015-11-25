@@ -32,7 +32,7 @@
     <lang.formatter language="Courier" implementationClass="org.coursera.courier.formatter.CourierFormattingModelBuilder"/>
     <codeStyleSettingsProvider implementation="org.coursera.courier.CourierCodeStyleSettingsProvider" />
     <langCodeStyleSettingsProvider implementation="org.coursera.courier.CourierLanguageCodeStyleSettingsProvider"/>
-    <!-- commentCompleteHandler implementation="org.coursera.courier.formatter.CourierCommentCompleteHandler" /-->
+    <commentCompleteHandler implementation="org.coursera.courier.formatter.CourierCommentCompleteHandler" />
     <completion.contributor language="Courier" implementationClass="org.coursera.courier.CourierCompletionContributor"/>
 
     <lang.refactoringSupport language="Courier" implementationClass="org.coursera.courier.CourierRefactoringSupportProvider"/>
