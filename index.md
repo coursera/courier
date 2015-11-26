@@ -5,17 +5,31 @@ layout: page
 Overview
 --------
 
-Courier is a Scala data binding generator for the [Pegasus](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates)
-schema language. The generated data bindings efficiently serialize to JSON and a variety of binary protocols.
+<p class="lead">
+Courier is a modern schema language and data binding generator for data interchange.
+</p>
 
-<br>
-<div>
-  <img src="images/courier-flow.png" style="max-width:100%; max-height:100%;" />
-</div>
-<br>
+#### Why Courier?
 
-Why use Courier?
-----------------
+* Modern schema language
+* Idiomatic Data bindings
+* Language interoperability
+* Multiple data protocols
+
+**Modern Schema language**
+
+Courier is a concise but comprehensive schema language, that is based on
+Pegasus and Avro.
+
+<center>
+<img src="images/courier-intellij.png" style="max-width:60%; max-height:100%;" />
+</center>
+
+**Idiomatic Data bindings**
+
+Courier goes to great lengths to produce data bindings that look and feel natural to developers.
+
+For example, for Scala, Courier generates immutable Scala case classes, `Option`, default parameters, pattern matching, sealed traits, Scala collections and Scala enumerations to produce ADT style bindings that look and behave how Scala developers expect.
 
 **Language interoperability**
 
@@ -26,7 +40,7 @@ Why use Courier?
 <img src="images/android-icon.png" width="64" />
 </center>
 
-Courier is one of a number of language bindings that exist for Pegasus schemas. When using Pegasus language bindings to build applications:
+Courier builds on the language interoperability features of Pegasus:
 
 * Languages share a common understanding of the structure of the data they read and write.
 * Language binding generators eliminate the tedious and error prone process of manually writing serializers.
@@ -48,14 +62,10 @@ This means developers can easily use different data protocols for different need
 * Persist data using compact binary protocol such as Avro
 * Message data efficiently between backend services in a "JSON equivalent" binary protocol such as PSON
 
-**Scala Idiomatic Data bindings**
-
-Courier goes to great lengths to produce data bindings that look and feel natural to Scala developers. Courier generates immutable Scala case classes, `Option`, default parameters, pattern matching, sealed traits, Scala collections and Scala enumerations to produce ADT style bindings that look and behave how Scala developers expect.
-
 How development with Courier works
 ----------------------------------
 
-* Developers write schema files (`.pdsc` or `.courier`) files.
+* Developers write schema files (`.pdsc` or `.courier`).
 * Data bindings are generated from schemas for each language.
 * Developers then code against those data bindings and get a strong guarentee that the JSON that those bindings read and write are compatible with all the other languages doing the same thing.
 
@@ -64,11 +74,18 @@ Courier provides the Scala data binding generator for the Pegasus schema languag
 Features
 --------
 
-Scala Generator:
+Schema language:
 
-* Generates "Scala Idiomatic" data bindings (case classes, pattern matching, Scala collections...)
-* Supports all Pegasus schema types: Records, Arrays, Maps, Primitives, ...
-* Integrated with popular build systems
+* Courier schema language (`.courier`)
+* Fully compatible with [.pdsc](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates)
+* Also fully Compatible with [Avro](http://avro.apache.org/) schemas
+
+Generators:
+
+* Scala
+* [Swift](https://github.com/coursera/courier/tree/master/swift)
+* [Android Java](https://github.com/coursera/courier/tree/master/android)
+* Java (via [Pegasus](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates))
 
 Supported Build Systems:
 
@@ -82,17 +99,10 @@ Supported Protocols:
 * PSON (JSON Equivalent binary format)
 * BSON (Another JSON Equivalent binary format)
 
-Schema language:
+IDE Support:
 
-* [Pegasus](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates)
-* Also fully Compatible with [Avro](http://avro.apache.org/) schemas
+* [Courier IntelliJ IDEA Plugin](https://plugins.jetbrains.com/plugin/8005?pr=idea)
 
-Compatible with other languages that use Pegasus bindings:
-
-* Scala
-* Java (via [Pegasus](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates))
-* Swift (via [Courier swift](https://github.com/coursera/courier/tree/master/swift))
-* Android specific Java bindings (via [Courier android](https://github.com/coursera/courier/tree/master/android))
 
 Getting Started
 ---------------
@@ -168,7 +178,7 @@ object Example extends App {
 
 The generator is run automatically before `src/main/scala` compilation. It also registers for
 triggered execution to support SBT commands like `~compile`, which will cause the generator to
-run immediately whenever a .pdsc or .courier file is changed.
+run immediately whenever a `.pdsc` or `.courier` file is changed.
 
 The generator will write Scala files to the `target/scala-<scalaMajorVersion>/courier` directory of
 your project and add them to the compile classpath.
@@ -185,7 +195,6 @@ The code generator is an extension of the Rest.li SBT Plugin, for more details, 
 #### Testing
 
 `.pdsc` or `.courier` files only needed for tests may be added to `src/test/pegasus`.
-
 
 Schema Types
 ============
@@ -222,17 +231,12 @@ Schema fields may also be documented or marked as deprecated:
 
 {% include file_format_specific.html name="record_properties" %}
 
+#### Including fields
+
 Records may [include fields from other records](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates#including-fields-from-another-record)
 using `"include"`:
 
-```json
-{
-  "name" : "WithIncluded",
-  "type" : "record",
-  "include" : [ "Foo" ],
-  "fields" : [ ... ]
-}
-```
+{% include file_format_specific.html name="record_include_example" %}
 
 In pegasus, field inclusion does not imply inheritance, it is merely a
 convenience to reduce duplication when writing schemas.

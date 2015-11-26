@@ -31,8 +31,18 @@
 {%endfor%}
 </div>
 <script type="text/javascript">
-var elems = $("#{{include.name}}-fileformat-tab-content");
-var height = Math.max.apply(null, elems.map(function(){ return $(this).height(); }));
-elems.each(function(){ $(this).height(height);});
+var elems = $("#{{include.name}}-fileformat-tab-content .fileformat-tab-pane");
+var minHeight = Math.min.apply(null, elems.map(function(){ return $(this).height(); }));
+var maxHeight = Math.max.apply(null, elems.map(function(){ return $(this).height(); }));
+// .pre-scrollable on the larger element?
+elems.each(function(){
+  if ($(this).height() > minHeight) {
+    $(this).addClass("pre-scrollable");
+    $(this).height(minHeight);
+  } else {
+    $(this).height(minHeight);
+  }
+  //$(this).height(maxHeight);
+});
 </script>
 </div>
