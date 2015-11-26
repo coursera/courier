@@ -3,7 +3,7 @@
 Courier
 =======
 
-Data interchange for the modern web + mobile stack, based on an expressive schema language and language idiomatic data binding generators.
+Modern data interchange system for web + mobile stacks that combines an expressive schema language with language idiomatic data binding generators.
 
 <br>
 
