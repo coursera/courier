@@ -8,7 +8,7 @@ Data interchange for the modern web + mobile stack, based on an expressive schem
 <br>
 
 <center>
-  <img src="http://coursera.github.io/courier/images/courier-intellij.png" style="max-width:60%; max-height:100%;" />
+  <img src="http://coursera.github.io/courier/images/courier-intellij.png" width="50%" />
 </center>
 
 <br>
