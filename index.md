@@ -6,7 +6,8 @@ Overview
 --------
 
 <p class="lead">
-Courier is a modern schema language and data binding generator for data interchange.
+Data interchange for a modern web + mobile stack data should be based on a solid
+schema language and language idiomatic data binding generators.
 </p>
 
 #### Why Courier?
