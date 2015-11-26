@@ -18,10 +18,10 @@ Data interchange for the modern web + mobile stack, based on an expressive schem
 Why Courier?
 ------------
 
-* Expressive schema language
-* Idiomatic Data bindings
-* Language interoperability
-* Multiple data protocols
+* Expressive schema language with full IDE support
+* Language idiomatic generated data bindings
+* Language interoperability: Scala, Swift, Java (incl. custom Android support), Javascript
+* Multiple data protocols: JSON, Avro binary, PSON, BSON, ...
 
 Features
 --------
@@ -38,6 +38,7 @@ Generators:
 * [Swift](https://github.com/coursera/courier/tree/master/swift)
 * [Android Java](https://github.com/coursera/courier/tree/master/android)
 * Java (via [Pegasus](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates))
+* Javascript (via JSON)
 
 Supported Build Systems:
 
