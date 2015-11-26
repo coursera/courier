@@ -6,19 +6,19 @@ Overview
 --------
 
 <p class="lead">
-Data interchange for the modern web + mobile stack, based on an expressive schema language and language idiomatic data binding generators.</p>
+Courier is a modern data interchange system for web + mobile stacks that combines an expressive schema language with language idiomatic data binding generators.</p>
 
 #### Why Courier?
 
-* Expressive schema language
-* Idiomatic Data bindings
-* Language interoperability
-* Multiple data protocols
+* Expressive schema language with full IDE support
+* Language idiomatic generated data bindings
+* Language interoperability: Scala, Swift, Android and Java
+* Multiple data protocols: JSON, Avro binary, PSON, BSON, ...
 
 **Modern Schema language**
 
-Courier is a concise but comprehensive schema language, that is based on
-Pegasus and Avro.
+Courier is a concise but comprehensive schema language, based on
+Pegasus and Avro, and with language features from Scala, Swift, and Avro IDL.
 
 <center>
 <img src="images/courier-intellij.png" style="max-width:60%; max-height:100%;" />
