@@ -12,7 +12,7 @@ Courier is a modern data interchange system for web + mobile stacks that combine
 
 * Expressive schema language with full IDE support
 * Language idiomatic generated data bindings
-* Language interoperability: Scala, Swift, Android and Java
+* Language interoperability: Scala, Swift, Java (incl. custom Android support), Javascript
 * Multiple data protocols: JSON, Avro binary, PSON, BSON, ...
 
 **Modern Schema language**
@@ -77,12 +77,13 @@ Schema language:
 * Fully compatible with [.pdsc](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates)
 * Also fully Compatible with [Avro](http://avro.apache.org/) schemas
 
-Generators:
+Supported Languages:
 
 * Scala
 * [Swift](https://github.com/coursera/courier/tree/master/swift)
 * [Android Java](https://github.com/coursera/courier/tree/master/android)
 * Java (via [Pegasus](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates))
+* Javascript (via JSON codec)
 
 Supported Build Systems:
 
