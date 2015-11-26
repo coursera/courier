@@ -64,18 +64,16 @@ This means developers can easily use different data protocols for different need
 How development with Courier works
 ----------------------------------
 
-* Developers write schema files (`.pdsc` or `.courier`).
-* Data bindings are generated from schemas for each language.
-* Developers then code against those data bindings and get a strong guarentee that the JSON that those bindings read and write are compatible with all the other languages doing the same thing.
-
-Courier provides the Scala data binding generator for the Pegasus schema language. It is intended to be used in combination with other Pegasus based data bindings generators, such as the [Java generator](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates) provided by Linkedin.
+* Developers write `.courier` (or `.pdsc`) schema files.
+* Data bindings are generated from schemas for each language using the provided build system plugins.
+* Developers then code against those data bindings and get a strong guarantee that the JSON (or binary protocol) that those bindings read and write are compatible with all the other languages doing the same thing.
 
 Features
 --------
 
 Schema language:
 
-* Courier schema language (`.courier`)
+* Courier schema language (`.courier` file format).
 * Fully compatible with [.pdsc](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates)
 * Also fully Compatible with [Avro](http://avro.apache.org/) schemas
 
@@ -145,7 +143,7 @@ object Example extends Build {
 
 Your project can now generate Courier data bindings.
 
-To try it out, add `.pdsc` or `.courier` files to the `src/main/pegasus` directory of your project. For example create the following file in the `schemas/src/main/pegasus/org/example/fortune` directory:
+To try it out, add `.courier` (or `.pdsc`) files to the `src/main/pegasus` directory of your project. For example create the following file in the `schemas/src/main/pegasus/org/example/fortune` directory:
 
 {% include file_format_specific.html name="sbt_fortune" %}
 
@@ -177,7 +175,7 @@ object Example extends App {
 
 The generator is run automatically before `src/main/scala` compilation. It also registers for
 triggered execution to support SBT commands like `~compile`, which will cause the generator to
-run immediately whenever a `.pdsc` or `.courier` file is changed.
+run immediately whenever `.courier` (or `.pdsc`) file is changed.
 
 The generator will write Scala files to the `target/scala-<scalaMajorVersion>/courier` directory of
 your project and add them to the compile classpath.
@@ -193,7 +191,7 @@ The code generator is an extension of the Rest.li SBT Plugin, for more details, 
 
 #### Testing
 
-`.pdsc` or `.courier` files only needed for tests may be added to `src/test/pegasus`.
+`.courier` (or `.pdsc`) files only needed for tests may be added to `src/test/pegasus`.
 
 Schema Types
 ============
@@ -225,8 +223,6 @@ Note that `"defaultNone"` is not part of Pegasus, but is a custom property suppo
 specifically added it make it possible to generate idiomatic Scala bindings.
 
 Schema fields may also be documented or marked as deprecated:
-
-`.pdsc`:
 
 {% include file_format_specific.html name="record_properties" %}
 
@@ -351,7 +347,7 @@ RecordArray(Record(field = 1), Record(field = 2)) |`[ { "field": 1 }, { "field":
 
 
 Ordinarily, arrays are defined inline inside other types. But if needed,
-typerefs allow a map to be defined in a separate `.pdsc` or `.courier` file and be assigned a
+typerefs allow a map to be defined in a separate `.courier` (or `.pdsc`) file and be assigned a
 unique type name. See below for more details about typerefs.
 
 Map Type
@@ -439,7 +435,7 @@ SimpleIdToRecordMap(SimpleId(id = 1000) -> Record(field = 1)) |`{ "(id~1000)": {
 
 
 Ordinarily, maps are defined inline inside other types. But if needed,
-typerefs allow a map to be defined in a separate `.pdsc` or `.courier` file and be assigned a
+typerefs allow a map to be defined in a separate `.courier` (or `.pdsc`) file and be assigned a
 unique type name name. See below for more details about typerefs.
 
 Union Type
@@ -532,7 +528,7 @@ The member key of primitives, maps, arrays and unions are the same as their type
 `Record(field = IntArrayMember(IntArray(1,2,3)))` | `{ "field": { "array": [1, 2, 3] } }`
 
 Ordinarily, unions are defined inside other types. But if needed,
-typerefs may be used to define a union in a separate `.pdsc` or `.courier` file and give the union
+typerefs may be used to define a union in a separate `.courier` (or `.pdsc`) file and give the union
 any desired name. See below for more details about typerefs.
 
 #### Union Backward Compatibility
