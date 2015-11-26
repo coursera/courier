@@ -6,13 +6,11 @@ Overview
 --------
 
 <p class="lead">
-Data interchange for a modern web + mobile stack data should be based on a solid
-schema language and language idiomatic data binding generators.
-</p>
+Data interchange for the modern web + mobile stack, based on an expressive schema language and language idiomatic data binding generators.</p>
 
 #### Why Courier?
 
-* Modern schema language
+* Expressive schema language
 * Idiomatic Data bindings
 * Language interoperability
 * Multiple data protocols
