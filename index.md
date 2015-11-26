@@ -194,8 +194,8 @@ The code generator is an extension of the Rest.li SBT Plugin, for more details, 
 
 `.courier` (or `.pdsc`) files only needed for tests may be added to `src/test/pegasus`.
 
-Schema Types
-============
+Schema Language
+===============
 
 Record Types
 ------------
