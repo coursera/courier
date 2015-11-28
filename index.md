@@ -83,7 +83,7 @@ Supported Languages:
 * [Swift](https://github.com/coursera/courier/tree/master/swift)
 * [Android Java](https://github.com/coursera/courier/tree/master/android)
 * Java (via [Pegasus](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates))
-* Javascript (via JSON codec)
+* Javascript (via JSON)
 
 Supported Build Systems:
 
@@ -105,12 +105,8 @@ IDE Support:
 Getting Started
 ---------------
 
-### Gradle
-See [Gradle Plugin](https://github.com/coursera/courier/tree/master/gradle-plugin).
-
-### SBT
-
-Add the generator dependencies to your SBT plugins:
+### Scala (SBT)
+For SBT, add the generator dependencies to your SBT plugins:
 
 ##### project/plugins.sbt
 
@@ -193,6 +189,14 @@ The code generator is an extension of the Rest.li SBT Plugin, for more details, 
 #### Testing
 
 `.courier` (or `.pdsc`) files only needed for tests may be added to `src/test/pegasus`.
+
+### Java (Gradle)
+
+See [Gradle Plugin](https://github.com/coursera/courier/tree/master/gradle-plugin).
+
+### Swift (Xcode / Cocoapods)
+
+See [XCode integration](https://github.com/coursera/courier/tree/master/swift#courier-data-binding-generator-for-swift).
 
 Schema Language
 ===============
@@ -720,8 +724,8 @@ This will be generated as:
 case class Fortune(createdAt: org.joda.time.DateTime)
 ```
 
-Serialization
-=============
+Data Protocols
+==============
 
 JSON
 ----
@@ -740,16 +744,33 @@ val dataMap = DataTemplates.readDataMap(json) // or readDataList
 val fortune = Fortune(dataMap, DataConversion.SetReadOnly) // or DataConversion.DeepCopy
 ```
 
-Codecs
-------
-
-Pegasus and Courier provides multiple "Codecs":
+As with all data protocols, JSON is available via a "codec":
 
 * JacksonDataCodec - The primary JSON encoding used by Pegasus.
-* [InlineStringCodec](https://github.com/coursera/courier/blob/master/runtime/src/main/scala/org/coursera/courier/codecs/InlineStringCodec.scala#L38)
-  - URL "Friendly" string encoding of data.
+
+Binary Protocols
+----------------
+
 * [PsonDataCodec](https://github.com/linkedin/rest.li/blob/master/data/src/main/java/com/linkedin/data/codec/PsonDataCodec.java#L41) - Non-standard "performance" optimized JSON-like codec.
 * BsonDataCodec - The [bson](http://bsonspec.org/) binary encoding for JSON-like data.
+
+Avro Translators
+----------------
+
+Avro compatibility is provided using "translators" of Avro data:
+
+* AvroGenericToDataTranslator
+* DataMapToGenericRecordTranslator
+
+and Avro schemas:
+
+* SchemaTranslator - Translates Avro `Schema` to and from Pegasus `DataSchema`.
+
+Inline String Protocol
+----------------------
+
+ [InlineStringCodec](https://github.com/coursera/courier/blob/master/runtime/src/main/scala/org/coursera/courier/codecs/InlineStringCodec.scala#L38) is a URL "Friendly" string encoding of data that can be used to
+ encode complex types (sucha as records) as URL query params or path parts.  It is also used by Courier to  encode complex types as JSON object map keys.
 
 Example codec use:
 
@@ -775,27 +796,87 @@ val dataMap = codec.readMap(inputStream)
 codec.writeMap(dataMap, outputStream)
 ```
 
-Avro Translators
+Custom Protocols
 ----------------
 
-Avro compatibility is provided using "translators" of Avro data:
-
-* AvroGenericToDataTranslator
-* DataMapToGenericRecordTranslator
-
-and Avro schemas:
-
-* SchemaTranslator - Translates Avro `Schema` to and from Pegasus `DataSchema`.
-
+To add a protocol of your own to Courier, simply implement the `DataCodec`.
 
 Validation
-----------
+==========
 
-https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates#data-to-schema-validation
+Data can be validated against a schema using ```ValidateDataAgainstSchema.validate()```, e.g.:
 
+```scala
+val recordToValidate = new RecordToValidate(/*...*/)
+val options = new ValidationOptions()
+val validationResult = ValidateDataAgainstSchema.validate(recordToValidate, options)
+if(!result.isValid()) {
+  // ...
+} else {
+  // ...
+}
+```
+
+This validation will check that all data is of the correct type and that all required fields are present.
+
+To include additional validation checks using the built-in validators, such as string regex check, simply add the validation property to a field, e.g.:
+
+{% include file_format_specific.html name="validation_example_field" %}
+
+or to a type, e.g.:
+
+{% include file_format_specific.html name="validation_example_typeref" %}
+
+And then run the schema validator as usual.
+
+To add your own custom validators, declare a new class that implements
+[Validator](https://github.com/linkedin/rest.li/blob/master/data/src/main/java/com/linkedin/data/schema/validator/Validator.java), e.g.:
+
+```scala
+class PrefixValidator(config: DataMap) extends Validator {
+  val prefix = config.getString("prefix");
+
+  def validate(context: ValidatorContext): Unit = {
+
+    context.dataElement.getValue match {
+      case str: String if str.startsWith(prefix) =>
+        // valid!
+      case _: Any =>
+        context.addResult(new Message(
+          element.path, true, s"Prefix of '$prefix' is required.")
+    }
+  }
+}
+```
+
+
+and provide it to the constructor of [DataSchemaAnnotationValidator](https://github.com/linkedin/rest.li/blob/master/data/src/main/java/com/linkedin/data/schema/validator/DataSchemaAnnotationValidator.java), e.g.:
+
+{% include file_format_specific.html name="validation_custom_example" %}
+
+And then include the custom validator when validating:
+
+```scala
+val prefixValidator = new PrefixValidator();
+
+val recordToValidate = new RecordToValidate(/*...*/)
+val options = new ValidationOptions()
+val validator =
+  new DataSchemaAnnotationValidator(recordToValidate, Map("prefix" -> prefixValidator))
+val validationResult =
+  ValidateDataAgainstSchema.validate(recordToValidate, options, validator)
+// ...
+```
+
+For more details on validation, see [Pegasus schema validation](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates#data-to-schema-validation).
+
+Community
+=========
+
+[Discussion Group](https://groups.google.com/d/forum/courier)
 
 License
--------
+=======
 
 Courier is [Apache 2.0 Licensed](LICENSE.txt).
 

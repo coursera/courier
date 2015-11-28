@@ -423,3 +423,71 @@ map_examples:
     `{ "type": "map", "values": "int" }`                                               | `org.coursera.courier.data.IntMap` (predefined)
     `{ "type": "map", "values": "org.example.Record" }`                                | `org.example.RecordMap` (generated)
     `{ "type": "map", "keys": "org.example.SimpleId", "values": "org.example.Record" }`| `org.example.SimpleIdToRecordMap` (generated)
+
+validation_example_typeref:
+  courier: |
+    ```
+    @validate.prefix = { "prefix": "What is"}
+    typeref JeopardyAnswer = string
+    ```
+
+  pdsc: |
+    ```json
+    {
+      "type" : "typeref",
+      "name" : "JeopardyAnswer",
+      "ref"  : "string",
+      "validate" : {
+        "regex" : {
+          "prefix" : "What is"
+        }
+      }
+    }
+    ```
+
+validation_example_field:
+  courier: |
+    ```
+    record JeopardyResponse {
+      @validate.prefix = { "prefix": "What is"}
+      question: string
+    }
+    ```
+
+  pdsc: |
+    ```json
+    {
+      "name" : "JeopardyResponse",
+      "type" : "record",
+      "fields": [
+        "name": "question",
+        "type": "string",
+        "validate" : {
+          "regex" : {
+            "regex" : "[0-9]*"
+          }
+        }
+      ]
+    }
+    ```
+
+validation_custom_example:
+  courier: |
+    ```
+    @validate.custom = { "customValidatorProperty": "..."}
+    typeref Digits = string
+    ```
+
+  pdsc: |
+    ```json
+    {
+      "type" : "typeref",
+      "name" : "ExampleTyperef",
+      "ref"  : "string",
+      "validate" : {
+        "custom" : {
+          "customValidatorProperty" : "..."
+        }
+      }
+    }
+    ```
