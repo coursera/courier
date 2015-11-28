@@ -21,7 +21,7 @@ Courier is a concise but comprehensive schema language, based on
 Pegasus and Avro, and with language features from Scala, Swift, and Avro IDL.
 
 <center>
-<img src="images/courier-intellij.png" style="max-width:60%; max-height:100%;" />
+<img src="images/courier-intellij.png" style="max-width:60%; max-height:100%; -webkit-filter: drop-shadow(5px 5px 5px #222); filter: drop-shadow(5px 5px 5px #222);" />
 </center>
 
 **Idiomatic Data bindings**
