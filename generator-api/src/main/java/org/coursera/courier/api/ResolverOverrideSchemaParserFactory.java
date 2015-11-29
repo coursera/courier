@@ -19,6 +19,7 @@ package org.coursera.courier.api;
 import com.linkedin.data.schema.DataSchemaResolver;
 import com.linkedin.data.schema.SchemaParser;
 import com.linkedin.data.schema.SchemaParserFactory;
+import com.linkedin.data.schema.validation.ValidationOptions;
 
 /**
  * Wraps a SchemaParserFactory overriding the resolver used to always be the one provided to this
@@ -42,6 +43,7 @@ class ResolverOverrideSchemaParserFactory extends SchemaParserFactory {
   public ResolverOverrideSchemaParserFactory(
       SchemaParserFactory underlying,
       DataSchemaResolver resolver) {
+    super(new ValidationOptions());
     this.underlying = underlying;
     this.resolver = resolver;
   }

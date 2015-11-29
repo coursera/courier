@@ -17,6 +17,7 @@
 package org.coursera.courier.api;
 
 import com.linkedin.data.schema.DataSchema;
+import com.linkedin.data.schema.DataSchemaLocation;
 import com.linkedin.data.schema.resolver.FileDataSchemaLocation;
 import com.linkedin.pegasus.generator.CodeUtil;
 import com.linkedin.pegasus.generator.DataSchemaParser;
@@ -32,6 +33,7 @@ import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -68,9 +70,8 @@ public class DefaultGeneratorRunner implements GeneratorRunner {
 
     DataSchemaParser.ParseResult parseResult = schemaParser.parseSources(options.getSources());
 
-    for (CodeUtil.Pair<DataSchema, File> pair: parseResult.getSchemaAndFiles()) {
-      FileDataSchemaLocation location = new FileDataSchemaLocation(pair.second);
-      specGenerator.generate(pair.first, location);
+    for (Map.Entry<DataSchema, DataSchemaLocation> entry: parseResult.getSchemaAndLocations().entrySet()) {
+      specGenerator.generate(entry.getKey(), entry.getValue());
     }
 
     // Build a set of top level types so that we only generate each class file exactly once

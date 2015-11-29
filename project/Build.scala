@@ -182,7 +182,7 @@ object Courier extends Build with OverridablePublishSettings {
 
   object ExternalDependencies {
     object Pegasus {
-      val version = "2.6.0"
+      val version = "3.1.1"
       val avroVersion = "1_6"
       val data = "com.linkedin.pegasus" % "data" % version
       val dataAvro = "com.linkedin.pegasus" % s"data-avro-$avroVersion" % version

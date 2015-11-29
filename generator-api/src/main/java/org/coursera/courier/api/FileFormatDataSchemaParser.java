@@ -98,7 +98,7 @@ public class FileFormatDataSchemaParser
   public ParseResult parseSources(String sources[])
       throws IOException
   {
-    final ParseResult result = new ParseResult();
+    final CourierParseResult result = new CourierParseResult();
 
     try
     {
@@ -126,22 +126,23 @@ public class FileFormatDataSchemaParser
           final DataSchema schema = _schemaResolver.findDataSchema(source, errorMessage);
           if (schema == null)
           {
-            result.getMessage().append("File cannot be opened or schema name cannot be resolved: ").append(source).append("\n");
+            result.addMessage("File cannot be opened or schema name cannot be resolved: ").addMessage(source).addMessage("\n");
           }
           if (errorMessage.length() > 0)
           {
-            result.getMessage().append(errorMessage.toString());
-          }
-          if (schema != null)
-          {
-            result.getSchemaAndNames().add(new CodeUtil.Pair<DataSchema, String>(schema, source));
+            result.addMessage(errorMessage.toString());
           }
         }
       }
 
+      for (Map.Entry<String, DataSchemaLocation> entry : _schemaResolver.nameToDataSchemaLocations().entrySet()) {
+        final DataSchema schema = _schemaResolver.bindings().get(entry.getKey());
+        result.getSchemaAndLocations().put(schema, entry.getValue());
+      }
+
       if (result.getMessage().length() > 0)
       {
-        throw new IOException(result.getMessage().toString());
+        throw new IOException(result.getMessage());
       }
 
       appendSourceFilesFromSchemaResolver(result);
@@ -169,7 +170,7 @@ public class FileFormatDataSchemaParser
    *
    * @throws IOException if there is a file access error.
    */
-  private void parseFile(File schemaSourceFile, ParseResult result)
+  private void parseFile(File schemaSourceFile, CourierParseResult result)
       throws IOException
   {
     if (wasResolved(schemaSourceFile))
@@ -182,7 +183,7 @@ public class FileFormatDataSchemaParser
     for (DataSchema schema : schemas)
     {
       validateSchemaWithFilePath(schemaSourceFile, schema);
-      result.getSchemaAndFiles().add(new CodeUtil.Pair<DataSchema, File>(schema, schemaSourceFile));
+      result.getSchemaAndLocations().put(schema, new FileDataSchemaLocation(schemaSourceFile));
       result.getSourceFiles().add(schemaSourceFile);
     }
   }
@@ -236,7 +237,7 @@ public class FileFormatDataSchemaParser
    *
    * @throws IOException if there is a file access error.
    */
-  private List<DataSchema> parseSchema(final File schemaSourceFile, ParseResult result)
+  private List<DataSchema> parseSchema(final File schemaSourceFile, CourierParseResult result)
       throws IOException
   {
     SchemaParser parser = _schemaParserFactory.create(_schemaResolver);
@@ -256,8 +257,8 @@ public class FileFormatDataSchemaParser
       schemaStream.close();
       if (parser.hasError())
       {
-        result.getMessage().append(schemaSourceFile.getPath() + ",");
-        result.getMessage().append(parser.errorMessage());
+        result.addMessage(schemaSourceFile.getPath() + ",");
+        result.addMessage(parser.errorMessage());
       }
     }
   }
@@ -296,4 +297,27 @@ public class FileFormatDataSchemaParser
       return _schemaSourceFile.toString();
     }
   }
+
+  public static class CourierParseResult extends ParseResult {
+    private final StringBuilder messageBuilder;
+
+    public CourierParseResult() {
+      try {
+        // TODO(jbetz): Fix underlying pegasus code and submit change request
+        // back to pegasus project.
+        java.lang.reflect.Field topLevelDataSchemasField =
+          ParseResult.class.getDeclaredField("_messageBuilder");
+        topLevelDataSchemasField.setAccessible(true);
+        this.messageBuilder = (StringBuilder) topLevelDataSchemasField.get(this);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    public CourierParseResult addMessage(String message) {
+      messageBuilder.append(message);
+      return this;
+    }
+  }
+
 }

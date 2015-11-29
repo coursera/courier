@@ -19,8 +19,17 @@ package org.coursera.courier.grammar;
 import com.linkedin.data.schema.DataSchemaResolver;
 import com.linkedin.data.schema.SchemaParser;
 import com.linkedin.data.schema.SchemaParserFactory;
+import com.linkedin.data.schema.validation.ValidationOptions;
 
 public class CourierSchemaParserFactory extends SchemaParserFactory {
+
+  public CourierSchemaParserFactory() {
+    super(new ValidationOptions());
+  }
+
+  public CourierSchemaParserFactory(ValidationOptions validationOptions) {
+    super(validationOptions);
+  }
 
   @Override
   public SchemaParser create(DataSchemaResolver resolver) {

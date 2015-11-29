@@ -119,12 +119,11 @@ public class MultiFormatSchemaParser {
   }
 
   private static ParseResult combine(Collection<ParseResult> parseResults) {
-    ParseResult combined = new ParseResult();
+    FileFormatDataSchemaParser.CourierParseResult combined = new FileFormatDataSchemaParser.CourierParseResult();
     for (ParseResult result : parseResults) {
-      combined.getSchemaAndFiles().addAll(result.getSchemaAndFiles());
-      combined.getSchemaAndNames().addAll(result.getSchemaAndNames());
+      combined.getSchemaAndLocations().putAll(result.getSchemaAndLocations());
       combined.getSourceFiles().addAll((result.getSourceFiles()));
-      combined.getMessage().append(result.getMessage().toString());
+      combined.addMessage(result.getMessage().toString());
     }
     return combined;
   }

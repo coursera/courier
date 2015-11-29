@@ -5,7 +5,6 @@ archivesBaseName = "courier-android-generator"
 dependencies {
   compile project(':runtime')
   compile externalDependency.rythm
-  compile externalDependency.pegasusGenerator
   compile externalDependency.gson
   compile externalDependency.courierGeneratorApi
   testCompile externalDependency.junit
