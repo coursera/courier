@@ -116,31 +116,32 @@ addSbtPlugin("org.coursera.courier" % "courier-sbt-plugin" % "{{site.data.versio
 
 Next, add `courierSettings` to your SBT project to enable the generator:
 
-##### project/Build.scala
+##### build.sbt
 
 ```scala
-import sbt._
-import Keys._
 import org.coursera.courier.sbt.CourierPlugin._
 
-object Example extends Build {
+name := "example"
 
-  val courierVersion = "{{site.data.version.courier}}"
+scalaVersion in ThisBuild := "2.11.6"
 
-  lazy val example = Project("example", file("example"))
-    .dependsOn(schemas)
-    .aggregate(schemas)
-    // ...
+val courierVersion = "{{site.data.version.courier}}"
 
-  lazy val schemas = Project("schemas", file("schemas"))
-    .settings(courierSettings: _*)
-    .settings(libraryDependencies += "org.coursera.courier" %% "courier-runtime" % courierVersion)
-}
+lazy val schemas = Project("schemas", file("schemas"))
+  .settings(courierSettings: _*)
+  .settings(libraryDependencies += "org.coursera.courier" %% "courier-runtime" % courierVersion)
+
+lazy val root = (project in file("."))
+  .dependsOn(schemas)
+  .aggregate(schemas)
 ```
 
 Your project can now generate Courier data bindings.
 
-To try it out, add `.courier` (or `.pdsc`) files to the `src/main/pegasus` directory of your project. For example create the following file in the `schemas/src/main/pegasus/org/example/fortune` directory:
+To try it out, add `.courier` (or `.pdsc`) files to the `src/main/pegasus`
+directory of your project. For example create a `Fortune.courier` or
+`Fortune.pdsc` file in the `schemas/src/main/pegasus/org/example/fortune`
+directory:
 
 {% include file_format_specific.html name="sbt_fortune" %}
 
