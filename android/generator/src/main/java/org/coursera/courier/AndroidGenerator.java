@@ -34,6 +34,7 @@ import org.coursera.courier.api.PegasusCodeGenerator;
 import org.rythmengine.RythmEngine;
 import org.rythmengine.resource.ClasspathResourceLoader;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -46,12 +47,13 @@ public class AndroidGenerator implements PegasusCodeGenerator {
   public static void main(String[] args) throws Throwable {
     if (args.length != 3) {
       throw new IllegalArgumentException(
-          "Usage: targetPath resolverPath sourcePath1[:sourcePath2]+");
+          "Usage: " + AndroidGenerator.class.getName() +
+            " targetPath resolverPath sourcePath1[:sourcePath2]+");
     }
     String targetPath = args[0];
     String resolverPath = args[1];
     String sourcePathString = args[2];
-    String[] sourcePaths = sourcePathString.split(":");
+    String[] sourcePaths = sourcePathString.split(File.pathSeparator);
 
     GeneratorRunnerOptions options =
         new GeneratorRunnerOptions(targetPath, sourcePaths, resolverPath);

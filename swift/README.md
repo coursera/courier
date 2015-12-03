@@ -220,13 +220,10 @@ Custom Types allow any Swift type to be bound to any pegasus primitive type.
 
 For example, say a schema has been defined to represent a "date time" as a unix timestamp long:
 
-```json
-{
-  "name": "DateTime",
-  "namespace": "org.example",
-  "type": "typeref",
-  "ref": "long"
-}
+```
+namespace org.example
+
+typeref DateTime = long
 ```
 
 And we want to use `NSDate` in our Swift code to represent this type.
@@ -251,32 +248,21 @@ public struct NSDateCoercer: Coercer {
 
 Then we register both the coercer and the `NSDate` class in the schema:
 
-```json
-{
-  "name": "DateTime",
-  "namespace": "org.example",
-  "type": "typeref",
-  "ref": "long",
-  "swift": {
-    "class": "Foundation.NSDate",
-    "coercerClass": "Coercers.NSDateCoercer"
-  }
-}
+```
+namespace org.example
+
+@swift.class = "Foundation.NSDate"
+@swift.coercerClass = "Coercers.NSDateCoercer"
+typeref DateTime = long
 ```
 
 Once this has been done, a schema using this type, e.g.:
 
-```json
-{
-  "name": "WithDateTime",
-  "namespace": "org.example",
-  "type": "record",
-  "fields": [
-    {
-      "name": "createdAt",
-      "type": "DateTime"
-    }
-  ]
+```
+namespace org.example
+
+record WithDateTime {
+  createdAt: DateTime
 }
 ```
 
@@ -336,26 +322,22 @@ All generated swift bindings depend on a `CourierRuntime.swift` class. This clas
 SwiftyJSON and Foundation classes to define minimal set of functions used by the generator to
 produce clean source code.
 
-This
-
 Building from source
 --------------------
 
+See the main CONTRIBUTING document for details.
+
+Building a Fat Jar
+------------------
+
 ```sh
-cd swift
-./gradlew jar
-``
-
-Publishing to Maven Central
----------------------------
-
-A "fat jar" called `courier-swift-generator-<version>.jar` is published to maven central.
-
-This jar is published by running:
-
+$ sbt
+> project swift-generator
+> assembly
 ```
-./gradlew uploadArchives
-```
+
+This will build a standalone "fat jar". This is particularly convenient for use as a standalone
+commandline application that can be called from Xcode build steps.
 
 Testing
 -------
@@ -367,13 +349,13 @@ the project and run `Test` (command-U).
 TODO
 ----
 
+* [ ] Figure out the best way to distribute the 'fat jar'.
 * [ ] Look into adding NSCoding support (see:
   http://swiftandpainless.com/nscoding-and-swift-structs/?utm_campaign=Swift+Developer+Weekly&utm_medium=email&utm_source=Swift_Developer_Weekly_27
   and https://github.com/nicklockwood/AutoCoding)
 * [ ] Implement namespace handling strategy (details below)
 * [ ] Automate distribution of the Fat Jar, and generally make the distribution sane
 * [ ] Publish Fat Jar to remote repos
-* [ ] Automate inclusion of CourierRuntime.swift in generated classes (or as a proper module?)
 * [ ] Generate scala style copy() methods?
 * [ ] Dig deeper into Equatable, Hashable (how to support arrays and maps?  Deep check?)
 * [ ] Move Poor Mans Source formatter into shared lib
