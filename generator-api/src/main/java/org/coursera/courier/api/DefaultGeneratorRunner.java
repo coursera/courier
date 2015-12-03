@@ -23,6 +23,7 @@ import com.linkedin.pegasus.generator.CodeUtil;
 import com.linkedin.pegasus.generator.DataSchemaParser;
 import com.linkedin.pegasus.generator.DefaultGeneratorResult;
 import com.linkedin.pegasus.generator.GeneratorResult;
+import com.linkedin.pegasus.generator.TemplateSpecGenerator;
 import com.linkedin.pegasus.generator.spec.ClassTemplateSpec;
 import org.apache.commons.io.FileUtils;
 
@@ -49,10 +50,10 @@ public class DefaultGeneratorRunner implements GeneratorRunner {
     MultiFormatSchemaParser schemaParser =
         new MultiFormatSchemaParser(options.getResolverPath(), options.getParsersForFileFormats());
 
-    CourierTemplateSpecGenerator specGenerator = new CourierTemplateSpecGenerator(
+    TemplateSpecGenerator specGenerator = new TemplateSpecGenerator(
         schemaParser.getSchemaResolver(),
-        options.getDataNamespace(),
-        generator.customTypeLanguage());
+        generator.customTypeLanguage(),
+        options.getDataNamespace());
 
     File targetDirectory = new File(options.getTargetDirectoryPath());
 

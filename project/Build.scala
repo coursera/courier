@@ -30,6 +30,7 @@ object Courier extends Build with OverridablePublishSettings {
 
   override lazy val settings = super.settings ++ overridePublishSettings ++
       Seq(
+        resolvers += Resolver.mavenLocal,
         organization := "org.coursera.courier")
 
   //
@@ -136,13 +137,15 @@ object Courier extends Build with OverridablePublishSettings {
     .settings(forkedVmCourierGeneratorSettings: _*)
     .settings(
       libraryDependencies ++= Seq(
+        ExternalDependencies.Pegasus.data, // TODO(jbetz): Figure out why a stale version of pegasus is picked up when this is absent
         ExternalDependencies.JUnit.junit,
         ExternalDependencies.Scalatest.scalatest))
 
   lazy val courierSbtPlugin = Project(id = "courier-sbt-plugin", base = file("sbt-plugin"))
     .dependsOn(generator)
     .settings(pluginVersionSettings)
-    //.settings(libraryDependencies += "com.github.eirslett" %% "sbt-slf4j" % "0.1")
+    .settings(libraryDependencies ++= Seq(
+      ExternalDependencies.Pegasus.data))
     .settings(
       sbtPlugin := true,
       name := "courier-sbt-plugin")
@@ -182,7 +185,7 @@ object Courier extends Build with OverridablePublishSettings {
 
   object ExternalDependencies {
     object Pegasus {
-      val version = "3.1.1"
+      val version = "3.1.11"
       val avroVersion = "1_6"
       val data = "com.linkedin.pegasus" % "data" % version
       val dataAvro = "com.linkedin.pegasus" % s"data-avro-$avroVersion" % version

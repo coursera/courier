@@ -20,10 +20,10 @@ import com.linkedin.data.DataMap
 import com.linkedin.data.schema.DataSchema
 import com.linkedin.data.schema.DataSchemaConstants
 import com.linkedin.data.schema.MapDataSchema
+import com.linkedin.pegasus.generator.spec.MapTemplateSpec
 import com.linkedin.pegasus.generator.spec.PrimitiveTemplateSpec
-import org.coursera.courier.api.CourierMapTemplateSpec
 
-case class MapDefinition(override val spec: CourierMapTemplateSpec) extends Definition(spec) {
+case class MapDefinition(override val spec: MapTemplateSpec) extends Definition(spec) {
   import MapDefinition._
 
   def mapSchema: MapDataSchema = spec.getSchema
@@ -94,7 +94,7 @@ object MapDefinition {
       schema: MapDataSchema,
       keyPrimitiveDef: Option[PrimitiveDefinition] = None): MapDefinition = {
 
-    val spec = new CourierMapTemplateSpec(schema)
+    val spec = new MapTemplateSpec(schema)
     spec.setClassName(scalaType)
     spec.setNamespace(namespace)
     spec.setValueClass(primitiveDef.spec)

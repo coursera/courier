@@ -20,6 +20,7 @@ import com.linkedin.data.DataList;
 import com.linkedin.data.DataMap;
 import com.linkedin.data.codec.DataLocation;
 import com.linkedin.data.codec.JacksonDataCodec;
+import com.linkedin.data.schema.AbstractSchemaParser;
 import com.linkedin.data.schema.ArrayDataSchema;
 import com.linkedin.data.schema.DataSchema;
 import com.linkedin.data.schema.DataSchemaResolver;
@@ -81,22 +82,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class CourierSchemaParser extends SchemaParser {
-
-  private final List<DataSchema> topLevelSchemas;
+public class CourierSchemaParser extends AbstractSchemaParser {
 
   @SuppressWarnings("unchecked")
   public CourierSchemaParser(DataSchemaResolver resolver) {
     super(resolver);
-    try {
-      // TODO(jbetz): Gahhh! We will submit pull request to rest.li so we can remove this hack.
-      java.lang.reflect.Field topLevelDataSchemasField =
-        SchemaParser.class.getDeclaredField("_topLevelDataSchemas");
-      topLevelDataSchemasField.setAccessible(true);
-      this.topLevelSchemas = (List<DataSchema>) topLevelDataSchemasField.get(this);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
   }
 
   /**
@@ -109,7 +99,6 @@ public class CourierSchemaParser extends SchemaParser {
    *
    * @param source with the source code representation of the schema.
    */
-  @Override
   public void parse(String source) {
     parse(new StringReader(source));
   }
@@ -124,7 +113,6 @@ public class CourierSchemaParser extends SchemaParser {
    *
    * @param inputStream with the JSON representation of the schema.
    */
-  @Override
   public void parse(InputStream inputStream) {
     parse(new InputStreamReader(inputStream));
   }
@@ -139,7 +127,6 @@ public class CourierSchemaParser extends SchemaParser {
    *
    * @param reader with the JSON representation of the schema.
    */
-  @Override
   public void parse(Reader reader) {
     try {
       ErrorRecorder errorRecorder = new ErrorRecorder();
@@ -279,7 +266,7 @@ public class CourierSchemaParser extends SchemaParser {
       document.namespaceDeclaration().namespace().value);
     setCurrentImports(document.importDeclarations());
     DataSchema schema = parseNamedType(document.namedTypeDeclaration());
-    topLevelSchemas.add(schema);
+    addTopLevelSchema(schema);
   }
 
   private DataSchema parseType(TypeDeclarationContext typ) throws ParseException{
@@ -543,7 +530,7 @@ public class CourierSchemaParser extends SchemaParser {
     schema.setFields(fieldsAndIncludes.fields, errorMessageBuilder());
     schema.setInclude(fieldsAndIncludes.includes);
     setAnnotations(context, schema);
-    topLevelSchemas.add(schema);
+    addTopLevelSchema(schema);
     return schema;
   }
 
@@ -682,6 +669,57 @@ public class CourierSchemaParser extends SchemaParser {
     }
   }
 
+  /**
+   * Look for {@link DataSchema} with the specified name.
+   *
+   * @param fullName to lookup.
+   * @return the {@link DataSchema} if lookup was successful else return null.
+   */
+  public DataSchema lookupName(String fullName)
+  {
+    DataSchema schema = DataSchemaUtil.typeStringToPrimitiveDataSchema(fullName);
+    if (schema == null)
+    {
+      schema = getResolver().findDataSchema(fullName, errorMessageBuilder());
+    }
+    return schema;
+  }
+
+  /**
+   * Lookup a name to obtain a {@link DataSchema}.
+   *
+   * The name may identify a {@link NamedDataSchema} obtained or a primitive type.
+   *
+   * @param name to lookup.
+   * @return the {@link DataSchema} of a primitive or named type
+   *         if the name can be resolved, else return null.
+   */
+  protected DataSchema stringToDataSchema(String name)
+  {
+    DataSchema schema = null;
+    // Either primitive or name
+    String fullName = computeFullName(name);
+    DataSchema found = lookupName(fullName);
+    if (found == null && !name.equals(fullName))
+    {
+      found = lookupName(name);
+    }
+    if (found == null)
+    {
+      StringBuilder sb = startErrorMessage(name).append("\"").append(name).append("\"");
+      if (!name.equals(fullName))
+      {
+        sb.append(" or \"").append(fullName).append("\"");
+      }
+      sb.append(" cannot be resolved.\n");
+    }
+    else
+    {
+      schema = found;
+    }
+    return schema;
+  }
+
   private DataSchema toDataSchema(TypeAssignmentContext typeAssignment) throws ParseException {
     TypeReferenceContext typeReference = typeAssignment.typeReference();
     if (typeReference != null) {
@@ -735,7 +773,6 @@ public class CourierSchemaParser extends SchemaParser {
   }
 
   // Extended fullname computation to handle imports
-  @Override
   public String computeFullName(String name) {
     String fullname;
     DataSchema schema = DataSchemaUtil.typeStringToPrimitiveDataSchema(name);
@@ -778,4 +815,46 @@ public class CourierSchemaParser extends SchemaParser {
     }
     this.currentImports = importsBySimpleName;
   }
+
+
+  /**
+   * Set the current namespace.
+   *
+   * Current namespace is used to compute the full name from an unqualified name.
+   *
+   * @param namespace to set as current namespace.
+   */
+  public void setCurrentNamespace(String namespace)
+  {
+    _currentNamespace = namespace;
+  }
+
+  /**
+   * Get the current namespace.
+   *
+   * @return the current namespace.
+   */
+  public String getCurrentNamespace()
+  {
+    return _currentNamespace;
+  }
+
+  @Override
+  public String schemasToString() {
+    return SchemaToJsonEncoder.schemasToJson(topLevelDataSchemas(), JsonBuilder.Pretty.SPACES);
+  }
+
+  /**
+   * Current namespace, used to determine full name from unqualified name.
+   */
+  private String _currentNamespace = "";
+
+  @Override
+  public StringBuilder errorMessageBuilder()
+  {
+    return _errorMessageBuilder;
+  }
+
+  private StringBuilder _errorMessageBuilder = new StringBuilder();
+
 }

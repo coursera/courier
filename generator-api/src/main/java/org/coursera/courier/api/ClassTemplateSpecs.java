@@ -19,12 +19,12 @@ package org.coursera.courier.api;
 import com.linkedin.data.schema.DataSchema;
 import com.linkedin.data.schema.NamedDataSchema;
 import com.linkedin.data.schema.TyperefDataSchema;
+import com.linkedin.pegasus.generator.TemplateSpecGenerator;
 import com.linkedin.pegasus.generator.spec.ArrayTemplateSpec;
 import com.linkedin.pegasus.generator.spec.ClassTemplateSpec;
 import com.linkedin.pegasus.generator.spec.CustomInfoSpec;
 import com.linkedin.pegasus.generator.spec.MapTemplateSpec;
 import com.linkedin.pegasus.generator.spec.RecordTemplateSpec;
-import com.linkedin.pegasus.generator.spec.TyperefTemplateSpec;
 import com.linkedin.pegasus.generator.spec.UnionTemplateSpec;
 
 import java.util.Collections;
@@ -48,8 +48,8 @@ public class ClassTemplateSpecs {
       for (UnionTemplateSpec.Member member: unionSpec.getMembers()) {
         results.add(member.getClassTemplateSpec());
       }
-    } else if (spec instanceof CourierMapTemplateSpec) {
-      CourierMapTemplateSpec mapSpec = (CourierMapTemplateSpec)spec;
+    } else if (spec instanceof MapTemplateSpec) {
+      MapTemplateSpec mapSpec = (MapTemplateSpec)spec;
       if (mapSpec.getKeyClass() != null) {
         results.add(mapSpec.getKeyClass());
       }
@@ -66,8 +66,8 @@ public class ClassTemplateSpecs {
     CustomInfoSpec immediate = null;
     for (DataSchema current = schema; current != null; current = dereferenceIfTyperef(current))
     {
-      final CourierTemplateSpecGenerator.CustomClasses customClasses =
-          CourierTemplateSpecGenerator.getCustomClasses(current, customTypeLanguage);
+      final TemplateSpecGenerator.CustomClasses customClasses =
+          TemplateSpecGenerator.getCustomClasses(current, customTypeLanguage);
       if (customClasses != null)
       {
         immediate = new CustomInfoSpec(

@@ -16,23 +16,20 @@
 
 package org.coursera.courier.grammar;
 
+import com.linkedin.data.schema.DataSchemaParser;
+import com.linkedin.data.schema.DataSchemaParserFactory;
 import com.linkedin.data.schema.DataSchemaResolver;
-import com.linkedin.data.schema.SchemaParser;
-import com.linkedin.data.schema.SchemaParserFactory;
-import com.linkedin.data.schema.validation.ValidationOptions;
 
-public class CourierSchemaParserFactory extends SchemaParserFactory {
+public class CourierSchemaParserFactory implements DataSchemaParserFactory {
+  private static CourierSchemaParserFactory INSTANCE = new CourierSchemaParserFactory();
 
-  public CourierSchemaParserFactory() {
-    super(new ValidationOptions());
-  }
+  public CourierSchemaParserFactory() {}
 
-  public CourierSchemaParserFactory(ValidationOptions validationOptions) {
-    super(validationOptions);
-  }
-
-  @Override
-  public SchemaParser create(DataSchemaResolver resolver) {
+  public DataSchemaParser create(DataSchemaResolver resolver) {
     return new CourierSchemaParser(resolver);
+  }
+
+  static public CourierSchemaParserFactory instance() {
+    return INSTANCE;
   }
 }

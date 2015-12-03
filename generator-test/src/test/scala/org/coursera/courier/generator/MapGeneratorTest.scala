@@ -25,9 +25,9 @@ import org.coursera.courier.data.DoubleToStringMap
 import org.coursera.courier.data.FloatMap
 import org.coursera.courier.data.FloatToStringMap
 import org.coursera.courier.data.IntArray
-import org.coursera.courier.data.IntArrayToStringMap
 import org.coursera.courier.data.IntMap
 import org.coursera.courier.data.IntToStringMap
+import org.coursera.courier.data.IntegerArrayToStringMap
 import org.coursera.courier.data.LongMap
 import org.coursera.courier.data.LongToStringMap
 import org.coursera.courier.data.StringMap
@@ -195,7 +195,7 @@ class MapGeneratorTest extends GeneratorTest with SchemaFixtures {
       StringMap("key" -> "string"),
       ByteStringToStringMap(bytesFixed8 -> "bytes"),
       SimpleToStringMap(Simple(Some("key")) -> "record"),
-      IntArrayToStringMap(IntArray(1, 2) -> "array"),
+      IntegerArrayToStringMap(IntArray(1, 2) -> "array"),
       FruitsToStringMap(Fruits.APPLE -> "enum"),
       CustomIntToStringMap(CustomInt(100) -> "custom"),
       Fixed8ToStringMap(Fixed8(bytesFixed8) -> "fixed"),

@@ -17,15 +17,7 @@
 package org.coursera.courier.generator.specs
 
 import com.linkedin.data.schema.DataSchema
-import com.linkedin.pegasus.generator.spec.ArrayTemplateSpec
-import com.linkedin.pegasus.generator.spec.ClassTemplateSpec
-import com.linkedin.pegasus.generator.spec.EnumTemplateSpec
-import com.linkedin.pegasus.generator.spec.FixedTemplateSpec
-import com.linkedin.pegasus.generator.spec.PrimitiveTemplateSpec
-import com.linkedin.pegasus.generator.spec.RecordTemplateSpec
-import com.linkedin.pegasus.generator.spec.TyperefTemplateSpec
-import com.linkedin.pegasus.generator.spec.UnionTemplateSpec
-import org.coursera.courier.api.CourierMapTemplateSpec
+import com.linkedin.pegasus.generator.spec._
 import org.coursera.courier.generator.CourierPredef
 import org.coursera.courier.generator.ScalaEscaping
 
@@ -198,7 +190,7 @@ object Definition {
       case union: UnionTemplateSpec => UnionDefinition(union)
       case enum: EnumTemplateSpec => EnumDefinition(enum)
       case array: ArrayTemplateSpec => ArrayDefinition(array)
-      case map: CourierMapTemplateSpec => MapDefinition(map)
+      case map: MapTemplateSpec => MapDefinition(map)
       case typeref: TyperefTemplateSpec => TyperefDefinition(typeref)
       case fixed: FixedTemplateSpec => FixedDefinition(fixed)
       case primitive: PrimitiveTemplateSpec => PrimitiveDefinition(primitive)

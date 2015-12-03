@@ -16,7 +16,7 @@
 
 package org.coursera.courier.api;
 
-import com.linkedin.data.schema.SchemaParserFactory;
+import com.linkedin.data.schema.DataSchemaParserFactory;
 
 /**
  * Identifies the SchemaParserFactory that should be used for a particular file format (e.g.
@@ -28,9 +28,9 @@ public class ParserForFileFormat {
    * File extension without a preceding ".".  E.g. "pdsc", "courier".
    */
   public final String fileExtension;
-  public final SchemaParserFactory parserFactory;
+  public final DataSchemaParserFactory parserFactory;
 
-  public ParserForFileFormat(String fileExtension, SchemaParserFactory parserFactory) {
+  public ParserForFileFormat(String fileExtension, DataSchemaParserFactory parserFactory) {
     assert !fileExtension.contains(".");
     this.fileExtension = fileExtension;
     this.parserFactory = parserFactory;

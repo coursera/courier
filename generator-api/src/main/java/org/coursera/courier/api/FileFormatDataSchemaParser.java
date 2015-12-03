@@ -18,12 +18,11 @@ package org.coursera.courier.api;
 
 import com.linkedin.data.schema.DataSchema;
 import com.linkedin.data.schema.DataSchemaLocation;
+import com.linkedin.data.schema.DataSchemaParser;
+import com.linkedin.data.schema.DataSchemaParserFactory;
 import com.linkedin.data.schema.DataSchemaResolver;
 import com.linkedin.data.schema.NamedDataSchema;
-import com.linkedin.data.schema.SchemaParser;
-import com.linkedin.data.schema.SchemaParserFactory;
 import com.linkedin.data.schema.resolver.FileDataSchemaLocation;
-import com.linkedin.pegasus.generator.CodeUtil;
 import com.linkedin.pegasus.generator.DataSchemaParser.ParseResult;
 import com.linkedin.util.FileUtil;
 import org.apache.commons.io.FilenameUtils;
@@ -54,14 +53,14 @@ import java.util.Map;
 public class FileFormatDataSchemaParser
 {
   private final DataSchemaResolver _schemaResolver;
-  private final SchemaParserFactory _schemaParserFactory;
+  private final DataSchemaParserFactory _schemaParserFactory;
   private final String _fileExtension;
   private final FileExtensionFilter _fileExtensionFilter;
 
   /**
    * Initialize my {@link DataSchemaResolver} with the resolver path.
    */
-  public FileFormatDataSchemaParser(DataSchemaResolver schemaResolver, SchemaParserFactory schemaParserFactory, String fileExtension)
+  public FileFormatDataSchemaParser(DataSchemaResolver schemaResolver, DataSchemaParserFactory schemaParserFactory, String fileExtension)
   {
     _schemaResolver = schemaResolver;
     _schemaParserFactory = schemaParserFactory;
@@ -240,7 +239,7 @@ public class FileFormatDataSchemaParser
   private List<DataSchema> parseSchema(final File schemaSourceFile, CourierParseResult result)
       throws IOException
   {
-    SchemaParser parser = _schemaParserFactory.create(_schemaResolver);
+    DataSchemaParser parser = _schemaParserFactory.create(_schemaResolver);
     final FileInputStream schemaStream = new SchemaFileInputStream(schemaSourceFile);
     try
     {

@@ -16,6 +16,8 @@
 
 package org.coursera.courier.api;
 
+import com.linkedin.data.schema.DataSchemaParser;
+import com.linkedin.data.schema.DataSchemaParserFactory;
 import com.linkedin.data.schema.DataSchemaResolver;
 import com.linkedin.data.schema.SchemaParser;
 import com.linkedin.data.schema.SchemaParserFactory;
@@ -35,21 +37,20 @@ import com.linkedin.data.schema.validation.ValidationOptions;
 // to only use the resolver for that file format when resolving schemas by name.
 // As a result, a schema defined in a ".pdsc" references a schema defined in a ".courier" file
 // (or vis-versa) can fail to resolve.
-class ResolverOverrideSchemaParserFactory extends SchemaParserFactory {
+class ResolverOverrideSchemaParserFactory implements DataSchemaParserFactory {
 
-  private final SchemaParserFactory underlying;
+  private final DataSchemaParserFactory underlying;
   private final DataSchemaResolver resolver;
 
   public ResolverOverrideSchemaParserFactory(
-      SchemaParserFactory underlying,
+      DataSchemaParserFactory underlying,
       DataSchemaResolver resolver) {
-    super(new ValidationOptions());
     this.underlying = underlying;
     this.resolver = resolver;
   }
 
   @Override
-  public SchemaParser create(DataSchemaResolver resolver) {
+  public DataSchemaParser create(DataSchemaResolver resolver) {
     return underlying.create(this.resolver);
   }
 }

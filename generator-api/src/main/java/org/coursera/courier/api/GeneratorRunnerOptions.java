@@ -45,7 +45,7 @@ public class GeneratorRunnerOptions {
     this.resolverPath = resolverPath;
     this.parsersForFileFormats = new ArrayList<ParserForFileFormat>();
     this.parsersForFileFormats.add(new ParserForFileFormat("pdsc", SchemaParserFactory.instance()));
-    this.parsersForFileFormats.add(new ParserForFileFormat("courier", new CourierSchemaParserFactory()));
+    this.parsersForFileFormats.add(new ParserForFileFormat("courier", CourierSchemaParserFactory.instance()));
   }
 
   public GeneratorRunnerOptions setDefaultPackage(String defaultPackage) {
