@@ -10,6 +10,8 @@ import java.io.Writer;
 public class SwiftStringEscaper {
 
   /**
+   * @param value provides the swift identifier to escape.
+   *
    * @return the contents of a Swift source code string literal that represents the given string.  Surrounding
    * quotes are not appended.
    */

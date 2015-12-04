@@ -61,6 +61,8 @@ public class JavaSyntax {
    * from Object and may be used).
    *
    * @param symbol to escape.
+   *
+   * @return the escaped symbol.
    */
   public static String escapeKeyword(String symbol) {
     if (javaKeywords.contains(symbol)) {
@@ -73,7 +75,9 @@ public class JavaSyntax {
   /**
    * Returns the escaped fully qualified name of a {@link ClassTemplateSpec}.
    *
-   * @spec to build a escaped fully qualified name for.
+   * @param spec to build a escaped fully qualified name for.
+   *
+   * @return the escaped fullname.
    */
   public static String escapedFullname(ClassTemplateSpec spec) {
     return toFullname(spec.getNamespace(), escapeKeyword(spec.getClassName()));
@@ -93,7 +97,8 @@ public class JavaSyntax {
    * Primitive types are represented using the {@link AndroidProperties.Optionality} for this
    * instance.
    *
-   * @spec to get a Java type name for.
+   * @param spec to get a Java type name for.
+   * @return a Java source code string identifying the given type.
    */
   public String toType(ClassTemplateSpec spec) {
     return toType(spec, androidProperties.optionality);
@@ -109,6 +114,7 @@ public class JavaSyntax {
    *
    * @param spec to get a Java type name for.
    * @param optional indicates if the type is optional or not.
+   * @return a Java source code string identifying the given type.
    */
   public String toOptionalType(ClassTemplateSpec spec, boolean optional) {
     return toType(
@@ -122,7 +128,8 @@ public class JavaSyntax {
    * Primitive types are represented as specified by the provided @{link PrimitiveStyle}.
    *
    * @param spec to get a Java type name for.
-   * @param optionality
+   * @param optionality provides the optionality to use when determining the Java type.
+   * @return a Java source code string identifying the given type.
    */
   public String toType(ClassTemplateSpec spec, Optionality optionality) {
     // If we're supporting projections, all fields, even required ones, may be absent.
@@ -194,7 +201,8 @@ public class JavaSyntax {
    * Returns the union member class name for the given {@link ClassTemplateSpec} as a Java
    * source code string.
    *
-   * @param spec
+   * @param spec provides the union member type to get the name for.
+   * @return a Java source code string identifying the union member.
    */
   public String toUnionMemberName(ClassTemplateSpec spec) {
 
@@ -239,7 +247,8 @@ public class JavaSyntax {
    *   field1, field2, field3, field4
    * </code>
    *
-   * @param fields
+   * @param fields provides the fields to construct a parameter list for.
+   * @return the fields as a list of parameters for inclusion in Java source.
    */
   public String fieldList(List<RecordTemplateSpec.Field> fields) {
     StringBuilder sb = new StringBuilder();
@@ -256,10 +265,11 @@ public class JavaSyntax {
    * Returns the fields as a list of parameter declarations for inclusion in Java source. E.g.:
    *
    * <code>
-   *   org.example.Record field1, List<Integer> field2, Map<String, Integer> field3, Integer field4
+   *   org.example.Record field1, List&lt;Integer&gt; field2, Map&lt;String, Integer&gt; field3, Integer field4
    * </code>
    *
-   * @param fields
+   * @param fields provides the fields to construct a parameter declaration list for.
+   * @return the fields as a list of parameter declarations.
    */
   public String fieldAndTypeList(List<RecordTemplateSpec.Field> fields) {
     StringBuilder sb = new StringBuilder();
@@ -285,7 +295,8 @@ public class JavaSyntax {
    *   intField, stringField, mapField, Arrays.deepHashCode(javaArrayField), recordField
    * </code>
    *
-   * @param fields
+   * @param fields provides the fields to include in the hashcode expression.
+   * @return a java expression that calculates a hash code.
    */
   public String hashCodeList(List<RecordTemplateSpec.Field> fields) {
     StringBuilder sb = new StringBuilder();

@@ -90,6 +90,9 @@ public class SwiftSyntax {
    *
    * (Because only fields are generated, symbols like hashCode do not collide with method names
    * from Object and may be used).
+   *
+   * @param symbol the symbol to escape
+   * @return the escaped Pegasus symbol.
    */
   public static String escapeKeyword(String symbol) {
     if (swiftKeywords.contains(symbol)) {
@@ -107,6 +110,10 @@ public class SwiftSyntax {
 
   /**
    * Returns the escaped fully qualified name of a {@link ClassTemplateSpec}.
+   *
+   * @param spec to build a escaped fully qualified name for.
+   *
+   * @return the escaped fullname.
    */
   public static String escapedFullname(ClassTemplateSpec spec) {
     // TODO: Remove below null and introduce module namespacing
@@ -127,6 +134,10 @@ public class SwiftSyntax {
    *
    * Even if the field is required, it still will be represented as optional when
    * Optionality is set to {@link SwiftProperties.Optionality#REQUIRED_FIELDS_MAY_BE_ABSENT}.
+   *
+   * @param spec to get a Swift type name for.
+   * @param isOptional indicates if the type is optional or not.
+   * @return Swift source code string identifying the given type.
    */
   public String toType(ClassTemplateSpec spec, boolean isOptional) {
     String type = toTypeString(spec);
@@ -191,6 +202,9 @@ public class SwiftSyntax {
   /**
    * Returns the union member class name for the given {@link ClassTemplateSpec} as a Swift
    * source code string.
+   *
+   * @param spec provides the union member type to get the name for.
+   * @return a Swift source code string identifying the union member.
    */
   public static String toUnionMemberName(ClassTemplateSpec spec) {
 
@@ -229,6 +243,8 @@ public class SwiftSyntax {
   }
 
   /**
+   * @param field field to build a default literal for.
+   *
    * @return A swift source code string representing the literal value of the field default, or null
    * if the field does not have a default.
    */

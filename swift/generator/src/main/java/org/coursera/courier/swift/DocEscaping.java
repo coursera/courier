@@ -41,6 +41,8 @@ public class DocEscaping {
    * Return a deprecated attribute, as a string of Swift source.
    * @param deprecatedProp provides the deprecated Pegasus schema property, if any.  May be a
    *                       Boolean, a String, or null.
+   *
+   * @return a Swift property indicating that a type or field is deprecated.
    */
   public static String deprecatedToString(Object deprecatedProp) {
     boolean emptyDeprecated = (deprecatedProp == null);
