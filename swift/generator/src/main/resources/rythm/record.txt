@@ -6,7 +6,7 @@
 @import com.linkedin.pegasus.generator.spec.UnionTemplateSpec
 @import com.linkedin.pegasus.generator.spec.ArrayTemplateSpec
 @import org.coursera.courier.api.ClassTemplateSpecs
-@import org.coursera.courier.swift.TypedDefinitions
+@import org.coursera.courier.schema.TypedDefinitions
 @import com.linkedin.data.schema.DataSchema.Type
 
 @maybePackageAndImports(record)

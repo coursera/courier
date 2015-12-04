@@ -1,6 +1,6 @@
 @args com.linkedin.pegasus.generator.spec.UnionTemplateSpec union, org.coursera.courier.swift.SwiftSyntax syntax, org.coursera.courier.swift.SwiftyJSON swifty
 @import com.linkedin.pegasus.generator.spec.UnionTemplateSpec.Member
-@import org.coursera.courier.swift.TypedDefinitions
+@import org.coursera.courier.schema.TypedDefinitions
 
 @maybePackageAndImports(union)
 

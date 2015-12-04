@@ -1,5 +1,5 @@
 @args com.linkedin.pegasus.generator.spec.RecordTemplateSpec record, org.coursera.courier.swift.SwiftSyntax syntax, org.coursera.courier.swift.SwiftyJSON swifty
-@import org.coursera.courier.swift.TypedDefinitions
+@import org.coursera.courier.schema.TypedDefinitions
 @import com.linkedin.pegasus.generator.spec.ClassTemplateSpec
 @import org.coursera.courier.api.ClassTemplateSpecs
 @import com.linkedin.pegasus.generator.spec.UnionTemplateSpec

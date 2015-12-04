@@ -1,5 +1,5 @@
 @args com.linkedin.pegasus.generator.spec.RecordTemplateSpec record, org.coursera.courier.android.JavaSyntax syntax, boolean mutable
-@import org.coursera.courier.android.TypedDefinitions
+@import org.coursera.courier.schema.TypedDefinitions
 @import com.linkedin.pegasus.generator.spec.ClassTemplateSpec
 @import org.coursera.courier.api.ClassTemplateSpecs
 @import com.linkedin.pegasus.generator.spec.UnionTemplateSpec

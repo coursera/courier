@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.coursera.courier.swift;
+package org.coursera.courier.schema;
 
 import com.linkedin.data.DataMap;
 import com.linkedin.pegasus.generator.spec.TyperefTemplateSpec;

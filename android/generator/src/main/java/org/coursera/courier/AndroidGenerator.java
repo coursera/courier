@@ -24,13 +24,13 @@ import com.linkedin.pegasus.generator.spec.UnionTemplateSpec;
 import org.coursera.courier.android.AndroidProperties;
 import org.coursera.courier.android.AndroidProperties.Mutability;
 import org.coursera.courier.android.JavaSyntax;
-import org.coursera.courier.android.PoorMansJavaSourceFormatter;
-import org.coursera.courier.android.TypedDefinitions;
 import org.coursera.courier.api.DefaultGeneratorRunner;
 import org.coursera.courier.api.GeneratedCode;
 import org.coursera.courier.api.GeneratedCodeTargetFile;
 import org.coursera.courier.api.GeneratorRunnerOptions;
 import org.coursera.courier.api.PegasusCodeGenerator;
+import org.coursera.courier.lang.PoorMansCStyleSourceFormatter;
+import org.coursera.courier.schema.TypedDefinitions;
 import org.rythmengine.RythmEngine;
 import org.rythmengine.resource.ClasspathResourceLoader;
 
@@ -72,6 +72,9 @@ public class AndroidGenerator implements PegasusCodeGenerator {
     }
   }
 
+  private static final PoorMansCStyleSourceFormatter formatter =
+    new PoorMansCStyleSourceFormatter(2, PoorMansCStyleSourceFormatter.DocCommentStyle.ASTRISK_MARGIN);
+
   /**
    * See {@link org.coursera.courier.android.AndroidProperties} for customization options.
    */
@@ -112,7 +115,7 @@ public class AndroidGenerator implements PegasusCodeGenerator {
     JavaCompilationUnit compilationUnit =
         new JavaCompilationUnit(
             JavaSyntax.escapeKeyword(templateSpec.getClassName()), templateSpec.getNamespace());
-    code = PoorMansJavaSourceFormatter.format(code);
+    code = formatter.format(code);
 
     return new GeneratedCode(compilationUnit, code);
   }

@@ -7,7 +7,7 @@
 @import com.linkedin.pegasus.generator.spec.ArrayTemplateSpec
 @import org.coursera.courier.android.JavaSyntax
 @import org.coursera.courier.api.ClassTemplateSpecs
-@import org.coursera.courier.android.TypedDefinitions
+@import org.coursera.courier.schema.TypedDefinitions
 @import com.linkedin.data.schema.DataSchema.Type
 
 @maybePackageAndImports(record)

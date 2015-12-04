@@ -350,16 +350,14 @@ TODO
 ----
 
 * [ ] Figure out the best way to distribute the 'fat jar'.
+* [ ] Automate distribution of the Fat Jar, and generally make the distribution sane
+* [ ] Publish Fat Jar to remote repos?
 * [ ] Look into adding NSCoding support (see:
   http://swiftandpainless.com/nscoding-and-swift-structs/?utm_campaign=Swift+Developer+Weekly&utm_medium=email&utm_source=Swift_Developer_Weekly_27
   and https://github.com/nicklockwood/AutoCoding)
 * [ ] Implement namespace handling strategy (details below)
-* [ ] Automate distribution of the Fat Jar, and generally make the distribution sane
-* [ ] Publish Fat Jar to remote repos
 * [ ] Generate scala style copy() methods?
 * [ ] Dig deeper into Equatable, Hashable (how to support arrays and maps?  Deep check?)
-* [ ] Move Poor Mans Source formatter into shared lib
-* [ ] Move TypedDefinitions class into shared lib
 * [ ] Add typed map key support (requires Equatable/Hashable)
 * [ ] Make CourierRuntime.swift available as a Pod?
 * [ ] Support recursively defined types (RecursivelyDefinedRecord.swift does not compile)
