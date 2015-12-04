@@ -27,6 +27,7 @@ import org.coursera.courier.api.GeneratedCode;
 import org.coursera.courier.api.GeneratedCodeTargetFile;
 import org.coursera.courier.api.GeneratorRunnerOptions;
 import org.coursera.courier.api.PegasusCodeGenerator;
+import org.coursera.courier.lang.DocCommentStyle;
 import org.coursera.courier.lang.PoorMansCStyleSourceFormatter;
 import org.coursera.courier.swift.GlobalConfig;
 import org.coursera.courier.swift.SwiftProperties;
@@ -97,7 +98,7 @@ public class SwiftGenerator implements PegasusCodeGenerator {
   }
 
   private static final PoorMansCStyleSourceFormatter formatter =
-    new PoorMansCStyleSourceFormatter(4, PoorMansCStyleSourceFormatter.DocCommentStyle.NO_MARGIN);
+    new PoorMansCStyleSourceFormatter(4, DocCommentStyle.NO_MARGIN);
 
   /**
    * See {@link org.coursera.courier.swift.SwiftProperties} for customization options.

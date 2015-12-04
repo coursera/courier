@@ -13,6 +13,4 @@ The courier plugin is available via the JetBrains plugin repository: https://plu
 TODO
 ----
 
-completion, references, go to... and a ton of other useful features.
-See http://www.jetbrains.org/intellij/sdk/docs/tutorials/custom_language_support_tutorial.html for
-a list of language extension features that might be useful.
+Suggestions welcome!

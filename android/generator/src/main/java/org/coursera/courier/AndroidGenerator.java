@@ -29,6 +29,7 @@ import org.coursera.courier.api.GeneratedCode;
 import org.coursera.courier.api.GeneratedCodeTargetFile;
 import org.coursera.courier.api.GeneratorRunnerOptions;
 import org.coursera.courier.api.PegasusCodeGenerator;
+import org.coursera.courier.lang.DocCommentStyle;
 import org.coursera.courier.lang.PoorMansCStyleSourceFormatter;
 import org.coursera.courier.schema.TypedDefinitions;
 import org.rythmengine.RythmEngine;
@@ -73,7 +74,7 @@ public class AndroidGenerator implements PegasusCodeGenerator {
   }
 
   private static final PoorMansCStyleSourceFormatter formatter =
-    new PoorMansCStyleSourceFormatter(2, PoorMansCStyleSourceFormatter.DocCommentStyle.ASTRISK_MARGIN);
+    new PoorMansCStyleSourceFormatter(2, DocCommentStyle.ASTRISK_MARGIN);
 
   /**
    * See {@link org.coursera.courier.android.AndroidProperties} for customization options.

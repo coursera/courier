@@ -1,9 +1,9 @@
 @args com.linkedin.data.schema.NamedDataSchema schema, org.coursera.courier.swift.SwiftyJSON swifty
 @import java.util.Calendar
-@import org.coursera.courier.swift.DocEscaping
+@import org.coursera.courier.swift.SwiftDocEscaping
 
 @* Add any scaladoc and deprecated annotations as well as the Generated annotation. *@
 @{Map<String, Object> props = schema.getProperties() }
 
-@DocEscaping.stringToDocComment(schema.getDoc())
-@DocEscaping.deprecatedToString(props.get("deprecated"))
+@SwiftDocEscaping.stringToDocComment(schema.getDoc())
+@SwiftDocEscaping.deprecatedToString(props.get("deprecated"))

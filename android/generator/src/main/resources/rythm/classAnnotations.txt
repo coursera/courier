@@ -7,4 +7,4 @@
 
 @JavadocEscaping.stringToJavadoc(schema.getDoc(), props)
 @if (schema.getProperties().containsKey("deprecated") && !Boolean.FALSE.equals(props)) {@@Deprecated}
-@@Generated(value = "@schema.getName()", comments="Courier generated GSON data binding for Android", date = "@Calendar.getInstance().getTime()")
+@@Generated(value = "@schema.getName()", comments="Courier generated GSON data binding for Android")

@@ -36,3 +36,8 @@ cp -r sbt-plugin/src/sbt-test/courier-sbt-plugin/sanity ~/tmp
 cd ~/tmp
 sbt -Dplugin.version=<published-courier-version>
 ```
+
+TODO
+----
+
+[ ] Incremental code generation?

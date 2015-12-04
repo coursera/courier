@@ -16,10 +16,10 @@
 
 package org.coursera.courier.swift;
 
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.commons.lang3.text.WordUtils;
+import org.coursera.courier.lang.DocCommentStyle;
+import org.coursera.courier.lang.DocEscaping;
 
-public class DocEscaping {
+public class SwiftDocEscaping {
   /**
    * Returns a doc comment, as a string of Swift source, for the given documentation string.
    *
@@ -30,11 +30,7 @@ public class DocEscaping {
     boolean emptyDoc = (doc == null || doc.trim().isEmpty());
     if (emptyDoc) return "";
 
-    String escaped = wrap(escape(doc)).replaceAll("\\n", "\n * ");
-    return
-      "/**\n" +
-      (escaped == null ? "" : (escaped + "\n")) +
-      " */";
+    return DocEscaping.stringToDocComment(doc, DocCommentStyle.NO_MARGIN);
   }
 
   /**
@@ -53,30 +49,5 @@ public class DocEscaping {
     } else {
       return "@available(*, deprecated)";
     }
-  }
-
-  private static int WRAP_HIGH_WATERMARK = 180;
-  private static int WRAP_TARGET_LINE_LENGTH = 100;
-
-  private static String wrap(String text) {
-    StringBuilder builder = new StringBuilder();
-    for (String line: text.split("\n")) {
-      if (line.length() > WRAP_HIGH_WATERMARK) {
-        builder.append(WordUtils.wrap(line, WRAP_TARGET_LINE_LENGTH));
-      } else {
-        builder.append(text);
-      }
-      builder.append("\n");
-    }
-    return builder.toString().trim();
-  }
-
-  private static String escape(String raw) {
-    String htmlEscaped = StringEscapeUtils.escapeHtml4(raw);
-
-    // escape "/*" and "*/" by replacing all slashes and asterisks with the entities
-    return htmlEscaped
-        .replace("/*", "&#47;&#42;")
-        .replace("*/", "&#42;&#47;");
   }
 }

@@ -1,6 +1,6 @@
 @args com.linkedin.pegasus.generator.spec.EnumTemplateSpec enumeration
 @import org.coursera.courier.swift.SwiftSyntax
-@import org.coursera.courier.swift.DocEscaping
+@import org.coursera.courier.swift.SwiftDocEscaping
 @import com.linkedin.data.DataMap
 
 @maybePackageAndImports(enumeration)
@@ -15,10 +15,10 @@ public enum @className: Equatable, Hashable {
   @for(String symbol: enumeration.getSchema().getSymbols()) {
     @{String symbolDoc = symbolDocs.get(symbol)}
     @if(symbolDoc != null) {
-      @DocEscaping.stringToDocComment(symbolDoc)
+      @SwiftDocEscaping.stringToDocComment(symbolDoc)
     }
     @if(deprecatedSymbols != null) {
-      @DocEscaping.deprecatedToString(deprecatedSymbols.get(symbol))
+      @SwiftDocEscaping.deprecatedToString(deprecatedSymbols.get(symbol))
     }
 
     case @SwiftSyntax.escapeKeyword(symbol)

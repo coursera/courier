@@ -14,31 +14,35 @@
  * limitations under the License.
  */
 
-package org.coursera.courier.schema;
+package org.coursera.courier.lang;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.text.WordUtils;
 
-public class SchemadocEscaping {
+public class DocEscaping {
   /**
-   * Returns a schemadoc comment, as a string of java source, for the given documentation string
+   * Returns a doc comment, as a string of source, for the given documentation string
    * and deprecated property.
    *
    * @param doc provides the schemadoc for the symbol, if any.  May be null.
    * @return an escaped schemadoc string.
    */
-  public static String stringToSchemadoc(String doc) {
+  public static String stringToDocComment(String doc, DocCommentStyle style) {
     if (doc == null || doc.trim().isEmpty()) return "";
 
-    String schemadoc = wrap(escape(doc)).replaceAll("\\n", "\n * ");
-    return
-      "/**\n" +
-      (" * " + schemadoc + "\n") +
-      " */";
+    String commentNewline = (style == DocCommentStyle.ASTRISK_MARGIN) ? "\n * " : "\n";
+    String schemadoc = wrap(escape(doc)).replaceAll("\\n", commentNewline);
+    StringBuilder builder = new StringBuilder();
+    builder.append("/**\n");
+    if (style == DocCommentStyle.ASTRISK_MARGIN) builder.append(" * ");
+    builder.append(schemadoc).append("\n");
+    if (style == DocCommentStyle.ASTRISK_MARGIN) builder.append(" ");
+    builder.append("*/");
+    return builder.toString();
   }
 
-  private static int WRAP_HIGH_WATERMARK = 180;
-  private static int WRAP_TARGET_LINE_LENGTH = 100;
+  private static final int WRAP_HIGH_WATERMARK = 180;
+  private static final int WRAP_TARGET_LINE_LENGTH = 100;
 
   private static String wrap(String text) {
     StringBuilder builder = new StringBuilder();
@@ -46,7 +50,7 @@ public class SchemadocEscaping {
       if (line.length() > WRAP_HIGH_WATERMARK) {
         builder.append(WordUtils.wrap(line, WRAP_TARGET_LINE_LENGTH));
       } else {
-        builder.append(text);
+        builder.append(line);
       }
       builder.append("\n");
     }

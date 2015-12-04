@@ -71,17 +71,17 @@ For example, given a union "AnswerFormat" with member types "TextEntry" and "Mul
 Java class signatures will be:
 
 ```java
-interface AnswerFormat
+interface AnswerFormat {};
 
 class TextEntryMember implements AnswerFormat {
-  public final TextEntry
+  public final TextEntry textEntry;
 }
 
 class MultipleChoiceMember implements AnswerFormat {
-  public final MultipleChoice
+  public final MultipleChoice multipleChoice;
 }
 
-class UnknownMember
+class UnknownMember {};
 ```
 
 Projections
@@ -116,16 +116,16 @@ Immutable classes are preferred when using Courier with Android.
 They may be constructed either using the public constructor:
 
 ```java
-Course course = new Course("name", "slug", ...)
+Course course = new Course("name", "slug", /*...*/ );
 ```
 
 Or, via a builder:
 
 ```java
-Course.Builder builder = new Course.Builder()
-builder.name = "name"
-builder.slug = "slug"
-Course course = builder.build() // builds an immutable type
+Course.Builder builder = new Course.Builder();
+builder.name = "name";
+builder.slug = "slug";
+Course course = builder.build(); // builds an immutable type
 ```
 
 The builder should be favored when constructing class instances with a large number of fields or
@@ -140,22 +140,18 @@ Mutable bindings are simple Java classes with an default constructor and public 
 Example usage:
 
 ```java
-Course course = new Course()
-course.name = "name"
-course.slug = "slug"
+Course course = new Course();
+course.name = "name";
+course.slug = "slug";
 ```
 
 To configure Courier to generate mutable bindings, set the mutability property to "MUTABLE" in the
 Pegasus schema:
 
 ```
-{
-  "name": "Course",
-  "type": "record",
-  "fields" [ ... ],
-  "android": {
-    "mutablity": "MUTABLE"
-  }
+@android.mutability = "MUTABLE"
+record Course {
+  // ...
 }
 ```
 
@@ -163,12 +159,10 @@ To represent Pegasus 'arrays' in Java as arrays (`[]`), set the arrayStyle prope
 the pegasus schema:
 
 ```
-{
-  ...
-  "android": {
-    "mutablity": "MUTABLE",
-    "arrayStyle": "ARRAYS"
-  }
+@android.mutability = "MUTABLE"
+@android.arrayStyle = "ARRAYS"
+record Course {
+  // ...
 }
 ```
 
@@ -176,12 +170,10 @@ To represent Pegasus primitive type in Java as primitive value type, set the pri
 to "PRIMITIVES" in the pegasus schema:
 
 ```
-{
-  ...
-  "android": {
-    "mutablity": "MUTABLE",
-    "primitiveStyle": "PRIMITIVES",
-  }
+@android.mutability = "MUTABLE"
+@android.primitiveStyle = "PRIMITIVES"
+record Course {
+  // ...
 }
 ```
 
@@ -201,15 +193,12 @@ GSON Adapters can be used to bind to arbitrary Java classes.
 For example, to bind to `org.joda.time.DateTime`, define a typeref to a Long (for unix timestamps) or
 a String (for ISO 8601 or whatever format of string date you would like to use). E.g.:
 
-```json
-  "name": "DateTime",
-  "namespace": "org.example",
-  "type": "typeref",
-  "ref": "long",
-  "android": {
-    "class": "org.joda.time.DateTime",
-    "coercerClass": "org.example.DateTimeAdapter"
-  }}
+```
+namespace org.example
+
+@android.class = "org.joda.time.DateTime"
+@android.coercerClass = "org.example.DateTimeAdapter"
+typeref DateTime = long
 ```
 
 And write a GSON `TypeAdapter`:

@@ -1,9 +1,9 @@
 @args com.linkedin.pegasus.generator.spec.RecordTemplateSpec.Field field, org.coursera.courier.swift.SwiftyJSON swifty
-@import org.coursera.courier.swift.DocEscaping
+@import org.coursera.courier.swift.SwiftDocEscaping
 @import com.linkedin.data.schema.RecordDataSchema
 
 @{RecordDataSchema.Field schemaField = field.getSchemaField() }
 @{Map<String, Object> props = schemaField.getProperties() }
 
-@DocEscaping.stringToDocComment(schemaField.getDoc())
-@DocEscaping.deprecatedToString(props.get("deprecated"))
+@SwiftDocEscaping.stringToDocComment(schemaField.getDoc())
+@SwiftDocEscaping.deprecatedToString(props.get("deprecated"))

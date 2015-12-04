@@ -24,8 +24,8 @@ buildscript {
   }
   dependencies {
     classpath 'org.scala-lang:scala-library:2.11.5'
-    classpath 'org.coursera.courier:gradle-plugin_2.11:0.5.0'
-    // classpath "org.coursera.courier:courier-android:0.5.0" // for Java Android bindings
+    classpath 'org.coursera.courier:gradle-plugin_2.11:0.17.1'
+    // classpath "org.coursera.courier:courier-android:0.17.1" // for Java Android bindings
   }
 }
 ```
@@ -50,7 +50,7 @@ courier {
 dependencies {
   compile 'org.scala-lang:scala-library:2.11.5'
   courierCompile 'org.scala-lang:scala-library:2.11.5'
-  courierCompile 'org.coursera.courier:courier-runtime_2.11:0.5.0'
+  courierCompile 'org.coursera.courier:courier-runtime_2.11:0.17.1'
   // courierCompile 'com.google.code.gson:gson:2.3.1' // for Java Android bindings
 }
 ```
