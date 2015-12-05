@@ -217,16 +217,13 @@ This will be generated as:
 
 ```scala
 /** A simple record */
-case class Example(field1: String, field2: Option[Int])
+case class Example(field1: String, field2: Option[Int], field3: DateTime)
 ```
 
 [Record Fields](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates#record-field-attributes)
 may be optional and/or may have default values.
 
 {% include file_format_specific.html name="record_fields" %}
-
-Note that `"defaultNone"` is not part of Pegasus, but is a custom property supported by Courier
-specifically added it make it possible to generate idiomatic Scala bindings.
 
 Schema fields may also be documented or marked as deprecated:
 
