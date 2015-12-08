@@ -102,9 +102,7 @@ fieldDeclaration returns [String name, boolean isOptional]:
 
 fieldName returns [String name]: identifier { $name = $identifier.value; };
 
-fieldDefault returns [boolean isNil]: '=' (jsonValue | NIL) {
-  $isNil = $NIL() != null;
-};
+fieldDefault: '=' jsonValue;
 
 identifier returns [String value]:
     PLAIN_IDENTIFIER { $value = $text; } |
@@ -141,7 +139,6 @@ bool returns [Boolean value]: BOOLEAN_LITERAL {
 
 nullValue: NULL_LITERAL;
 
-NIL: 'nil';
 QUESTION_MARK: '?';
 BOOLEAN_LITERAL: 'true' | 'false';
 NULL_LITERAL: 'null';

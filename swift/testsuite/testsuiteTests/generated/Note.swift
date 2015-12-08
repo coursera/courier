@@ -6,7 +6,7 @@ public struct Note: Serializable, Equatable {
     public let text: String?
     
     public init(
-        text: String?
+        text: String? = "default"
     ) {
         self.text = text
     }

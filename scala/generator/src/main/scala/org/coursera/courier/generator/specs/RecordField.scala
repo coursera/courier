@@ -156,32 +156,32 @@ case class RecordField(field: Field) extends Deprecatable {
     scalaProperties.exists(props => Option(props.getBoolean("omit")).exists(_.booleanValue()))
 
   /**
-   * Custom property supported by Courier. If "defaultNone" is true for an optional value,
-   * it's default value in Scala will be None.
+   * Custom property supported by Courier. If "explicit" is true for an optional value,
+   * it will not be defaulted to None in generated data bindings.
    *
    * This is useful in Scala, because Scala supports default values on parameters, allowing
    * defaults to be provided by the generator to record type "constructors" (apply methods really).
    */
-  val isDefaultNone = {
-    properties.get("defaultNone") == Some(java.lang.Boolean.TRUE)
+  val explicit = {
+    properties.get("explicit") == Some(java.lang.Boolean.TRUE)
   }
 
   def default: Option[FieldDefault] = {
     val maybeDefault = Option(schemaField.getDefault)
 
-    if (isDefaultNone) {
-      assert(isOptional, s"Field '$name' marked as 'defaultNone' must be 'optional'")
-      assert(!maybeDefault.isDefined,
-        "Optional field '$name' may have either 'default' or 'defaultNone', not both.")
+    if (explicit) {
+      assert(isOptional, s"Field '$name' marked as 'explicit' must be 'optional'")
+      assert(maybeDefault.isEmpty,
+        "Optional field '$name' may have either 'default' or 'explicit', not both.")
     }
 
-    (maybeDefault, isDefaultNone, isOptional) match {
+    (maybeDefault, explicit, isOptional) match {
       // Required field with a default value
-      case (Some(defaultValue), false, false) => Some(RequiredFieldDefault(defaultValue))
+      case (Some(defaultValue), _, false) => Some(RequiredFieldDefault(defaultValue))
       // Optional field with some default value
       case (Some(defaultValue), false, true) => Some(OptionalFieldDefault(Some(defaultValue)))
       // Optional fied with a default value of None
-      case (None, true, true) => Some(OptionalFieldDefault(None))
+      case (None, false, true) => Some(OptionalFieldDefault(None))
       // does not have a default value
       case _ => None
     }

@@ -249,8 +249,8 @@ public class SwiftSyntax {
    * if the field does not have a default.
    */
   public String defaultToLiteral(RecordTemplateSpec.Field field) {
-    boolean defaultNone = Boolean.TRUE.equals(field.getSchemaField().getProperties().get("defaultNone"));
-    if (defaultNone) {
+    boolean explicit = Boolean.TRUE.equals(field.getSchemaField().getProperties().get("explicit"));
+    if (!explicit && field.getSchemaField().getOptional()) {
       return "nil";
     } else {
       CustomInfoSpec customInfo = field.getCustomInfo();
@@ -386,5 +386,4 @@ public class SwiftSyntax {
     sb.append("]");
     return sb.toString();
   }
-
 }

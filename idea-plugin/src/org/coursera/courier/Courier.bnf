@@ -102,11 +102,9 @@ fieldSelectionElement ::= fieldInclude | fieldDeclaration
 
 fieldInclude ::= DOTDOTDOT typeReference {pin=1}
 
-fieldDeclaration ::= annotations? fieldName COLON typeAssignment QUESTION_MARK? (EQUALS optionalLiteral)? {pin=2}
+fieldDeclaration ::= annotations? fieldName COLON typeAssignment QUESTION_MARK? (EQUALS literal)? {pin=2}
 
 fieldName ::= IDENTIFIER
-
-optionalLiteral ::= literal | NIL
 
 literal ::= jsonValue
 

@@ -40,4 +40,5 @@ sbt -Dplugin.version=<published-courier-version>
 TODO
 ----
 
+[ ] Make this an auto-plugin that automatically adds all necessary settings to projects.
 [ ] Incremental code generation?

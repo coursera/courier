@@ -64,7 +64,6 @@ public class CourierSyntaxHighlighter extends SyntaxHighlighterBase {
     KEYWORDS.add(CourierTypes.TYPEREF_KEYWORD);
     KEYWORDS.add(CourierTypes.TRUE);
     KEYWORDS.add(CourierTypes.FALSE);
-    KEYWORDS.add(CourierTypes.NIL);
     KEYWORDS.add(CourierTypes.NULL);
   }
 

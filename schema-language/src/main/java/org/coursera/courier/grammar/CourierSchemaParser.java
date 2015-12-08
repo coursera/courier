@@ -89,7 +89,9 @@ public class CourierSchemaParser extends SchemaParser {
   public CourierSchemaParser(DataSchemaResolver resolver) {
     super(resolver);
     try {
-      // TODO(jbetz): Gahhh! We will submit pull request to rest.li so we can remove this hack.
+      // TODO(jbetz):
+      // Replace with https://github.com/coursera/courier/tree/with-restli-upstream-fixes
+      // once https://github.com/linkedin/rest.li/pull/60 is accepted.
       java.lang.reflect.Field topLevelDataSchemasField =
         SchemaParser.class.getDeclaredField("_topLevelDataSchemas");
       topLevelDataSchemasField.setAccessible(true);
@@ -633,8 +635,6 @@ public class CourierSchemaParser extends SchemaParser {
           JsonValueContext defaultValue = fieldDefault.jsonValue();
           if (defaultValue != null) {
             result.setDefault(parseJsonValue(defaultValue));
-          } else if (fieldDefault.isNil) {
-            properties.put("defaultNone", true);
           }
         }
 

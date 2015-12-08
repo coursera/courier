@@ -49,8 +49,9 @@ import java.util.Map;
  * @author Joe Betz
  * @author Keren Jin
  */
-// TODO(jbetz): Submit a pull request to merge the improvements to DataSchemaParser by this class
-// to rest.li and remove this class once those improvements become available.
+// TODO(jbetz):
+// Replace with https://github.com/coursera/courier/tree/with-restli-upstream-fixes
+// once https://github.com/linkedin/rest.li/pull/60 is accepted.
 public class FileFormatDataSchemaParser
 {
   private final DataSchemaResolver _schemaResolver;

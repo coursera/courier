@@ -3,7 +3,17 @@ IntelliJ IDEA Plugin
 
 Features:
 
-* ".courier" file format syntax and "red curvy underline" syntax error indicators.
+* ".courier" language support
+  * Syntax highlighting, incl. config
+  * Code formatting && brace matching, incl. code style config
+  * Follow/find references
+  * Reference auto-complete, incl. automatic import statement generation
+  * Syntax errors for unrecognized type references
+  * Go to type
+  * Find usages
+  * New file templates: "New" > "Courier Data Schema"
+  * Doc comment support
+  * Optimize imports
 
 Installation
 ------------

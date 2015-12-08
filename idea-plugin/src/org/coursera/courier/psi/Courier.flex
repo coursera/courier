@@ -60,7 +60,6 @@ StringLiteral = \" ( [^\"\\] | \\ ( [\"\\/bfnrt] | u[0-9]{4} ) )* \"
   "map"                  { return CourierTypes.MAP_KEYWORD; }
   "array"                { return CourierTypes.ARRAY_KEYWORD; }
 
-  "nil"                  { return CourierTypes.NIL; }
   "null"                 { return CourierTypes.NULL; }
   "true"                 { return CourierTypes.TRUE; }
   "false"                { return CourierTypes.FALSE; }

@@ -17,6 +17,13 @@
 package org.coursera.courier.lang;
 
 public enum DocCommentStyle {
+  /**
+   * For Scaladoc/Javadoc style doc comments.
+   */
   ASTRISK_MARGIN,
+
+  /**
+   * For swift style doc comments.
+   */
   NO_MARGIN
 }

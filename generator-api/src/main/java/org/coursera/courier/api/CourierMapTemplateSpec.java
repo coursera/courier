@@ -27,8 +27,9 @@ import com.linkedin.pegasus.generator.spec.CustomInfoSpec;
  *
  * @author Keren Jin
  */
-// TODO(jbetz): Submit pull requests to the rest.li project to provide extension points
-// that we can use instead of keeping a modified version of this class.
+// TODO(jbetz):
+// Replace with https://github.com/coursera/courier/tree/with-restli-upstream-fixes
+// once https://github.com/linkedin/rest.li/pull/61 is accepted.
 public class CourierMapTemplateSpec extends ClassTemplateSpec
 {
   private ClassTemplateSpec _valueClass;
