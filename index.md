@@ -221,7 +221,7 @@ case class Example(field1: String, field2: Option[Int], field3: DateTime)
 ```
 
 [Record Fields](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates#record-field-attributes)
-may be optional and/or may have default values.
+may be optional or may have default values.
 
 {% include file_format_specific.html name="record_fields" %}
 

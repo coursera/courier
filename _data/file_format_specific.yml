@@ -374,17 +374,15 @@ record_fields:
     ---------------------------------------------|------------------------------------------------------
     `field: string`                              | `case class Record(field: String)`
     `field: string = "message"`                  | `case class Record(field: String = "message")`
-    `field: string?`                             | `case class Record(field: Option[String])`
+    `field: string?`                             | `case class Record(field: Option[String] = None)`
     `field: string? = "message"`                 | `case class Record(field: Option[String] = Some("message"))`
-    `field: string? = nil`                       | `case class Record(field: Option[String] = None)`
   pdsc: |
     Schema Field                                 | Generated Scala
     ---------------------------------------------|------------------------------------------------------
     `"type": "string"`                           | `case class Record(field: String)`
     `..., "default": "message"`                  | `case class Record(field: String = "message")`
-    `..., "optional": true`                      | `case class Record(field: Option[String])`
+    `..., "optional": true`                      | `case class Record(field: Option[String] = None)`
     `..., "optional": true "default": "message"` | `case class Record(field: Option[String] = Some("message"))`
-    `..., "optional": true, "defaultNone": true` | `case class Record(field: Option[String] = None)`
 
 record_properties:
   courier: |
