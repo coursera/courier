@@ -76,7 +76,9 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -366,12 +368,14 @@ public class CourierSchemaParser extends SchemaParser {
     DataMap symbolProperties = new DataMap();
     for (EnumSymbolDeclarationContext symbolDecl: symbolDecls) {
       for (PropDeclarationContext prop: symbolDecl.props) {
-        String key = symbolDecl.symbol.value;
+        String symbol = symbolDecl.symbol.value;
         Object value = parsePropValue(prop);
         if (prop.name.equals("deprecated")) {
-          deprecatedSymbols.put(key, value);
+          deprecatedSymbols.put(symbol, value);
         } else {
-          symbolProperties.put(key, value);
+          List<String> path = new ArrayList<>(prop.path);
+          path.add(0, symbol);
+          addToDataMap(prop, symbolProperties, path, value);
         }
       }
     }
@@ -450,6 +454,10 @@ public class CourierSchemaParser extends SchemaParser {
 
     if (keyType.typeReference() != null) {
       String typeName = keyType.typeReference().value;
+
+      // TODO(jbetz):
+      // Replace with https://github.com/coursera/courier/tree/with-restli-upstream-fixes
+      // once https://github.com/linkedin/rest.li/pull/61 is accepted.
       if (!typeName.equals("string")) {
         String qualifiedKeyName;
         Name importKeyTypeName = currentImports.get(typeName);
@@ -509,23 +517,10 @@ public class CourierSchemaParser extends SchemaParser {
           schemadocByMember.put(memberKey, schemadoc);
         }
         if (memberDecl.props != null) {
-          //Map<String, Object> properties = new HashMap<String, Object>();
           for (PropDeclarationContext prop : memberDecl.props) {
-            String[] path = prop.name.split("\\.");
-            String[] pathWithMemberKey = Arrays.copyOf(path, path.length + 1);
-            pathWithMemberKey[path.length] = memberKey;
+            List<String> pathWithMemberKey = new ArrayList<>(prop.path);
+            pathWithMemberKey.add(memberKey);
             addToDataMap(prop, byNameByMemberProps, pathWithMemberKey, parsePropValue(prop));
-            /*DataMap byMemberProps;
-            if (!byNameByMemberProps.containsKey(prop.name)) {
-              byMemberProps = new DataMap();
-              byNameByMemberProps.put(prop.name, byMemberProps);
-            } else {
-              byMemberProps = byNameByMemberProps.getDataMap(prop.name);
-            }
-
-            byMemberProps.put(
-              memberKey,
-              parseJsonValue(prop.propJsonValue().jsonValue()));*/
           }
         }
       }
@@ -568,41 +563,43 @@ public class CourierSchemaParser extends SchemaParser {
   }
 
   private void addToProperties(Map<String, Object> properties, PropDeclarationContext prop) throws ParseException{
-    String[] path = prop.name.split("\\.");
-    addToDataMap(prop, properties, path, parsePropValue(prop));
+    addToDataMap(prop, properties, prop.path, parsePropValue(prop));
   }
 
   private void addToDataMap(
       ParserRuleContext context,
       Map<String, Object> properties,
-      String[] path,
+      Iterable<String> path,
       Object value) throws ParseException {
     Map<String, Object> current = properties;
-    for (int i = 0; i < path.length - 1; i++) {
-      String pathPart = path[i];
-      if (properties.containsKey(pathPart)) {
-        Object val = properties.get(pathPart);
-        if (!(val instanceof DataMap)) {
+    Iterator<String> iter = path.iterator();
+    while (iter.hasNext()) {
+      String pathPart = iter.next();
+      if (iter.hasNext()) {
+        if (properties.containsKey(pathPart)) {
+          Object val = properties.get(pathPart);
+          if (!(val instanceof DataMap)) {
+            throw new ParseException(
+              new ParseError(
+                new ParseErrorLocation(context),
+                "Conflicting property: " + path.toString()));
+          }
+          current = (DataMap) val;
+        } else {
+          DataMap next = new DataMap();
+          current.put(pathPart, next);
+          current = next;
+        }
+      } else {
+        if (current.containsKey(pathPart)) {
           throw new ParseException(
             new ParseError(
               new ParseErrorLocation(context),
-              "Conflicting property: " + Arrays.toString(path)));
+              "Property already defined: " + path.toString()));
+        } else {
+          current.put(pathPart, value);
         }
-        current = (DataMap)val;
-      } else {
-        DataMap next = new DataMap();
-        current.put(pathPart, next);
-        current = next;
       }
-    }
-    String terminalPart = path[path.length-1];
-    if (current.containsKey(terminalPart)) {
-      throw new ParseException(
-        new ParseError(
-          new ParseErrorLocation(context),
-          "Property already defined: " + Arrays.toString(path)));
-    } else {
-      current.put(terminalPart, value);
     }
   }
 

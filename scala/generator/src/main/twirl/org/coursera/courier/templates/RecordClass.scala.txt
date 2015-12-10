@@ -23,6 +23,7 @@
   import org.coursera.courier.templates.ScalaRecordTemplate
   import org.coursera.courier.templates.ScalaArrayTemplate
   import org.coursera.courier.templates.ScalaUnionTemplate
+  import org.coursera.courier.templates.ScalaEnumerationTemplate
   import scala.runtime.ScalaRunTime
   import com.linkedin.data.template.DataTemplateUtil
   import com.linkedin.data.schema.RecordDataSchema

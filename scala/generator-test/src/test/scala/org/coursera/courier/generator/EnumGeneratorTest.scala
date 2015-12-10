@@ -16,8 +16,8 @@
 
 package org.coursera.courier.generator
 
+import org.coursera.enums.EnumProperties
 import org.coursera.enums.Fruits
-import org.junit.BeforeClass
 import org.junit.Test
 
 class EnumGeneratorTest extends GeneratorTest with SchemaFixtures {
@@ -27,5 +27,18 @@ class EnumGeneratorTest extends GeneratorTest with SchemaFixtures {
     assert(Fruits.fromString("APPLE") === Fruits.APPLE)
     assert(Fruits.fromString("BWAHH") === Fruits.$UNKNOWN)
     assert(Fruits.values.contains(Fruits.BANANA) === true)
+  }
+
+  @Test
+  def testCompare(): Unit = {
+    assert(EnumProperties.APPLE.compare(EnumProperties.ORANGE) < 0)
+  }
+
+  @Test
+  def testEnumProperties(): Unit = {
+    val maybeColor = EnumProperties.BANANA.property("color").collect {
+      case color: String => color
+    }
+    assert(maybeColor === Some("yellow"))
   }
 }

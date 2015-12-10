@@ -2,6 +2,7 @@ grammar Courier;
 
 @header {
   import org.coursera.courier.grammar.ParseUtils;
+  import java.util.Arrays;
 }
 
 document: namespaceDeclaration importDeclarations namedTypeDeclaration;
@@ -41,8 +42,9 @@ anonymousTypeDeclaration: unionDeclaration | arrayDeclaration | mapDeclaration;
 
 typeAssignment: typeReference | typeDeclaration;
 
-propDeclaration returns [String name]: propNameDeclaration propJsonValue? {
+propDeclaration returns [String name, List<String> path]: propNameDeclaration propJsonValue? {
   $name = $propNameDeclaration.name;
+  $path = Arrays.asList($propNameDeclaration.name.split("\\."));
 };
 
 propNameDeclaration returns [String name]: '@' propName { $name = $propName.value; };
