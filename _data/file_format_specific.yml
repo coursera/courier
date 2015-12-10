@@ -247,6 +247,46 @@ enum_inline:
     }
     ```
 
+enum_properties_example:
+  courier: |
+    ```
+    namespace org.example
+
+    enum Fruits {
+      @color = "red"
+      APPLE
+
+      /** Yum. */
+      @color = "yellow"
+      BANANA
+
+      @deprecated
+      @color = "orange"
+      ORANGE
+    }
+    ```
+
+  pdsc: |
+    ```json
+    {
+      "type" : "enum",
+      "name" : "Fruits",
+      "namespace" : "org.example",
+      "symbols" : ["APPLE", "BANANA", "ORANGE"],
+      "symbolDocs": {
+        "BANANA": "Yum."
+      },
+      "deprecatedSymbols": {
+        "ORANGE": true
+      },
+      "symbolProperties": {
+        "APPLE": "red",
+        "BANANA": "yellow",
+        "ORANGE": "orange"
+      }
+    }
+    ```
+
 typeref_example:
   courier: |
     ```

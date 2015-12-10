@@ -601,6 +601,19 @@ object Fruits extends Enumeration {
 
 Enums are represented in JSON as strings, e.g. `"APPLE"`
 
+#### Enum documentation, deprecation and properties
+
+Doc comments, `@deprecation` and properties may be added directly to enum
+symbols:
+
+{% include file_format_specific.html name="enum_properties_example" %}
+
+Properties can easily be accessed from Scala code:
+
+```scala
+Fruits.BANANA.property("color")
+```
+
 #### Enum Backward Compatibility
 
 `$UNKNOWN` indicates an unrecognized symbol was
