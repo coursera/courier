@@ -1,0 +1,12 @@
+{
+  "name": "WithInclude",
+  "namespace": "org.coursera.records.test",
+  "type": "record",
+  "include": [ "Simple" ],
+  "fields": [
+    {
+      "name": "direct",
+      "type": "int"
+    }
+  ]
+}

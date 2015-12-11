@@ -16,15 +16,24 @@
 
 package org.coursera.courier.grammar;
 
+import org.antlr.v4.runtime.FailedPredicateException;
+import org.antlr.v4.runtime.IntStream;
+import org.antlr.v4.runtime.Parser;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.RecognitionException;
+import org.antlr.v4.runtime.Recognizer;
 import org.apache.commons.lang3.StringEscapeUtils;
 
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Iterator;
 import java.util.List;
 
 public class ParseUtils {
   public static String extractMarkdown(String schemaDoc) {
     return unescapeDocstring(
-      stripMargin(schemaDoc.substring(3, schemaDoc.length() -2)).trim());
+      stripMargin(schemaDoc.substring(3, schemaDoc.length() - 2)).trim());
   }
 
   private static String unescapeDocstring(String escaped) {
@@ -43,7 +52,7 @@ public class ParseUtils {
   public static String stripMargin(String schemadoc) {
     char marginChar = '*';
     StringBuilder buf = new StringBuilder();
-    for (String line: schemadoc.split("\n")) {
+    for (String line : schemadoc.split("\n")) {
       int len = line.length();
       int index = 0;
       while (index < len && line.charAt(index) <= ' ') {
@@ -73,5 +82,31 @@ public class ParseUtils {
       }
     }
     return stringBuilder.toString();
+  }
+
+  // There must be a better way.
+  public static Number toNumber(String string) {
+    BigDecimal value = new BigDecimal(string);
+    try {
+      long l = value.longValueExact();
+      int i = (int) l;
+      if ((long) i == l) {
+        return i;
+      } else {
+        return l;
+      }
+    } catch (ArithmeticException e) {
+      double d = value.doubleValue();
+      if (BigDecimal.valueOf(d).equals(value)) {
+        float f = (float) d;
+        if ((double) f == d) {
+          return (float) d;
+        } else {
+          return d;
+        }
+      } else {
+        return null;
+      }
+    }
   }
 }

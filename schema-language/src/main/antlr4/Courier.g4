@@ -128,11 +128,7 @@ string returns [String value]: STRING_LITERAL {
 };
 
 number returns [Number value]: NUMBER_LITERAL {
-  if ($NUMBER_LITERAL.text.contains(".")) {
-    $value = Double.valueOf($NUMBER_LITERAL.text);
-  } else {
-    $value = Long.valueOf($NUMBER_LITERAL.text);
-  }
+  $value = ParseUtils.toNumber($NUMBER_LITERAL.text);
 };
 
 bool returns [Boolean value]: BOOLEAN_LITERAL {

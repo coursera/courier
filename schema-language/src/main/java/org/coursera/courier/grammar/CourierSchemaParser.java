@@ -18,6 +18,7 @@ package org.coursera.courier.grammar;
 
 import com.linkedin.data.DataList;
 import com.linkedin.data.DataMap;
+import com.linkedin.data.Null;
 import com.linkedin.data.codec.DataLocation;
 import com.linkedin.data.codec.JacksonDataCodec;
 import com.linkedin.data.schema.ArrayDataSchema;
@@ -82,7 +83,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Parses courier schema language source, generating Pegasus DataSchema types.
+ * Parses courier schema language source and generates Pegasus DataSchema types.
  */
 public class CourierSchemaParser extends SchemaParser {
 
@@ -105,7 +106,7 @@ public class CourierSchemaParser extends SchemaParser {
   }
 
   /**
-   * Parse a representation of a schema from source
+   * Parse a representation of a schema from source.
    *
    * The top level {{DataSchema}'s parsed are in {{#topLevelDataSchemas}.
    * These are the types that are not defined within other types.
@@ -151,7 +152,7 @@ public class CourierSchemaParser extends SchemaParser {
       CourierLexer lexer;
       try {
         lexer = new CourierLexer(new ANTLRInputStream(reader));
-      } catch(IOException e) {
+      } catch (IOException e) {
         ParseError error = new ParseError(new ParseErrorLocation(0, 0), e.getMessage());
         startErrorMessage(error).append(error.message).append("\n");
         return;
@@ -164,6 +165,7 @@ public class CourierSchemaParser extends SchemaParser {
       parser.addErrorListener(errorRecorder);
 
       parse(parser.document());
+
       if (errorRecorder.errors.size() > 0) {
         for (ParseError error : errorRecorder.errors) {
           startErrorMessage(error).append(error.message).append("\n");
@@ -239,7 +241,7 @@ public class CourierSchemaParser extends SchemaParser {
    * i.e. errors forcing the parser to must halt immediately and not continue to parse the
    * document in search of other potential errors to report.
    *
-   * For recoverable, parse errors the error should instead be recorded using startErrorMessage.
+   * For recoverable parse errors, the error should instead be recorded using startErrorMessage.
    */
   private class ParseException extends IOException {
     public final ParseError error;
@@ -506,8 +508,8 @@ public class CourierSchemaParser extends SchemaParser {
   }
 
   /**
-   * A UnionDataSchema plus any doc comments (and, potentially properties, if we decide to support
-   * them) added to union members so that if the surrounding type is a typeref, it can track them.
+   * A UnionDataSchema plus any metadata, such as doc comments added to union members so
+   * that if the surrounding type is a typeref, it can track them.
    *
    * Note that all Courier schemas must be directly representable as .pdsc schemas.
    * And unlike all other pegasus types, unions are represented as a JSON array in .pdsc, and as
@@ -560,7 +562,7 @@ public class CourierSchemaParser extends SchemaParser {
           String schemadoc = memberDecl.schemadoc().value;
           metadataByMember.put(memberKey, new UnionMemberMetadata(schemadoc));
         }
-        if (memberDecl.propDeclaration() != null) {
+        if (memberDecl.propDeclaration() != null && memberDecl.propDeclaration().size() > 0) {
           // TODO: For typeref'd unions, consider adding support for properties. A reasonable
           // way to represent them in the typeref (that is consistent with enums) would need to
           // be sorted out.
@@ -736,11 +738,15 @@ public class CourierSchemaParser extends SchemaParser {
         TypeReferenceContext includeRef = element.fieldInclude().typeReference();
         DataSchema includedSchema = toDataSchema(includeRef);
         if (includedSchema != null) {
-          if (includedSchema instanceof NamedDataSchema) {
-            includes.add((NamedDataSchema) includedSchema);
+          DataSchema dereferencedIncludedSchema = includedSchema.getDereferencedDataSchema();
+          if (dereferencedIncludedSchema instanceof RecordDataSchema) {
+            RecordDataSchema includedRecordSchema = (RecordDataSchema) dereferencedIncludedSchema;
+            results.addAll(includedRecordSchema.getFields());
+
+            includes.add(includedRecordSchema);
           } else {
             startErrorMessage(element)
-              .append("Include is not a named type: ")
+              .append("Include is not a record type: ")
               .append(includeRef.value).append("\n");
           }
         }
@@ -808,14 +814,26 @@ public class CourierSchemaParser extends SchemaParser {
     } else if (jsonValue.string() != null) {
       return jsonValue.string().value;
     } else if (jsonValue.number() != null) {
-      return jsonValue.number().value;
+      Number numberValue = jsonValue.number().value;
+      if (numberValue == null) {
+        startErrorMessage(jsonValue)
+          .append("'")
+          .append(jsonValue.number().getText())
+          .append("' is not a valid int, long, float or double.")
+          .append("\n");
+        return 0;
+      }
+      return numberValue;
     } else if (jsonValue.bool() != null) {
       return jsonValue.bool().value;
     } else if (jsonValue.nullValue() != null) {
-      return null;
+      return Null.getInstance();
     } else {
-      throw new ParseException(jsonValue,
-        "Unrecognized JSON parse node: " + jsonValue.getText());
+      startErrorMessage(jsonValue)
+        .append("Unrecognized JSON parse node: ")
+        .append(jsonValue.getText())
+        .append("\n");
+      return Null.getInstance();
     }
   }
 
