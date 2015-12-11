@@ -4,12 +4,8 @@ typeref FortuneTelling = union[
   /**
    * A fortune cookie.
    */
-  @tag("fortuneCookie")
   FortuneCookie,
 
-  @tag("magicEightBall")
   MagicEightBall,
-
-  @tag("string")
   string
 ]

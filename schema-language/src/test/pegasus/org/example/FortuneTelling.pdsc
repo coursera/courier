@@ -9,10 +9,5 @@
   ],
   "memberDocs": {
     "org.example.FortuneCookie": "A fortune cookie."
-  },
-  "tag": {
-    "org.example.FortuneCookie": "fortuneCookie",
-    "org.example.MagicEightBall": "magicEightBall",
-    "string": "string"
   }
 }

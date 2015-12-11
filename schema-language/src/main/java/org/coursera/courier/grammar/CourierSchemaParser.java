@@ -53,6 +53,8 @@ import org.coursera.courier.grammar.CourierParser.FieldDefaultContext;
 import org.coursera.courier.grammar.CourierParser.FieldSelectionContext;
 import org.coursera.courier.grammar.CourierParser.FieldSelectionElementContext;
 import org.coursera.courier.grammar.CourierParser.FixedDeclarationContext;
+import org.coursera.courier.grammar.CourierParser.ImportDeclarationContext;
+import org.coursera.courier.grammar.CourierParser.ImportDeclarationsContext;
 import org.coursera.courier.grammar.CourierParser.JsonValueContext;
 import org.coursera.courier.grammar.CourierParser.MapDeclarationContext;
 import org.coursera.courier.grammar.CourierParser.NamedTypeDeclarationContext;
@@ -66,8 +68,6 @@ import org.coursera.courier.grammar.CourierParser.TypeReferenceContext;
 import org.coursera.courier.grammar.CourierParser.TyperefDeclarationContext;
 import org.coursera.courier.grammar.CourierParser.UnionDeclarationContext;
 import org.coursera.courier.grammar.CourierParser.UnionMemberDeclarationContext;
-import org.coursera.courier.grammar.CourierParser.ImportDeclarationContext;
-import org.coursera.courier.grammar.CourierParser.ImportDeclarationsContext;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -75,14 +75,15 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Parses courier schema language source, generating Pegasus DataSchema types.
+ */
 public class CourierSchemaParser extends SchemaParser {
 
   private final List<DataSchema> topLevelSchemas;
@@ -292,7 +293,7 @@ public class CourierSchemaParser extends SchemaParser {
     } else if (typ.anonymousTypeDeclaration() != null) {
       AnonymousTypeDeclarationContext anon = typ.anonymousTypeDeclaration();
       if (anon.unionDeclaration() != null) {
-        return parseUnion(anon.unionDeclaration()).unionDataSchema;
+        return parseUnion(anon.unionDeclaration(), false).unionDataSchema;
       } else if (anon.mapDeclaration() != null) {
         return parseMap(anon.mapDeclaration());
       } else if (anon.arrayDeclaration() != null) {
@@ -332,7 +333,7 @@ public class CourierSchemaParser extends SchemaParser {
     bindNameToSchema(name, schema);
 
     schema.setSize(fixed.size, errorMessageBuilder());
-    setAnnotations(context, schema);
+    setProperties(context, schema);
     return schema;
   }
 
@@ -352,7 +353,7 @@ public class CourierSchemaParser extends SchemaParser {
     }
     schema.setSymbols(symbols, errorMessageBuilder());
 
-    Map<String, Object> props = setAnnotations(context, schema);
+    Map<String, Object> props = setProperties(context, schema);
 
     Map<String, String> symbolDocs = new HashMap<String, String>();
     for (EnumSymbolDeclarationContext symbolDecl : symbolDecls) {
@@ -375,7 +376,7 @@ public class CourierSchemaParser extends SchemaParser {
         } else {
           List<String> path = new ArrayList<>(prop.path);
           path.add(0, symbol);
-          addToDataMap(prop, symbolProperties, path, value);
+          addPropertiesAtPath(prop, symbolProperties, path, value);
         }
       }
     }
@@ -395,45 +396,65 @@ public class CourierSchemaParser extends SchemaParser {
   private TyperefDataSchema parseTyperef(
       NamedTypeDeclarationContext context,
       TyperefDeclarationContext typeref) throws ParseException {
+
+    UnionDataSchemaWithMetadata unionWithMetadata =
+      lookupUnionDataSchema(typeref.ref.typeDeclaration());
+    if (unionWithMetadata != null) {
+      return parseTyperefUnion(context, typeref, unionWithMetadata);
+    }
+
     Name name = toName(typeref.name);
     TyperefDataSchema schema = new TyperefDataSchema(name);
     bindNameToSchema(name, schema);
-    TypeAssignmentContext ref = typeref.ref;
-
-    UnionDataSchemaWithProperties unionWithProps =
-      lookupUnionDataSchema(ref.typeDeclaration());
-    DataSchema refSchema;
-    if (unionWithProps != null) {
-      refSchema = unionWithProps.unionDataSchema;
-      Map<String, Object> propsToAdd = new HashMap<String, Object>();
-      propsToAdd.putAll(schema.getProperties());
-      DataMap unionProps = unionWithProps.byNameByMemberProps;
-      if (unionProps != null && unionProps.size() > 0) {
-        propsToAdd.putAll(unionProps);
-      }
-
-      Map<String, String> unionSchemadoc = unionWithProps.schemadocByMember;
-      if (unionSchemadoc != null && unionSchemadoc.size() > 0) {
-        propsToAdd.put("memberDocs", new DataMap(unionSchemadoc));
-      }
-      schema.setProperties(propsToAdd);
-    } else {
-      refSchema = toDataSchema(typeref.ref);
-    }
+    DataSchema refSchema = toDataSchema(typeref.ref);
     schema.setReferencedType(refSchema);
 
-    setAnnotations(context, schema);
+    setProperties(context, schema);
     return schema;
   }
 
-  private UnionDataSchemaWithProperties lookupUnionDataSchema(
+  /**
+   * Unions within a typref receive special treatment. Metadata from the union, such as doc
+   * comments, may be written as properties in the union schema.
+   */
+  private TyperefDataSchema parseTyperefUnion(
+      NamedTypeDeclarationContext context,
+      TyperefDeclarationContext typeref,
+      UnionDataSchemaWithMetadata unionWithMetadata) throws ParseException {
+    Name name = toName(typeref.name);
+    TyperefDataSchema typerefSchema = new TyperefDataSchema(name);
+    bindNameToSchema(name, typerefSchema);
+
+    Map<String, Object> typerefProps = setProperties(context, typerefSchema);
+
+    DataSchema unionSchema = unionWithMetadata.unionDataSchema;
+    Map<String, UnionMemberMetadata> metadataByMember = unionWithMetadata.metadataByMember;
+    if (metadataByMember.size() > 0) {
+      DataMap schemadocMap = new DataMap();
+      for (Map.Entry<String, UnionMemberMetadata> entry: metadataByMember.entrySet()) {
+        String member = entry.getKey();
+        UnionMemberMetadata auxInfo = entry.getValue();
+        if (auxInfo.doc != null) {
+          schemadocMap.put(member, auxInfo.doc);
+        }
+      }
+      if (schemadocMap.size() > 0) {
+        typerefProps.put("memberDocs", schemadocMap);
+      }
+    }
+    typerefSchema.setProperties(typerefProps);
+    typerefSchema.setReferencedType(unionSchema);
+    return typerefSchema;
+  }
+
+  private UnionDataSchemaWithMetadata lookupUnionDataSchema(
       TypeDeclarationContext typeDecl) throws ParseException {
     if (typeDecl != null) {
       AnonymousTypeDeclarationContext anonDecl = typeDecl.anonymousTypeDeclaration();
       if (anonDecl != null) {
         UnionDeclarationContext unionDecl = anonDecl.unionDeclaration();
         if (unionDecl != null) {
-          return parseUnion(unionDecl);
+          return parseUnion(unionDecl, true);
         }
       }
     }
@@ -484,24 +505,43 @@ public class CourierSchemaParser extends SchemaParser {
     return schema;
   }
 
-  private static class UnionDataSchemaWithProperties {
+  /**
+   * A UnionDataSchema plus any doc comments (and, potentially properties, if we decide to support
+   * them) added to union members so that if the surrounding type is a typeref, it can track them.
+   *
+   * Note that all Courier schemas must be directly representable as .pdsc schemas.
+   * And unlike all other pegasus types, unions are represented as a JSON array in .pdsc, and as
+   * such, cannot have doc comment strings or properties added to them like can be done for typed
+   * defined with a JSON object. There would be no place to put them.
+   *
+   * However, being able to add doc comments (and potentially properties) to unions members is
+   * possible for typeref'd unions because the typeref can be used to hold the additional
+   * information.
+   */
+  private static class UnionDataSchemaWithMetadata {
     public final UnionDataSchema unionDataSchema;
-    public final Map<String, String> schemadocByMember;
-    public final DataMap byNameByMemberProps;
+    public final Map<String, UnionMemberMetadata> metadataByMember;
 
-    public UnionDataSchemaWithProperties(
+    public UnionDataSchemaWithMetadata(
         UnionDataSchema unionDataSchema,
-        Map<String, String> schemadocByMember,
-        DataMap byNameByMemberProps) {
+        Map<String, UnionMemberMetadata> metadataByMember) {
       this.unionDataSchema = unionDataSchema;
-      this.schemadocByMember = schemadocByMember;
-      this.byNameByMemberProps = byNameByMemberProps;
+      this.metadataByMember = metadataByMember;
     }
   }
 
-  private UnionDataSchemaWithProperties parseUnion(UnionDeclarationContext union) throws ParseException {
-    Map<String, String> schemadocByMember = new HashMap<String, String>();
-    DataMap byNameByMemberProps = new DataMap();
+  private static class UnionMemberMetadata {
+    public final String doc;
+
+    public UnionMemberMetadata(String doc) {
+      this.doc = doc;
+    }
+  }
+
+  private UnionDataSchemaWithMetadata parseUnion(
+      UnionDeclarationContext union, boolean withinTypref) throws ParseException {
+    Map<String, UnionMemberMetadata> metadataByMember =
+      new HashMap<String, UnionMemberMetadata>();
 
     UnionDataSchema schema = new UnionDataSchema();
     List<UnionMemberDeclarationContext> members = union.typeParams.members;
@@ -513,20 +553,24 @@ public class CourierSchemaParser extends SchemaParser {
         types.add(dataSchema);
         String memberKey = dataSchema.getUnionMemberKey();
         if (memberDecl.schemadoc() != null) {
-          String schemadoc = memberDecl.schemadoc().value;
-          schemadocByMember.put(memberKey, schemadoc);
-        }
-        if (memberDecl.props != null) {
-          for (PropDeclarationContext prop : memberDecl.props) {
-            List<String> pathWithMemberKey = new ArrayList<>(prop.path);
-            pathWithMemberKey.add(memberKey);
-            addToDataMap(prop, byNameByMemberProps, pathWithMemberKey, parsePropValue(prop));
+          if (!withinTypref) {
+            startErrorMessage(memberDecl.schemadoc())
+              .append("Doc comments are only allowed on union members of typeref'd unions.\n");
           }
+          String schemadoc = memberDecl.schemadoc().value;
+          metadataByMember.put(memberKey, new UnionMemberMetadata(schemadoc));
+        }
+        if (memberDecl.propDeclaration() != null) {
+          // TODO: For typeref'd unions, consider adding support for properties. A reasonable
+          // way to represent them in the typeref (that is consistent with enums) would need to
+          // be sorted out.
+          startErrorMessage(memberDecl.propDeclaration())
+            .append("Properties are not supported on union members.\n");
         }
       }
     }
     schema.setTypes(types, errorMessageBuilder());
-    return new UnionDataSchemaWithProperties(schema, schemadocByMember, byNameByMemberProps);
+    return new UnionDataSchemaWithMetadata(schema, metadataByMember);
   }
 
   private RecordDataSchema parseRecord(
@@ -539,12 +583,12 @@ public class CourierSchemaParser extends SchemaParser {
     FieldsAndIncludes fieldsAndIncludes = parseFields(schema, record.recordDecl);
     schema.setFields(fieldsAndIncludes.fields, errorMessageBuilder());
     schema.setInclude(fieldsAndIncludes.includes);
-    setAnnotations(context, schema);
+    setProperties(context, schema);
     topLevelSchemas.add(schema);
     return schema;
   }
 
-  private Map<String, Object> setAnnotations(
+  private Map<String, Object> setProperties(
       NamedTypeDeclarationContext source, NamedDataSchema target) throws ParseException {
 
     Map<String, Object> properties = new HashMap<String, Object>();
@@ -555,29 +599,73 @@ public class CourierSchemaParser extends SchemaParser {
     }
 
     for (PropDeclarationContext prop: source.props) {
-      addToProperties(properties, prop);
+      addPropertiesAtPath(properties, prop);
     }
 
     target.setProperties(properties);
     return properties;
   }
 
-  private void addToProperties(Map<String, Object> properties, PropDeclarationContext prop) throws ParseException{
-    addToDataMap(prop, properties, prop.path, parsePropValue(prop));
+  /**
+   * Adds additional properties to an existing properties map at the location identified by
+   * the given PropDeclarationContexts path.
+   *
+   * @param existingProperties provides the existing properties to add the additional properties to.
+   * @param prop provides the ANTLR property AST node to add the properties for.
+   */
+  private void addPropertiesAtPath(
+      Map<String, Object> existingProperties, PropDeclarationContext prop) throws ParseException{
+    addPropertiesAtPath(prop, existingProperties, prop.path, parsePropValue(prop));
   }
 
-  private void addToDataMap(
+  /**
+   * Adds additional properties to an existing properties map at the location identified by
+   * the given path.
+   *
+   * This allows for properties defined with paths such as:
+   *
+   * {@literal @}a.b = "x"
+   * {@literal @}a.c = "y"
+   *
+   * to be merged together into a property map like:
+   *
+   * { "a": { "b": "x", "c": "y" }}
+   *
+   * Examples:
+   *
+   * <pre>
+   * existing properties        | path  | value         | result
+   * ---------------------------|-------|---------------|----------------------------------------
+   * {}                         | a.b.c | true          | { "a": { "b": { "c": true } } }
+   * { "a": {} }                | a.b   | true          | { "a": { "b": true } }
+   * { "a": {} }                | a.b   | { "z": "x" }  | { "a": { "b": { "z": "x" } } }
+   * { "a": { "c": "x"}} }      | a.b   | true          | { "a": { "b": true, "c": "x"} } }
+   * { "a": { "b": "x"}} }      | a.b   | "y"           | ParseError "Conflicting property: a.b"
+   * </pre>
+   *
+   * The existing properties are traversed using the given path, adding DataMaps as needed to
+   * complete the traversal. If any of data elements in the existing properties along the path are
+   * not DataMaps, a ParseError is thrown to report the conflict.
+   *
+   * @param context provides the parsing context for error reporting purposes.
+   * @param existingProperties provides the properties to add to.
+   * @param path provides the path of the property to insert.
+   * @param value provides the value of the property to insert.
+   * @throws ParseException if the path of the properties to add conflicts with data already
+   * in the properties map or if a property is already exists at the path.
+   */
+  private void addPropertiesAtPath(
       ParserRuleContext context,
-      Map<String, Object> properties,
+      Map<String, Object> existingProperties,
       Iterable<String> path,
       Object value) throws ParseException {
-    Map<String, Object> current = properties;
+    Map<String, Object> current = existingProperties;
     Iterator<String> iter = path.iterator();
     while (iter.hasNext()) {
       String pathPart = iter.next();
       if (iter.hasNext()) {
-        if (properties.containsKey(pathPart)) {
-          Object val = properties.get(pathPart);
+        if (existingProperties.containsKey(pathPart)) {
+          Object val = existingProperties.get(pathPart);
           if (!(val instanceof DataMap)) {
             throw new ParseException(
               new ParseError(
@@ -636,7 +724,7 @@ public class CourierSchemaParser extends SchemaParser {
         }
 
         for (PropDeclarationContext prop : field.props) {
-          addToProperties(properties, prop);
+          addPropertiesAtPath(properties, prop);
         }
         if (field.doc != null) {
           result.setDoc(field.doc.value);
