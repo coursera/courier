@@ -40,5 +40,8 @@ class EnumGeneratorTest extends GeneratorTest with SchemaFixtures {
       case color: String => color
     }
     assert(maybeColor === Some("yellow"))
+
+    val orange = EnumProperties.fromString("ORANGE")
+    assert(Set(EnumProperties.BANANA, EnumProperties.ORANGE).contains(orange))
   }
 }

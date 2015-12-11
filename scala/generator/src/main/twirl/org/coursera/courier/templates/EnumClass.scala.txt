@@ -33,8 +33,8 @@
    * Converts a string to an enumeration value. If the string does not match
    * any of the enumeration values, returns the \$UNKNOWN enumeration value.
    */
-  def fromString(s: String): Value = {
-    values.find(_.toString == s).getOrElse($UNKNOWN)
+  def fromString(s: String): TemplateValue = {
+    values.find(_.toString == s).map(_.asInstanceOf[TemplateValue]).getOrElse($UNKNOWN)
   }
 
   val SCHEMA = DataTemplateUtil.parseSchema(@("\"\"\"" + SchemaToJsonEncoder.schemaToJson(enum.enumSchema, JsonBuilder.Pretty.COMPACT) + "\"\"\"")).asInstanceOf[EnumDataSchema]
