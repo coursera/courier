@@ -20,6 +20,12 @@ Installation
 
 The courier plugin is available via the JetBrains plugin repository: https://plugins.jetbrains.com/plugin/8005?pr=
 
+It can be installed directly from IntelliJ:
+
+```
+Preferences -> Plugins -> Browse Repositories... -> Search for "Courier schema language" -> Click install
+```
+
 TODO
 ----
 
