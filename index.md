@@ -107,15 +107,18 @@ Getting Started
 
 ### IntelliJ Plugin
 
-For full IDE support, including syntax highlighting, syntax error highlighting,
+Courier has full IntelliJ IDE support, including syntax highlighting, syntax error highlighting,
 code formatting, Find/follow references, auto-complete, import statement
 generation, find usages, New file templates: "New" > "Courier Data Schema", ...
 
-To install directly from IntelliJ:
+**Installation**
 
-```
-Preferences -> Plugins -> Browse Repositories... -> Search for "Courier schema language" -> Install
-```
+In IntelliJ do:
+
+* Go to *Preferences -> Plugins -> Browse Repositories...*
+* Search for *"Courier schema language"*
+* Click *Install*
+
 
 ### Scala (SBT)
 For SBT, add the generator dependencies to your SBT plugins:
