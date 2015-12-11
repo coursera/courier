@@ -105,6 +105,18 @@ IDE Support:
 Getting Started
 ---------------
 
+### IntelliJ Plugin
+
+For full IDE support, including syntax highlighting, syntax error highlighting,
+code formatting, Find/follow references, auto-complete, import statement
+generation, find usages, New file templates: "New" > "Courier Data Schema", ...
+
+To install directly from IntelliJ:
+
+```
+Preferences -> Plugins -> Browse Repositories... -> Search for "Courier schema language" -> Install
+```
+
 ### Scala (SBT)
 For SBT, add the generator dependencies to your SBT plugins:
 
