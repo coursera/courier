@@ -15,6 +15,6 @@
     }
   ],
   "swift": {
-    "equatable": true
+    "omit": true
   }
 }

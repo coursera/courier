@@ -371,11 +371,17 @@ public class CourierTemplateSpecGenerator {
   private ClassTemplateSpec processSchema(DataSchema schema, ClassTemplateSpec enclosingClass, String memberName)
   {
     ClassTemplateSpec result = null;
+    TyperefDataSchema originalTyperefSchema = null;
 
     final CustomInfoSpec customInfo = getImmediateCustomInfo(schema);
     while (schema.getType() == DataSchema.Type.TYPEREF)
     {
       final TyperefDataSchema typerefSchema = (TyperefDataSchema) schema;
+      if (originalTyperefSchema == null)
+      {
+        originalTyperefSchema = typerefSchema;
+      }
+
       final ClassTemplateSpec found = _schemaToClassMap.get(schema);
       if (found == null)
       {
@@ -434,6 +440,7 @@ public class CourierTemplateSpecGenerator {
       throw unrecognizedSchemaType(enclosingClass, memberName, schema);
     }
 
+    result.setOriginalTyperefSchema(originalTyperefSchema);
     return result;
   }
 

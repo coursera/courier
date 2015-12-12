@@ -1,9 +1,0 @@
-{
-  "value": {
-    "typeName": "message",
-    "definition": {
-      "title": "title",
-      "body": "Hello, GSON."
-    }
-  }
-}

@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public enum TypedDefinition: Serializable {
+public enum TypedDefinition: Serializable, Equatable {
     
     case NoteMember(Note)
     
@@ -34,3 +34,15 @@ public enum TypedDefinition: Serializable {
     }
 }
 
+public func ==(lhs: TypedDefinition, rhs: TypedDefinition) -> Bool {
+    switch (lhs, rhs) {
+    case (let .NoteMember(lhs), let .NoteMember(rhs)):
+        return lhs == rhs
+    case (let .MessageMember(lhs), let .MessageMember(rhs)):
+        return lhs == rhs
+    case (let .UNKNOWN$(lhs), let .UNKNOWN$(rhs)):
+        return JSON(lhs) == JSON(rhs)
+    default:
+        return false
+    }
+}

@@ -53,7 +53,8 @@ object TestSchema {
     TestSchema(schema, resolver, location)
   }
 
-  val pegasusPath = new File(sys.props("project.dir") + "/src/test/pegasus")
+  val pegasusPath = new File(sys.props("referencesuite.srcdir") +
+    File.separator + "main" + File.separator + "courier")
   val fileResolver = new FileDataSchemaResolver(
     SchemaParserFactory.instance, pegasusPath.getAbsolutePath)
 

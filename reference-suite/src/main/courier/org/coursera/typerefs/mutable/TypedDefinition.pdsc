@@ -6,5 +6,8 @@
   "typedDefinition": {
     "org.coursera.records.mutable.Note": "note",
     "org.coursera.records.mutable.Message": "message"
+  },
+  "swift": {
+    "omit": true
   }
 }

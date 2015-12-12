@@ -81,7 +81,10 @@ public class ConversionTest {
       this.location = location;
     }
 
-    private static File pegasusPath = new File(System.getProperty("project.dir") + "/src/test/pegasus");
+    private static File pegasusPath =
+      new File(System.getProperty("project.dir")  +
+      File.separator + "src" + File.separator + "test" + File.separator + "pegasus");
+
     private static FileDataSchemaResolver pegasusFileResolver = new FileDataSchemaResolver(
       SchemaParserFactory.instance(), pegasusPath.getAbsolutePath());
 
@@ -89,12 +92,14 @@ public class ConversionTest {
       StringBuilder why = new StringBuilder();
       NamedDataSchema schema = pegasusFileResolver.findDataSchema(schemaName, why);
       FileDataSchemaLocation location = new FileDataSchemaLocation(
-        new File(pegasusPath + "/" + schemaName.replace('.', '/') + ".pdsc"));
+        new File(pegasusPath + File.separator + schemaName.replace('.', File.separatorChar) + ".pdsc"));
       Assert.assertTrue(why.toString(), schema != null);
       return new TestSchema(schema, pegasusFileResolver, location);
     }
 
-    private static File courierPath = new File(System.getProperty("project.dir") + "/src/test/courier");
+    private static File courierPath =
+      new File(System.getProperty("project.dir") +
+      File.separator + "src" + File.separator + "test" + File.separator + "courier");
 
     private static FileDataSchemaResolver courierFileResolver =
       new FileDataSchemaResolver(

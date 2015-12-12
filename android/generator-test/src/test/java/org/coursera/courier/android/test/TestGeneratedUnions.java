@@ -36,7 +36,7 @@ public class TestGeneratedUnions extends JsonTest {
     TypedDefinition TypedDefinition = record.value;
     TypedDefinition.MessageMember member = (TypedDefinition.MessageMember) TypedDefinition;
     Assert.assertEquals(member.definition.title, "title");
-    Assert.assertEquals(member.definition.body, "Hello, GSON.");
+    Assert.assertEquals(member.definition.body, "Hello, Courier.");
 
     TypedDefinition.NoteMember noteMember = new TypedDefinition.NoteMember(new Note("text"));
 
@@ -54,7 +54,7 @@ public class TestGeneratedUnions extends JsonTest {
     FlatTypedDefinition TypedDefinition = record.value;
     FlatTypedDefinition.MessageMember member = (FlatTypedDefinition.MessageMember) TypedDefinition;
     Assert.assertEquals(member.title, "title");
-    Assert.assertEquals(member.body, "Hello, GSON.");
+    Assert.assertEquals(member.body, "Hello, Courier.");
 
     FlatTypedDefinition.NoteMember noteMember = new FlatTypedDefinition.NoteMember("text");
     String serialized = gson.toJson(noteMember);
@@ -71,7 +71,7 @@ public class TestGeneratedUnions extends JsonTest {
     Union Union = record.value;
     Union.MessageMember member = (Union.MessageMember) Union;
     Assert.assertEquals(member.member.title, "title");
-    Assert.assertEquals(member.member.body, "Hello, GSON.");
+    Assert.assertEquals(member.member.body, "Hello, Courier.");
 
 
     Union.NoteMember Member1 = new Union.NoteMember(new Note("text"));

@@ -3,7 +3,7 @@
     "typeName": "message",
     "definition": {
       "title": "title",
-      "body": "Hello, Swift."
+      "body": "Hello, Courier."
     }
   }
 }

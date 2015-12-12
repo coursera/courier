@@ -3,6 +3,7 @@ package org.coursera.courier.swift;
 import com.linkedin.data.DataMap;
 import com.linkedin.data.schema.DataSchema;
 import com.linkedin.pegasus.generator.spec.ClassTemplateSpec;
+import com.linkedin.pegasus.generator.spec.UnionTemplateSpec;
 
 public class GlobalConfig {
   public final SwiftProperties defaults;
@@ -16,6 +17,10 @@ public class GlobalConfig {
 
   public SwiftProperties lookupSwiftProperties(ClassTemplateSpec templateSpec) {
     DataSchema schema = templateSpec.getSchema();
+    if (templateSpec instanceof UnionTemplateSpec && templateSpec.getOriginalTyperefSchema() != null) {
+      schema = templateSpec.getOriginalTyperefSchema();
+    }
+
     if (schema == null) {
       return defaults;
     } else {

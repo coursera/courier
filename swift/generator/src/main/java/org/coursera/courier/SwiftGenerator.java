@@ -133,7 +133,6 @@ public class SwiftGenerator implements PegasusCodeGenerator {
         new SwiftCompilationUnit(
             templateSpec.getClassName(), "");
     code = formatter.format(code);
-
     return new GeneratedCode(compilationUnit, code);
   }
 

@@ -1,8 +1,0 @@
-{
-  "value": {
-    "org.coursera.records.Message": {
-      "title": "title",
-      "body": "Hello, GSON."
-    }
-  }
-}

@@ -228,6 +228,9 @@ object Courier extends Build with OverridablePublishSettings {
     testOptions in Test += Tests.Argument(TestFrameworks.JUnit, "-v"),
     testOptions in Test += Tests.Setup { () =>
       System.setProperty("project.dir", baseDirectory.value.getAbsolutePath)
+      System.setProperty(
+        "referencesuite.srcdir",
+        (sourceDirectory in referenceSuite).value.getAbsolutePath)
     })
 
   // TODO(jbetz): Once SBT supports scala 2.11, we can enable .aggregate for all
@@ -400,7 +403,6 @@ object Courier extends Build with OverridablePublishSettings {
       classpath: Seq[File],
       log: Logger): Seq[File] = {
     IO.withTemporaryFile("courier", "output") { tmpFile =>
-      System.err.println("dest: " + dst.getAbsolutePath)
       val outStream = new java.io.FileOutputStream(tmpFile)
       try {
         val args = Seq(dst.toString, src.toString, src.toString)

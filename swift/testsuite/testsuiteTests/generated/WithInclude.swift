@@ -3,28 +3,31 @@ import SwiftyJSON
 
 public struct WithInclude: Serializable {
     
-    public let find: String?
+    /**
+        A simple field
+    */
+    public let message: String?
     
     public let direct: Int?
     
     public init(
-        find: String?,
+        message: String? = nil,
         direct: Int?
     ) {
-        self.find = find
+        self.message = message
         self.direct = direct
     }
     
     public static func readJSON(json: JSON) throws -> WithInclude {
         return WithInclude(
-            find: try json["find"].optional(.String).string,
+            message: try json["message"].optional(.String).string,
             direct: try json["direct"].optional(.Number).int
         )
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]
-        if let find = self.find {
-            dict["find"] = find
+        if let message = self.message {
+            dict["message"] = message
         }
         if let direct = self.direct {
             dict["direct"] = direct

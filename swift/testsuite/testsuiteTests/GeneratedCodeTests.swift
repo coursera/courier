@@ -22,7 +22,7 @@ import Foundation
 
 class GeneratedCodeTests: XCTestCase {
     // TODO(jbetz): Locate a xcode variable for the project root, use that instead of the /base/coursera path here.
-    let jsonDir = NSProcessInfo.processInfo().environment["HOME"]! + "/base/coursera/courier/swift/generator-test/src/test/resources/test/records/"
+    let jsonDir = NSProcessInfo.processInfo().environment["HOME"]! + "/base/coursera/courier/reference-suite/src/main/json/"
     
     func testWithComplexTypesMap() {
         let json = try! jsonFile("WithComplexTypesMap.json");
@@ -76,7 +76,7 @@ class GeneratedCodeTests: XCTestCase {
         let deserialized = try! WithFlatTypedDefinition.readJSON(json);
         
         let expected = WithFlatTypedDefinition(
-            value: .MessageMember(Message(title: "title", body: "Hello, Swift.")))
+            value: .MessageMember(Message(title: "title", body: "Hello, Courier.")))
         
         XCTAssertEqual(deserialized, expected)
         
@@ -149,7 +149,7 @@ class GeneratedCodeTests: XCTestCase {
         let deserialized = try! WithTypedDefinition.readJSON(json);
         
         let expected = WithTypedDefinition(
-            value: .MessageMember(Message(title: "title", body: "Hello, Swift.")))
+            value: .MessageMember(Message(title: "title", body: "Hello, Courier.")))
         XCTAssertEqual(deserialized, expected)
         
         let serialized = deserialized.writeJSON();
@@ -170,7 +170,7 @@ class GeneratedCodeTests: XCTestCase {
         let json = try! jsonFile("WithUnion.json");
         let deserialized = try! WithUnion.readJSON(json);
         
-        let expected = WithUnion(value: .MessageMember(Message(title: "title", body: "Hello, Swift.")))
+        let expected = WithUnion(value: .MessageMember(Message(title: "title", body: "Hello, Courier.")))
         XCTAssertEqual(deserialized, expected)
         
         let serialized = deserialized.writeJSON();
