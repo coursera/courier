@@ -6,7 +6,7 @@ public struct WithOptionalPrimitiveCustomTypes: Serializable {
     public let intField: Int?
     
     public init(
-        intField: Int?
+        intField: Int? = nil
     ) {
         self.intField = intField
     }

@@ -17,6 +17,8 @@
 package org.coursera.courier.generator
 
 import org.coursera.arrays.WithCustomTypesArray
+import org.coursera.arrays.WithCustomTypesArrayUnion
+import org.coursera.arrays.WithCustomTypesArrayUnionArray
 import org.coursera.arrays.WithPrimitivesArray
 import org.coursera.arrays.WithRecordArray
 import org.coursera.courier.data.BooleanArray
@@ -27,7 +29,6 @@ import org.coursera.courier.data.IntArray
 import org.coursera.courier.data.LongArray
 import org.coursera.courier.data.StringArray
 import org.coursera.courier.generator.customtypes.CustomInt
-import org.coursera.courier.templates.DataTemplates
 import org.coursera.courier.templates.DataTemplates.DataConversion
 import org.coursera.customtypes.CustomIntArray
 import org.coursera.enums.Fruits
@@ -94,15 +95,14 @@ class ArrayGeneratorTest extends GeneratorTest with SchemaFixtures {
 
   @Test
   def testWithCustomTypesArray(): Unit = {
-    import WithCustomTypesArray._
     val original = WithCustomTypesArray(
       CustomIntArray(CustomInt(1), CustomInt(2), CustomInt(3)),
       SimpleArrayArray(SimpleArray(Simple(Some("a1")))),
       SimpleMapArray(SimpleMap("a" -> Simple(Some("m1")))),
-      UnionsArray(
-        Unions.IntMember(1),
-        Unions.StringMember("str"),
-        Unions.SimpleMember(Simple(Some("u1")))),
+      WithCustomTypesArrayUnionArray(
+        WithCustomTypesArrayUnion.IntMember(1),
+        WithCustomTypesArrayUnion.StringMember("str"),
+        WithCustomTypesArrayUnion.SimpleMember(Simple(Some("u1")))),
       Fixed8Array(Fixed8(bytesFixed8))
     )
     val roundTripped =WithCustomTypesArray(roundTrip(original.data()), DataConversion.SetReadOnly)

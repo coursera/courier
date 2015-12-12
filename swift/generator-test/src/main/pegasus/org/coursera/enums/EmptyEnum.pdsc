@@ -1,6 +1,0 @@
-{
-  "type" : "enum",
-  "name" : "EmptyEnum",
-  "namespace" : "org.coursera.enums",
-  "symbols" : []
-}

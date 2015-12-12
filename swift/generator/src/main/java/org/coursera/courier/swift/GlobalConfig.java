@@ -7,8 +7,11 @@ import com.linkedin.pegasus.generator.spec.ClassTemplateSpec;
 public class GlobalConfig {
   public final SwiftProperties defaults;
 
-  public GlobalConfig(SwiftProperties.Optionality defaultOptionality, boolean defaultEquatable) {
-    defaults = new SwiftProperties(defaultOptionality, defaultEquatable);
+  public GlobalConfig(
+      SwiftProperties.Optionality defaultOptionality,
+      boolean defaultEquatable,
+      boolean defaultOmit) {
+    defaults = new SwiftProperties(defaultOptionality, defaultEquatable, defaultOmit);
   }
 
   public SwiftProperties lookupSwiftProperties(ClassTemplateSpec templateSpec) {
@@ -30,7 +33,10 @@ public class GlobalConfig {
       Boolean maybeEquatable = properties.getBoolean("equatable");
       boolean equatable =  maybeEquatable == null ? defaults.equatable : maybeEquatable;
 
-      return new SwiftProperties(optionality, equatable);
+      Boolean maybeOmit = properties.getBoolean("omit");
+      boolean omit = maybeOmit == null ? defaults.omit : maybeOmit;
+
+      return new SwiftProperties(optionality, equatable, omit);
     }
   }
 }

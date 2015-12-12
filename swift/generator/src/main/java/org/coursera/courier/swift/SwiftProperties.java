@@ -60,10 +60,12 @@ public class SwiftProperties {
 
   public final Optionality optionality;
   public final boolean equatable;
+  public final boolean omit;
 
-  public SwiftProperties(Optionality optionality, boolean equatable) {
+  public SwiftProperties(Optionality optionality, boolean equatable, boolean omit) {
     this.optionality = optionality;
     this.equatable = equatable;
+    this.omit = omit;
   }
 
 }

@@ -25,6 +25,7 @@ import org.coursera.enums.Fruits
 import org.coursera.records.test.InlineOptionalRecord
 import org.coursera.records.test.InlineRecord
 import org.coursera.records.test.Simple
+import org.coursera.records.test.SimpleMap
 import org.coursera.records.test.WithComplexTypeDefaults
 import org.coursera.records.test.WithComplexTypes
 import org.coursera.records.test.WithInlineRecord
@@ -310,11 +311,12 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures {
       Union.IntMember(1),
       IntArray(1),
       IntMap("a" -> 1),
+      SimpleMap("a" -> Simple(Some("message"))),
       CustomInt(1))
     val roundTripped = WithComplexTypes(
       roundTrip(original.data()), DataConversion.SetReadOnly)
-    val WithComplexTypes(simple, fruit, union, array, map, custom) = original
-    val reconstructed = WithComplexTypes(simple, fruit, union, array, map, custom)
+    val WithComplexTypes(simple, fruit, union, array, map, complexMap, custom) = original
+    val reconstructed = WithComplexTypes(simple, fruit, union, array, map, complexMap, custom)
 
     assert(original === roundTripped)
     assert(original === reconstructed)
@@ -336,11 +338,12 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures {
       1,
       Seq(1),
       Map("a" -> 1),
+      Map("a" -> Simple(Some("message"))),
       CustomInt(1))
     val roundTripped = WithComplexTypes(
       roundTrip(original.data()), DataConversion.SetReadOnly)
-    val WithComplexTypes(simple, fruit, union, array, map, custom) = original
-    val reconstructed = WithComplexTypes(simple, fruit, union, array, map, custom)
+    val WithComplexTypes(simple, fruit, union, array, map, complexMap, custom) = original
+    val reconstructed = WithComplexTypes(simple, fruit, union, array, map, complexMap, custom)
 
     assert(original === roundTripped)
     assert(original === reconstructed)

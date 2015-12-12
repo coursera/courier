@@ -21,9 +21,9 @@ public struct WithPrimitiveDefaults: Serializable {
     
     public init(
         intWithDefault: Int? = 1,
-        longWithDefault: Int? = 2,
+        longWithDefault: Int? = 3000000000,
         floatWithDefault: Float? = 3.3,
-        doubleWithDefault: Double? = 4.4,
+        doubleWithDefault: Double? = 4.4E38,
         booleanWithDefault: Bool? = true,
         stringWithDefault: String? = "DEFAULT",
         bytesWithDefault: String? = "",

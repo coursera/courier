@@ -1,0 +1,12 @@
+{
+  "name": "Empty",
+  "type": "record",
+  "namespace": "org.coursera.records.mutable",
+  "fields": [],
+  "android": {
+    "mutability": "MUTABLE"
+  },
+  "swift": {
+    "omit": true
+  }
+}

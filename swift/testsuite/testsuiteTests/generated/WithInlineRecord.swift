@@ -9,7 +9,7 @@ public struct WithInlineRecord: Serializable {
     
     public init(
         inline: InlineRecord?,
-        inlineOptional: InlineOptionalRecord?
+        inlineOptional: InlineOptionalRecord? = nil
     ) {
         self.inline = inline
         self.inlineOptional = inlineOptional

@@ -1,0 +1,17 @@
+{
+  "name": "WithTypedDefinition",
+  "type": "record",
+  "namespace": "org.coursera.records.mutable",
+  "fields": [
+    {
+      "name": "value",
+      "type": "org.coursera.typerefs.mutable.TypedDefinition"
+    }
+  ],
+  "android": {
+    "mutability": "MUTABLE"
+  },
+  "swift": {
+    "omit": true
+  }
+}

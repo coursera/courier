@@ -22,7 +22,7 @@ import Foundation
 
 class GeneratedCodeTests: XCTestCase {
     // TODO(jbetz): Locate a xcode variable for the project root, use that instead of the /base/coursera path here.
-    let jsonDir = NSProcessInfo.processInfo().environment["HOME"]! + "/base/coursera/courier/swift/generator/src/test/resources/test/records/"
+    let jsonDir = NSProcessInfo.processInfo().environment["HOME"]! + "/base/coursera/courier/swift/generator-test/src/test/resources/test/records/"
     
     func testWithComplexTypesMap() {
         let json = try! jsonFile("WithComplexTypesMap.json");

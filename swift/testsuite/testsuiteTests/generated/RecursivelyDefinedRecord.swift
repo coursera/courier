@@ -6,7 +6,7 @@ public struct RecursivelyDefinedRecord: Serializable {
     public let `self`: RecursivelyDefinedRecord?
     
     public init(
-        `self`: RecursivelyDefinedRecord?
+        `self`: RecursivelyDefinedRecord? = nil
     ) {
         self.`self` = `self`
     }

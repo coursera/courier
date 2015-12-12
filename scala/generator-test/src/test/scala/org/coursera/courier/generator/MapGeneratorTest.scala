@@ -45,6 +45,8 @@ import org.coursera.fixed.Fixed8ToStringMap
 import org.coursera.maps.RecordKey
 import org.coursera.maps.RecordKeyToStringMap
 import org.coursera.maps.WithComplexTypesMap
+import org.coursera.maps.WithComplexTypesMapUnion
+import org.coursera.maps.WithComplexTypesMapUnionMap
 import org.coursera.maps.WithCustomTypesMap
 import org.coursera.maps.WithPrimitivesMap
 import org.coursera.maps.WithTypedKeyMap
@@ -63,13 +65,14 @@ class MapGeneratorTest extends GeneratorTest with SchemaFixtures {
 
   @Test
   def testWithComplexTypesMap(): Unit = {
-    import WithComplexTypesMap._
     val original = WithComplexTypesMap(
       EmptyMap("a" -> Empty(), "b" -> Empty(), "c" -> Empty()),
       FruitsMap("a" -> Fruits.APPLE, "b" -> Fruits.BANANA, "c" -> Fruits.ORANGE),
       SimpleArrayMap("a" -> SimpleArray(Simple(Some("v1")), Simple(Some("v2")))),
       SimpleMapMap("o1" -> SimpleMap("i1" -> Simple(Some("o1i1")), "i2" -> Simple(Some("o1i2")))),
-      UnionsMap("a" -> Unions.IntMember(1), "b" -> Unions.StringMember("u1")),
+      WithComplexTypesMapUnionMap(
+        "a" -> WithComplexTypesMapUnion.IntMember(1),
+        "b" -> WithComplexTypesMapUnion.StringMember("u1")),
       Fixed8Map("a" -> Fixed8(bytesFixed8)))
     val roundTripped = WithComplexTypesMap(roundTrip(original.data()), DataConversion.SetReadOnly)
     assert(original === roundTripped)

@@ -18,13 +18,13 @@ public struct WithOptionalPrimitives: Serializable {
     public let bytesField: String?
     
     public init(
-        intField: Int?,
-        longField: Int?,
-        floatField: Float?,
-        doubleField: Double?,
-        booleanField: Bool?,
-        stringField: String?,
-        bytesField: String?
+        intField: Int? = nil,
+        longField: Int? = nil,
+        floatField: Float? = nil,
+        doubleField: Double? = nil,
+        booleanField: Bool? = nil,
+        stringField: String? = nil,
+        bytesField: String? = nil
     ) {
         self.intField = intField
         self.longField = longField

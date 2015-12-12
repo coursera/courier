@@ -1,32 +1,26 @@
 import Foundation
 import SwiftyJSON
 
-public struct WithDateTime: Serializable, Equatable {
+public struct WithDateTime: Serializable {
     
-    public let createdAt: NSDate?
+    public let time: NSDate?
     
     public init(
-        createdAt: NSDate?
+        time: NSDate?
     ) {
-        self.createdAt = createdAt
+        self.time = time
     }
     
     public static func readJSON(json: JSON) throws -> WithDateTime {
         return WithDateTime(
-            createdAt: try json["createdAt"].optional(.Number).int.map { try NSDateCoercer.coerceInput($0) }
+            time: try json["time"].optional(.Number).int.map { try NSDateCoercer.coerceInput($0) }
         )
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]
-        if let createdAt = self.createdAt {
-            dict["createdAt"] = NSDateCoercer.coerceOutput(createdAt)
+        if let time = self.time {
+            dict["time"] = NSDateCoercer.coerceOutput(time)
         }
         return dict
     }
-}
-public func ==(lhs: WithDateTime, rhs: WithDateTime) -> Bool {
-    return (
-        (lhs.createdAt == nil ? (rhs.createdAt == nil) : lhs.createdAt! == rhs.createdAt!) &&
-        true
-    )
 }

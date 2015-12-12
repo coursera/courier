@@ -12,7 +12,7 @@ public struct Simple: Serializable, Equatable {
     public let message: String?
     
     public init(
-        message: String?
+        message: String? = nil
     ) {
         self.message = message
     }

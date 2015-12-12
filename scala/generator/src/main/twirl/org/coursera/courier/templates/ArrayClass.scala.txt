@@ -22,7 +22,7 @@
   import scala.collection.GenTraversable
   import scala.collection.JavaConverters._
   import scala.collection.generic.CanBuildFrom
-  import scala.collection.mutable
+  import scala.collection.mutable.Builder
   import com.linkedin.data.template.Custom
   import org.coursera.courier.coercers.SingleElementCaseClassCoercer
   import scala.language.implicitConversions
@@ -111,7 +111,7 @@ object @(array.scalaType) {
     def apply() = newBuilder
   }
 
-  class DataBuilder(initial: @(array.scalaType)) extends mutable.Builder[@(array.itemClass.scalaTypeFullname), @(array.scalaType)] {
+  class DataBuilder(initial: @(array.scalaType)) extends Builder[@(array.itemClass.scalaTypeFullname), @(array.scalaType)] {
     def this() = this(new @(array.scalaType)(new DataList()))
 
     val elems = new DataList(initial.data())

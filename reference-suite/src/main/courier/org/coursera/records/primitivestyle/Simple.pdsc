@@ -1,0 +1,22 @@
+{
+  "type": "record",
+  "name": "Simple",
+  "doc": "A simple record",
+  "namespace": "org.coursera.records.primitivestyle",
+  "fields": [
+    {
+      "name": "message",
+      "type": "string",
+      "optional": true,
+      "doc": "A simple field"
+    }
+  ],
+  "android": {
+    "mutability": "MUTABLE",
+    "optionality": "BASIC",
+    "arrayStyle": "ARRAYS"
+  },
+  "swift": {
+    "omit": true
+  }
+}

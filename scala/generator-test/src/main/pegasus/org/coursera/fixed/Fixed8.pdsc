@@ -1,6 +1,0 @@
-{
-  "type" : "fixed",
-  "name" : "Fixed8",
-  "namespace": "org.coursera.fixed",
-  "size" : 8
-}

@@ -20,14 +20,14 @@ public struct WithOptionalPrimitiveDefaults: Serializable {
     public let enumWithDefault: Fruits?
     
     public init(
-        intWithDefault: Int? = 1,
-        longWithDefault: Int? = 2,
-        floatWithDefault: Float? = 3.3,
-        doubleWithDefault: Double? = 4.4,
-        booleanWithDefault: Bool? = true,
-        stringWithDefault: String? = "DEFAULT",
-        bytesWithDefault: String? = "",
-        enumWithDefault: Fruits? = .APPLE
+        intWithDefault: Int? = nil,
+        longWithDefault: Int? = nil,
+        floatWithDefault: Float? = nil,
+        doubleWithDefault: Double? = nil,
+        booleanWithDefault: Bool? = nil,
+        stringWithDefault: String? = nil,
+        bytesWithDefault: String? = nil,
+        enumWithDefault: Fruits? = nil
     ) {
         self.intWithDefault = intWithDefault
         self.longWithDefault = longWithDefault

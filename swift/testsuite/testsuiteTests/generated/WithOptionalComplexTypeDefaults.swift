@@ -16,12 +16,12 @@ public struct WithOptionalComplexTypeDefaults: Serializable {
     public let custom: CustomInt?
     
     public init(
-        record: Simple? = Simple(message: "defaults!"),
-        `enum`: Fruits? = .APPLE,
-        union: Union? = .IntMember(1),
-        array: [Int]? = [1],
-        map: [String: Int]? = ["a": 1],
-        custom: CustomInt? = try! CustomIntCoercer.coerceInput(1)
+        record: Simple? = nil,
+        `enum`: Fruits? = nil,
+        union: Union? = nil,
+        array: [Int]? = nil,
+        map: [String: Int]? = nil,
+        custom: CustomInt? = nil
     ) {
         self.record = record
         self.`enum` = `enum`

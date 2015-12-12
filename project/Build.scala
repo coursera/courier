@@ -139,8 +139,12 @@ object Courier extends Build with OverridablePublishSettings {
       name := "courier-generator-test",
       forkedVmCourierMainClass := "org.coursera.courier.generator.ScalaDataTemplateGenerator",
       forkedVmCourierClasspath := (dependencyClasspath in Runtime in scalaGenerator).value.files,
+      forkedVmSourceDirectory := (sourceDirectory in referenceSuite).value / "main" / "courier",
+      forkedVmCourierDest :=
+        target.value / s"scala-${scalaBinaryVersion.value}" / "courier",
       packagedArtifacts := Map.empty, // do not publish
       libraryDependencies ++= Seq(
+        ExternalDependencies.JodaTime.jodaTime,
         ExternalDependencies.JUnit.junit,
         ExternalDependencies.Scalatest.scalatest))
 
@@ -163,7 +167,12 @@ object Courier extends Build with OverridablePublishSettings {
       name := "courier-android-generator-test",
       forkedVmCourierMainClass := "org.coursera.courier.AndroidGenerator",
       forkedVmCourierClasspath := (dependencyClasspath in Runtime in androidGenerator).value.files,
+      forkedVmSourceDirectory := (sourceDirectory in referenceSuite).value / "main" / "courier",
+      forkedVmCourierDest :=
+        target.value / s"scala-${scalaBinaryVersion.value}" / "courier",
       packagedArtifacts := Map.empty) // do not publish
+
+  lazy val referenceSuite = Project(id = "reference-suite", base = file("reference-suite"))
 
   lazy val androidRuntime = Project(id = "android-runtime", base = file("android") / "runtime")
     .settings(plainJavaProjectSettings)
@@ -193,6 +202,8 @@ object Courier extends Build with OverridablePublishSettings {
       name := "courier-swift-generator-test",
       forkedVmCourierMainClass := "org.coursera.courier.SwiftGenerator",
       forkedVmCourierClasspath := (dependencyClasspath in Runtime in swiftGenerator).value.files,
+      forkedVmSourceDirectory := (sourceDirectory in referenceSuite).value / "main" / "courier",
+      forkedVmCourierDest := file("swift") / "testsuite" / "testsuiteTests" / "generated",
       packagedArtifacts := Map.empty, // do not publish
       libraryDependencies ++= Seq(
         ExternalDependencies.JodaTime.jodaTime))
@@ -359,12 +370,14 @@ object Courier extends Build with OverridablePublishSettings {
   lazy val forkedVmCourierClasspath = taskKey[Seq[File]](
     "Classpath to use when running the generator.")
 
+  lazy val forkedVmSourceDirectory = settingKey[File]("directory containing .courier and .pdsc files")
+
   val forkedVmCourierGeneratorSettings = Seq(
-    forkedVmCourierDest :=
-      target.value / s"scala-${scalaBinaryVersion.value}" / "courier",
+
+    // TODO: for android and swift, don't generate into a scala-x.xx dir
     forkedVmCourierGenerator in Compile := {
       val mainClass = forkedVmCourierMainClass.value
-      val src = sourceDirectory.value / "main" / "pegasus"
+      val src = forkedVmSourceDirectory.value
       val dst = forkedVmCourierDest.value
       val classpath = forkedVmCourierClasspath.value
       streams.value.log.info("Generating courier bindings...")
@@ -387,6 +400,7 @@ object Courier extends Build with OverridablePublishSettings {
       classpath: Seq[File],
       log: Logger): Seq[File] = {
     IO.withTemporaryFile("courier", "output") { tmpFile =>
+      System.err.println("dest: " + dst.getAbsolutePath)
       val outStream = new java.io.FileOutputStream(tmpFile)
       try {
         val args = Seq(dst.toString, src.toString, src.toString)

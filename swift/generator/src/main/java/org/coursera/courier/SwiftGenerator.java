@@ -34,6 +34,7 @@ import org.coursera.courier.swift.SwiftProperties;
 import org.coursera.courier.swift.SwiftSyntax;
 import org.coursera.courier.swift.SwiftyJSON;
 import org.rythmengine.RythmEngine;
+import org.rythmengine.exception.RythmException;
 import org.rythmengine.resource.ClasspathResourceLoader;
 
 import java.io.File;
@@ -72,7 +73,7 @@ public class SwiftGenerator implements PegasusCodeGenerator {
     GeneratorRunnerOptions options =
         new GeneratorRunnerOptions(targetPath, sourcePaths, resolverPath);
 
-    GlobalConfig globalConfig = new GlobalConfig(optionality, false);
+    GlobalConfig globalConfig = new GlobalConfig(optionality, false, false);
     new DefaultGeneratorRunner().run(new SwiftGenerator(globalConfig), options);
 
     InputStream runtime = ClassLoader.getSystemResourceAsStream("runtime/CourierRuntime.swift");
@@ -82,6 +83,7 @@ public class SwiftGenerator implements PegasusCodeGenerator {
   public SwiftGenerator() {
     this(new GlobalConfig(
         defaultOptionality,
+        false,
         false));
   }
 
@@ -108,17 +110,24 @@ public class SwiftGenerator implements PegasusCodeGenerator {
 
     String code;
     SwiftProperties swiftProperties = globalConfig.lookupSwiftProperties(templateSpec);
+    if (swiftProperties.omit) return null;
+
     SwiftSyntax syntax = new SwiftSyntax(templateSpec, swiftProperties, globalConfig);
     SwiftyJSON swifty = new SwiftyJSON(syntax);
 
-    if (templateSpec instanceof RecordTemplateSpec) {
-      code = engine.render("rythm/record.txt", templateSpec, syntax, swifty);
-    } else if (templateSpec instanceof EnumTemplateSpec) {
-      code = engine.render("rythm/enum.txt", templateSpec);
-    } else if (templateSpec instanceof UnionTemplateSpec) {
-      code = engine.render("rythm/union.txt", templateSpec, syntax, swifty);
-    } else {
-      return null; // Indicates that we are declining to generate code for the type (e.g. map or array)
+    try {
+      if (templateSpec instanceof RecordTemplateSpec) {
+        code = engine.render("rythm/record.txt", templateSpec, syntax, swifty);
+      } else if (templateSpec instanceof EnumTemplateSpec) {
+        code = engine.render("rythm/enum.txt", templateSpec);
+      } else if (templateSpec instanceof UnionTemplateSpec) {
+        code = engine.render("rythm/union.txt", templateSpec, syntax, swifty);
+      } else {
+        return null; // Indicates that we are declining to generate code for the type (e.g. map or array)
+      }
+    } catch (RythmException e) {
+      throw new RuntimeException(
+        "Internal error in generator while processing " + templateSpec.getFullName(), e);
     }
     SwiftCompilationUnit compilationUnit =
         new SwiftCompilationUnit(

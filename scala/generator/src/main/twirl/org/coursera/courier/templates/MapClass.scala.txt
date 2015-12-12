@@ -69,8 +69,9 @@
   import org.coursera.courier.templates.DataTemplates
   import org.coursera.courier.templates.DataTemplates.DataConversion
   import scala.collection.generic.CanBuildFrom
-  import scala.collection.immutable
-  import scala.collection.mutable
+  import scala.collection.immutable.Iterable
+  import scala.collection.immutable.MapLike
+  import scala.collection.mutable.Builder
   import scala.collection.JavaConverters._
   import com.linkedin.data.template.Custom
   import org.coursera.courier.codecs.InlineStringCodec
@@ -79,9 +80,9 @@
 }
 
 @ClassAnnotations(map) final class @(map.scalaType)(private val dataMap: DataMap)
-  extends immutable.Iterable[(@(map.keyClass.scalaTypeFullname), @(map.valueClass.scalaTypeFullname))]
+  extends Iterable[(@(map.keyClass.scalaTypeFullname), @(map.valueClass.scalaTypeFullname))]
   with Map[@(map.keyClass.scalaTypeFullname), @(map.valueClass.scalaTypeFullname)]
-  with immutable.MapLike[@(map.keyClass.scalaTypeFullname), @(map.valueClass.scalaTypeFullname), immutable.Map[@(map.keyClass.scalaTypeFullname), @(map.valueClass.scalaTypeFullname)]]
+  with MapLike[@(map.keyClass.scalaTypeFullname), @(map.valueClass.scalaTypeFullname), scala.collection.immutable.Map[@(map.keyClass.scalaTypeFullname), @(map.valueClass.scalaTypeFullname)]]
   with DataTemplate[DataMap] {
 
   @(map.scalaType) // force static initialization
@@ -167,7 +168,7 @@ object @(map.scalaType) {
     def apply() = newBuilder
   }
 
-  class DataBuilder(initial: @(map.scalaType)) extends mutable.Builder[(@(map.keyClass.scalaTypeFullname), @(map.valueClass.scalaTypeFullname)), @(map.scalaType)] {
+  class DataBuilder(initial: @(map.scalaType)) extends Builder[(@(map.keyClass.scalaTypeFullname), @(map.valueClass.scalaTypeFullname)), @(map.scalaType)] {
     def this() = this(new @(map.scalaType)(new DataMap()))
 
     val entries = new DataMap(initial.data())

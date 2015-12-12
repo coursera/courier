@@ -3,23 +3,23 @@ import SwiftyJSON
 
 public struct KeywordEscaping: Serializable {
     
-    public let `default`: String?
+    public let type: String?
     
     public init(
-        `default`: String?
+        type: String?
     ) {
-        self.`default` = `default`
+        self.type = type
     }
     
     public static func readJSON(json: JSON) throws -> KeywordEscaping {
         return KeywordEscaping(
-            `default`: try json["default"].optional(.String).string
+            type: try json["type"].optional(.String).string
         )
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]
-        if let `default` = self.`default` {
-            dict["default"] = `default`
+        if let type = self.type {
+            dict["type"] = type
         }
         return dict
     }

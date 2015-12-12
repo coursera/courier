@@ -31,8 +31,9 @@
   import com.linkedin.data.ByteString
   import com.linkedin.data.DataList
   import scala.collection.JavaConverters._
-  import scala.collection.immutable
-  import scala.collection.mutable
+  import scala.collection.immutable.Iterable
+  import scala.collection.immutable.MapLike
+  import scala.collection.mutable.Builder
   import scala.collection.generic.CanBuildFrom
   import com.linkedin.data.schema.MapDataSchema
   import com.linkedin.data.schema.ArrayDataSchema

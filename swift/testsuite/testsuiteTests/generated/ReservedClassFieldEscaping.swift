@@ -3,39 +3,47 @@ import SwiftyJSON
 
 public struct ReservedClassFieldEscaping: Serializable {
     
-    public let json: String?
+    public let data: String?
     
-    public let read: String?
+    public let schema: String?
     
-    public let write: String?
+    public let copy: String?
+    
+    public let clone: String?
     
     public init(
-        json: String?,
-        read: String?,
-        write: String?
+        data: String?,
+        schema: String?,
+        copy: String?,
+        clone: String?
     ) {
-        self.json = json
-        self.read = read
-        self.write = write
+        self.data = data
+        self.schema = schema
+        self.copy = copy
+        self.clone = clone
     }
     
     public static func readJSON(json: JSON) throws -> ReservedClassFieldEscaping {
         return ReservedClassFieldEscaping(
-            json: try json["json"].optional(.String).string,
-            read: try json["read"].optional(.String).string,
-            write: try json["write"].optional(.String).string
+            data: try json["data"].optional(.String).string,
+            schema: try json["schema"].optional(.String).string,
+            copy: try json["copy"].optional(.String).string,
+            clone: try json["clone"].optional(.String).string
         )
     }
     public func writeData() -> [String: AnyObject] {
         var dict: [String : AnyObject] = [:]
-        if let json = self.json {
-            dict["json"] = json
+        if let data = self.data {
+            dict["data"] = data
         }
-        if let read = self.read {
-            dict["read"] = read
+        if let schema = self.schema {
+            dict["schema"] = schema
         }
-        if let write = self.write {
-            dict["write"] = write
+        if let copy = self.copy {
+            dict["copy"] = copy
+        }
+        if let clone = self.clone {
+            dict["clone"] = clone
         }
         return dict
     }
