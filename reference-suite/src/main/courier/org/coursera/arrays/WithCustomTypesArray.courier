@@ -1,8 +1,8 @@
 namespace org.coursera.arrays
 
 import org.coursera.customtypes.CustomInt
-import org.coursera.records.test.Simple
 import org.coursera.`fixed`.Fixed8
+import org.coursera.records.test.Simple
 
 @swift.equatable
 record WithCustomTypesArray {

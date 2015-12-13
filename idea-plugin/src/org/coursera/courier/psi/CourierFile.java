@@ -103,10 +103,13 @@ public class CourierFile extends PsiFileBase {
   private CourierImportDeclarations addNthImport(CourierImportDeclaration importDecl) {
     CourierTopLevel root = getRoot();
     CourierImportDeclarations importDecls = root.getImportDeclarations();
+    if (importDecl.getFullname() == null) {
+      return importDecls;
+    }
 
     boolean added = false;
     for (CourierImportDeclaration existing : importDecls.getImportDeclarationList()) {
-      if (importDecl.getFullname().toString().compareTo(existing.getFullname().toString()) < 0) {
+      if (existing.getFullname() != null && importDecl.getFullname().toString().compareTo(existing.getFullname().toString()) < 0) {
         importDecls.addBefore(importDecl, existing);
         added = true;
         break;

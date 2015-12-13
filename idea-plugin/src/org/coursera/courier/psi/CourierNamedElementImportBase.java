@@ -13,7 +13,7 @@ public abstract class CourierNamedElementImportBase extends CourierNamedElementR
 
   @Override
   public TypeName getFullname() {
-    return TypeName.unescaped(getFullyQualifiedName().getText());
+    return TypeName.escaped(getFullyQualifiedName().getText());
   }
 
   @Override

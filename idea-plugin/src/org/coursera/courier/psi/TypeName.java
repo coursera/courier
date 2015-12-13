@@ -1,7 +1,12 @@
 package org.coursera.courier.psi;
 
+import com.google.common.base.Strings;
+import com.intellij.openapi.util.text.StringUtil;
+
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * A namespaced courier type name.
@@ -29,9 +34,41 @@ public class TypeName implements Comparable<TypeName> {
     return name.replaceAll("`", "");
   }
 
+  private static final Set<String> keywords;
+  static {
+    keywords = new HashSet<String>();
+    keywords.add("namespace");
+    keywords.add("import");
+    keywords.add("record");
+    keywords.add("enum");
+    keywords.add("fixed");
+    keywords.add("typeref");
+    keywords.add("union");
+    keywords.add("map");
+    keywords.add("array");
+    keywords.add("null");
+    keywords.add("true");
+    keywords.add("false");
+  }
+
   public static String unescape(String name) {
-    // TODO: Implement.  We'll need to use the full keyword list here.
-    return name;
+    String[] parts = name.split("\\.");
+    StringBuilder builder = new StringBuilder();
+    for (int i = 0; i < parts.length; i++) {
+      builder.append(unescapeIdentifier(parts[i]));
+      if (i < parts.length - 1) {
+        builder.append(".");
+      }
+    }
+    return builder.toString();
+  }
+
+  private static String unescapeIdentifier(String name) {
+    if (keywords.contains(name)) {
+      return "`" + name + "`";
+    } else {
+      return name;
+    }
   }
 
   public TypeName(String fullname) {
