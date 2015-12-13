@@ -1,0 +1,6 @@
+namespace org.coursera.records
+
+@swift.equatable
+record Note {
+  text: string
+}

@@ -1,0 +1,11 @@
+namespace org.coursera.arrays.mutable
+
+import org.coursera.enums.Fruits
+import org.coursera.records.mutable.Empty
+
+@android.mutability = "MUTABLE"
+@swift.omit
+record WithRecordArray {
+  empties: array[Empty]
+  fruits: array[Fruits]
+}

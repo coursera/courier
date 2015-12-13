@@ -1,0 +1,15 @@
+namespace org.coursera.records.primitivestyle
+
+/**
+ * A simple record
+ */
+@android.mutability = "MUTABLE"
+@android.optionality = "BASIC"
+@android.arrayStyle = "ARRAYS"
+@swift.omit
+record Simple {
+  /**
+   * A simple field
+   */
+  message: string?
+}

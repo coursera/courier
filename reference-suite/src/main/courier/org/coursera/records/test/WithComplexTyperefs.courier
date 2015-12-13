@@ -1,0 +1,15 @@
+namespace org.coursera.records.test
+
+import org.coursera.typerefs.ArrayTyperef
+import org.coursera.typerefs.EnumTyperef
+import org.coursera.typerefs.MapTyperef
+import org.coursera.typerefs.RecordTyperef
+import org.coursera.typerefs.UnionTyperef
+
+record WithComplexTyperefs {
+  `enum`: EnumTyperef
+  `record`: RecordTyperef
+  `map`: MapTyperef
+  `array`: ArrayTyperef
+  `union`: UnionTyperef
+}

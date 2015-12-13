@@ -1,0 +1,7 @@
+namespace org.coursera.records
+
+record WithInclude {
+  ...CourierFile
+
+  direct: int
+}

@@ -3,9 +3,6 @@ import SwiftyJSON
 
 public enum Fruits: Equatable, Hashable {
     
-    /**
-        An Apple.
-    */
     case APPLE
     
     case BANANA

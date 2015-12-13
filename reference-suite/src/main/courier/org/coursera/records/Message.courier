@@ -1,0 +1,7 @@
+namespace org.coursera.records
+
+@swift.omit
+record Message {
+  title: string?
+  body: string?
+}

@@ -1,0 +1,9 @@
+namespace org.coursera.records.mutable
+
+import org.coursera.typerefs.mutable.FlatTypedDefinition
+
+@android.mutability = "MUTABLE"
+@swift.omit
+record WithFlatTypedDefinition {
+value: FlatTypedDefinition
+}

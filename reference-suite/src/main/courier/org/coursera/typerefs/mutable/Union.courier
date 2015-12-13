@@ -1,0 +1,7 @@
+namespace org.coursera.typerefs.mutable
+
+import org.coursera.records.Message
+import org.coursera.records.Note
+
+@swift.omit
+typeref Union = union[Note, Message]

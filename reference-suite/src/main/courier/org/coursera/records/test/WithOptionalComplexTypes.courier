@@ -1,0 +1,15 @@
+namespace org.coursera.records.test
+
+import org.coursera.customtypes.CustomInt
+import org.coursera.enums.Fruits
+
+@swift.equatable
+record WithOptionalComplexTypes {
+  `record`: Simple?
+  `enum`: Fruits?
+  `union`: union[int, string, Simple]?
+  `array`: array[int]?
+  `map`: map[string, int]?
+  complexMap: map[string, Simple]?
+  custom: CustomInt?
+}

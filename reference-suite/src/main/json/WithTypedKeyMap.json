@@ -10,6 +10,5 @@
   "array" : { "List(1,2)": "array" },
   "enum" : { "APPLE": "enum" },
   "custom" : { "100": "custom" },
-  "fixed" : { "\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007": "fixed" },
-  "inlineRecord": { "(x~100,y~false)": "inlineRecord" }
+  "fixed" : { "\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007": "fixed" }
 }

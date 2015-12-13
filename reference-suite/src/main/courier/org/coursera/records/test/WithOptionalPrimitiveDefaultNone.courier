@@ -1,0 +1,14 @@
+namespace org.coursera.records.test
+
+import org.coursera.enums.Fruits
+
+record WithOptionalPrimitiveDefaultNone {
+  intWithDefault: int?
+  longWithDefault: long?
+  floatWithDefault: float?
+  doubleWithDefault: double?
+  booleanWithDefault: boolean?
+  stringWithDefault: string?
+  bytesWithDefault: bytes?
+  enumWithDefault: Fruits?
+}

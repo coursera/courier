@@ -1,0 +1,7 @@
+namespace org.coursera.unions
+
+import org.coursera.customtypes.CustomRecord
+
+record WithRecordCustomTypeUnion {
+  `union`: union[CustomRecord]
+}

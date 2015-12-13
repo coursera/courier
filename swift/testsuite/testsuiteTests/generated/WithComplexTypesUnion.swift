@@ -16,7 +16,6 @@ public struct WithComplexTypesUnion: Serializable {
         case FruitsMember(Fruits)
         case ArrayMember([Simple])
         case MapMember([String: Simple])
-        case FixedMember(String)
         case UNKNOWN$([String : AnyObject])
         public static func readJSON(json: JSON) throws -> Union {
             let dict = json.dictionaryValue
@@ -31,9 +30,6 @@ public struct WithComplexTypesUnion: Serializable {
             }
             if let member = dict["map"] {
                 return .MapMember(try member.required(.Dictionary).dictionaryValue.mapValues { try Simple.readJSON(try $0.required(.Dictionary).jsonValue) })
-            }
-            if let member = dict["org.coursera.fixed.Fixed8"] {
-                return .FixedMember(try member.required(.String).stringValue)
             }
             if let unknownDict = json.dictionaryObject {
                 return .UNKNOWN$(unknownDict)
@@ -51,8 +47,6 @@ public struct WithComplexTypesUnion: Serializable {
                 return ["array": member.map { $0.writeData() }];
             case .MapMember(let member):
                 return ["map": member.mapValues { $0.writeData() }];
-            case .FixedMember(let member):
-                return ["org.coursera.fixed.Fixed8": member];
             case .UNKNOWN$(let dict):
                 return dict
             }

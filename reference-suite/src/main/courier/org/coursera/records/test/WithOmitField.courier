@@ -1,0 +1,16 @@
+namespace org.coursera.records.test
+
+import org.coursera.customtypes.CustomInt
+
+@swift.omit
+record WithOmitField {
+  keep: int
+
+  @scala.omit
+  omit: int
+
+  @scala.omit
+  omitCustom: CustomInt
+
+  keepCustom: CustomInt
+}

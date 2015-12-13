@@ -1,0 +1,11 @@
+namespace org.coursera.records.test
+
+record WithPrimitiveTyperefs {
+  intField: typeref IntTyperef = int
+  longField: typeref LongTyperef = long
+  floatField: typeref FloatTyperef = float
+  doubleField: typeref DoubleTyperef = double
+  booleanField: typeref BooleanTyperef = boolean
+  stringField: typeref StringTyperef = string
+  bytesField: typeref BytesTyperef = bytes
+}

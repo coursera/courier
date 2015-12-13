@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyJSON
 
-public struct WithOptionalComplexTypes: Serializable {
+public struct WithOptionalComplexTypes: Serializable, Equatable {
     
     public let record: Simple?
     
@@ -13,6 +13,8 @@ public struct WithOptionalComplexTypes: Serializable {
     
     public let map: [String: Int]?
     
+    public let complexMap: [String: Simple]?
+    
     public let custom: CustomInt?
     
     public init(
@@ -21,6 +23,7 @@ public struct WithOptionalComplexTypes: Serializable {
         union: Union? = nil,
         array: [Int]? = nil,
         map: [String: Int]? = nil,
+        complexMap: [String: Simple]? = nil,
         custom: CustomInt? = nil
     ) {
         self.record = record
@@ -28,10 +31,11 @@ public struct WithOptionalComplexTypes: Serializable {
         self.union = union
         self.array = array
         self.map = map
+        self.complexMap = complexMap
         self.custom = custom
     }
     
-    public enum Union: Serializable {
+    public enum Union: Serializable, Equatable {
         case IntMember(Int)
         case StringMember(String)
         case SimpleMember(Simple)
@@ -74,6 +78,7 @@ public struct WithOptionalComplexTypes: Serializable {
             union: try json["union"].optional(.Dictionary).json.map { try Union.readJSON($0) },
             array: try json["array"].optional(.Array).array.map { try $0.map { try $0.required(.Number).intValue } },
             map: try json["map"].optional(.Dictionary).dictionary.map { try $0.mapValues { try $0.required(.Number).intValue } },
+            complexMap: try json["complexMap"].optional(.Dictionary).dictionary.map { try $0.mapValues { try Simple.readJSON(try $0.required(.Dictionary).jsonValue) } },
             custom: try json["custom"].optional(.Number).int.map { try CustomIntCoercer.coerceInput($0) }
         )
     }
@@ -94,10 +99,39 @@ public struct WithOptionalComplexTypes: Serializable {
         if let map = self.map {
             dict["map"] = map
         }
+        if let complexMap = self.complexMap {
+            dict["complexMap"] = complexMap.mapValues { $0.writeData() }
+        }
         if let custom = self.custom {
             dict["custom"] = CustomIntCoercer.coerceOutput(custom)
         }
         return dict
     }
 }
+public func ==(lhs: WithOptionalComplexTypes, rhs: WithOptionalComplexTypes) -> Bool {
+    return (
+        (lhs.record == nil ? (rhs.record == nil) : lhs.record! == rhs.record!) &&
+        (lhs.`enum` == nil ? (rhs.`enum` == nil) : lhs.`enum`! == rhs.`enum`!) &&
+        (lhs.union == nil ? (rhs.union == nil) : lhs.union! == rhs.union!) &&
+        (lhs.array == nil ? (rhs.array == nil) : lhs.array! == rhs.array!) &&
+        (lhs.map == nil ? (rhs.map == nil) : lhs.map! == rhs.map!) &&
+        (lhs.complexMap == nil ? (rhs.complexMap == nil) : lhs.complexMap! == rhs.complexMap!) &&
+        (lhs.custom == nil ? (rhs.custom == nil) : lhs.custom! == rhs.custom!) &&
+        true
+    )
+}
 
+public func ==(lhs: WithOptionalComplexTypes.Union, rhs: WithOptionalComplexTypes.Union) -> Bool {
+    switch (lhs, rhs) {
+    case (let .IntMember(lhs), let .IntMember(rhs)):
+        return lhs == rhs
+    case (let .StringMember(lhs), let .StringMember(rhs)):
+        return lhs == rhs
+    case (let .SimpleMember(lhs), let .SimpleMember(rhs)):
+        return lhs == rhs
+    case (let .UNKNOWN$(lhs), let .UNKNOWN$(rhs)):
+        return JSON(lhs) == JSON(rhs)
+    default:
+        return false
+    }
+}

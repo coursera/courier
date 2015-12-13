@@ -1,0 +1,5 @@
+namespace org.coursera.`fixed`
+
+record WithFixed8 {
+  `fixed`: Fixed8
+}

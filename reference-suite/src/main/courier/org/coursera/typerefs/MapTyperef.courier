@@ -1,0 +1,5 @@
+namespace org.coursera.typerefs
+
+import org.coursera.records.test.Empty
+
+typeref MapTyperef = map[string, Empty]

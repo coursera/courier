@@ -1,0 +1,35 @@
+namespace org.coursera.maps.mutable
+
+import org.coursera.customtypes.CustomInt
+import org.coursera.enums.Fruits
+import org.coursera.records.mutable.Simple
+import org.coursera.`fixed`.Fixed8
+
+@android.mutability = "MUTABLE"
+@swift.omit
+record WithTypedKeyMap {
+  ints: map[int, string]
+  longs: map[long, string]
+  floats: map[float, string]
+  doubles: map[double, string]
+  booleans: map[boolean, string]
+  strings: map[string, string]
+  bytes: map[bytes, string]
+  `record`: map[Simple, string]
+  `array`: map[array[int], string]
+  `enum`: map[Fruits, string]
+  custom: map[CustomInt, string]
+  `fixed`: map[Fixed8, string]
+  // TODO: fix
+  /*
+  inlineRecord: map [
+    @android.mutability = "MUTABLE"
+    @swift.omit
+    record RecordKey {
+      x: int,
+      y: boolean
+    },
+    string
+  ]
+  */
+}

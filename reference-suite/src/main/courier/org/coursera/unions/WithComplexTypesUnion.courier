@@ -1,0 +1,9 @@
+namespace org.coursera.unions
+
+import org.coursera.enums.Fruits
+import org.coursera.records.test.Empty
+import org.coursera.records.test.Simple
+
+record WithComplexTypesUnion {
+  `union`: union[Empty, Fruits, array[Simple], map[string, Simple]]
+}

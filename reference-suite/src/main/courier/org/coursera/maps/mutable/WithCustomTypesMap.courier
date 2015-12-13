@@ -1,0 +1,9 @@
+namespace org.coursera.maps.mutable
+
+import org.coursera.customtypes.CustomInt
+
+@android.mutability = "MUTABLE"
+@swift.omit
+record WithCustomTypesMap {
+  ints: map[string, CustomInt]
+}

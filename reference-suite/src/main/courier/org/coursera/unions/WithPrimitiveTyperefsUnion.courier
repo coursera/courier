@@ -1,0 +1,9 @@
+namespace org.coursera.unions
+
+record WithPrimitiveTyperefsUnion {
+  `union`: union[
+    @scala.class = "org.coursera.courier.generator.customtypes.CustomInt"
+    @scala.coercerClass = "org.coursera.courier.generator.customtypes.CustomIntCoercer"
+    typeref IntTyperef = int
+  ]
+}

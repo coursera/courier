@@ -1,0 +1,9 @@
+namespace org.coursera.records.test
+
+import org.coursera.customtypes.CustomRecord
+
+record WithCustomRecord {
+  custom: CustomRecord = { "title": "defaultTitle", "body": "defaultBody" }
+  customArray: array[CustomRecord] = []
+  customMap: map[CustomRecord, CustomRecord] = {}
+}

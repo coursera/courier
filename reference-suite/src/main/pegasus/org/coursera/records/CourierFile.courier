@@ -1,0 +1,8 @@
+namespace org.coursera.records
+
+/**
+ *
+ */
+record CourierFile {
+  find: string
+}

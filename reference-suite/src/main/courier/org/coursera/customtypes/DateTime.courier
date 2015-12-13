@@ -1,0 +1,12 @@
+namespace org.coursera.customtypes
+
+@scala.class = "org.joda.time.DateTime"
+@scala.coercerClass = "org.coursera.courier.generator.customtypes.DateTimeCoercer"
+
+@android.class = "org.joda.time.DateTime"
+@android.coercerClass = "org.coursera.courier.android.adapters.DateTimeAdapter"
+
+@swift.class = "Foundation.NSDate"
+@swift.coercerClass = "Coercers.NSDateCoercer"
+
+typeref DateTime = long

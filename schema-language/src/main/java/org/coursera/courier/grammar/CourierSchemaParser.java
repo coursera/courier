@@ -282,10 +282,15 @@ public class CourierSchemaParser extends SchemaParser {
    * @param document provides the source code in AST form
    */
   private void parse(DocumentContext document) throws ParseException {
-    setCurrentNamespace(
-      document.namespaceDeclaration().namespace().value);
+    if (document.namespaceDeclaration() != null) {
+      setCurrentNamespace(
+        document.namespaceDeclaration().namespace().value);
+    } else {
+      setCurrentNamespace("");
+    }
+
     setCurrentImports(document.importDeclarations());
-    DataSchema schema = parseNamedType(document.namedTypeDeclaration());
+    NamedDataSchema schema = parseNamedType(document.namedTypeDeclaration());
     topLevelSchemas.add(schema);
   }
 
@@ -554,7 +559,7 @@ public class CourierSchemaParser extends SchemaParser {
       if (dataSchema != null) {
         types.add(dataSchema);
         String memberKey = dataSchema.getUnionMemberKey();
-        if (memberDecl.schemadoc() != null) {
+        /*if (memberDecl.schemadoc() != null) {
           if (!withinTypref) {
             startErrorMessage(memberDecl.schemadoc())
               .append("Doc comments are only allowed on union members of typeref'd unions.\n");
@@ -568,7 +573,7 @@ public class CourierSchemaParser extends SchemaParser {
           // be sorted out.
           startErrorMessage(memberDecl.propDeclaration())
             .append("Properties are not supported on union members.\n");
-        }
+        }*/
       }
     }
     schema.setTypes(types, errorMessageBuilder());
@@ -584,9 +589,9 @@ public class CourierSchemaParser extends SchemaParser {
     bindNameToSchema(name, schema);
     FieldsAndIncludes fieldsAndIncludes = parseFields(schema, record.recordDecl);
     schema.setFields(fieldsAndIncludes.fields, errorMessageBuilder());
+    validateDefaults(schema);
     schema.setInclude(fieldsAndIncludes.includes);
     setProperties(context, schema);
-    topLevelSchemas.add(schema);
     return schema;
   }
 

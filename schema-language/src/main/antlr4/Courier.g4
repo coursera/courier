@@ -1,11 +1,11 @@
-grammar Courier;
+/grammar Courier;
 
 @header {
   import org.coursera.courier.grammar.ParseUtils;
   import java.util.Arrays;
 }
 
-document: namespaceDeclaration importDeclarations namedTypeDeclaration;
+document: namespaceDeclaration? importDeclarations namedTypeDeclaration;
 
 namespaceDeclaration: 'namespace' namespace;
 
@@ -71,7 +71,7 @@ enumSymbol returns [String value]: identifier {
 typerefDeclaration: 'typeref' name=typeNameDeclaration '=' ref=typeAssignment;
 
 fixedDeclaration returns[int size]:
-  'fixed' name=typeNameDeclaration sizeStr=NON_NEGATIVE_INTEGER_LITERAL {
+  'fixed' name=typeNameDeclaration sizeStr=NUMBER_LITERAL {
   $size = $sizeStr.int;
 };
 
@@ -79,7 +79,7 @@ unionDeclaration: 'union' typeParams=unionTypeAssignments;
 
 unionTypeAssignments: '[' members+=unionMemberDeclaration* ']';
 
-unionMemberDeclaration: doc=schemadoc? props+=propDeclaration* member=typeAssignment;
+unionMemberDeclaration: /*doc=schemadoc? props+=propDeclaration* */ member=typeAssignment;
 
 arrayDeclaration: 'array' typeParams=arrayTypeAssignments;
 

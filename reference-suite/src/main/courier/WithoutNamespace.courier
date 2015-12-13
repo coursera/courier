@@ -1,0 +1,3 @@
+record WithoutNamespace {
+  field1: string
+}

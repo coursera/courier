@@ -1,0 +1,7 @@
+namespace org.coursera.arrays
+
+import org.coursera.customtypes.CustomArrayTestId
+
+record WithCustomArrayTestId {
+  `array`: array[CustomArrayTestId]
+}

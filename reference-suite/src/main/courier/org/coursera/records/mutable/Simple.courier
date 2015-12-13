@@ -1,0 +1,13 @@
+namespace org.coursera.records.mutable
+
+/**
+ * A simple record
+ */
+@android.mutability = "MUTABLE"
+@swift.omit
+record Simple {
+  /**
+   * A simple field
+   */
+  message: string?
+}

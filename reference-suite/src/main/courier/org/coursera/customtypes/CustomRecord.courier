@@ -1,0 +1,7 @@
+namespace org.coursera.customtypes
+
+import org.coursera.records.test.Message
+
+@scala.class = "org.coursera.courier.generator.customtypes.CustomRecord"
+@scala.coercerClass = "org.coursera.courier.generator.customtypes.CustomRecordCoercer"
+typeref CustomRecord = Message

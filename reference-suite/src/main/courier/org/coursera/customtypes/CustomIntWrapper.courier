@@ -1,0 +1,9 @@
+namespace org.coursera.customtypes
+
+@scala.class = "org.coursera.courier.generator.customtypes.CustomIntWrapper"
+@scala.coercerClass = "org.coursera.courier.generator.customtypes.CustomIntWrapperCoercer"
+
+@swift.class = "Coercers.CustomIntWrapper"
+@swift.coercerClass = "Coercers.CustomIntWrapperCoercer"
+
+typeref CustomIntWrapper = CustomInt

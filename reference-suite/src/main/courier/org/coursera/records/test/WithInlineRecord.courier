@@ -1,0 +1,10 @@
+namespace org.coursera.records.test
+
+record WithInlineRecord {
+  inline: record InlineRecord {
+    value: int
+  }
+  inlineOptional: record InlineOptionalRecord {
+    value: string
+  }?
+}

@@ -1,0 +1,12 @@
+namespace org.coursera.enums
+
+enum EnumProperties {
+  @color = "red"
+  APPLE
+
+  @color = "orange"
+  ORANGE
+
+  @color = "yellow"
+  BANANA
+}

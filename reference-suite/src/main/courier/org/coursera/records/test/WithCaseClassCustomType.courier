@@ -1,0 +1,33 @@
+namespace org.coursera.records.test
+
+import org.coursera.customtypes.BooleanId
+import org.coursera.customtypes.BoxedIntId
+import org.coursera.customtypes.ByteId
+import org.coursera.customtypes.CaseClassCustomIntWrapper
+import org.coursera.customtypes.CaseClassStringIdWrapper
+import org.coursera.customtypes.CharId
+import org.coursera.customtypes.DoubleId
+import org.coursera.customtypes.FloatId
+import org.coursera.customtypes.IntId
+import org.coursera.customtypes.LongId
+import org.coursera.customtypes.ShortId
+import org.coursera.customtypes.StringId
+
+record WithCaseClassCustomType {
+  short: ShortId
+  byte: ByteId
+  char: CharId
+  int: IntId
+  long: LongId
+  float: FloatId
+  double: DoubleId
+  string: StringId
+  boolean: BooleanId
+  boxedInt: BoxedIntId
+  `map`: map[string, IntId]
+  mapKeys: map[IntId, string]
+  `array`: array[IntId]
+  chained: CaseClassStringIdWrapper
+  chainedToCoercer: CaseClassCustomIntWrapper
+}
+

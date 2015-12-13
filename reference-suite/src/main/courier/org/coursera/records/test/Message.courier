@@ -1,0 +1,7 @@
+namespace org.coursera.records.test
+
+@swift.equatable
+record Message {
+  title: string
+  body: string
+}

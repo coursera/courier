@@ -1,0 +1,6 @@
+namespace org.coursera.records.test
+
+record WithInclude {
+  ...Simple
+  direct: int
+}

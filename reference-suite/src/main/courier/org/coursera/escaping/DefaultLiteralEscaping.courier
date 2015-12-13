@@ -1,0 +1,5 @@
+namespace org.coursera.escaping
+
+record DefaultLiteralEscaping {
+  stringField: string = "tripleQuote: \"\"\" "
+}

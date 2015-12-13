@@ -1,0 +1,4 @@
+namespace org.coursera.customtypes
+
+@scala.class = "org.coursera.courier.generator.customtypes.StringId"
+typeref StringId = string

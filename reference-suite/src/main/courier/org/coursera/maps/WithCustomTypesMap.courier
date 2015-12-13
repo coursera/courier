@@ -1,0 +1,8 @@
+namespace org.coursera.maps
+
+import org.coursera.customtypes.CustomInt
+
+@swift.equatable
+record WithCustomTypesMap {
+  ints: map[string, CustomInt]
+}

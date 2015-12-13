@@ -1,0 +1,7 @@
+namespace org.coursera.records.test
+
+import org.coursera.customtypes.CustomRecordTestId
+
+record WithCustomRecordTestId {
+  id: CustomRecordTestId
+}

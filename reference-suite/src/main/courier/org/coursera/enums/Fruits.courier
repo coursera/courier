@@ -1,0 +1,12 @@
+namespace org.coursera.enums
+
+enum Fruits {
+  /**
+   * An Apple.
+   */
+  APPLE
+
+  BANANA
+  ORANGE
+  PINEAPPLE
+}

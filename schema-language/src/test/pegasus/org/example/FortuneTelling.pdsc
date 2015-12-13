@@ -6,8 +6,5 @@
     "FortuneCookie",
     "MagicEightBall",
     "string"
-  ],
-  "memberDocs": {
-    "org.example.FortuneCookie": "A fortune cookie."
-  }
+  ]
 }

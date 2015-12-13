@@ -1,0 +1,5 @@
+namespace org.coursera.customtypes
+
+@scala.class = "org.coursera.courier.generator.customtypes.ByteId"
+typeref ByteId = bytes
+

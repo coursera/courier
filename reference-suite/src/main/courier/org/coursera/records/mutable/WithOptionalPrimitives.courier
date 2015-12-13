@@ -1,0 +1,13 @@
+namespace org.coursera.records.mutable
+
+@android.mutability = "MUTABLE"
+@swift.omit
+record WithOptionalPrimitives {
+  intField: int?
+  longField: long?
+  floatField: float?
+  doubleField: double?
+  booleanField: boolean?
+  stringField: string?
+  bytesField: bytes?
+}
