@@ -1,9 +1,0 @@
-{
-  "name": "CaseClassStringIdWrapper",
-  "namespace": "org.coursera.customtypes",
-  "type": "typeref",
-  "ref": "org.coursera.customtypes.StringId",
-  "scala": {
-    "class": "org.coursera.courier.generator.customtypes.StringIdWrapper"
-  }
-}

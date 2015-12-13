@@ -1,8 +1,0 @@
-{
-  "type": "record",
-  "name": "WithCustomUnionTestId",
-  "namespace": "org.coursera.unions",
-  "fields": [
-    { "name": "union", "type": [ "org.coursera.customtypes.CustomUnionTestId" ] }
-  ]
-}

@@ -1,0 +1,17 @@
+{
+  "type": "record",
+  "name": "Fortune",
+  "namespace": "org.example",
+  "doc": "A fortune.",
+  "fields": [
+    {
+      "name": "telling",
+      "doc": "The fortune telling.",
+      "type": "FortuneTelling"
+    },
+    {
+      "name": "createdAt",
+      "type": "org.example.common.DateTime"
+    }
+  ]
+}

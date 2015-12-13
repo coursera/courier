@@ -1,8 +1,0 @@
-{
-  "type": "record",
-  "name": "WithCustomRecordTestId",
-  "namespace": "org.coursera.records.test",
-  "fields": [
-    { "name": "id", "type": "org.coursera.customtypes.CustomRecordTestId" }
-  ]
-}

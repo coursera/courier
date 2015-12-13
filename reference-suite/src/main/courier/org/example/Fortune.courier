@@ -1,0 +1,15 @@
+namespace org.example
+
+import org.example.common.DateTime
+
+/**
+ * A fortune.
+ */
+record Fortune {
+  /**
+   * The fortune telling.
+   */
+  telling: FortuneTelling // comment 1
+
+  createdAt: /* comment 2 */ DateTime
+}

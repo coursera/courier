@@ -1,9 +1,0 @@
-{
-  "name": "ByteId",
-  "namespace": "org.coursera.customtypes",
-  "type": "typeref",
-  "ref": "bytes",
-  "scala": {
-    "class": "org.coursera.courier.generator.customtypes.ByteId"
-  }
-}

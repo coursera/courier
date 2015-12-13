@@ -1,9 +1,0 @@
-{
-  "name": "LongId",
-  "namespace": "org.coursera.customtypes",
-  "type": "typeref",
-  "ref": "long",
-  "scala": {
-    "class": "org.coursera.courier.generator.customtypes.LongId"
-  }
-}

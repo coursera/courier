@@ -1,9 +1,0 @@
-{
-  "type": "record",
-  "name": "Empty",
-  "namespace": "org.coursera.records.test",
-  "fields": [],
-  "swift": {
-    "equatable": true
-  }
-}

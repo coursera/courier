@@ -41,8 +41,8 @@ public class ConversionTest {
       "org.example.MagicEightBallAnswer",
       "org.example.TyperefExample",
       "org.example.common.DateTime",
-      "org.example.common.Timestamp",
-      "org.example.Note"};
+      "org.example.common.Timestamp"
+    };
     for (String schemaName: schemasNames) {
       NamedDataSchema pegasus = TestSchema.loadPegasus(schemaName).schema;
       NamedDataSchema courier = TestSchema.loadCourier(schemaName).schema;
@@ -82,8 +82,8 @@ public class ConversionTest {
     }
 
     private static File pegasusPath =
-      new File(System.getProperty("project.dir")  +
-      File.separator + "src" + File.separator + "test" + File.separator + "pegasus");
+      new File(System.getProperty("referencesuite.srcdir")  +
+      File.separator + "main" + File.separator + "pegasus");
 
     private static FileDataSchemaResolver pegasusFileResolver = new FileDataSchemaResolver(
       SchemaParserFactory.instance(), pegasusPath.getAbsolutePath());
@@ -98,8 +98,8 @@ public class ConversionTest {
     }
 
     private static File courierPath =
-      new File(System.getProperty("project.dir") +
-      File.separator + "src" + File.separator + "test" + File.separator + "courier");
+      new File(System.getProperty("referencesuite.srcdir") +
+      File.separator + "main" + File.separator + "courier");
 
     private static FileDataSchemaResolver courierFileResolver =
       new FileDataSchemaResolver(

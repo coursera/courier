@@ -1,9 +1,0 @@
-{
-  "name": "Union",
-  "namespace": "org.coursera.typerefs.mutable",
-  "type": "typeref",
-  "ref": ["org.coursera.records.mutable.Note", "org.coursera.records.mutable.Message"],
-  "swift": {
-    "omit": true
-  }
-}

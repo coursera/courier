@@ -1,9 +1,0 @@
-{
-  "name": "BooleanId",
-  "namespace": "org.coursera.customtypes",
-  "type": "typeref",
-  "ref": "boolean",
-  "scala": {
-    "class": "org.coursera.courier.generator.customtypes.BooleanId"
-  }
-}

@@ -1,9 +1,0 @@
-{
-  "name": "FloatId",
-  "namespace": "org.coursera.customtypes",
-  "type": "typeref",
-  "ref": "float",
-  "scala": {
-    "class": "org.coursera.courier.generator.customtypes.FloatId"
-  }
-}

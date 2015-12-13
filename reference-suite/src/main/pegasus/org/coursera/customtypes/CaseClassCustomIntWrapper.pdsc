@@ -1,9 +1,0 @@
-{
-  "name": "CaseClassCustomIntWrapper",
-  "namespace": "org.coursera.customtypes",
-  "type": "typeref",
-  "ref": "org.coursera.customtypes.CustomInt",
-  "scala": {
-    "class": "org.coursera.courier.generator.customtypes.CaseClassCustomIntWrapper"
-  }
-}
