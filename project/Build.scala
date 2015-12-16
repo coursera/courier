@@ -204,6 +204,7 @@ object Courier extends Build with OverridablePublishSettings {
       forkedVmCourierClasspath := (dependencyClasspath in Runtime in swiftGenerator).value.files,
       forkedVmSourceDirectory := (sourceDirectory in referenceSuite).value / "main" / "courier",
       forkedVmCourierDest := file("swift") / "testsuite" / "testsuiteTests" / "generated",
+      forkedVmAdditionalArgs := Seq("REQUIRED_FIELDS_MAY_BE_ABSENT", "EQUATABLE"),
       packagedArtifacts := Map.empty, // do not publish
       libraryDependencies ++= Seq(
         ExternalDependencies.JodaTime.jodaTime))
@@ -373,7 +374,11 @@ object Courier extends Build with OverridablePublishSettings {
   lazy val forkedVmCourierClasspath = taskKey[Seq[File]](
     "Classpath to use when running the generator.")
 
-  lazy val forkedVmSourceDirectory = settingKey[File]("directory containing .courier and .pdsc files")
+  lazy val forkedVmSourceDirectory =
+    settingKey[File]("directory containing .courier and .pdsc files")
+
+  lazy val forkedVmAdditionalArgs =
+    settingKey[Seq[String]]("Additional args to pass to the generator")
 
   val forkedVmCourierGeneratorSettings = Seq(
 
@@ -383,11 +388,14 @@ object Courier extends Build with OverridablePublishSettings {
       val src = forkedVmSourceDirectory.value
       val dst = forkedVmCourierDest.value
       val classpath = forkedVmCourierClasspath.value
+      val additionalArgs = forkedVmAdditionalArgs.value
       streams.value.log.info("Generating courier bindings...")
-      val files = runForkedGenerator(mainClass, src, dst, classpath, streams.value.log)
+      val files =
+        runForkedGenerator(mainClass, src, dst, classpath, additionalArgs, streams.value.log)
       streams.value.log.info(s"There are ${files.size} classes generated from courier bindings")
       files
     },
+    forkedVmAdditionalArgs := Seq(),
     sourceGenerators in Compile <+= (forkedVmCourierGenerator in Compile),
     unmanagedSourceDirectories in Compile +=
       target.value / s"scala-${scalaBinaryVersion.value}" / "courier",
@@ -401,11 +409,12 @@ object Courier extends Build with OverridablePublishSettings {
       src: File,
       dst: File,
       classpath: Seq[File],
+      additionalArgs: Seq[String],
       log: Logger): Seq[File] = {
     IO.withTemporaryFile("courier", "output") { tmpFile =>
       val outStream = new java.io.FileOutputStream(tmpFile)
       try {
-        val args = Seq(dst.toString, src.toString, src.toString)
+        val args = Seq(dst.toString, src.toString, src.toString) ++ additionalArgs
         val exitValue =
           Fork.java(
             None,

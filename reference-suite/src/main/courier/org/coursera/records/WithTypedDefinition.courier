@@ -2,7 +2,6 @@ namespace org.coursera.records
 
 import org.coursera.typerefs.TypedDefinition
 
-@swift.equatable
 record WithTypedDefinition {
   value: TypedDefinition
 }

@@ -1,5 +1,4 @@
 namespace org.coursera.records.test
 
-@swift.equatable
 record Empty {
 }

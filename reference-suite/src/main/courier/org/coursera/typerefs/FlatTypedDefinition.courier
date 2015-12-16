@@ -3,7 +3,6 @@ namespace org.coursera.typerefs
 import org.coursera.records.Message
 import org.coursera.records.Note
 
-@swift.equatable
 @flatTypedDefinition = {
   "org.coursera.records.Note": "note",
   "org.coursera.records.Message": "message"

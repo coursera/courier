@@ -3,7 +3,6 @@ namespace org.coursera.records.test
 import org.coursera.customtypes.CustomInt
 import org.coursera.enums.Fruits
 
-@swift.equatable
 record WithComplexTypes {
   `record`: Simple
   `enum`: Fruits

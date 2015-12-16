@@ -3,7 +3,6 @@ namespace org.coursera.arrays
 import org.coursera.enums.Fruits
 import org.coursera.records.test.Empty
 
-@swift.equatable
 record WithRecordArray {
   empties: array[Empty]
   fruits: array[Fruits]

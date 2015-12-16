@@ -3,5 +3,4 @@ namespace org.coursera.typerefs
 import org.coursera.records.Message
 import org.coursera.records.Note
 
-@swift.equatable
 typeref Union = union[Note, Message]

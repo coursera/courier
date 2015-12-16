@@ -1,6 +1,5 @@
 namespace org.coursera.maps
 
-@swift.equatable
 record WithPrimitivesMap {
   ints: map[string, int]
   longs: map[string, long]

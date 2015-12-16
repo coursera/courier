@@ -3,7 +3,6 @@ namespace org.coursera.records.test
 /**
  * A simple record
  */
-@swift.equatable
 record Simple {
   /**
    * A simple field

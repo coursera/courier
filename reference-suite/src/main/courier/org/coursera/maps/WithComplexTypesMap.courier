@@ -5,7 +5,6 @@ import org.coursera.records.test.Empty
 import org.coursera.records.test.Simple
 import org.coursera.`fixed`.Fixed8
 
-@swift.equatable
 record WithComplexTypesMap {
   empties: map[string, Empty]
   fruits: map[string, Fruits]
@@ -13,7 +12,6 @@ record WithComplexTypesMap {
   maps: map[string, map[string, Simple]]
   unions: map[
     string,
-    @swift.equatable
     typeref WithComplexTypesMapUnion = union[int, string, Simple]
   ]
   `fixed`: map[string, Fixed8]

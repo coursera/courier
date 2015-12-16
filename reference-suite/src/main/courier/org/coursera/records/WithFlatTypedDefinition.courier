@@ -2,7 +2,6 @@ namespace org.coursera.records
 
 import org.coursera.typerefs.FlatTypedDefinition
 
-@swift.equatable
 record WithFlatTypedDefinition {
   value: FlatTypedDefinition
 }

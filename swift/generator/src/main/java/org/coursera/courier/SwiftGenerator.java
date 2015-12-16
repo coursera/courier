@@ -56,9 +56,9 @@ public class SwiftGenerator implements PegasusCodeGenerator {
   public static void main(String[] args) throws Throwable {
     // TODO(jbetz): use a CLI parser library
 
-    if (args.length < 3 || args.length > 4) {
+    if (args.length < 3 || args.length > 5) {
       throw new IllegalArgumentException(
-          "Usage: targetPath resolverPath1[:resolverPath2]+ sourcePath1[:sourcePath2]+ [REQUIRED_FIELDS_MAY_BE_ABSENT|STRICT]");
+          "Usage: targetPath resolverPath1[:resolverPath2]+ sourcePath1[:sourcePath2]+ [REQUIRED_FIELDS_MAY_BE_ABSENT|STRICT] [EQUATABLE]");
     }
     String targetPath = args[0];
     String resolverPath = args[1];
@@ -70,10 +70,18 @@ public class SwiftGenerator implements PegasusCodeGenerator {
       optionality = SwiftProperties.Optionality.valueOf(args[3]);
     }
 
+    boolean equatable = false;
+    if (args.length > 4) {
+      if (!args[4].equals("EQUATABLE")) {
+        throw new IllegalArgumentException("If present 4th argument must be 'EQUATABLE'");
+      }
+      equatable = true;
+    }
+
     GeneratorRunnerOptions options =
         new GeneratorRunnerOptions(targetPath, sourcePaths, resolverPath);
 
-    GlobalConfig globalConfig = new GlobalConfig(optionality, false, false);
+    GlobalConfig globalConfig = new GlobalConfig(optionality, equatable, false);
     new DefaultGeneratorRunner().run(new SwiftGenerator(globalConfig), options);
 
     InputStream runtime = ClassLoader.getSystemResourceAsStream("runtime/CourierRuntime.swift");

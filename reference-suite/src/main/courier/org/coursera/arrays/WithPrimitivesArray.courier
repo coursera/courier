@@ -1,6 +1,5 @@
 namespace org.coursera.arrays
 
-@swift.equatable
 record WithPrimitivesArray {
   ints: array[int]
   longs: array[long]

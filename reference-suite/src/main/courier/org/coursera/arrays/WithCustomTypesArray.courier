@@ -4,13 +4,11 @@ import org.coursera.customtypes.CustomInt
 import org.coursera.`fixed`.Fixed8
 import org.coursera.records.test.Simple
 
-@swift.equatable
 record WithCustomTypesArray {
   ints: array[CustomInt]
   arrays: array[array[Simple]]
   maps: array[map[string, Simple]]
   unions: array[
-    @swift.equatable
     typeref WithCustomTypesArrayUnion = union[int, string, Simple]
   ]
   `fixed`: array[Fixed8]

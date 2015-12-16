@@ -4,7 +4,6 @@ import org.coursera.customtypes.CustomInt
 import org.coursera.enums.Fruits
 
 // TODO: remove
-@swift.equatable
 record WithOptionalComplexTypesDefaultNone {
   `record`: Simple?
   `enum`: Fruits?
