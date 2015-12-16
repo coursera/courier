@@ -1,4 +1,4 @@
-@args com.linkedin.pegasus.generator.spec.RecordTemplateSpec record, org.coursera.courier.android.JavaSyntax syntax, boolean mutable
+@args com.linkedin.pegasus.generator.spec.RecordTemplateSpec record, org.coursera.courier.android.JavaSyntax syntax
 @import com.linkedin.pegasus.generator.spec.ClassTemplateSpec
 @import com.linkedin.pegasus.generator.spec.RecordTemplateSpec.Field
 @import com.linkedin.pegasus.generator.spec.PrimitiveTemplateSpec
@@ -16,21 +16,19 @@
 
 @classAnnotations(record.getSchema())
 public final class @className {
-  @if(!mutable) {
-    @if(record.getFields().size() > 0) {
-      @(className)() {
-        @for(Field field: record.getFields()) {
-          @(syntax.escapeKeyword(field.getSchemaField().getName())) = null;
-        }
+  @if(record.getFields().size() > 0) {
+    @(className)() {
+      @for(Field field: record.getFields()) {
+        @(syntax.escapeKeyword(field.getSchemaField().getName())) = null;
       }
     }
-
-    @recordConstructor(className, record, syntax)
   }
 
-  @recordFields(record, syntax, mutable, false)
+  @recordConstructor(className, record, syntax)
 
-  @enclosedTypes(record, syntax, mutable)
+  @recordFields(record, syntax, false)
+
+  @enclosedTypes(record, syntax)
 
   @* TODO: define a result type *@
   public void validate() {
@@ -43,15 +41,13 @@ public final class @className {
     }
   }
 
-  @if(!mutable) {
-    @recordEqualityMethods(className, record, syntax)
+  @recordEqualityMethods(className, record, syntax)
 
-    public static class Builder {
-      @recordFields(record, syntax, true, true)
+  public static class Builder {
+    @recordFields(record, syntax, true, true)
 
-      public @className build() {
-        return new @(className)(@syntax.fieldList(record.getFields()));
-      }
+    public @className build() {
+      return new @(className)(@syntax.fieldList(record.getFields()));
     }
   }
 }

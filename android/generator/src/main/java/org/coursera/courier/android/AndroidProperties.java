@@ -16,59 +16,12 @@ import com.linkedin.pegasus.generator.spec.ClassTemplateSpec;
  *     "type": "record",
  *     "fields": [ ... ],
  *     "android": {
- *       "mutability": "MUTABLE",
- *       "arrayStyle": "LISTS",
  *       "optionality": "BASIC"
  *     }
  *   }
  * </code>
  */
 public class AndroidProperties {
-
-  /**
-   * "mutability" property.
-   *
-   * Defines the two major data binding generation modes supported by this generator.
-   */
-  public enum Mutability {
-
-    /**
-     * Generates immutable types with parameterized constructors, a mutable builder utility class,
-     * and public final fields.
-     */
-    IMMUTABLE,
-
-    /**
-     * Provided for compatibility with "basic" GSON data bindings.
-     *
-     * Generates simple classes with a default constructor and public fields.
-     */
-    MUTABLE
-  }
-
-  /**
-   * "arrayStyle" property.
-   *
-   * Java representations of a Pegasus 'array' supported by this generator.
-   */
-  public enum ArrayStyle {
-
-    /**
-     * Represent a Pegasus 'array' as a {@link java.util.List} (e.g. "List&lt;Course&gt;")
-     *
-     * For immutable data bindings, all Lists are unmodifiable.
-     */
-    LISTS,
-
-    /**
-     * rovided for compatibility with "basic" GSON data bindings.
-     *
-     * Represent a Pegasus 'array' as a Java array (e.g. "Course[]").
-     *
-     * Since all Java arrays are mutable, this mode may be used with {@link Mutability#MUTABLE} only.
-     */
-    ARRAYS
-  }
 
   /**
    * "optionality" property.
@@ -111,17 +64,12 @@ public class AndroidProperties {
     BASIC
   }
 
-  public final ArrayStyle arrayStyle;
-  public final Mutability mutability;
   public final Optionality optionality;
 
   public static final AndroidProperties DEFAULT =
-      new AndroidProperties(ArrayStyle.LISTS, Mutability.IMMUTABLE, Optionality.REQUIRED_FIELDS_MAY_BE_ABSENT);
+      new AndroidProperties(Optionality.REQUIRED_FIELDS_MAY_BE_ABSENT);
 
-  public AndroidProperties(
-      ArrayStyle arrayStyle, Mutability mutability, Optionality optionality) {
-    this.arrayStyle = arrayStyle;
-    this.mutability = mutability;
+  public AndroidProperties(Optionality optionality) {
     this.optionality = optionality;
   }
 
@@ -136,32 +84,12 @@ public class AndroidProperties {
       }
       DataMap properties = ((DataMap) android);
 
-      String arrayStyleStr = properties.getString("arrayStyle");
-      String mutabilityStr = properties.getString("mutability");
       String primitiveStyleStr = properties.getString("primitiveStyle");
 
-      ArrayStyle arrayStyle =
-          arrayStyleStr == null ? DEFAULT.arrayStyle : ArrayStyle.valueOf(arrayStyleStr);
-      Mutability mutability =
-          mutabilityStr == null ? DEFAULT.mutability : Mutability.valueOf(mutabilityStr);
       Optionality optionality =
           primitiveStyleStr == null ? DEFAULT.optionality : Optionality.valueOf(primitiveStyleStr);
 
-      if (mutability == Mutability.IMMUTABLE) {
-        if (arrayStyle == ArrayStyle.ARRAYS) {
-          throw new IllegalArgumentException(
-            "In pegasus schema '" + templateSpec.getFullName() + "', " +
-            "to guarantee immutablity, 'arrayStyle': '" + ArrayStyle.ARRAYS + "' may not be used " +
-            "with 'mutability': '" + Mutability.IMMUTABLE + "'. Use " + ArrayStyle.LISTS + " instead.");
-        }
-        if (optionality == Optionality.BASIC) {
-          throw new IllegalArgumentException(
-            "In pegasus schema '" + templateSpec.getFullName() + "', " +
-            "to support projections, 'optionality': '" + Optionality.BASIC + "' may not " +
-            "be used with 'mutability': '" + Mutability.IMMUTABLE + "'. Use " + Optionality.REQUIRED_FIELDS_MAY_BE_ABSENT + " instead.");
-        }
-      }
-      return new AndroidProperties(arrayStyle, mutability, optionality);
+      return new AndroidProperties(optionality);
     }
   }
 }

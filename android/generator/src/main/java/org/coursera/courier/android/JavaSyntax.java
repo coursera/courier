@@ -16,12 +16,10 @@
 
 package org.coursera.courier.android;
 
-import com.linkedin.data.schema.ArrayDataSchema;
 import com.linkedin.data.schema.DataSchema.Type;
 import com.linkedin.pegasus.generator.spec.ArrayTemplateSpec;
 import com.linkedin.pegasus.generator.spec.ClassTemplateSpec;
 import com.linkedin.pegasus.generator.spec.RecordTemplateSpec;
-import org.coursera.courier.android.AndroidProperties.ArrayStyle;
 import org.coursera.courier.android.AndroidProperties.Optionality;
 import org.coursera.courier.api.CourierMapTemplateSpec;
 
@@ -185,13 +183,7 @@ public class JavaSyntax {
     } else if (schemaType == Type.MAP) {
       return "Map<String, " + toType(((CourierMapTemplateSpec) spec).getValueClass(), Optionality.REQUIRED_FIELDS_MAY_BE_ABSENT) + ">";
     } else if (schemaType == Type.ARRAY) {
-      if (androidProperties.arrayStyle == ArrayStyle.ARRAYS) {
-        return toType(((ArrayTemplateSpec) spec).getItemClass(), Optionality.REQUIRED_FIELDS_MAY_BE_ABSENT) + "[]";
-      } else if (androidProperties.arrayStyle == ArrayStyle.LISTS) {
-	      return "List<" + toType(((ArrayTemplateSpec) spec).getItemClass(), Optionality.REQUIRED_FIELDS_MAY_BE_ABSENT) + ">";
-      } else {
-        throw new IllegalArgumentException();
-      }
+      return "List<" + toType(((ArrayTemplateSpec) spec).getItemClass(), Optionality.REQUIRED_FIELDS_MAY_BE_ABSENT) + ">";
     } else {
       throw new IllegalArgumentException("unrecognized type: " + schemaType);
     }
@@ -304,18 +296,7 @@ public class JavaSyntax {
     while(iter.hasNext()) {
       RecordTemplateSpec.Field field = iter.next();
       Type schemaType = field.getSchemaField().getType().getType();
-      if (schemaType == Type.ARRAY && androidProperties.arrayStyle == ArrayStyle.ARRAYS) {
-        ArrayDataSchema arraySchema = (ArrayDataSchema) field.getSchemaField().getType();
-        if (arraySchema.getItems().getDereferencedDataSchema().isPrimitive()) {
-          sb.append("Arrays.hashCode(");
-        } else {
-          sb.append("Arrays.deepHashCode(");
-        }
-        sb.append(escapeKeyword(field.getSchemaField().getName()));
-        sb.append(")");
-      } else {
-        sb.append(escapeKeyword(field.getSchemaField().getName()));
-      }
+      sb.append(escapeKeyword(field.getSchemaField().getName()));
       if (iter.hasNext()) sb.append(", ");
     }
     return sb.toString();

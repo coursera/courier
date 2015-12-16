@@ -1,6 +1,0 @@
-namespace org.coursera.records.mutable
-
-@android.mutability = "MUTABLE"
-@swift.omit
-record Empty {
-}

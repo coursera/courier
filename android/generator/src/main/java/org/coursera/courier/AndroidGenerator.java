@@ -22,7 +22,6 @@ import com.linkedin.pegasus.generator.spec.EnumTemplateSpec;
 import com.linkedin.pegasus.generator.spec.RecordTemplateSpec;
 import com.linkedin.pegasus.generator.spec.UnionTemplateSpec;
 import org.coursera.courier.android.AndroidProperties;
-import org.coursera.courier.android.AndroidProperties.Mutability;
 import org.coursera.courier.android.JavaSyntax;
 import org.coursera.courier.api.DefaultGeneratorRunner;
 import org.coursera.courier.api.GeneratedCode;
@@ -86,11 +85,10 @@ public class AndroidGenerator implements PegasusCodeGenerator {
     AndroidProperties androidProperties = AndroidProperties.lookupAndroidProperties(templateSpec);
     JavaSyntax syntax = new JavaSyntax(androidProperties);
 
-    boolean isMutableBinding = androidProperties.mutability == Mutability.MUTABLE;
     if (templateSpec instanceof RecordTemplateSpec) {
-      code = engine.render("rythm/record.txt", templateSpec, syntax, isMutableBinding);
+      code = engine.render("rythm/record.txt", templateSpec, syntax);
     } else if (templateSpec instanceof EnumTemplateSpec) {
-      code = engine.render("rythm/enum.txt", templateSpec, syntax, isMutableBinding);
+      code = engine.render("rythm/enum.txt", templateSpec, syntax);
     } else if (templateSpec instanceof UnionTemplateSpec) {
       UnionTemplateSpec unionSpec = (UnionTemplateSpec) templateSpec;
       if (TypedDefinitions.isTypedDefinition(unionSpec)) {
@@ -98,17 +96,15 @@ public class AndroidGenerator implements PegasusCodeGenerator {
             "rythm/typedDefinition.txt",
             templateSpec,
             TypedDefinitions.getTypedDefinitionMapping(unionSpec, false),
-            syntax,
-            isMutableBinding);
+            syntax);
       } else if (TypedDefinitions.isFlatTypedDefinition(unionSpec)) {
         code = engine.render(
             "rythm/flatTypedDefinition.txt",
             templateSpec,
             TypedDefinitions.getTypedDefinitionMapping(unionSpec, true),
-            syntax,
-            isMutableBinding);
+            syntax);
       } else {
-        code = engine.render("rythm/union.txt", templateSpec, syntax, isMutableBinding);
+        code = engine.render("rythm/union.txt", templateSpec, syntax);
       }
     } else {
       return null; // Indicates that we are declining to generate code for the type (e.g. map or array)

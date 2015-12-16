@@ -1,4 +1,4 @@
-@args com.linkedin.pegasus.generator.spec.UnionTemplateSpec union, org.coursera.courier.android.JavaSyntax syntax, boolean mutable
+@args com.linkedin.pegasus.generator.spec.UnionTemplateSpec union, org.coursera.courier.android.JavaSyntax syntax
 @import com.linkedin.pegasus.generator.spec.UnionTemplateSpec.Member
 @import org.coursera.courier.android.JavaSyntax
 
@@ -16,28 +16,24 @@ public interface @className {
     public @if (union.getEnclosingClass() != null) {static} class @unionMemberName implements @className {
       private static final String MEMBER_KEY = "@member.getSchema().getUnionMemberKey()";
 
-      @if(!mutable) {
-        public @(unionMemberName)(@syntax.toType(member.getClassTemplateSpec()) member) {
-          this.member = member;
-        }
+      public @(unionMemberName)(@syntax.toType(member.getClassTemplateSpec()) member) {
+        this.member = member;
       }
 
       @@SerializedName(MEMBER_KEY)
-      public @if(!mutable){final} @syntax.toType(member.getClassTemplateSpec()) member;
+      public final @syntax.toType(member.getClassTemplateSpec()) member;
 
-      @if(!mutable) {
-        @@Override
-        public int hashCode() {
-          return Objects.hash(this.getClass(), member);
-        }
+      @@Override
+      public int hashCode() {
+        return Objects.hash(this.getClass(), member);
+      }
 
-        @@Override
-        public boolean equals(Object obj) {
-          if (!(obj instanceof @unionMemberName)) return false;
-          @unionMemberName other = (@unionMemberName)obj;
-          if (other == this) return true;
-          return Objects.deepEquals(this.member, other.member);
-        }
+      @@Override
+      public boolean equals(Object obj) {
+        if (!(obj instanceof @unionMemberName)) return false;
+        @unionMemberName other = (@unionMemberName)obj;
+        if (other == this) return true;
+        return Objects.deepEquals(this.member, other.member);
       }
     }
   }

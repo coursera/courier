@@ -1,4 +1,4 @@
-@args com.linkedin.pegasus.generator.spec.UnionTemplateSpec union, java.util.Map<String, String> memberKeyToTypeName, org.coursera.courier.android.JavaSyntax syntax, boolean mutable
+@args com.linkedin.pegasus.generator.spec.UnionTemplateSpec union, java.util.Map<String, String> memberKeyToTypeName, org.coursera.courier.android.JavaSyntax syntax
 @import com.linkedin.pegasus.generator.spec.RecordTemplateSpec
 @import com.linkedin.pegasus.generator.spec.RecordTemplateSpec.Field
 @import com.linkedin.pegasus.generator.spec.UnionTemplateSpec.Member
@@ -21,25 +21,21 @@ public interface @className {
       @{RecordTemplateSpec memberSpec = ((RecordTemplateSpec)member.getClassTemplateSpec())}
       @{List<Field> fields = memberSpec.getFields()}
 
-      @if(!mutable) {
-        @recordConstructor(unionMemberName, memberSpec, syntax)
-      }
+      @recordConstructor(unionMemberName, memberSpec, syntax)
 
       private static final String TYPE_NAME = "@memberKeyToTypeName.get(memberKey)";
 
       public final String typeName = TYPE_NAME;
 
-      @recordFields(memberSpec, syntax, mutable, false)
+      @recordFields(memberSpec, syntax, false)
 
-      @if(!mutable) {
         @recordEqualityMethods(unionMemberName, memberSpec, syntax)
 
-        public static class Builder {
-          @recordFields(memberSpec, syntax, true, false)
+      public static class Builder {
+        @recordFields(memberSpec, syntax, true, false)
 
-          public @unionMemberName build() {
-            return new @(unionMemberName)(@syntax.fieldList(memberSpec.getFields()));
-          }
+        public @unionMemberName build() {
+          return new @(unionMemberName)(@syntax.fieldList(memberSpec.getFields()));
         }
       }
     }
