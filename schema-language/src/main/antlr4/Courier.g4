@@ -79,7 +79,7 @@ unionDeclaration: 'union' typeParams=unionTypeAssignments;
 
 unionTypeAssignments: '[' members+=unionMemberDeclaration* ']';
 
-unionMemberDeclaration: /*doc=schemadoc? props+=propDeclaration* */ member=typeAssignment;
+unionMemberDeclaration: member=typeAssignment;
 
 arrayDeclaration: 'array' typeParams=arrayTypeAssignments;
 

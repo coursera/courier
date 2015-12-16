@@ -1,7 +1,7 @@
 namespace org.example
 
 typeref FortuneTelling = union[
-  FortuneCookie,
-  MagicEightBall,
+  FortuneCookie
+  MagicEightBall
   string
 ]

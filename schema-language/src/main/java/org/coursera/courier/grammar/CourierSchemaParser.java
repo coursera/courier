@@ -300,7 +300,7 @@ public class CourierSchemaParser extends SchemaParser {
     } else if (typ.anonymousTypeDeclaration() != null) {
       AnonymousTypeDeclarationContext anon = typ.anonymousTypeDeclaration();
       if (anon.unionDeclaration() != null) {
-        return parseUnion(anon.unionDeclaration(), false).unionDataSchema;
+        return parseUnion(anon.unionDeclaration(), false);
       } else if (anon.mapDeclaration() != null) {
         return parseMap(anon.mapDeclaration());
       } else if (anon.arrayDeclaration() != null) {
@@ -404,12 +404,6 @@ public class CourierSchemaParser extends SchemaParser {
       NamedTypeDeclarationContext context,
       TyperefDeclarationContext typeref) throws ParseException {
 
-    UnionDataSchemaWithMetadata unionWithMetadata =
-      lookupUnionDataSchema(typeref.ref.typeDeclaration());
-    if (unionWithMetadata != null) {
-      return parseTyperefUnion(context, typeref, unionWithMetadata);
-    }
-
     Name name = toName(typeref.name);
     TyperefDataSchema schema = new TyperefDataSchema(name);
     bindNameToSchema(name, schema);
@@ -418,54 +412,6 @@ public class CourierSchemaParser extends SchemaParser {
 
     setProperties(context, schema);
     return schema;
-  }
-
-  /**
-   * Unions within a typref receive special treatment. Metadata from the union, such as doc
-   * comments, may be written as properties in the union schema.
-   */
-  private TyperefDataSchema parseTyperefUnion(
-      NamedTypeDeclarationContext context,
-      TyperefDeclarationContext typeref,
-      UnionDataSchemaWithMetadata unionWithMetadata) throws ParseException {
-    Name name = toName(typeref.name);
-    TyperefDataSchema typerefSchema = new TyperefDataSchema(name);
-    bindNameToSchema(name, typerefSchema);
-
-    Map<String, Object> typerefProps = setProperties(context, typerefSchema);
-
-    DataSchema unionSchema = unionWithMetadata.unionDataSchema;
-    Map<String, UnionMemberMetadata> metadataByMember = unionWithMetadata.metadataByMember;
-    if (metadataByMember.size() > 0) {
-      DataMap schemadocMap = new DataMap();
-      for (Map.Entry<String, UnionMemberMetadata> entry: metadataByMember.entrySet()) {
-        String member = entry.getKey();
-        UnionMemberMetadata auxInfo = entry.getValue();
-        if (auxInfo.doc != null) {
-          schemadocMap.put(member, auxInfo.doc);
-        }
-      }
-      if (schemadocMap.size() > 0) {
-        typerefProps.put("memberDocs", schemadocMap);
-      }
-    }
-    typerefSchema.setProperties(typerefProps);
-    typerefSchema.setReferencedType(unionSchema);
-    return typerefSchema;
-  }
-
-  private UnionDataSchemaWithMetadata lookupUnionDataSchema(
-      TypeDeclarationContext typeDecl) throws ParseException {
-    if (typeDecl != null) {
-      AnonymousTypeDeclarationContext anonDecl = typeDecl.anonymousTypeDeclaration();
-      if (anonDecl != null) {
-        UnionDeclarationContext unionDecl = anonDecl.unionDeclaration();
-        if (unionDecl != null) {
-          return parseUnion(unionDecl, true);
-        }
-      }
-    }
-    return null;
   }
 
   private ArrayDataSchema parseArray(ArrayDeclarationContext array) throws ParseException {
@@ -512,44 +458,8 @@ public class CourierSchemaParser extends SchemaParser {
     return schema;
   }
 
-  /**
-   * A UnionDataSchema plus any metadata, such as doc comments added to union members so
-   * that if the surrounding type is a typeref, it can track them.
-   *
-   * Note that all Courier schemas must be directly representable as .pdsc schemas.
-   * And unlike all other pegasus types, unions are represented as a JSON array in .pdsc, and as
-   * such, cannot have doc comment strings or properties added to them like can be done for typed
-   * defined with a JSON object. There would be no place to put them.
-   *
-   * However, being able to add doc comments (and potentially properties) to unions members is
-   * possible for typeref'd unions because the typeref can be used to hold the additional
-   * information.
-   */
-  private static class UnionDataSchemaWithMetadata {
-    public final UnionDataSchema unionDataSchema;
-    public final Map<String, UnionMemberMetadata> metadataByMember;
-
-    public UnionDataSchemaWithMetadata(
-        UnionDataSchema unionDataSchema,
-        Map<String, UnionMemberMetadata> metadataByMember) {
-      this.unionDataSchema = unionDataSchema;
-      this.metadataByMember = metadataByMember;
-    }
-  }
-
-  private static class UnionMemberMetadata {
-    public final String doc;
-
-    public UnionMemberMetadata(String doc) {
-      this.doc = doc;
-    }
-  }
-
-  private UnionDataSchemaWithMetadata parseUnion(
+  private UnionDataSchema parseUnion(
       UnionDeclarationContext union, boolean withinTypref) throws ParseException {
-    Map<String, UnionMemberMetadata> metadataByMember =
-      new HashMap<String, UnionMemberMetadata>();
-
     UnionDataSchema schema = new UnionDataSchema();
     List<UnionMemberDeclarationContext> members = union.typeParams.members;
     List<DataSchema> types = new ArrayList<DataSchema>(members.size());
@@ -558,26 +468,10 @@ public class CourierSchemaParser extends SchemaParser {
       DataSchema dataSchema = toDataSchema(memberType);
       if (dataSchema != null) {
         types.add(dataSchema);
-        String memberKey = dataSchema.getUnionMemberKey();
-        /*if (memberDecl.schemadoc() != null) {
-          if (!withinTypref) {
-            startErrorMessage(memberDecl.schemadoc())
-              .append("Doc comments are only allowed on union members of typeref'd unions.\n");
-          }
-          String schemadoc = memberDecl.schemadoc().value;
-          metadataByMember.put(memberKey, new UnionMemberMetadata(schemadoc));
-        }
-        if (memberDecl.propDeclaration() != null && memberDecl.propDeclaration().size() > 0) {
-          // TODO: For typeref'd unions, consider adding support for properties. A reasonable
-          // way to represent them in the typeref (that is consistent with enums) would need to
-          // be sorted out.
-          startErrorMessage(memberDecl.propDeclaration())
-            .append("Properties are not supported on union members.\n");
-        }*/
       }
     }
     schema.setTypes(types, errorMessageBuilder());
-    return new UnionDataSchemaWithMetadata(schema, metadataByMember);
+    return schema;
   }
 
   private RecordDataSchema parseRecord(

@@ -15,7 +15,7 @@
 
 document ::= topLevel
 
-topLevel ::= namespaceDeclaration importDeclarations namedTypeDeclaration
+topLevel ::= namespaceDeclaration? importDeclarations namedTypeDeclaration
 
 importDeclarations ::= importDeclaration*
 
@@ -86,7 +86,7 @@ unionDeclaration ::= UNION_KEYWORD unionTypeAssignments {pin=1}
 
 unionTypeAssignments ::= OPEN_BRACKET unionMemberDeclaration* CLOSE_BRACKET {pin=1}
 
-unionMemberDeclaration ::= annotations? typeAssignment
+unionMemberDeclaration ::= typeAssignment
 
 arrayDeclaration ::= ARRAY_KEYWORD arrayTypeAssignments {pin=1}
 
