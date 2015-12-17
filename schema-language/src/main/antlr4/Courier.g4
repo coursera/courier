@@ -1,4 +1,4 @@
-/grammar Courier;
+grammar Courier;
 
 @header {
   import org.coursera.courier.grammar.ParseUtils;
@@ -7,30 +7,14 @@
 
 document: namespaceDeclaration? importDeclarations namedTypeDeclaration;
 
-namespaceDeclaration: 'namespace' namespace;
-
-namespace returns [String value]: parts+=identifier ('.' parts+=identifier)* {
-  $value = ParseUtils.join($parts);
-};
+namespaceDeclaration: NAMESPACE qualifiedIdentifier;
 
 importDeclarations: importDeclaration*;
 
-importDeclaration: 'import' type=fullyQualifiedTypeName;
+importDeclaration: IMPORT type=qualifiedIdentifier;
 
-typeReference returns [String value]:
-    fullyQualifiedTypeName { $value = $fullyQualifiedTypeName.value; } |
-    simpleName { $value = $simpleName.value; };
-
-typeNameDeclaration returns [String value]: simpleName {
-  $value = $simpleName.value;
-};
-
-simpleName returns [String value]: identifier {
-  $value = $identifier.value;
-};
-
-fullyQualifiedTypeName returns [String value]: parts+=identifier ('.' parts+=identifier)* {
-  $value = ParseUtils.join($parts);
+typeReference returns [String value]: qualifiedIdentifier {
+  $value = $qualifiedIdentifier.value;
 };
 
 typeDeclaration: namedTypeDeclaration | anonymousTypeDeclaration;
@@ -47,20 +31,22 @@ propDeclaration returns [String name, List<String> path]: propNameDeclaration pr
   $path = Arrays.asList($propNameDeclaration.name.split("\\."));
 };
 
-propNameDeclaration returns [String name]: '@' propName { $name = $propName.value; };
-
-propName returns [String value]: parts+=identifier ('.' parts+=identifier)* {
-  $value = ParseUtils.join($parts);
+propNameDeclaration returns [String name]: AT qualifiedIdentifier {
+  $name = $qualifiedIdentifier.value;
 };
 
-// TODO(jbetz): remove '( )' form once migrated to '=' form.
-propJsonValue: '(' jsonValue ')' | '=' jsonValue;
+// TODO(jbetz): remove '( )' form once migrated to '=' form?
+propJsonValue: OPEN_PAREN jsonValue CLOSE_PAREN | EQ jsonValue;
 
-recordDeclaration: 'record' name=typeNameDeclaration recordDecl=fieldSelection;
+recordDeclaration returns [String name]: RECORD identifier recordDecl=fieldSelection {
+  $name = $identifier.value;
+};
 
-enumDeclaration: 'enum' name=typeNameDeclaration enumDecl=enumSymbolDeclarations;
+enumDeclaration returns [String name]: ENUM identifier enumDecl=enumSymbolDeclarations {
+  $name = $identifier.value;
+};
 
-enumSymbolDeclarations: '{' symbolDecls+=enumSymbolDeclaration* '}';
+enumSymbolDeclarations: OPEN_BRACE symbolDecls+=enumSymbolDeclaration* CLOSE_BRACE;
 
 enumSymbolDeclaration: doc=schemadoc? props+=propDeclaration* symbol=enumSymbol;
 
@@ -68,58 +54,63 @@ enumSymbol returns [String value]: identifier {
   $value = $identifier.value;
 };
 
-typerefDeclaration: 'typeref' name=typeNameDeclaration '=' ref=typeAssignment;
+typerefDeclaration returns [String name]: TYPEREF identifier EQ ref=typeAssignment {
+  $name = $identifier.value;
+};
 
-fixedDeclaration returns[int size]:
-  'fixed' name=typeNameDeclaration sizeStr=NUMBER_LITERAL {
+fixedDeclaration returns[String name, int size]:
+  FIXED identifier sizeStr=NUMBER_LITERAL {
+  $name = $identifier.value;
   $size = $sizeStr.int;
 };
 
-unionDeclaration: 'union' typeParams=unionTypeAssignments;
+unionDeclaration: UNION typeParams=unionTypeAssignments;
 
-unionTypeAssignments: '[' members+=unionMemberDeclaration* ']';
+unionTypeAssignments: OPEN_BRACKET members+=unionMemberDeclaration* CLOSE_BRACKET;
 
 unionMemberDeclaration: member=typeAssignment;
 
-arrayDeclaration: 'array' typeParams=arrayTypeAssignments;
+arrayDeclaration: ARRAY typeParams=arrayTypeAssignments;
 
-arrayTypeAssignments: '[' items=typeAssignment ']';
+arrayTypeAssignments: OPEN_BRACKET items=typeAssignment CLOSE_BRACKET;
 
-mapDeclaration: 'map' typeParams=mapTypeAssignments;
+mapDeclaration: MAP typeParams=mapTypeAssignments;
 
-mapTypeAssignments: '[' key=typeAssignment value=typeAssignment ']';
+mapTypeAssignments: OPEN_BRACKET key=typeAssignment value=typeAssignment CLOSE_BRACKET;
 
-fieldSelection: '{' fields+=fieldSelectionElement* '}';
+fieldSelection: OPEN_BRACE fields+=fieldSelectionElement* CLOSE_BRACE;
 
 fieldSelectionElement: fieldInclude | fieldDeclaration;
 
-fieldInclude: '...' typeReference;
+fieldInclude: DOTDOTDOT typeReference;
 
 fieldDeclaration returns [String name, boolean isOptional]:
-    doc=schemadoc? props+=propDeclaration* fieldName ':' type=typeAssignment QUESTION_MARK?
+    doc=schemadoc? props+=propDeclaration* fieldName=identifier COLON type=typeAssignment QUESTION_MARK?
     fieldDefault? {
-  $name = $fieldName.name;
+  $name = $identifier.value;
   $isOptional = $QUESTION_MARK() != null;
 };
 
-fieldName returns [String name]: identifier { $name = $identifier.value; };
+fieldDefault: EQ jsonValue;
 
-fieldDefault: '=' jsonValue;
+qualifiedIdentifier returns [String value]: ID (DOT ID)* {
+  $value = ParseUtils.unescapeIdentifier($text);
+};
 
-identifier returns [String value]:
-    PLAIN_IDENTIFIER { $value = $text; } |
-    ESCAPED_IDENTIFIER { $value = ParseUtils.stripEscaping($text); };
+identifier returns [String value]: ID {
+  $value = ParseUtils.unescapeIdentifier($text);
+};
 
 schemadoc returns [String value]: SCHEMADOC_COMMENT {
   $value = ParseUtils.extractMarkdown($SCHEMADOC_COMMENT.text);
 };
 
 // JSON
-object: '{' objectEntry* '}';
+object: OPEN_BRACE objectEntry* CLOSE_BRACE;
 
-objectEntry: key=string ':' value=jsonValue ;
+objectEntry: key=string COLON value=jsonValue ;
 
-array: '[' items=jsonValue* ']';
+array: OPEN_BRACKET items=jsonValue* CLOSE_BRACKET;
 
 jsonValue: string | number | object | array | bool | nullValue;
 
@@ -137,7 +128,31 @@ bool returns [Boolean value]: BOOLEAN_LITERAL {
 
 nullValue: NULL_LITERAL;
 
+// Tokens
+ARRAY: 'array';
+ENUM: 'enum';
+FIXED: 'fixed';
+IMPORT: 'import';
+MAP: 'map';
+NAMESPACE: 'namespace';
+RECORD: 'record';
+TYPEREF: 'typeref';
+UNION: 'union';
+
+OPEN_PAREN: '(';
+CLOSE_PAREN: ')';
+OPEN_BRACE: '{';
+CLOSE_BRACE: '}';
+OPEN_BRACKET: '[';
+CLOSE_BRACKET: ']';
+
+AT: '@';
+COLON: ':';
+DOT: '.';
+DOTDOTDOT: '...';
+EQ: '=';
 QUESTION_MARK: '?';
+
 BOOLEAN_LITERAL: 'true' | 'false';
 NULL_LITERAL: 'null';
 
@@ -145,16 +160,13 @@ SCHEMADOC_COMMENT: '/**' .*? '*/';
 BLOCK_COMMENT: '/*' .*? '*/' -> skip;
 LINE_COMMENT: '//' ~['\r\n']* -> skip;
 
-NUMBER_LITERAL: INTEGER_LITERAL ( '.' [0-9]+)? ([eE][+-]?[0-9]+)?;
-INTEGER_LITERAL: '-'? NON_NEGATIVE_INTEGER_LITERAL;
-NON_NEGATIVE_INTEGER_LITERAL: '0' | [1-9] [0-9]*;
+NUMBER_LITERAL: '-'? '0' | [1-9] [0-9]* ( '.' [0-9]+)? ([eE][+-]?[0-9]+)?;
 
 fragment HEX: [0-9a-fA-F];
 fragment UNICODE: 'u' HEX HEX HEX HEX;
 fragment ESC:   '\\' (["\\/bfnrt] | UNICODE);
 STRING_LITERAL: '"' (ESC | ~["\\])* '"';
 
-PLAIN_IDENTIFIER: [A-Za-z_] [A-Za-z0-9_]*; // Avro/Pegasus identifiers
-ESCAPED_IDENTIFIER: '`' PLAIN_IDENTIFIER '`'; // Scala/Swift style keyword escaping
+ID: '`'? [A-Za-z_] [A-Za-z0-9_]* '`'?; // Avro/Pegasus identifiers with Scala/Swift escaping
 
 WS: [ \t\n\r\f,]+ -> skip;

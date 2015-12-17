@@ -68,8 +68,8 @@ public class ParseUtils {
     return buf.toString();
   }
 
-  public static String stripEscaping(String identifier) {
-    return identifier.substring(1, identifier.length() - 1);
+  public static String unescapeIdentifier(String identifier) {
+    return identifier.replaceAll("`", "");
   }
 
   public static String join(List<CourierParser.IdentifierContext> identifiers) {

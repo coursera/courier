@@ -64,7 +64,6 @@ import org.coursera.courier.grammar.CourierParser.PropDeclarationContext;
 import org.coursera.courier.grammar.CourierParser.RecordDeclarationContext;
 import org.coursera.courier.grammar.CourierParser.TypeAssignmentContext;
 import org.coursera.courier.grammar.CourierParser.TypeDeclarationContext;
-import org.coursera.courier.grammar.CourierParser.TypeNameDeclarationContext;
 import org.coursera.courier.grammar.CourierParser.TypeReferenceContext;
 import org.coursera.courier.grammar.CourierParser.TyperefDeclarationContext;
 import org.coursera.courier.grammar.CourierParser.UnionDeclarationContext;
@@ -164,7 +163,8 @@ public class CourierSchemaParser extends SchemaParser {
       parser.removeErrorListeners();
       parser.addErrorListener(errorRecorder);
 
-      parse(parser.document());
+      DocumentContext antlrDocument = parser.document();
+      parse(antlrDocument);
 
       if (errorRecorder.errors.size() > 0) {
         for (ParseError error : errorRecorder.errors) {
@@ -281,10 +281,10 @@ public class CourierSchemaParser extends SchemaParser {
    *
    * @param document provides the source code in AST form
    */
-  private void parse(DocumentContext document) throws ParseException {
+  private String parse(DocumentContext document) throws ParseException {
     if (document.namespaceDeclaration() != null) {
       setCurrentNamespace(
-        document.namespaceDeclaration().namespace().value);
+        document.namespaceDeclaration().qualifiedIdentifier().value);
     } else {
       setCurrentNamespace("");
     }
@@ -292,6 +292,7 @@ public class CourierSchemaParser extends SchemaParser {
     setCurrentImports(document.importDeclarations());
     NamedDataSchema schema = parseNamedType(document.namedTypeDeclaration());
     topLevelSchemas.add(schema);
+    return schema.getFullName();
   }
 
   private DataSchema parseType(TypeDeclarationContext typ) throws ParseException{
@@ -684,8 +685,8 @@ public class CourierSchemaParser extends SchemaParser {
     }
   }
 
-  private Name toName(TypeNameDeclarationContext name) {
-    return new Name(name.value, getCurrentNamespace(), errorMessageBuilder());
+  private Name toName(String name) {
+    return new Name(name, getCurrentNamespace(), errorMessageBuilder());
   }
 
   private Object parsePropValue(
