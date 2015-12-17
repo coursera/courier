@@ -146,7 +146,10 @@ object Courier extends Build with OverridablePublishSettings {
       libraryDependencies ++= Seq(
         ExternalDependencies.JodaTime.jodaTime,
         ExternalDependencies.JUnit.junit,
-        ExternalDependencies.Scalatest.scalatest))
+        ExternalDependencies.Scalatest.scalatest),
+      fork in Test := true,
+      javaOptions in Test += // TODO(jbetz): figure out how to use testOptions in Test here
+          "-Dreferencesuite.srcdir=" + (sourceDirectory in referenceSuite).value.getAbsolutePath)
 
   lazy val androidGenerator = Project(id = "android-generator", base = file("android") / "generator")
     .dependsOn(scalaGeneratorApi)

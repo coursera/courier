@@ -65,6 +65,7 @@ class MapGeneratorTest extends GeneratorTest with SchemaFixtures {
 
   @Test
   def testWithComplexTypesMap(): Unit = {
+    val json = load("WithComplexTypesMap.json")
     val original = WithComplexTypesMap(
       EmptyMap("a" -> Empty(), "b" -> Empty(), "c" -> Empty()),
       FruitsMap("a" -> Fruits.APPLE, "b" -> Fruits.BANANA, "c" -> Fruits.ORANGE),
@@ -78,41 +79,14 @@ class MapGeneratorTest extends GeneratorTest with SchemaFixtures {
     assert(original === roundTripped)
 
     Seq(original, roundTripped).foreach { record =>
-      assertJson(record,
-        s"""{
-      |  "empties" : {
-      |    "b" : { },
-      |    "c" : { },
-      |    "a" : { }
-      |  },
-      |  "fruits" : {
-      |    "b" : "BANANA",
-      |    "c" : "ORANGE",
-      |    "a" : "APPLE"
-      |  },
-      |  "arrays" : {
-      |    "a": [ {"message": "v1"}, {"message": "v2"} ]
-      |  },
-      |  "maps": {
-      |    "o1": {
-      |      "i1": { "message": "o1i1" },
-      |      "i2": { "message": "o1i2" }
-      |    }
-      |  },
-      |  "unions": {
-      |    "a": { "int": 1 },
-      |    "b": { "string": "u1" }
-      |  },
-      |  "fixed": {
-      |    "a": "$bytesFixed8String"
-      |  }
-      |}""".stripMargin)
+      assertJson(record, json)
     }
   }
 
   @Test
   def
   testWithPrimitivesMap(): Unit = {
+    val json = load("WithPrimitivesMap.json")
     val original = WithPrimitivesMap(
       IntMap("a" -> 1, "b" -> 2, "c" -> 3),
       LongMap("a" -> 10L, "b" -> 20L, "c" -> 30L),
@@ -126,49 +100,13 @@ class MapGeneratorTest extends GeneratorTest with SchemaFixtures {
     assert(original === roundTripped)
 
     Seq(original, roundTripped).foreach { record =>
-      assertJson(original,
-        s"""{
-        |  "bytes" : {
-        |    "b" : "${'\\'}u0003${'\\'}u0004${'\\'}u0005",
-        |    "c" : "${'\\'}u0006${'\\'}u0007${'\\'}b",
-        |    "a" : "${'\\'}u0000${'\\'}u0001${'\\'}u0002"
-        |  },
-        |  "longs" : {
-        |    "b" : 20,
-        |    "c" : 30,
-        |    "a" : 10
-        |  },
-        |  "strings" : {
-        |    "b" : "string2",
-        |    "c" : "string3",
-        |    "a" : "string1"
-        |  },
-        |  "doubles" : {
-        |    "b" : 22.2,
-        |    "c" : 33.3,
-        |    "a" : 11.1
-        |  },
-        |  "booleans" : {
-        |    "b" : false,
-        |    "c" : true,
-        |    "a" : true
-        |  },
-        |  "floats" : {
-        |    "b" : 2.2,
-        |    "c" : 3.3,
-        |    "a" : 1.1
-        |  },
-        |  "ints" : {
-        |    "b" : 2,
-        |    "c" : 3,
-        |    "a" : 1
-        |  }
-        |}""".stripMargin)
+      assertJson(original, json)
     }
   }
 
   @Test
   def testWithCustomTypesMap(): Unit = {
+    val json = load("WithCustomTypesMap.json")
     val original = WithCustomTypesMap(
       CustomIntMap("a" -> CustomInt(1), "b" -> CustomInt(2), "c" ->CustomInt(3)))
     val roundTripped = WithCustomTypesMap(roundTrip(original.data()), DataConversion.SetReadOnly)
@@ -176,19 +114,13 @@ class MapGeneratorTest extends GeneratorTest with SchemaFixtures {
     assert(original === roundTripped)
 
     Seq(original, roundTripped).foreach { record =>
-      assertJson(original,
-        """{
-        |  "ints" : {
-        |    "b" : 2,
-        |    "c" : 3,
-        |    "a" : 1
-        |  }
-        |}""".stripMargin)
+      assertJson(original, json)
     }
   }
 
   @Test
   def testWithTypedKeyMap(): Unit = {
+    val json = load("WithTypedKeyMap.json")
     val original = WithTypedKeyMap(
       IntToStringMap(1 -> "int"),
       LongToStringMap(2L -> "long"),
@@ -209,21 +141,7 @@ class MapGeneratorTest extends GeneratorTest with SchemaFixtures {
     assert(original === roundTripped)
 
     Seq(original, roundTripped).foreach { record =>
-      assertJson(original,
-        s"""{
-          |  "ints" : { "1": "int" },
-          |  "longs" : { "2": "long" },
-          |  "floats" : { "3.14": "float" },
-          |  "doubles" : { "2.71": "double" },
-          |  "booleans" : { "true": "boolean" },
-          |  "strings" : { "key": "string" },
-          |  "bytes" : { "$bytesFixed8String": "bytes" },
-          |  "record" : { "(message~key)": "record" },
-          |  "array" : { "List(1,2)": "array" },
-          |  "enum" : { "APPLE": "enum" },
-          |  "custom" : { "100": "custom" },
-          |  "fixed" : { "$bytesFixed8String": "fixed" }
-          |}""".stripMargin) //   "inlineRecord": { "(x~100,y~false)": "inlineRecord" }
+      assertJson(original, json)
     }
   }
 

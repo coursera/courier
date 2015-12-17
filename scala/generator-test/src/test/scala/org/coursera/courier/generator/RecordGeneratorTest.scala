@@ -46,16 +46,7 @@ import org.junit.Test
 class RecordGeneratorTest extends GeneratorTest with SchemaFixtures {
 
 
-  private val primitiveRecordFieldsJson =
-    s"""{
-       |  "floatField" : 3.3,
-       |  "doubleField" : 4.4e38,
-       |  "intField" : 1,
-       |  "bytesField" : "${'\\'}u0000${'\\'}u0001${'\\'}u0002",
-       |  "longField" : 3000000000,
-       |  "booleanField" : true,
-       |  "stringField" : "str"
-       |}""".stripMargin
+  private val primitiveRecordFieldsJson = load("WithPrimitives_flex_defaults.json")
 
   @Test
   def testWithPrimitives(): Unit = {
@@ -236,10 +227,7 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures {
     Seq(original, roundTripped, reconstructed) foreach { primitives =>
       assert(primitives.intField.value === 1)
 
-      assertJson(primitives,
-        s"""{
-           |  "intField" : 1
-           |}""".stripMargin)
+      assertJson(primitives, load("WithPrimitiveCustomTypes.json"))
 
       val copy = primitives.copy(intField = CustomInt(2))
       assert(copy.intField.value === 2)

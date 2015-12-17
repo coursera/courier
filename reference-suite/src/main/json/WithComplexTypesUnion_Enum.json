@@ -1,0 +1,5 @@
+{
+  "union" : {
+    "org.coursera.enums.Fruits" : "APPLE"
+  }
+}

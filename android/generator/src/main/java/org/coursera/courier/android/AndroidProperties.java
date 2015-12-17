@@ -16,7 +16,7 @@ import com.linkedin.pegasus.generator.spec.ClassTemplateSpec;
  *     "type": "record",
  *     "fields": [ ... ],
  *     "android": {
- *       "optionality": "BASIC"
+ *       "optionality": "STRICT"
  *     }
  *   }
  * </code>
@@ -47,8 +47,6 @@ public class AndroidProperties {
      * pattern on a projection could result in the default value of primitives (e.g. 0 for ints)
      * to be accidentally written.
      *
-     * Provided for compatibility with "basic" GSON data bindings.
-     *
      * Required primitive fields are represented as Java primitives and must be present. If not
      * explicitly set, they will default to the Java defined default value for the particular
      * primitive type (e.g. 0 for int).
@@ -61,7 +59,7 @@ public class AndroidProperties {
      *
      * Optional primitive fields are represented as nullable Java boxed primitive types.
      */
-    BASIC
+    STRICT
   }
 
   public final Optionality optionality;

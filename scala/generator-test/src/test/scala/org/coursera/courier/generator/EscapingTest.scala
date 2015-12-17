@@ -27,12 +27,10 @@ class EscapingTest extends GeneratorTest with SchemaFixtures {
 
   @Test
   def testEscaping(): Unit = {
+    val json = load("KeywordEscaping.json")
     val withKeywordEscaping = KeywordEscaping(`type` = "test")
     assert(withKeywordEscaping.`type` === "test")
-    assertJson(withKeywordEscaping,
-      """{
-        |  "type" : "test"
-        |}""".stripMargin)
+    assertJson(withKeywordEscaping, json)
 
     // Please never actually name a schema like this!
     val withRecordNameEscaping = `class`()
@@ -40,6 +38,7 @@ class EscapingTest extends GeneratorTest with SchemaFixtures {
   }
 
   @Test
+  val json = load("ReservedClassFieldEscaping.json")
   def testReservedClassFields(): Unit = {
     val reservedClassFields = ReservedClassFieldEscaping(
       data$ = "dataText",
@@ -47,12 +46,6 @@ class EscapingTest extends GeneratorTest with SchemaFixtures {
       copy$ = "copyText",
       clone$ = "cloneText")
 
-    assertJson(reservedClassFields,
-      """{
-        |  "data" : "dataText",
-        |  "schema": "schemaText",
-        |  "copy": "copyText",
-        |  "clone": "cloneText"
-        |}""".stripMargin)
+    assertJson(reservedClassFields, json)
   }
 }

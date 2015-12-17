@@ -16,12 +16,16 @@
 
 package org.coursera.courier.generator
 
+import java.io.File
+import java.io.IOException
+
 import com.linkedin.data.DataList
 import com.linkedin.data.DataMap
 import com.linkedin.data.codec.JacksonDataCodec
 import com.linkedin.data.template.DataTemplate
 import com.linkedin.data.template.JacksonDataTemplateCodec
 import com.linkedin.data.template.PrettyPrinterJacksonDataTemplateCodec
+import org.apache.commons.io.FileUtils
 import org.scalatest.junit.AssertionsForJUnit
 import org.scalatest.junit.JUnitSuite
 
@@ -43,6 +47,14 @@ abstract class GeneratorTest extends JUnitSuite with AssertionsForJUnit {
 
   def roundTrip(complex: DataList): DataList = {
     readJsonToList(listToJson(complex))
+  }
+
+  private val jsonPath = new File(
+    System.getProperty("referencesuite.srcdir") +
+      File.separator + "main" + File.separator + "json")
+
+  protected def load(filename: String): String = {
+    FileUtils.readFileToString(new File(jsonPath, filename))
   }
 
   private val prettyPrinter = new PrettyPrinterJacksonDataTemplateCodec

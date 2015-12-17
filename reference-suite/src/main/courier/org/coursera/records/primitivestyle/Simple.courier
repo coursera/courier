@@ -3,9 +3,8 @@ namespace org.coursera.records.primitivestyle
 /**
  * A simple record
  */
-@android.mutability = "MUTABLE"
-@android.optionality = "BASIC"
-@android.arrayStyle = "ARRAYS"
+@android.optionality = "STRICT"
+@scala.omit
 @swift.omit
 record Simple {
   /**

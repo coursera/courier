@@ -66,33 +66,10 @@ class UnionGeneratorTest extends GeneratorTest with SchemaFixtures {
       assert(original === reconstructed)
     }
 
-    assertJson(WithComplexTypesUnion(recordMember),
-      """{
-        |  "union" : {
-        |    "org.coursera.records.test.Empty" : { }
-        |  }
-        |}""".stripMargin)
-
-    assertJson(WithComplexTypesUnion(enumMember),
-      """{
-        |  "union" : {
-        |    "org.coursera.enums.Fruits" : "APPLE"
-        |  }
-        |}""".stripMargin)
-
-    assertJson(WithComplexTypesUnion(arrayMember),
-      """{
-        |  "union" : {
-        |    "array" : [ { "message": "a1" } ]
-        |  }
-        |}""".stripMargin)
-
-    assertJson(WithComplexTypesUnion(mapMember),
-      """{
-        |  "union" : {
-        |    "map" : { "a": { "message": "m1" } }
-        |  }
-        |}""".stripMargin)
+    assertJson(WithComplexTypesUnion(recordMember), load("WithComplexTypesUnion_Empty.json"))
+    assertJson(WithComplexTypesUnion(enumMember), load("WithComplexTypesUnion_Enum.json"))
+    assertJson(WithComplexTypesUnion(arrayMember), load("WithComplexTypesUnion_Array.json"))
+    assertJson(WithComplexTypesUnion(mapMember), load("WithComplexTypesUnion_Map.json"))
   }
 
   @Test
@@ -126,54 +103,13 @@ class UnionGeneratorTest extends GeneratorTest with SchemaFixtures {
       assert(original === reconstructed)
     }
 
-    assertJson(WithPrimitivesUnion(intMember),
-      """{
-        |  "union" : {
-        |    "int" : 1
-        |  }
-        |}""".stripMargin)
-
-    assertJson(WithPrimitivesUnion(longMember),
-      """{
-        |  "union" : {
-        |    "long" : 2
-        |  }
-        |}""".stripMargin)
-
-    assertJson(WithPrimitivesUnion(floatMember),
-      """{
-        |  "union" : {
-        |    "float" : 3.0
-        |  }
-        |}""".stripMargin)
-
-    assertJson(WithPrimitivesUnion(doubleMember),
-      """{
-        |  "union" : {
-        |    "double" : 4.0
-        |  }
-        |}""".stripMargin)
-
-    assertJson(WithPrimitivesUnion(booleanMember),
-      """{
-        |  "union" : {
-        |    "boolean" : true
-        |  }
-        |}""".stripMargin)
-
-    assertJson(WithPrimitivesUnion(stringMember),
-      """{
-        |  "union" : {
-        |    "string" : "str"
-        |  }
-        |}""".stripMargin)
-    assertJson(WithPrimitivesUnion(bytesMember),
-      s"""{
-        |  "union" : {
-        |    "bytes" : "${'\\'}u0000${'\\'}u0001${'\\'}u0002"
-        |  }
-        |}""".stripMargin)
-
+    assertJson(WithPrimitivesUnion(intMember), load("WithPrimitivesUnion_int.json"))
+    assertJson(WithPrimitivesUnion(longMember), load("WithPrimitivesUnion_long.json"))
+    assertJson(WithPrimitivesUnion(floatMember), load("WithPrimitivesUnion_float.json"))
+    assertJson(WithPrimitivesUnion(doubleMember), load("WithPrimitivesUnion_double.json"))
+    assertJson(WithPrimitivesUnion(booleanMember), load("WithPrimitivesUnion_boolean.json"))
+    assertJson(WithPrimitivesUnion(stringMember), load("WithPrimitivesUnion_string.json"))
+    assertJson(WithPrimitivesUnion(bytesMember), load("WithPrimitivesUnion_bytes.json"))
   }
 
   @Test
@@ -196,12 +132,7 @@ class UnionGeneratorTest extends GeneratorTest with SchemaFixtures {
       assert(c === CustomInt(1))
     }
 
-    assertJson(original,
-      """{
-        |  "union" : {
-        |    "int" : 1
-        |  }
-        |}""".stripMargin)
+    assertJson(original, load("WithPrimitiveCustomTypesUnion_int.json"))
   }
 
   @Test

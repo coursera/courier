@@ -48,6 +48,7 @@ class ArrayGeneratorTest extends GeneratorTest with SchemaFixtures {
 
   @Test
   def testWithRecordArray(): Unit = {
+    val json = load("WithRecordArray.json")
     val original = WithRecordArray(
       EmptyArray(Empty(), Empty(), Empty()),
       FruitsArray(Fruits.APPLE, Fruits.BANANA, Fruits.ORANGE))
@@ -56,16 +57,13 @@ class ArrayGeneratorTest extends GeneratorTest with SchemaFixtures {
     assert(original === roundTripped)
 
     Seq(original, roundTripped).foreach { record =>
-      assertJson(record,
-        """{
-         |  "empties" : [ { }, { }, { } ],
-         |  "fruits" : [ "APPLE", "BANANA", "ORANGE" ]
-         |}""".stripMargin)
+      assertJson(record, json)
     }
   }
 
   @Test
   def testWithPrimitivesArray(): Unit = {
+    val json = load("WithPrimitivesArray.json")
     val original = WithPrimitivesArray(
       IntArray(1, 2, 3),
       LongArray(10L, 20L, 30L),
@@ -79,22 +77,13 @@ class ArrayGeneratorTest extends GeneratorTest with SchemaFixtures {
     assert(original === roundTripped)
 
     Seq(original, roundTripped).foreach { record =>
-      assertJson(record,
-      s"""{
-          |  "bytes" : [ "${'\\'}u0000${'\\'}u0001${'\\'}u0002",
-          |              "${'\\'}u0003${'\\'}u0004${'\\'}u0005" ],
-          |  "longs" : [ 10, 20, 30 ],
-          |  "strings" : [ "a", "b", "c" ],
-          |  "doubles" : [ 11.1, 22.2, 33.3 ],
-          |  "booleans" : [ false, true ],
-          |  "floats" : [ 1.1, 2.2, 3.3 ],
-          |  "ints" : [ 1, 2, 3 ]
-          |}""".stripMargin)
+      assertJson(record, json)
     }
   }
 
   @Test
   def testWithCustomTypesArray(): Unit = {
+    val json = load("WithCustomTypesArray.json")
     val original = WithCustomTypesArray(
       CustomIntArray(CustomInt(1), CustomInt(2), CustomInt(3)),
       SimpleArrayArray(SimpleArray(Simple(Some("a1")))),
@@ -110,18 +99,7 @@ class ArrayGeneratorTest extends GeneratorTest with SchemaFixtures {
     assert(original === roundTripped)
 
     Seq(original, roundTripped).foreach { record =>
-      assertJson(original,
-        s"""{
-        |  "ints" : [ 1, 2, 3 ],
-        |  "arrays": [ [ { "message": "a1" } ] ],
-        |  "maps": [ { "a": { "message": "m1" } } ],
-        |  "unions": [
-        |    { "int": 1 },
-        |    { "string": "str" },
-        |    { "org.coursera.records.test.Simple": { "message": "u1" }}
-        |  ],
-        |  "fixed": [ "$bytesFixed8String" ]
-        |}""".stripMargin)
+      assertJson(original, json)
     }
   }
 
