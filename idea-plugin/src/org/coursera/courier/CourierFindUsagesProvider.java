@@ -12,24 +12,27 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class CourierFindUsagesProvider implements FindUsagesProvider {
-  private static final DefaultWordsScanner WORDS_SCANNER =
-    new DefaultWordsScanner(new CourierLexerAdapter(),
-      TokenSet.create(CourierTypes.IDENTIFIER),
-      TokenSet.create(
-        CourierTypes.LINE_COMMENT,
-        CourierTypes.BLOCK_COMMENT_NON_EMPTY,
-        CourierTypes.BLOCK_COMMENT_EMPTY,
-        CourierTypes.COMMA),
-      TokenSet.create(
-        CourierTypes.JSON_STRING,
-        CourierTypes.JSON_NUMBER,
-        CourierTypes.JSON_BOOLEAN,
-        CourierTypes.JSON_NULL));
+
+  private static final TokenSet identifiers =
+    TokenSet.create(CourierTypes.IDENTIFIER);
+
+  private static final TokenSet comments = TokenSet.create(
+    CourierTypes.LINE_COMMENT,
+    CourierTypes.BLOCK_COMMENT_NON_EMPTY,
+    CourierTypes.BLOCK_COMMENT_EMPTY,
+    CourierTypes.COMMA);
+
+  private static final TokenSet literals = TokenSet.create(
+    CourierTypes.JSON_STRING,
+    CourierTypes.JSON_NUMBER,
+    CourierTypes.JSON_BOOLEAN,
+    CourierTypes.JSON_NULL);
 
   @Nullable
   @Override
   public WordsScanner getWordsScanner() {
-    return WORDS_SCANNER;
+    // See https://devnet.jetbrains.com/message/5537369
+    return new DefaultWordsScanner(new CourierLexerAdapter(), identifiers, comments, literals);
   }
 
   @Override
