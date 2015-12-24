@@ -151,6 +151,27 @@ object Courier extends Build with OverridablePublishSettings {
       javaOptions in Test += // TODO(jbetz): figure out how to use testOptions in Test here
           "-Dreferencesuite.srcdir=" + (sourceDirectory in referenceSuite).value.getAbsolutePath)
 
+  lazy val javaGenerator = Project(id = "java-generator", base = file("java") / "generator")
+    .dependsOn(scalaGeneratorApi)
+    .settings(plainJavaProjectSettings)
+    .settings(
+      name := "courier-java-generator",
+      libraryDependencies ++= Seq("com.sun.codemodel" % "codemodel" % "2.2"))
+
+  lazy val javaGeneratorTest = Project(id = "java-generator-test", base = file("java") / "generator-test")
+    .dependsOn(javaGenerator)
+    .settings(forkedVmCourierGeneratorSettings)
+    .settings(junitTestSettings)
+    .settings(plainJavaProjectSettings)
+    .settings(
+      name := "courier-java-generator-test",
+      forkedVmCourierMainClass := "org.coursera.courier.JavaGenerator",
+      forkedVmCourierClasspath := (dependencyClasspath in Runtime in javaGenerator).value.files,
+      forkedVmSourceDirectory := (sourceDirectory in referenceSuite).value / "main" / "courier",
+      forkedVmCourierDest :=
+        target.value / s"scala-${scalaBinaryVersion.value}" / "courier",
+      packagedArtifacts := Map.empty) // do not publish
+
   lazy val androidGenerator = Project(id = "android-generator", base = file("android") / "generator")
     .dependsOn(scalaGeneratorApi)
     .settings(plainJavaProjectSettings)
@@ -247,6 +268,7 @@ object Courier extends Build with OverridablePublishSettings {
     // We do not cross build java projects:
     s";project schema-language;$publishCommand" +
     s";project generator-api;$publishCommand" +
+    s";project java-generator;$publishCommand" +
     s";project android-generator;$publishCommand" +
     s";project android-runtime;$publishCommand" +
     s";project swift-generator;$publishCommand" +
@@ -293,7 +315,7 @@ object Courier extends Build with OverridablePublishSettings {
       val generator = ("com.linkedin.pegasus" % "generator" % version)
         // Only used by the java code generator, which we do not use.
         .exclude("com.linkedin.pegasus", "r2-core")
-        .exclude("com.sun.codemodel", "codemodel")
+        //.exclude("com.sun.codemodel", "codemodel")
     }
 
     object ScalaParserCombinators {

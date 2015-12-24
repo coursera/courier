@@ -20,6 +20,7 @@ import com.linkedin.data.schema.DataSchema;
 import com.linkedin.data.schema.MapDataSchema;
 import com.linkedin.pegasus.generator.spec.ClassTemplateSpec;
 import com.linkedin.pegasus.generator.spec.CustomInfoSpec;
+import com.linkedin.pegasus.generator.spec.MapTemplateSpec;
 
 /**
  * Modified version of {@link com.linkedin.pegasus.generator.spec.MapTemplateSpec} that
@@ -30,7 +31,7 @@ import com.linkedin.pegasus.generator.spec.CustomInfoSpec;
 // TODO(jbetz):
 // Replace with https://github.com/coursera/courier/tree/with-restli-upstream-fixes
 // once https://github.com/linkedin/rest.li/pull/61 is accepted.
-public class CourierMapTemplateSpec extends ClassTemplateSpec
+public class CourierMapTemplateSpec extends MapTemplateSpec
 {
   private ClassTemplateSpec _valueClass;
   private ClassTemplateSpec _valueDataClass;
@@ -44,6 +45,7 @@ public class CourierMapTemplateSpec extends ClassTemplateSpec
 
   public CourierMapTemplateSpec(MapDataSchema schema)
   {
+    super(schema);
     setSchema(schema);
   }
 
