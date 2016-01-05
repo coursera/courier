@@ -1,0 +1,11 @@
+{
+  "name": "Wrapper",
+  "namespace": "org.example",
+  "type": "record",
+  "fields": [
+    {
+      "name": "fortune",
+      "type": "org.example.Fortune"
+    }
+  ]
+}

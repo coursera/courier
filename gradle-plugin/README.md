@@ -23,9 +23,12 @@ buildscript {
     mavenLocal()
   }
   dependencies {
-    classpath 'org.scala-lang:scala-library:2.11.5'
-    classpath 'org.coursera.courier:gradle-plugin_2.11:0.17.1'
-    // classpath "org.coursera.courier:courier-android:0.17.1" // for Java Android bindings
+    // For Scala
+    classpath "org.scala-lang:scala-library:$scalaVersion" // picked up implicitly, but best to add it explicitly
+    classpath "org.coursera.courier:courier-generator_$scalaMajorVersion:$courierVersion"
+
+    // For Java Android
+    classpath "org.coursera.courier:courier-android:$courierVersion"
   }
 }
 ```
@@ -43,15 +46,17 @@ repositories {
 }
 
 courier {
-  codeGenerator 'org.coursera.courier.generator.twirl.TwirlDataTemplateGenerator'
-  // codeGenerator 'org.coursera.courier.android.RythmTemplateGenerator' // for Java Android bindings
+  codeGenerator 'org.coursera.courier.ScalaGenerator'
+  //codeGenerator 'org.coursera.courier.AndroidGenerator'
+  //codeGenerator 'org.coursera.courier.JavaGenerator'
+  //codeGenerator 'org.coursera.courier.SwiftGenerator'
 }
 
 dependencies {
-  compile 'org.scala-lang:scala-library:2.11.5'
-  courierCompile 'org.scala-lang:scala-library:2.11.5'
-  courierCompile 'org.coursera.courier:courier-runtime_2.11:0.17.1'
-  // courierCompile 'com.google.code.gson:gson:2.3.1' // for Java Android bindings
+  // Scala
+  compile "org.scala-lang:scala-library:$scalaVersion"
+  courierCompile "org.scala-lang:scala-library:$scalaVersion"
+  courierCompile "org.coursera.courier:courier-runtime_$scalaMajorVersion:$courierVersion"
 }
 ```
 

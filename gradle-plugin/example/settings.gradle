@@ -1,3 +1,6 @@
 include 'schemas'
-include 'schemas2'
+include 'scala'
+include 'android'
+include 'java'
+include 'swift'
 include 'app'

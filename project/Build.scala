@@ -182,6 +182,13 @@ object Courier extends Build with OverridablePublishSettings {
         ExternalDependencies.Gson.gson,
         ExternalDependencies.JodaTime.jodaTime))
 
+  lazy val javaRuntime = Project(id = "java-runtime", base = file("java") / "runtime")
+    .settings(plainJavaProjectSettings)
+    .settings(
+      name := "courier-java-runtime",
+      libraryDependencies ++= Seq(
+        ExternalDependencies.Pegasus.data))
+
   lazy val androidGeneratorTest = Project(id = "android-generator-test", base = file("android") / "generator-test")
     .dependsOn(androidGenerator, androidRuntime)
     .settings(forkedVmCourierGeneratorSettings)

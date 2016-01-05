@@ -13,6 +13,12 @@ buildscript {
 
     // For Java Android
     classpath "org.coursera.courier:courier-android:$courierVersion"
+
+    // For Pegasus Java
+    classpath "org.coursera.courier:courier-java:$courierVersion"
+
+    // For Swift
+    classpath "org.coursera.courier:courier-swift:$courierVersion"
   }
 }
 

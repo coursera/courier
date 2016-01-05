@@ -1,6 +1,9 @@
-apply plugin: 'scala' // For Scala, I believe order matters.
+apply plugin: 'scala' // The Scala plugin must be before the courier plugin.
 apply plugin: 'courier'
 
+courier {
+  codeGenerator 'org.coursera.courier.ScalaGenerator'
+}
 dependencies {
   pegasus project(path: ':schemas', configuration: 'pegasus')
   compile "org.scala-lang:scala-library:$scalaVersion"

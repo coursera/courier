@@ -1,0 +1,11 @@
+apply plugin: 'java'
+apply plugin: 'courier'
+
+courier {
+  codeGenerator 'org.coursera.courier.AndroidGenerator'
+}
+
+dependencies {
+  pegasus project(path: ':schemas', configuration: 'pegasus')
+  courierCompile "org.coursera.courier:courier-android-runtime:$courierVersion"
+}
