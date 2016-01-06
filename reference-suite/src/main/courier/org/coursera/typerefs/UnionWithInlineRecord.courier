@@ -1,0 +1,10 @@
+namespace org.coursera.typerefs
+
+typeref UnionWithInlineRecord = union[
+
+  record InlineRecord {
+    value: int?
+  }
+
+  record InlineRecord2 {}
+]
