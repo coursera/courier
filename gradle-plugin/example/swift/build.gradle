@@ -7,5 +7,4 @@ courier {
 
 dependencies {
   pegasus project(path: ':schemas', configuration: 'pegasus')
-  //courierCompile "org.coursera.courier:courier-runtime_$scalaMajorVersion:$courierVersion"
 }

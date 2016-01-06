@@ -86,25 +86,25 @@ public class AndroidGenerator implements PegasusCodeGenerator {
     JavaSyntax syntax = new JavaSyntax(androidProperties);
 
     if (templateSpec instanceof RecordTemplateSpec) {
-      code = engine.render("rythm/record.txt", templateSpec, syntax);
+      code = engine.render("rythm-android/record.txt", templateSpec, syntax);
     } else if (templateSpec instanceof EnumTemplateSpec) {
-      code = engine.render("rythm/enum.txt", templateSpec, syntax);
+      code = engine.render("rythm-android/enum.txt", templateSpec, syntax);
     } else if (templateSpec instanceof UnionTemplateSpec) {
       UnionTemplateSpec unionSpec = (UnionTemplateSpec) templateSpec;
       if (TypedDefinitions.isTypedDefinition(unionSpec)) {
         code = engine.render(
-            "rythm/typedDefinition.txt",
+            "rythm-android/typedDefinition.txt",
             templateSpec,
             TypedDefinitions.getTypedDefinitionMapping(unionSpec, false),
             syntax);
       } else if (TypedDefinitions.isFlatTypedDefinition(unionSpec)) {
         code = engine.render(
-            "rythm/flatTypedDefinition.txt",
+            "rythm-android/flatTypedDefinition.txt",
             templateSpec,
             TypedDefinitions.getTypedDefinitionMapping(unionSpec, true),
             syntax);
       } else {
-        code = engine.render("rythm/union.txt", templateSpec, syntax);
+        code = engine.render("rythm-android/union.txt", templateSpec, syntax);
       }
     } else {
       return null; // Indicates that we are declining to generate code for the type (e.g. map or array)

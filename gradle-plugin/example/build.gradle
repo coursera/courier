@@ -4,21 +4,20 @@ buildscript {
     mavenLocal()
   }
   dependencies {
-    //classpath "org.coursera.courier:gradle-plugin_$scalaMajorVersion:$courierVersion"
-    classpath "org.coursera.courier:gradle-plugin:$courierVersion"
+    classpath "org.coursera.courier:courier-gradle-plugin:$courierVersion"
 
     // For Scala
     classpath "org.scala-lang:scala-library:$scalaVersion" // picked up implicitly, but best to add it explicitly
     classpath "org.coursera.courier:courier-generator_$scalaMajorVersion:$courierVersion"
 
     // For Java Android
-    classpath "org.coursera.courier:courier-android:$courierVersion"
+    classpath "org.coursera.courier:courier-android-generator:$courierVersion"
 
     // For Pegasus Java
-    classpath "org.coursera.courier:courier-java:$courierVersion"
+    classpath "org.coursera.courier:courier-java-generator:$courierVersion"
 
     // For Swift
-    classpath "org.coursera.courier:courier-swift:$courierVersion"
+    classpath "org.coursera.courier:courier-swift-generator:$courierVersion"
   }
 }
 

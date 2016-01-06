@@ -125,11 +125,11 @@ public class SwiftGenerator implements PegasusCodeGenerator {
 
     try {
       if (templateSpec instanceof RecordTemplateSpec) {
-        code = engine.render("rythm/record.txt", templateSpec, syntax, swifty);
+        code = engine.render("rythm-swift/record.txt", templateSpec, syntax, swifty);
       } else if (templateSpec instanceof EnumTemplateSpec) {
-        code = engine.render("rythm/enum.txt", templateSpec);
+        code = engine.render("rythm-swift/enum.txt", templateSpec);
       } else if (templateSpec instanceof UnionTemplateSpec) {
-        code = engine.render("rythm/union.txt", templateSpec, syntax, swifty);
+        code = engine.render("rythm-swift/union.txt", templateSpec, syntax, swifty);
       } else {
         return null; // Indicates that we are declining to generate code for the type (e.g. map or array)
       }

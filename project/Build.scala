@@ -276,6 +276,7 @@ object Courier extends Build with OverridablePublishSettings {
     s";project schema-language;$publishCommand" +
     s";project generator-api;$publishCommand" +
     s";project java-generator;$publishCommand" +
+    s";project java-runtime;$publishCommand" +
     s";project android-generator;$publishCommand" +
     s";project android-runtime;$publishCommand" +
     s";project swift-generator;$publishCommand" +

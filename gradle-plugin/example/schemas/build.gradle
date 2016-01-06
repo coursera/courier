@@ -2,8 +2,7 @@ apply plugin: 'java'
 apply plugin: 'courier'
 
 courier {
-  //codeGenerator 'org.coursera.courier.ScalaGenerator'
-  codeGenerator 'org.coursera.courier.AndroidGenerator'
+  codeGenerator 'org.coursera.courier.ScalaGenerator'
 }
 
 dependencies {

@@ -11,10 +11,7 @@ This plugin can be used to generate Pegasus data bindings for multiple targets i
 Scala Setup
 -----------
 
-To get started, first add the plugin to your Gradle project.
-
-
-E.g. in your root build.gradle file, add:
+To get started, first add the plugin to your Gradle project. In your root build.gradle file, add:
 
 ```groovy
 buildscript {
@@ -23,12 +20,8 @@ buildscript {
     mavenLocal()
   }
   dependencies {
-    // For Scala
     classpath "org.scala-lang:scala-library:$scalaVersion" // picked up implicitly, but best to add it explicitly
     classpath "org.coursera.courier:courier-generator_$scalaMajorVersion:$courierVersion"
-
-    // For Java Android
-    classpath "org.coursera.courier:courier-android:$courierVersion"
   }
 }
 ```
@@ -36,24 +29,13 @@ buildscript {
 Next, apply the courier plugin to projects where it is needed:
 
 ```groovy
-apply plugin: 'idea'
-apply plugin: 'scala'
+apply plugin: 'scala' // The Scala plugin must be before the courier plugin.
 apply plugin: 'courier'
-
-repositories {
-  mavenCentral()
-  mavenLocal()
-}
 
 courier {
   codeGenerator 'org.coursera.courier.ScalaGenerator'
-  //codeGenerator 'org.coursera.courier.AndroidGenerator'
-  //codeGenerator 'org.coursera.courier.JavaGenerator'
-  //codeGenerator 'org.coursera.courier.SwiftGenerator'
 }
-
 dependencies {
-  // Scala
   compile "org.scala-lang:scala-library:$scalaVersion"
   courierCompile "org.scala-lang:scala-library:$scalaVersion"
   courierCompile "org.coursera.courier:courier-runtime_$scalaMajorVersion:$courierVersion"
@@ -66,10 +48,137 @@ mark generated source directories as such.)
 Java Android Setup
 ------------------
 
+To get started, first add the plugin to your Gradle project. In your root build.gradle file, add:
 
+```groovy
+buildscript {
+  repositories {
+    mavenCentral()
+    mavenLocal()
+  }
+  dependencies {
+    classpath "org.coursera.courier:courier-gradle-plugin:$courierVersion"
+    classpath "org.coursera.courier:courier-android-generator:$courierVersion"
+  }
+}
+
+apply plugin: 'idea'
+
+subprojects {
+  apply plugin: 'idea'
+
+  repositories {
+    mavenCentral()
+    mavenLocal()
+  }
+}
+
+```
+
+Next, apply the courier plugin to projects where it is needed:
+
+```groovy
+apply plugin: 'java'
+apply plugin: 'courier'
+
+courier {
+  codeGenerator 'org.coursera.courier.AndroidGenerator'
+}
+
+dependencies {
+  courierCompile "org.coursera.courier:courier-android-runtime:$courierVersion"
+}
+```
+
+Pegasus Java Setup
+------------------
+
+To get started, first add the plugin to your Gradle project. In your root build.gradle file, add:
+
+```groovy
+buildscript {
+  repositories {
+    mavenCentral()
+    mavenLocal()
+  }
+  dependencies {
+    classpath "org.coursera.courier:courier-java-generator:$courierVersion"
+  }
+}
+
+apply plugin: 'idea'
+
+subprojects {
+  apply plugin: 'idea'
+
+  repositories {
+    mavenCentral()
+    mavenLocal()
+  }
+}
+
+```
+
+Next, apply the courier plugin to projects where it is needed:
+
+```groovy
+apply plugin: 'java'
+apply plugin: 'courier'
+
+courier {
+  codeGenerator 'org.coursera.courier.JavaGenerator'
+}
+
+dependencies {
+  courierCompile "org.coursera.courier:courier-java-runtime:$courierVersion"
+}
+```
+
+Swift Setup
+-----------
+
+To get started, first add the plugin to your Gradle project. In your root build.gradle file, add:
+
+```groovy
+buildscript {
+  repositories {
+    mavenCentral()
+    mavenLocal()
+  }
+  dependencies {
+    classpath "org.coursera.courier:courier-swift-generator:$courierVersion"
+  }
+}
+
+apply plugin: 'idea'
+
+subprojects {
+  apply plugin: 'idea'
+
+  repositories {
+    mavenCentral()
+    mavenLocal()
+  }
+}
+
+```
+
+Next, apply the courier plugin to projects where it is needed:
+
+```groovy
+apply plugin: 'java'
+apply plugin: 'courier'
+
+courier {
+  codeGenerator 'org.coursera.courier.SwiftGenerator'
+}
+
+dependencies {
+}
+```
 
 Usage
--------------------
+-----
 
 Add a `.pdsc` file to the `src/main/pegasus` directory of the project, e.g.:
 
