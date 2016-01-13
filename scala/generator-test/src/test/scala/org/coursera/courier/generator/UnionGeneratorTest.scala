@@ -25,6 +25,7 @@ import org.coursera.records.test.Empty
 import org.coursera.records.test.Simple
 import org.coursera.records.test.SimpleArray
 import org.coursera.records.test.SimpleMap
+import org.coursera.typerefs.TypedDefinition
 import org.coursera.unions.WithComplexTypesUnion
 import org.coursera.unions.WithPrimitiveCustomTypesUnion
 import org.coursera.unions.WithPrimitivesUnion
@@ -148,5 +149,10 @@ class UnionGeneratorTest extends GeneratorTest with SchemaFixtures {
 
     val withUnknown = WithEmptyUnion(readJsonToMap(unknownJson), DataConversion.SetReadOnly)
     assert(withUnknown.union === WithEmptyUnion.Union.$UnknownMember)*/
+  }
+
+  @Test
+  def testUnionTyperefSchema(): Unit = {
+    assert(TypedDefinition.TYPEREF_SCHEMA.getDereferencedDataSchema === TypedDefinition.SCHEMA)
   }
 }

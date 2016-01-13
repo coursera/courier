@@ -13,6 +13,7 @@
   import com.linkedin.data.schema.DataSchemaConstants
   import com.linkedin.data.ByteString
   import com.linkedin.data.schema.UnionDataSchema
+  import com.linkedin.data.schema.TyperefDataSchema
   import com.linkedin.data.template.DataTemplateUtil
   import com.linkedin.data.template.UnionTemplate
   import org.coursera.courier.templates.DataTemplates.DataConversion
@@ -39,6 +40,10 @@
 
 object @(union.scalaType) {
   val SCHEMA = DataTemplateUtil.parseSchema(@("\"\"\"" + SchemaToJsonEncoder.schemaToJson(union.unionSchema, JsonBuilder.Pretty.COMPACT) + "\"\"\"")).asInstanceOf[UnionDataSchema]
+
+  @union.containingTyperef.flatMap(_.schema).map { typerefSchema =>
+    val TYPEREF_SCHEMA = DataTemplateUtil.parseSchema(@("\"\"\"" + SchemaToJsonEncoder.schemaToJson(typerefSchema, JsonBuilder.Pretty.COMPACT) + "\"\"\"")).asInstanceOf[TyperefDataSchema]
+  }
 
   @* Register custom types and coercers. *@
   @union.customInfosToRegister.map { case (member, customInfos) =>

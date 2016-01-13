@@ -46,6 +46,10 @@ case class UnionDefinition(override val spec: UnionTemplateSpec) extends Definit
     }
   }
 
+  def containingTyperef: Option[TyperefDefinition] = {
+    Option(spec.getTyperefClass).map(t => TyperefDefinition(t))
+  }
+
   /**
    * The union member types.
    */
