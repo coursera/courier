@@ -463,7 +463,9 @@ map_examples:
 validation_example_typeref:
   courier: |
     ```
-    @validate.prefix = { "prefix": "What is"}
+    @validate.regex = {
+      "regex": "^(What|Who) is"
+    }
     typeref JeopardyAnswer = string
     ```
 
@@ -475,7 +477,7 @@ validation_example_typeref:
       "ref"  : "string",
       "validate" : {
         "regex" : {
-          "prefix" : "What is"
+          "regex" : "^(What|Who) is"
         }
       }
     }
@@ -485,7 +487,9 @@ validation_example_field:
   courier: |
     ```
     record JeopardyResponse {
-      @validate.prefix = { "prefix": "What is"}
+      @validate.regex = {
+        "regex": "^(What|Who) is"
+      }
       question: string
     }
     ```
@@ -500,7 +504,7 @@ validation_example_field:
         "type": "string",
         "validate" : {
           "regex" : {
-            "regex" : "[0-9]*"
+            "regex" : "^(What|Who) is"
           }
         }
       ]
@@ -510,8 +514,12 @@ validation_example_field:
 validation_custom_example:
   courier: |
     ```
-    @validate.custom = { "customValidatorProperty": "..."}
-    typeref Digits = string
+    @validate = {
+      "org.example.CustomValidator" = {
+        "customValidatorProperty" : "..."
+      }
+    }
+    typeref ExampleTyperef = string
     ```
 
   pdsc: |
@@ -521,7 +529,7 @@ validation_custom_example:
       "name" : "ExampleTyperef",
       "ref"  : "string",
       "validate" : {
-        "custom" : {
+        "org.example.CustomValidator" : {
           "customValidatorProperty" : "..."
         }
       }

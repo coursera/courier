@@ -835,7 +835,8 @@ Data can be validated against a schema using ```ValidateDataAgainstSchema.valida
 ```scala
 val recordToValidate = new RecordToValidate(/*...*/)
 val options = new ValidationOptions()
-val validationResult = ValidateDataAgainstSchema.validate(recordToValidate, options)
+val annotationValidator = new DataSchemaAnnotationValidator(recordToValidate.schema())
+val validationResult = ValidateDataAgainstSchema.validate(recordToValidate, options, annotationValidator)
 if(!result.isValid()) {
   // ...
 } else {
@@ -859,26 +860,33 @@ To add your own custom validators, declare a new class that implements
 [Validator](https://github.com/linkedin/rest.li/blob/master/data/src/main/java/com/linkedin/data/schema/validator/Validator.java), e.g.:
 
 ```scala
-class PrefixValidator(config: DataMap) extends Validator {
-  val prefix = config.getString("prefix");
+class CustomValidator(config: DataMap) extends Validator {
+  val property = config.getString("customValidatorProperty");
 
   def validate(context: ValidatorContext): Unit = {
 
     context.dataElement.getValue match {
-      case str: String if str.startsWith(prefix) =>
-        // valid!
+      case str: String =>
+        if (!someCondition) {
+          context.addResult(new Message(
+            element.path, true, s"Validation failure message goes here")
+        } else {
+          // valid!
+        }
       case _: Any =>
         context.addResult(new Message(
-          element.path, true, s"Prefix of '$prefix' is required.")
+          element.path, true, s"CustomValidator may only be applied to strings.")
     }
   }
 }
 ```
 
-
-and provide it to the constructor of [DataSchemaAnnotationValidator](https://github.com/linkedin/rest.li/blob/master/data/src/main/java/com/linkedin/data/schema/validator/DataSchemaAnnotationValidator.java), e.g.:
+And then use the validator in schemas.
 
 {% include file_format_specific.html name="validation_custom_example" %}
+
+It is also possible to assign a validator a short name. To do this,
+use the constructor of [DataSchemaAnnotationValidator](https://github.com/linkedin/rest.li/blob/master/data/src/main/java/com/linkedin/data/schema/validator/DataSchemaAnnotationValidator.java), e.g.:
 
 And then include the custom validator when validating:
 
