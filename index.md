@@ -891,16 +891,19 @@ use the constructor of [DataSchemaAnnotationValidator](https://github.com/linked
 And then include the custom validator when validating:
 
 ```scala
-val prefixValidator = new PrefixValidator();
+val customValidator = new CustomValidator();
 
 val recordToValidate = new RecordToValidate(/*...*/)
 val options = new ValidationOptions()
 val validator =
-  new DataSchemaAnnotationValidator(recordToValidate, Map("prefix" -> prefixValidator))
+  new DataSchemaAnnotationValidator(recordToValidate, Map("custom" -> customValidator))
 val validationResult =
   ValidateDataAgainstSchema.validate(recordToValidate, options, validator)
 // ...
 ```
+
+And then the validator can be referenced in schemas using the short 'custom' name
+instead of the fully qualified 'org.example.CustomValidator' class name.
 
 For more details on validation, see [Pegasus schema validation](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates#data-to-schema-validation).
 
