@@ -6,6 +6,10 @@
     {
       "name": "field1",
       "type": "int"
+    },
+    {
+      "name": "fortune",
+      "type": "org.coursera.fortune.Fortune"
     }
   ]
 }
