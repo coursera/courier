@@ -153,8 +153,22 @@ object DataTemplates {
     * @param clazz provides a Scala generated data binding class.
     * @return a typeref data schema.
     */
-  def getDeclaringTyperefSchema(clazz: Class[_]): TyperefDataSchema = {
-    getSchema(clazz, "TYPEREF_SCHEMA").asInstanceOf[TyperefDataSchema]
+  def getDeclaringTyperefSchema(clazz: Class[_]): Option[TyperefDataSchema] = {
+    try {
+      Some(getSchema(clazz, "TYPEREF_SCHEMA").asInstanceOf[TyperefDataSchema])
+    } catch {
+      case e: NoSuchMethodException => None
+    }
+  }
+
+  /**
+    * Gets the schema of the Scala generated data binding class.
+    *
+    * @return a data schema.
+    */
+  def getSchema[T <: DataTemplate[_]](implicit tag: ClassTag[T]): DataSchema = {
+    val clazz = tag.runtimeClass.asInstanceOf[Class[T]]
+    getSchema(clazz, "SCHEMA")
   }
 
   /**

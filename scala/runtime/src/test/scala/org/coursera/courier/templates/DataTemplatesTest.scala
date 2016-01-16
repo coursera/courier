@@ -45,6 +45,15 @@ class DataTemplatesTest extends AssertionsForJUnit {
     val roundTripped = DataTemplates.writeUnion(union)
     assert(DataTemplates.readDataMap(roundTripped) === DataTemplates.readDataMap(json))
   }
+
+  @Test
+  def testGetSchema(): Unit = {
+    val schemaFromClass = DataTemplates.getSchema(classOf[MockRecord])
+    assert(schemaFromClass === MockRecord.SCHEMA)
+
+    val schemaFromClassTag = DataTemplates.getSchema[MockRecord]
+    assert(schemaFromClassTag === MockRecord.SCHEMA)
+  }
 }
 
 object DataTemplatesTest {
