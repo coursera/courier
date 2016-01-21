@@ -423,7 +423,8 @@ record_fields:
     `..., "optional": true`                      | `case class Record(field: Option[String] = None)`
 
 docstring:
-  courier:
+  courier: |
+    ```
     /**
      * Doc strings may be added to types. This doc should describe the purposes
      * of the Example type.
@@ -437,7 +438,9 @@ docstring:
        */
        field: string
     }
-  pdsc:
+    ```
+  pdsc: |
+    ```json
     {
       "name": "Example",
       "type": "record",
@@ -450,15 +453,19 @@ docstring:
         }
       ]
     }
+    ```
 
 deprecated:
-  courier:
+  courier: |
+    ```
     @deprecated("Use record X instead.")
     record Example {
       @deprecated("Use field x instead.")
       field: string
     }
-  pdsc:
+    ```
+  pdsc: |
+    ```json
     {
       "name": "Example",
       "type": "record",
@@ -471,6 +478,7 @@ deprecated:
         }
       ]
     }
+    ```
 
 record_properties:
   courier: |

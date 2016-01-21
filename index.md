@@ -240,13 +240,18 @@ may be optional or may have default values.
 
 {% include file_format_specific.html name="record_fields" %}
 
-Schema fields may also be documented:
+#### Doc Strings
+
+Types and fields may be documented using "doc strings".
 
 {% include file_format_specific.html name="docstring" %}
 
-or marked as deprecated:
+#### Deprecation
+
+Types and fields may be deprecated.
 
 {% include file_format_specific.html name="deprecated" %}
+
 
 #### Including fields
 
