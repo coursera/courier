@@ -224,11 +224,11 @@ Record Types
 contain any number of fields, which may be any pegasus type, including
 primitives, enums, unions, maps and arrays.
 
-For example, a basic record type containing a few fields:
+For example, a basic record type containing a few fields
 
 {% include file_format_specific.html name="record_example" %}
 
-This will be generated as:
+will be generated as:
 
 ```scala
 /** A simple record */
@@ -240,9 +240,13 @@ may be optional or may have default values.
 
 {% include file_format_specific.html name="record_fields" %}
 
-Schema fields may also be documented or marked as deprecated:
+Schema fields may also be documented:
 
-{% include file_format_specific.html name="record_properties" %}
+{% include file_format_specific.html name="docstring" %}
+
+or marked as deprecated:
+
+{% include file_format_specific.html name="deprecated" %}
 
 #### Including fields
 

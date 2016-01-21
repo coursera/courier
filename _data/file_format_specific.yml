@@ -422,6 +422,56 @@ record_fields:
     `..., "default": "message"`                  | `case class Record(field: String = "message")`
     `..., "optional": true`                      | `case class Record(field: Option[String] = None)`
 
+docstring:
+  courier:
+    /**
+     * Doc strings may be added to types. This doc should describe the purposes
+     * of the Example type.
+     *
+     * Doc strings may be formatted using
+     * [Markdown](https://daringfireball.net/projects/markdown/).
+     */
+    record Example {
+      /**
+       * Doc strings may also be added to fields.
+       */
+       field: string
+    }
+  pdsc:
+    {
+      "name": "Example",
+      "type": "record",
+      "doc": "Doc strings may be added to types...",
+      "fields": [
+        {
+          "name": "field",
+          "type": "string",
+          "doc": "Doc strings may also be added to fields."
+        }
+      ]
+    }
+
+deprecated:
+  courier:
+    @deprecated("Use record X instead.")
+    record Example {
+      @deprecated("Use field x instead.")
+      field: string
+    }
+  pdsc:
+    {
+      "name": "Example",
+      "type": "record",
+      "deprecated": "Use record X instead.",
+      "fields": [
+        {
+          "name": "field",
+          "type": "string",
+          "doc": "Use field x instead."
+        }
+      ]
+    }
+
 record_properties:
   courier: |
     Schema Field                                 | Generated Scala
