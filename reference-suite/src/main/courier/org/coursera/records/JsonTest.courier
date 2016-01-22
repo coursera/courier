@@ -1,0 +1,7 @@
+namespace org.coursera.records
+
+@json = {
+  "negativeNumber": -3000000000
+}
+record JsonTest {
+}
