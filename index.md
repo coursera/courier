@@ -14,7 +14,7 @@ Binary protocols, such as Protobuf, Thrift and MessagePack have proven that data
 schemas are an excellent way to sharing the structure of data messaged
 between multiple systems and programming languages. For JSON, however, there are
 few systems available that take this schema driven approach. So we build Courier,
-the most comprehensive schema based system for JSON.
+the most comprehensive schema based system centered around JSON.
 
 Courier includes:
 
