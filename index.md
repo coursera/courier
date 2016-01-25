@@ -10,9 +10,9 @@ Courier is a modern data interchange system for web + mobile stacks that combine
 
 #### Why Courier?
 
-Courier is the only comprehensive schema based data system centered around JSON.
+Courier is the only comprehensive, schema based data system centered around JSON.
 Binary protocols, such as Protobuf, Thrift and MessagePack have proven that data
-schemas are an excellent way to sharing the structure of data messaged
+schemas are an excellent way to share the structure of data messaged
 between multiple systems and programming languages. For JSON, however, there are
 few systems available that take this schema driven approach. Json-schema
 aims to satisfy the needs of dynamically programming languages and lacks the type
