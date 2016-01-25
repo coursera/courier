@@ -15,13 +15,23 @@ Modern data interchange system for web + mobile stacks that combines an expressi
 
 <p align="center"><a href="http://coursera.github.io/courier/#getting-started">Getting Started</a> | <a href="http://coursera.github.io/courier/#documentation">Documentation</a> | <a href="https://groups.google.com/d/forum/courier">Discussion Group</a></p>
 
-Why Courier?
-------------
+#### Why Courier?
+
+Binary protocols, such as Protobuf, Thrift and MessagePack have proven that data
+schemas are an excellent way to sharing the structure of data messaged
+between multiple systems and programming languages. For JSON, however, there are
+few systems available that take this schema driven approach. So we build Courier,
+the most comprehensive schema based system centered around JSON.
+
+Courier includes:
 
 * Expressive schema language with full IDE support
 * Language idiomatic generated data bindings
 * Language interoperability: Scala, Swift, Java (incl. custom Android support), Javascript
-* Multiple data protocols: JSON, Avro binary, PSON, BSON, ...
+* Build for JSON with support for other data protocols including: Avro binary, PSON and BSON
+* Fast and stable. Courier is based on
+  [Pegasus](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates),
+  a high performance, battle tested data system built and used at scale at Linkedin.
 
 Features
 --------
