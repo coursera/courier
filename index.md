@@ -10,6 +10,16 @@ Courier is a modern data interchange system for web + mobile stacks that combine
 
 #### Why Courier?
 
+There are numerous excellent schema driven data interchange systems for binary protocols
+such as Protobuf, Thrift and MessagePack.  These systems have proven that generating
+bindings from data schemas for each language is a solid approach for data interchange
+between type-safe languages. For JSON, however, there are few systems that take this
+schema driven approach. Courier aims to fill this gap with a comprehensive system
+based on Pegasus, a high performance, battle tested data system built and used at
+scale at Linkedin.
+
+Courier includes:
+
 * Expressive schema language with full IDE support
 * Language idiomatic generated data bindings
 * Language interoperability: Scala, Swift, Java (incl. custom Android support), Javascript
