@@ -434,13 +434,7 @@ public class CourierSchemaParser extends SchemaParser {
       // Replace with https://github.com/coursera/courier/tree/with-restli-upstream-fixes
       // once https://github.com/linkedin/rest.li/pull/61 is accepted.
       if (!typeName.equals("string")) {
-        String qualifiedKeyName;
-        Name importKeyTypeName = currentImports.get(typeName);
-        if (importKeyTypeName != null) {
-          qualifiedKeyName = importKeyTypeName.getFullName();
-        } else {
-          qualifiedKeyName = typeName;
-        }
+        String qualifiedKeyName = computeFullName(typeName);
         propsToAdd.put("keys", qualifiedKeyName);
       }
     } else if (keyType.typeDeclaration() != null) {

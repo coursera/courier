@@ -992,6 +992,7 @@ public class CourierTemplateSpecGenerator {
     final Object keysSchemaData = mapSchema.getProperties().get("keys");
     if (keysSchemaData != null)
     {
+      // TODO: for some reason this code path to look up a schema doesn't account for the local files namespace.
       DataSchema keySchema = _schemaParser.parseObject(keysSchemaData);
       if (keySchema == null) {
         throw unrecognizedSchemaType(enclosingClass, "keys", mapSchema);

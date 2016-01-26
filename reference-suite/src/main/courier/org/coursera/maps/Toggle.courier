@@ -1,0 +1,6 @@
+namespace org.coursera.maps
+
+enum Toggle {
+  UP
+  DOWN
+}

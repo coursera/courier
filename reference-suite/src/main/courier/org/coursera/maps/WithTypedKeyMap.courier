@@ -18,6 +18,7 @@ record WithTypedKeyMap {
   `enum`: map[Fruits, string]
   custom: map[CustomInt, string]
   `fixed`: map[Fixed8, string]
+  samePackageEnum: map[Toggle, string]?
   // TODO: fix
   /* inlineRecord: map [
     record RecordKey {

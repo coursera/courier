@@ -42,6 +42,9 @@ import org.coursera.enums.FruitsToStringMap
 import org.coursera.fixed.Fixed8
 import org.coursera.fixed.Fixed8Map
 import org.coursera.fixed.Fixed8ToStringMap
+import org.coursera.maps.Toggle
+import org.coursera.maps.ToggleToStringMap
+
 //import org.coursera.maps.RecordKey
 //import org.coursera.maps.RecordKeyToStringMap
 import org.coursera.maps.WithComplexTypesMap
