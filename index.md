@@ -208,12 +208,18 @@ compile
 run-main Example
 ```
 
+And that's it.  You've used Courier to write some JSON!.
+
+#### How it Works
+
 The generator is run automatically before `src/main/scala` compilation. It also registers for
 triggered execution to support SBT commands like `~compile`, which will cause the generator to
 run immediately whenever `.courier` (or `.pdsc`) file is changed.
 
 The generator will write Scala files to the `schemas/target/scala-<scalaMajorVersion>/src_managed/main/courier` directory of
 your project and add them to the compile classpath.
+
+#### Next Steps
 
 For details on the `.pdsc` file format, see
 [Pegasus Schemas and Data](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates).
@@ -224,8 +230,7 @@ For details on the `.courier` file format, see
 The code generator is an extension of the Rest.li SBT Plugin, for more details, see
 [the rest.li-sbt-plugin wiki](https://github.com/linkedin/rest.li-sbt-plugin).
 
-#### Testing
-
+For testing,
 `.courier` (or `.pdsc`) files only needed for tests may be added to `src/test/pegasus`.
 
 ### Java (Gradle)
