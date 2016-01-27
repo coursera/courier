@@ -178,7 +178,7 @@ directory:
 In SBT, run:
 
 ```sh
-project example
+project schemas
 compile
 ```
 
@@ -186,7 +186,7 @@ When run, the `org.example.fortune.Fortune` Scala class is generated. It behaves
 a case class, but can be serialized to JSON, or any other data format a Pegasus codec is available
 for.  For example:
 
-##### example/src/main/scala/Main.scala
+##### /src/main/scala/Main.scala
 
 ```scala
 import com.linkedin.data.template.PrettyPrinterJacksonDataTemplateCodec
@@ -196,16 +196,24 @@ object Example extends App {
   val fortune = Fortune(message = "Today is your lucky day!")
 
   val codec = new PrettyPrinterJacksonDataTemplateCodec
-  println(codec.mapToString(fortune.dataMap))
+  println(codec.mapToString(fortune.data))
   // -> { "message": "Today is your lucky day!" }
 }
+```
+
+In SBT, run:
+
+```sh
+project root
+compile
+run-main Example
 ```
 
 The generator is run automatically before `src/main/scala` compilation. It also registers for
 triggered execution to support SBT commands like `~compile`, which will cause the generator to
 run immediately whenever `.courier` (or `.pdsc`) file is changed.
 
-The generator will write Scala files to the `target/scala-<scalaMajorVersion>/courier` directory of
+The generator will write Scala files to the `schemas/target/scala-<scalaMajorVersion>/src_managed/main/courier` directory of
 your project and add them to the compile classpath.
 
 For details on the `.pdsc` file format, see
