@@ -1,0 +1,10 @@
+#!/bin/bash
+ARTIFACTORY_URL=$1
+
+sbt fullpublish-mavenlocal # publish courier to maven local so that the gradle build for gradle-plugin can depend on it
+
+sbt -Dsbt.override.publish.repos.release=$ARTIFACTORY_URL/general \
+    -Dsbt.override.publish.repos.snapshot=$ARTIFACTORY_URL/general-snapshots \
+    "set credentials in Global += Credentials(Path.userHome / \".artifactory_credentials\")" "fullpublish"
+
+(cd gradle-plugin; gradle artifactoryPublish)

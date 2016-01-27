@@ -92,25 +92,29 @@ To publish to maven central, configure your credentials as described by
 http://www.scala-sbt.org/0.13/docs/Using-Sonatype.html and then publish via SBT using:
 
 ```sh
-sbt fullpublish
-# OR
-sbt fullpublish-signed
+scripts/courier-publish-mavencentral
 ```
 
-To publish to different repo, override the publication repo and set your credentials like so:
+To publish to an artifactory repo:
 
 ```sh
-sbt \
--Dsbt.override.publish.repos.release=https://<repoistory>/path/to/repo/releases \
--Dsbt.override.publish.repos.snapshot=https://<repoistory>/path/to/repo/snapshots \
-"set credentials += Credentials(\"/path/to/credentials_file\")" \
-"fullpublish"
+scripts/courier-publich-artifactory <artifactory-base-url>
 ```
+
+Where <artifactory-base-url> is something like `https://example.org/artifactory`
 
 When published, the version number in `version.sbt` will automatically be incremented.
 It should always end with `-SNAPSHOT`. The `sbt-release` plugin is responsible for publishing
 the release versions and incrementing the version number, so this should not usually need to
 be done manually.
+
+To publish to "maven local" (`.m2` directory):
+
+```sh
+scripts/courier-publish-local
+```
+
+See the publish scripts for additional details.
 
 Licensing
 ---------

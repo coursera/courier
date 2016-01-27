@@ -1,0 +1,4 @@
+#!/bin/bash
+sbt fullpublish-mavenlocal
+(cd gradle-plugin; ./gradlew install)
+

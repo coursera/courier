@@ -1,0 +1,5 @@
+#!/bin/bash
+# Publish to Maven
+sbt fullpublish-mavenlocal # publish courier to maven local so that the gradle build for gradle-plugin can depend on it
+sbt fullpublish-signed
+(cd gradle-plugin; gradle uploadArchives)
