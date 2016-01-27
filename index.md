@@ -168,10 +168,9 @@ lazy val root = (project in file("."))
 
 Your project can now generate Courier data bindings.
 
-To try it out, add `.courier` (or `.pdsc`) files to the `src/main/pegasus`
-directory of your project. For example create a `Fortune.courier` or
-`Fortune.pdsc` file in the `schemas/src/main/pegasus/org/example/fortune`
-directory:
+To try it out, add a schema file:
+
+##### /schemas/src/main/pegasus/org/example/fortune/Fortune.courier
 
 {% include file_format_specific.html name="sbt_fortune" %}
 
