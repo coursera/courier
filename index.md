@@ -36,7 +36,7 @@ Courier is a concise but comprehensive schema language, based on
 Pegasus and Avro, and with language features from Scala, Swift, and Avro IDL.
 
 <center>
-<img src="images/courier-intellij.png" style="max-width:60%; max-height:100%; -webkit-filter: drop-shadow(5px 5px 5px #222); filter: drop-shadow(5px 5px 5px #222);" />
+<img src="images/courier-intellij3.png" style="max-width:60%; max-height:100%;" />
 </center>
 
 **Idiomatic Data bindings**
@@ -44,6 +44,19 @@ Pegasus and Avro, and with language features from Scala, Swift, and Avro IDL.
 Courier goes to great lengths to produce data bindings that look and feel natural to developers.
 
 For example, for Scala, Courier generates immutable Scala case classes, `Option`, default parameters, pattern matching, sealed traits, Scala collections and Scala enumerations to produce ADT style bindings that look and behave how Scala developers expect.
+
+<div style="text-align:right">
+  <b>Swift</b>
+  <br>
+  <img src="images/courier-swift.png" style="max-width:80%; max-height:100%;" />
+</div>
+
+<div>
+  <b>Scala</b>
+  <br>
+  <img src="images/courier-scala.png" style="max-width:60%; max-height:100%;" />
+</div>
+<br>
 
 **Language interoperability**
 
@@ -83,8 +96,8 @@ How development with Courier works
 * Data bindings are generated from schemas for each language using the provided build system plugins.
 * Developers then code against those data bindings and get a strong guarantee that the JSON (or binary protocol) that those bindings read and write are compatible with all the other languages doing the same thing.
 
-Features
---------
+Feature status
+--------------
 
 Schema language:
 
