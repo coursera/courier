@@ -36,7 +36,7 @@ Courier is a concise but comprehensive schema language, based on
 Pegasus and Avro, and with language features from Scala, Swift, and Avro IDL.
 
 <center>
-<img src="images/courier-intellij3.png" style="max-width:60%; max-height:100%;" />
+<img src="images/courier-intellij3.png" style="max-width:664px; max-height:245px;" />
 </center>
 
 **Idiomatic Data bindings**
@@ -48,13 +48,13 @@ For example, for Scala, Courier generates immutable Scala case classes, `Option`
 <div style="text-align:right">
   <b>Swift</b>
   <br>
-  <img src="images/courier-swift.png" style="max-width:80%; max-height:100%;" />
+  <img src="images/courier-swift.png" style="max-width:544px; max-height:117px;" />
 </div>
 
 <div>
   <b>Scala</b>
   <br>
-  <img src="images/courier-scala.png" style="max-width:60%; max-height:100%;" />
+  <img src="images/courier-scala.png" style="max-width:492px; max-height:146px;" />
 </div>
 <br>
 
