@@ -14,7 +14,7 @@
 }
 
 @ClassAnnotations(enum) object @enum.enumName extends ScalaEnumerationTemplate {
-  type @enum.enumName = Value
+  type @enum.enumName = TemplateValue
 
   @enum.symbols.map { symbol =>
     @enum.symbolScalaDocs.get(symbol).map { doc => @doc }

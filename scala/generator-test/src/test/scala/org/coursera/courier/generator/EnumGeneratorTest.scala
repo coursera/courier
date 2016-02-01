@@ -35,7 +35,7 @@ class EnumGeneratorTest extends GeneratorTest with SchemaFixtures {
   }
 
   @Test
-  def testEnumProperties(): Unit = {
+  def testEnumProperties_symbol(): Unit = {
     val maybeColor = EnumProperties.BANANA.property("color").collect {
       case color: String => color
     }
@@ -43,5 +43,16 @@ class EnumGeneratorTest extends GeneratorTest with SchemaFixtures {
 
     val orange = EnumProperties.fromString("ORANGE")
     assert(Set(EnumProperties.BANANA, EnumProperties.ORANGE).contains(orange))
+  }
+
+  @Test
+  def testEnumProperties_ref(): Unit = {
+    def toColor(entry: EnumProperties.EnumProperties): String = {
+      entry.property("color").collect {
+        case color: String => color
+      }.getOrElse(throw new RuntimeException())
+    }
+
+    assert(toColor(EnumProperties.BANANA) === "yellow")
   }
 }
