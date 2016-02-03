@@ -610,13 +610,6 @@ and writers of the data may be using different versions of a schema, because,
 in such system, a reader might receive data containing union members they do
 not yet recognize.
 
-Note that the presence of the `$UnknownMember` symbol does not, by itself, guarantee
-that adding an a member to the a union is safe. In order to ensure
-this, one must be sure that all readers of the union
-handle reading the `$UnknownMember` in a reasonable way. Depending on
-the semantic meaning of the union, this may or may not be possible, and so
-the addition of union members should be approached with care.
-
 All readers are expected to check if a union is `$UnknownMember` when consuming it.
 If the reader is able to handle `$UnknownMember` in a reasonable and safe way, it
 is encouraged to do so. If the reader requires a recognized member and cannot
@@ -698,9 +691,6 @@ unrecognized symbol was read from serialized data. `$UNKNOWN` is primarily
 intended to help manage changes to the enum in systems where reader and writers of the data
 may be using different versions of a schema, because, in such system, a reader might
 receive data containing enum symbols they do not yet recognize.
-
-Note that the `$UNKNOWN` symbol must always be considered by readers when consuming
-a enum.
 
 All readers are expected to check if a enum is `$UNKNOWN` when consuming it.
 If the reader is able to handle `$UNKNOWN` in a reasonable and safe way, it
