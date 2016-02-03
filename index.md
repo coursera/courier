@@ -600,14 +600,18 @@ any desired name. See below for more details about typerefs.
 
 #### Union Backward Compatibility
 
-`$UnknownMember` indicates an unrecognized union member was read
-from serialized data. `$UnknownMember` is primarily intended to ease
-managing backward compatibility in systems where reader and writers of the data
-may be using different versions of a schema, because, in such system, a reader might
-receive data containing union members they do not yet recognize.
+Strictly speaking, adding members to unions is a backward incompatible change.
+But in some cases, adding members can be handled in safe and controlled fashion.
+
+Each Courier generated union type includes a `$UnknownMember` that indicates
+an unrecognized union member was read from serialized data. `$UnknownMember`
+is primarily intended help manage changes to the union in systems where reader
+and writers of the data may be using different versions of a schema, because,
+in such system, a reader might receive data containing union members they do
+not yet recognize.
 
 Note that the presence of the `$UnknownMember` symbol does not, by itself, guarantee
-that adding an a member to the a union is backward compatible. In order to ensure
+that adding an a member to the a union is safe. In order to ensure
 this, one must be sure that all readers of the union
 handle reading the `$UnknownMember` in a backward compatible way. Depending on
 the semantic meaning of the union, this may or may not be possible, and so
@@ -680,14 +684,17 @@ Fruits.BANANA.property("color")
 
 #### Enum Backward Compatibility
 
-`$UNKNOWN` indicates an unrecognized symbol was
-read from serialized data. `$UNKNOWN` is primarily intended to ease
-managing backward compatibility in systems where reader and writers of the data
+Strictly speaking, adding a symbol to a union is a backward incompatible change.
+But in some cases, adding symbols can be handled in safe and controlled fashion.
+
+Each Courier generated enum includes a `$UNKNOWN` symbol that indicates an
+unrecognized symbol was read from serialized data. `$UNKNOWN` is primarily
+intended to help manage changes to the enum in systems where reader and writers of the data
 may be using different versions of a schema, because, in such system, a reader might
 receive data containing enum symbols they do not yet recognize.
 
 Note that the presence of the `$UNKNOWN` symbol does not, by itself, guarantee
-that adding an a symbol to the enum is backward compatible. In order to ensure
+that adding an a symbol to the enum is safe. In order to ensure
 this, one must be sure that all readers of the enum
 handle the `$UNKNOWN` symbol in a backward compatible way. Depending on
 the semantic meaning of the enum, this may or may not be possible, and so
