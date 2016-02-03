@@ -16,6 +16,7 @@
 
 package org.coursera.courier.generator
 
+import org.coursera.courier.templates.ScalaEnumerationTemplate
 import org.coursera.enums.EnumProperties
 import org.coursera.enums.Fruits
 import org.junit.Test

@@ -27,6 +27,8 @@ abstract class ScalaEnumerationTemplate extends Enumeration {
 
   def SCHEMA: EnumDataSchema
 
+  def fromString(s: String): TemplateValue
+
   lazy val properties: Option[DataMap] = {
     Option(SCHEMA.getProperties.get(symbolProperties)).collect {
       case enumProps: DataMap => enumProps
