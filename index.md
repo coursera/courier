@@ -613,9 +613,9 @@ not yet recognize.
 Note that the presence of the `$UnknownMember` symbol does not, by itself, guarantee
 that adding an a member to the a union is safe. In order to ensure
 this, one must be sure that all readers of the union
-handle reading the `$UnknownMember` in a backward compatible way. Depending on
+handle reading the `$UnknownMember` in a reasonable way. Depending on
 the semantic meaning of the union, this may or may not be possible, and so
-the backward compatibility of changes to union members should be approached
+changes to union members should be approached
 with care.
 
 Enum Type
@@ -696,10 +696,9 @@ receive data containing enum symbols they do not yet recognize.
 Note that the presence of the `$UNKNOWN` symbol does not, by itself, guarantee
 that adding an a symbol to the enum is safe. In order to ensure
 this, one must be sure that all readers of the enum
-handle the `$UNKNOWN` symbol in a backward compatible way. Depending on
+handle the `$UNKNOWN` symbol in a reasonable way. Depending on
 the semantic meaning of the enum, this may or may not be possible, and so
-the backward compatibility of changes to enum symbols should be approached
-with care.
+the changes to enum symbols should be approached with care.
 
 Typerefs
 --------
