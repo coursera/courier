@@ -617,6 +617,13 @@ handle reading the `$UnknownMember` in a reasonable way. Depending on
 the semantic meaning of the union, this may or may not be possible, and so
 the addition of union members should be approached with care.
 
+All readers are expected to check if a union is `$UnknownMember` when consuming it.
+If the reader is able to handle `$UnknownMember` in a reasonable and safe way, it
+is encouraged to do so. If the reader requires a recognized member and cannot
+proceed in a reasonable way when `$UnknownMember` is encountered the reader should
+reject the data outright (e.g. if the data was received in an HTTP POST request,
+respond with a 400 HTTP response status code).
+
 Enum Type
 ---------
 
@@ -692,12 +699,15 @@ intended to help manage changes to the enum in systems where reader and writers 
 may be using different versions of a schema, because, in such system, a reader might
 receive data containing enum symbols they do not yet recognize.
 
-Note that the presence of the `$UNKNOWN` symbol does not, by itself, guarantee
-that adding an a symbol to the enum is safe. In order to ensure
-this, one must be sure that all readers of the enum
-handle the `$UNKNOWN` symbol in a reasonable way. Depending on
-the semantic meaning of the enum, this may or may not be possible, and so
-the addition of enum symbols should be approached with care.
+Note that the `$UNKNOWN` symbol must always be considered by readers when consuming
+a enum.
+
+All readers are expected to check if a enum is `$UNKNOWN` when consuming it.
+If the reader is able to handle `$UNKNOWN` in a reasonable and safe way, it
+is encouraged to do so. If the reader requires a recognized symbol and cannot
+proceed in a reasonable way when `$UNKNOWN` is encountered the reader should
+reject the data outright (e.g. if the data was received in an HTTP POST request,
+respond with a 400 HTTP response status code).
 
 Typerefs
 --------
