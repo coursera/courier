@@ -684,7 +684,7 @@ Fruits.BANANA.property("color")
 
 #### Enum Backward Compatibility
 
-Strictly speaking, adding a symbol to a union is a backward incompatible change.
+Strictly speaking, adding a symbol to a enum is a backward incompatible change.
 But in some cases, adding symbols can be handled in safe and controlled fashion.
 
 Each Courier generated enum includes a `$UNKNOWN` symbol that indicates an
