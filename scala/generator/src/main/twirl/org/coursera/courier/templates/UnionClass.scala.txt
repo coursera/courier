@@ -85,6 +85,14 @@ object @(union.scalaType) {
       extends @(union.scalaType)(dataMap) with Product1[@(member.classDefinition.scalaTypeFullname)] {
       import @(member.classDefinition.memberName)._
 
+      def declaringTyperefSchema: Option[TyperefDataSchema] = {
+        @if(union.containingTyperef.isDefined) {
+          Some(@(union.scalaType).TYPEREF_SCHEMA)
+        } else {
+          None
+        }
+      }
+
       def _1 = value
 
       lazy val value = @member.classDefinition match {
@@ -151,5 +159,14 @@ object @(union.scalaType) {
 
   case class $UnknownMember private[@(union.scalaType)](
       private[@(union.scalaType)] val dataMap: DataMap)
-    extends @(union.scalaType)(dataMap)
+    extends @(union.scalaType)(dataMap) {
+
+    def declaringTyperefSchema: Option[TyperefDataSchema] = {
+      @if(union.containingTyperef.isDefined) {
+        Some(@(union.scalaType).TYPEREF_SCHEMA)
+      } else {
+        None
+      }
+    }
+  }
 }

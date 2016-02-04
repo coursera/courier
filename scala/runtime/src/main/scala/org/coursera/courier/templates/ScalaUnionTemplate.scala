@@ -17,8 +17,11 @@
 package org.coursera.courier.templates
 
 import com.linkedin.data.DataMap
+import com.linkedin.data.schema.TyperefDataSchema
 import com.linkedin.data.schema.UnionDataSchema
 import com.linkedin.data.template.UnionTemplate
 
 abstract class ScalaUnionTemplate(dataMap: DataMap, schema: UnionDataSchema)
-  extends UnionTemplate(dataMap, schema)
+  extends UnionTemplate(dataMap, schema) {
+  def declaringTyperefSchema: Option[TyperefDataSchema]
+}
