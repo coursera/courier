@@ -63,6 +63,7 @@
   import com.linkedin.data.DataMap
   import com.linkedin.data.DataList
   import com.linkedin.data.schema.MapDataSchema
+  import org.coursera.courier.companions.MapCompanion
   import com.linkedin.data.schema.DataSchema
   import com.linkedin.data.template.DataTemplate
   import com.linkedin.data.template.DataTemplateUtil

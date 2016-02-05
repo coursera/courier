@@ -18,6 +18,9 @@
   import com.linkedin.data.template.UnionTemplate
   import org.coursera.courier.templates.DataTemplates.DataConversion
   import org.coursera.courier.templates.ScalaUnionTemplate
+  import org.coursera.courier.companions.UnionCompanion
+  import org.coursera.courier.companions.UnionMemberCompanion
+  import org.coursera.courier.companions.UnionWithTyperefCompanion
   import scala.language.implicitConversions
 
   import scala.runtime.ScalaRunTime
@@ -38,7 +41,7 @@
   override def hashCode: Int = ScalaRunTime._hashCode(this)
 }
 
-object @(union.scalaType) {
+object @(union.scalaType) extends UnionCompanion @(if(union.containingTyperef.isDefined){"with UnionWithTyperefCompanion "}){
   val SCHEMA = DataTemplateUtil.parseSchema(@("\"\"\"" + SchemaToJsonEncoder.schemaToJson(union.unionSchema, JsonBuilder.Pretty.COMPACT) + "\"\"\"")).asInstanceOf[UnionDataSchema]
 
   @union.containingTyperef.flatMap(_.schema).map { typerefSchema =>
@@ -131,7 +134,7 @@ object @(union.scalaType) {
       }
     }
 
-    object @(member.classDefinition.memberName) {
+    object @(member.classDefinition.memberName) extends UnionMemberCompanion {
       def apply(value: @(member.classDefinition.scalaTypeFullname)): @(member.classDefinition.memberName) = {
         val $dataMap = new DataMap
         val $result = new @(member.classDefinition.memberName)($dataMap)
@@ -149,7 +152,9 @@ object @(union.scalaType) {
         Some(member.value)
       }
 
-      private[@(union.scalaType)] val memberKey = "@(member.unionMemberKey)"
+      val memberKey = "@(member.unionMemberKey)"
+
+      def unionCompanion = @(union.scalaType)
     }
 
     implicit def wrap(value: @(member.classDefinition.scalaTypeFullname)): @(member.classDefinition.memberName) = {

@@ -25,7 +25,7 @@ import com.linkedin.data.template.SetMode
 import org.coursera.courier.templates.DataTemplates.DataConversion
 
 abstract class ScalaRecordTemplate(dataMap: DataMap, schema: RecordDataSchema)
-  extends RecordTemplate(dataMap, schema) {
+  extends RecordTemplate(dataMap, schema) with ScalaTemplate {
 
   // TODO(jbetz): Add more utility methods here to simplify obtain and put methods that generator
   // produces.

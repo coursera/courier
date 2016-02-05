@@ -18,23 +18,39 @@ package org.coursera.courier.templates
 
 import com.linkedin.data.DataMap
 import com.linkedin.data.schema.EnumDataSchema
+import org.coursera.courier.companions.SchemaAware
 
 /**
  * Extends a Scala Enumeration, providing access to the Courier schema and it's properties.
  */
-abstract class ScalaEnumerationTemplate extends Enumeration {
+abstract class ScalaEnumerationTemplate extends Enumeration with ScalaTemplate with SchemaAware {
   import ScalaEnumerationTemplate._
 
-  def SCHEMA: EnumDataSchema
+  override def SCHEMA: EnumDataSchema
 
+  /**
+   * Reads a string as an enumeration symbol.  This method differs from `withName(String)`:
+   *
+   * - Unrecognized string symbols are read as the `$UNKNOWN` enum symbol, unlike `withName(String)`
+   *   which throws a `NoSuchElementException` if a unrecognized symbol is encountered.
+   * - Returns a `TemplateValue`, a subtype of the `Value` type returned by `withName(String)` that
+   *   contains additional Courier specific convenience methods such as `property(String)`.
+   */
   def fromString(s: String): TemplateValue
 
+  /**
+   * Schema properties defined on this enum, if any.
+   */
   lazy val properties: Option[DataMap] = {
     Option(SCHEMA.getProperties.get(symbolProperties)).collect {
       case enumProps: DataMap => enumProps
     }
   }
 
+  /**
+   * Enumeration value type that includes Courier specific convenience methods such as
+   * `property(String)`.
+   */
   case class TemplateValue(name: String) extends Val(name) {
     override def compare(that: Value): Int = {
       that match {
@@ -43,6 +59,9 @@ abstract class ScalaEnumerationTemplate extends Enumeration {
       }
     }
 
+    /**
+     * Schema properties defined on this enum symbol, if any.
+     */
     lazy val properties: Option[DataMap] = {
       ScalaEnumerationTemplate.this.properties.map { enumProps =>
         Option(enumProps.get(name)) match {
@@ -55,6 +74,12 @@ abstract class ScalaEnumerationTemplate extends Enumeration {
       }
     }
 
+    /**
+     * Gets a schema property defined on this enum symbol.
+     *
+     * @param name The name of the schema property.
+     * @return The schema property if found, else None.
+     */
     def property(name: String): Option[AnyRef] = {
       properties.map(_.get(name))
     }

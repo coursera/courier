@@ -19,6 +19,7 @@
   import org.coursera.courier.templates.DataTemplates
   import org.coursera.courier.templates.DataTemplates.DataConversion
   import org.coursera.courier.templates.ScalaArrayTemplate
+  import org.coursera.courier.companions.ArrayCompanion
   import scala.collection.GenTraversable
   import scala.collection.JavaConverters._
   import scala.collection.generic.CanBuildFrom
@@ -82,7 +83,7 @@
   override def clone(): DataTemplate[DataList] = this
 }
 
-object @(array.scalaType) {
+object @(array.scalaType) extends ArrayCompanion {
   val SCHEMA = DataTemplateUtil.parseSchema(@("\"\"\"" + SchemaToJsonEncoder.schemaToJson(array.arraySchema, JsonBuilder.Pretty.COMPACT) + "\"\"\"")).asInstanceOf[ArrayDataSchema]
 
   @* Register custom types and coercers. *@

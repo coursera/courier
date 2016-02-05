@@ -22,6 +22,6 @@ import com.linkedin.data.schema.UnionDataSchema
 import com.linkedin.data.template.UnionTemplate
 
 abstract class ScalaUnionTemplate(dataMap: DataMap, schema: UnionDataSchema)
-  extends UnionTemplate(dataMap, schema) {
+  extends UnionTemplate(dataMap, schema) with ScalaTemplate {
   def declaringTyperefSchema: Option[TyperefDataSchema]
 }

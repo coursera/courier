@@ -14,12 +14,12 @@
  limitations under the License.
  */
 
-package org.coursera.courier.templates
+package org.coursera.courier.companions
 
-import com.linkedin.data.DataList
-import com.linkedin.data.template.DataTemplate
-import org.coursera.courier.templates.DataTemplates.DataConversion
-
-trait ScalaArrayTemplate extends DataTemplate[DataList] with ScalaTemplate {
-  def copy(dataList: DataList, conversion: DataConversion): ScalaArrayTemplate
+/**
+ * Identifies companion objects of Courier generated union member types.
+ */
+trait UnionMemberCompanion {
+  def memberKey: String
+  def unionCompanion: UnionCompanion
 }
