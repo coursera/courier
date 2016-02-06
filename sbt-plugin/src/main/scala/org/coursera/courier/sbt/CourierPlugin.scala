@@ -42,6 +42,21 @@ import scala.collection.JavaConverters._
  */
 object CourierPlugin extends Plugin {
 
+  /**
+   * Courier's version number.
+   *
+   * Code generation is always re-run if this version differs from it's value from the
+   * previous run (even if there are no changes to .courier files).
+   *
+   * If this version is unchanged, the code generation is only run if changes to the .courier
+   * files are detected.
+   *
+   * Note that changes to the courier generator must still follow semantic versioning-- any
+   * backward incompatible changes should be reflected in the major version.
+   */
+  // SBT correctly sets the implementation version using the value from version.sbt
+  val VERSION = getClass.getPackage.getImplementationVersion
+
   val courierGenerator = taskKey[Seq[File]]("Generates Scala bindings for .pdsc and .courier files")
 
   val courierGeneratorClass = settingKey[Class[_ <: PegasusCodeGenerator]](
@@ -56,6 +71,10 @@ object CourierPlugin extends Plugin {
     "Namespace prefix used for generated Scala classes")
 
   val courierCacheSources = taskKey[File]("Caches .pdsc and .courier sources")
+
+  val courierVersionFile = taskKey[File](
+    "Version file for cache busting 'courierCacheSources' when the Courier generator version is " +
+    "bumped")
 
   val packageDataModel = taskKey[File]("Produces a data model jar containing only pdsc files")
 
@@ -86,6 +105,9 @@ object CourierPlugin extends Plugin {
 
     courierDestinationDirectory in conf := (sourceManaged in conf).value / "courier",
 
+    courierVersionFile in conf :=
+      (streams in conf).value.cacheDirectory / "VERSION",
+
     courierCacheSources in conf := (streams in conf).value.cacheDirectory / "pdsc.sources",
 
     watchSources in conf := ((courierSourceDirectory in conf).value ** sourceFileFilter).get,
@@ -108,17 +130,24 @@ object CourierPlugin extends Plugin {
         (internalDependencyClasspath in conf).value.map(_.data.getAbsolutePath)
       val resolverPath = resolverPathFiles.mkString(pathSeparator)
 
+      val versionFile = (courierVersionFile in conf).value
       val cacheFileSources = (courierCacheSources in conf).value
       val sourceFiles = (src ** sourceFileFilter).get
       val previousScalaFiles = (dst ** "*.scala").get
 
+      if (!versionFile.exists() || IO.read(versionFile).trim != VERSION) {
+        log.info(s"Courier generator version update detected: $VERSION.")
+        IO.write(versionFile, s"$VERSION\n")
+      }
+
       val (anyFilesChanged, cacheSourceFiles) = {
-        prepareCacheUpdate(cacheFileSources, sourceFiles, s)
+        prepareCacheUpdate(cacheFileSources, sourceFiles :+ versionFile, s)
       }
 
       log.debug("Detected changed files: " + anyFilesChanged)
       val results = if (anyFilesChanged) {
-        log.info("Courier: Generating Scala bindings for .pdsc and .courier files.")
+        log.info(
+          s"Courier: Generating Scala bindings for .pdsc and .courier files for ${conf.name}.")
         log.debug("Courier resolver path: " + resolverPath)
         log.debug("Courier source path: " + src)
         log.debug("Courier destination path: " + dst)
