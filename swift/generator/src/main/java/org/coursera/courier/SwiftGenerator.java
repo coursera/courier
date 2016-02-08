@@ -17,6 +17,7 @@
 package org.coursera.courier;
 
 import com.linkedin.data.schema.DataSchema;
+import com.linkedin.pegasus.generator.GeneratorResult;
 import com.linkedin.pegasus.generator.spec.ClassTemplateSpec;
 import com.linkedin.pegasus.generator.spec.EnumTemplateSpec;
 import com.linkedin.pegasus.generator.spec.RecordTemplateSpec;
@@ -82,7 +83,12 @@ public class SwiftGenerator implements PegasusCodeGenerator {
         new GeneratorRunnerOptions(targetPath, sourcePaths, resolverPath);
 
     GlobalConfig globalConfig = new GlobalConfig(optionality, equatable, false);
-    new DefaultGeneratorRunner().run(new SwiftGenerator(globalConfig), options);
+    GeneratorResult result =
+      new DefaultGeneratorRunner().run(new SwiftGenerator(globalConfig), options);
+
+    for (File file: result.getTargetFiles()) {
+      System.out.println(file.getAbsolutePath());
+    }
 
     InputStream runtime = ClassLoader.getSystemResourceAsStream("runtime/CourierRuntime.swift");
     IOUtils.copy(runtime, new FileOutputStream(new File(targetPath, "CourierRuntime.swift")));

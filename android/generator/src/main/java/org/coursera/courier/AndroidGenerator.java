@@ -17,6 +17,7 @@
 package org.coursera.courier;
 
 import com.linkedin.data.schema.DataSchema;
+import com.linkedin.pegasus.generator.GeneratorResult;
 import com.linkedin.pegasus.generator.spec.ClassTemplateSpec;
 import com.linkedin.pegasus.generator.spec.EnumTemplateSpec;
 import com.linkedin.pegasus.generator.spec.RecordTemplateSpec;
@@ -58,7 +59,11 @@ public class AndroidGenerator implements PegasusCodeGenerator {
     GeneratorRunnerOptions options =
         new GeneratorRunnerOptions(targetPath, sourcePaths, resolverPath);
 
-    new DefaultGeneratorRunner().run(new AndroidGenerator(), options);
+    GeneratorResult result = new DefaultGeneratorRunner().run(new AndroidGenerator(), options);
+
+    for (File file: result.getTargetFiles()) {
+      System.out.println(file.getAbsolutePath());
+    }
   }
 
   public AndroidGenerator() {

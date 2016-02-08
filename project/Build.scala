@@ -39,22 +39,10 @@ object Courier extends Build with OverridablePublishSettings {
         organization := "org.coursera.courier")
 
   //
-  // Publishing
-  //
-
-  // TODO(jbetz): Figure out how to enable sbt-release for this build.
-  // In order to use `sbt-release` we need to figure out how to cross build correctly with it.
-  // For now, we can release using the `fullpublish*` aliases defined in the root project and
-  // manually updating the version number before and after each release (removing -SNAPSHOT before),
-  // adding it back afterward and bumping the version number.
-  // OverrideablePublishSetiings allows the artifacts to be published to alternate repos.
-  override def defaultPublishSettings: Seq[Def.Setting[_]] = Sonatype.Settings
-
-  //
   // Cross building
   //
 
-  // Our scala build version story is, unfortunately, a bit hairy.
+  // Our scala cross building story is, unfortunately, a bit hairy.
   // In order to keep it under control we primarily concern ourselves with these two below Scala
   // version numbers:
 
@@ -66,7 +54,7 @@ object Courier extends Build with OverridablePublishSettings {
     scalaVersion in ThisBuild := sbtScalaVersion,
     crossScalaVersions in ThisBuild := Seq(sbtScalaVersion))
 
-  // We cross build our runtime for recent versions of Scala.
+  // We cross build our runtime to both versions.
   lazy val runtimeVersionSettings = Seq(
     scalaVersion in ThisBuild := currentScalaVersion,
     crossScalaVersions in ThisBuild := Seq(sbtScalaVersion, currentScalaVersion))
@@ -80,178 +68,13 @@ object Courier extends Build with OverridablePublishSettings {
     scalaVersion in ThisBuild := sbtScalaVersion,
     crossScalaVersions in ThisBuild := Seq(sbtScalaVersion, currentScalaVersion))
 
-  //
-  // Projects
-  //
-  lazy val scalaGenerator = Project(id = "scala-generator", base = file("scala") / "generator")
-    .dependsOn(scalaRuntime, scalaGeneratorApi, schemaLanguage)
-    .settings(generatorVersionSettings)
-    .enablePlugins(SbtTwirl)
-    .settings(
-      name := "courier-generator",
-      libraryDependencies ++= Seq(
-        ExternalDependencies.Pegasus.data,
-        ExternalDependencies.Pegasus.generator,
-        ExternalDependencies.JUnit.junit,
-        ExternalDependencies.Scalatest.scalatest,
-        ExternalDependencies.Scalariform.scalariform,
-        ExternalDependencies.ApacheCommons.lang),
-      dependencyOverrides += ExternalDependencies.ApacheCommons.io)
-
-  lazy val schemaLanguage = Project(id = "schema-language", base = file("schema-language"))
-    .settings(antlr4Settings)
-    .settings(plainJavaProjectSettings)
-    .settings(junitTestSettings)
-    .settings(
-      name := "courier-grammar",
-      antlr4PackageName in Antlr4 := Some("org.coursera.courier.grammar"),
-      libraryDependencies ++= Seq(
-        ExternalDependencies.Pegasus.data,
-        ExternalDependencies.ApacheCommons.lang),
-      dependencyOverrides += ExternalDependencies.ApacheCommons.io)
-
-  lazy val scalaGeneratorApi = Project(id = "generator-api", base = file("generator-api"))
-    .dependsOn(schemaLanguage)
-    .settings(plainJavaProjectSettings)
-    .settings(junitTestSettings)
-    .settings(
-      name := "courier-generator-api",
-      libraryDependencies ++= Seq(
-        ExternalDependencies.Pegasus.data,
-        ExternalDependencies.Pegasus.generator))
-
-  lazy val scalaRuntime = Project(id = "scala-runtime", base = file("scala") / "runtime")
-    .settings(runtimeVersionSettings)
-    .settings(
-      name := "courier-runtime",
-      libraryDependencies ++= Seq(
-        ExternalDependencies.Pegasus.data,
-        ExternalDependencies.JUnit.junit,
-        ExternalDependencies.Scalatest.scalatest)
-        ++
-        ExternalDependencies.ScalaParserCombinators.dependencies(scalaVersion.value))
-
-  lazy val scalaGeneratorTest = Project(id = "scala-generator-test", base = file("scala") / "generator-test")
-    .dependsOn(scalaGenerator)
-    .settings(runtimeVersionSettings)
-    .settings(forkedVmCourierGeneratorSettings)
-    .settings(
-      name := "courier-generator-test",
-      forkedVmCourierMainClass := "org.coursera.courier.generator.ScalaDataTemplateGenerator",
-      forkedVmCourierClasspath := (dependencyClasspath in Runtime in scalaGenerator).value.files,
-      forkedVmSourceDirectory := (sourceDirectory in referenceSuite).value / "main" / "courier",
-      forkedVmCourierDest :=
-        target.value / s"scala-${scalaBinaryVersion.value}" / "courier",
-      packagedArtifacts := Map.empty, // do not publish
-      libraryDependencies ++= Seq(
-        ExternalDependencies.JodaTime.jodaTime,
-        ExternalDependencies.JUnit.junit,
-        ExternalDependencies.Scalatest.scalatest),
-      fork in Test := true,
-      javaOptions in Test += // TODO(jbetz): figure out how to use testOptions in Test here
-          "-Dreferencesuite.srcdir=" + (sourceDirectory in referenceSuite).value.getAbsolutePath)
-
-  lazy val javaGenerator = Project(id = "java-generator", base = file("java") / "generator")
-    .dependsOn(scalaGeneratorApi)
-    .settings(plainJavaProjectSettings)
-    .settings(
-      name := "courier-java-generator",
-      libraryDependencies ++= Seq("com.sun.codemodel" % "codemodel" % "2.2"))
-
-  lazy val javaGeneratorTest = Project(id = "java-generator-test", base = file("java") / "generator-test")
-    .dependsOn(javaGenerator)
-    .settings(forkedVmCourierGeneratorSettings)
-    .settings(junitTestSettings)
-    .settings(plainJavaProjectSettings)
-    .settings(
-      name := "courier-java-generator-test",
-      forkedVmCourierMainClass := "org.coursera.courier.JavaGenerator",
-      forkedVmCourierClasspath := (dependencyClasspath in Runtime in javaGenerator).value.files,
-      forkedVmSourceDirectory := (sourceDirectory in referenceSuite).value / "main" / "courier",
-      forkedVmCourierDest :=
-        target.value / s"scala-${scalaBinaryVersion.value}" / "courier",
-      packagedArtifacts := Map.empty) // do not publish
-
-  lazy val androidGenerator = Project(id = "android-generator", base = file("android") / "generator")
-    .dependsOn(scalaGeneratorApi)
-    .settings(plainJavaProjectSettings)
-    .settings(
-      name := "courier-android-generator",
-      libraryDependencies ++= Seq(
-        ExternalDependencies.Rythm.rythmEngine,
-        ExternalDependencies.Gson.gson,
-        ExternalDependencies.JodaTime.jodaTime))
-
-  lazy val javaRuntime = Project(id = "java-runtime", base = file("java") / "runtime")
-    .settings(plainJavaProjectSettings)
-    .settings(
-      name := "courier-java-runtime",
-      libraryDependencies ++= Seq(
-        ExternalDependencies.Pegasus.data))
-
-  lazy val androidGeneratorTest = Project(id = "android-generator-test", base = file("android") / "generator-test")
-    .dependsOn(androidGenerator, androidRuntime)
-    .settings(forkedVmCourierGeneratorSettings)
-    .settings(junitTestSettings)
-    .settings(plainJavaProjectSettings)
-    .settings(
-      name := "courier-android-generator-test",
-      forkedVmCourierMainClass := "org.coursera.courier.AndroidGenerator",
-      forkedVmCourierClasspath := (dependencyClasspath in Runtime in androidGenerator).value.files,
-      forkedVmSourceDirectory := (sourceDirectory in referenceSuite).value / "main" / "courier",
-      forkedVmCourierDest :=
-        target.value / s"scala-${scalaBinaryVersion.value}" / "courier",
-      packagedArtifacts := Map.empty) // do not publish
-
-  lazy val referenceSuite = Project(id = "reference-suite", base = file("reference-suite"))
-
-  lazy val androidRuntime = Project(id = "android-runtime", base = file("android") / "runtime")
-    .settings(plainJavaProjectSettings)
-    .settings(
-      name := "courier-android-runtime",
-      libraryDependencies ++= Seq(
-        ExternalDependencies.Gson.gson))
-
-  lazy val swiftGenerator = Project(id = "swift-generator", base = file("swift") / "generator")
-    .dependsOn(scalaGeneratorApi)
-    .settings(plainJavaProjectSettings)
-    .settings(
-      name := "courier-swift-generator",
-      mainClass in assembly := Some("org.coursera.courier.SwiftGenerator"),
-      assemblyOption in assembly := (assemblyOption in assembly).value.copy(prependShellScript = Some(defaultShellScript)),
-      assemblyJarName in assembly := s"${name.value}-${version.value}.jar",
-      libraryDependencies ++= Seq(
-        ExternalDependencies.Rythm.rythmEngine,
-        ExternalDependencies.Slf4j.slf4jSimple))
-
-  lazy val swiftGeneratorTest = Project(id = "swift-generator-test", base = file("swift") / "generator-test")
-    .dependsOn(androidGenerator, androidRuntime)
-    .settings(forkedVmCourierGeneratorSettings)
-    .settings(junitTestSettings)
-    .settings(plainJavaProjectSettings)
-    .settings(
-      name := "courier-swift-generator-test",
-      forkedVmCourierMainClass := "org.coursera.courier.SwiftGenerator",
-      forkedVmCourierClasspath := (dependencyClasspath in Runtime in swiftGenerator).value.files,
-      forkedVmSourceDirectory := (sourceDirectory in referenceSuite).value / "main" / "courier",
-      forkedVmCourierDest := file("swift") / "testsuite" / "testsuiteTests" / "generated",
-      forkedVmAdditionalArgs := Seq("REQUIRED_FIELDS_MAY_BE_ABSENT", "EQUATABLE"),
-      packagedArtifacts := Map.empty, // do not publish
-      libraryDependencies ++= Seq(
-        ExternalDependencies.JodaTime.jodaTime))
-
-  lazy val courierSbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
-    .dependsOn(scalaGenerator)
-    .settings(pluginVersionSettings)
-    .settings(
-      sbtPlugin := true,
-      name := "courier-sbt-plugin")
-
+  // Java project settings
   lazy val plainJavaProjectSettings = Seq(
     autoScalaLibrary := false,
     crossPaths := false
   )
 
+  // Test settings
   lazy val junitTestSettings = Seq(
     libraryDependencies ++= Seq(
       ExternalDependencies.JUnit.junit,
@@ -264,6 +87,69 @@ object Courier extends Build with OverridablePublishSettings {
         "referencesuite.srcdir",
         (sourceDirectory in referenceSuite).value.getAbsolutePath)
     })
+
+  //
+  // Projects
+  //
+  lazy val schemaLanguage = Project(id = "schema-language", base = file("schema-language"))
+
+  lazy val generatorApi = Project(id = "generator-api", base = file("generator-api"))
+    .dependsOn(schemaLanguage)
+
+  lazy val referenceSuite = Project(id = "reference-suite", base = file("reference-suite"))
+
+  private[this] val scalaDir = file("scala")
+
+  lazy val scalaGenerator = Project(id = "scala-generator", base = scalaDir / "generator")
+    .dependsOn(scalaRuntime, generatorApi, schemaLanguage)
+    .enablePlugins(SbtTwirl)
+
+  lazy val scalaRuntime = Project(id = "scala-runtime", base = scalaDir / "runtime")
+
+  lazy val scalaGeneratorTest = Project(
+    id = "scala-generator-test", base = scalaDir / "generator-test")
+    .dependsOn(scalaGenerator)
+
+  private[this] val javaDir = file("java")
+
+  lazy val javaGenerator = Project(id = "java-generator", base = javaDir / "generator")
+    .dependsOn(generatorApi)
+
+  lazy val javaGeneratorTest = Project(
+    id = "java-generator-test", base = javaDir / "generator-test")
+    .dependsOn(javaGenerator)
+
+  lazy val javaRuntime = Project(id = "java-runtime", base = javaDir / "runtime")
+
+  private[this] val androidDir = file("android")
+
+  lazy val androidGenerator = Project(id = "android-generator", base = androidDir / "generator")
+    .dependsOn(generatorApi)
+
+  lazy val androidGeneratorTest = Project(
+    id = "android-generator-test", base = androidDir / "generator-test")
+    .dependsOn(androidGenerator, androidRuntime)
+
+  lazy val androidRuntime = Project(id = "android-runtime", base = androidDir / "runtime")
+
+  private[this] val swiftDir = file("swift")
+  lazy val swiftGenerator = Project(id = "swift-generator", base = swiftDir / "generator")
+    .dependsOn(generatorApi)
+
+  lazy val courierSbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
+    .dependsOn(scalaGenerator)
+
+  //
+  // Publishing
+  //
+
+  // TODO(jbetz): Figure out how to enable sbt-release for this build.
+  // In order to use `sbt-release` we need to figure out how to cross build correctly with it.
+  // For now, we can release using the `fullpublish*` aliases defined in the root project and
+  // manually updating the version number before and after each release (removing -SNAPSHOT before),
+  // adding it back afterward and bumping the version number.
+  // OverrideablePublishSetiings allows the artifacts to be published to alternate repos.
+  override def defaultPublishSettings: Seq[Def.Setting[_]] = Sonatype.Settings
 
   // TODO(jbetz): Once SBT supports scala 2.11, we can enable .aggregate for all
   // project dependencies that have .dependsOn in the above projects, and then we will only
@@ -296,8 +182,7 @@ object Courier extends Build with OverridablePublishSettings {
       androidGenerator,
       androidGeneratorTest,
       androidRuntime,
-      swiftGenerator,
-      swiftGeneratorTest)
+      swiftGenerator)
     .settings(runtimeVersionSettings)
     .settings(packagedArtifacts := Map.empty) // disable publish for root aggregate module
     .settings(
@@ -393,7 +278,7 @@ object Courier extends Build with OverridablePublishSettings {
   }
 
   //
-  // Helper tasks
+  // Test generator
   //
 
   // In order to be able to quickly test our generator, we use
@@ -425,7 +310,7 @@ object Courier extends Build with OverridablePublishSettings {
       streams.value.log.info("Generating courier bindings...")
       val files =
         runForkedGenerator(mainClass, src, dst, classpath, additionalArgs, streams.value.log)
-      streams.value.log.info(s"There are ${files.size} classes generated from courier bindings")
+      streams.value.log.info(s"${files.size} classes generated from $src for $mainClass")
       files
     },
     forkedVmAdditionalArgs := Seq(),
