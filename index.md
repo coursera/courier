@@ -36,7 +36,7 @@ layout: page
 <div class="row">
   <div class="col-md-4" style="text-align: center;">
   <h4>
-    Build for JSON
+    Build for JSON.. and Binary
   </h4>
   <p>Courier serializes to natural looking JSON but also supports multiple binary data protocols including Avro, PSON and BSON.</p>
 
@@ -68,7 +68,9 @@ layout: page
       Full IDE Support
     </h4>
     <p>
-      Courier has a full featured IntelliJ plugin that includes syntax highlighting,
+      Courier has a full featured
+      <a href="https://plugins.jetbrains.com/plugin/8005?pr=idea">IntelliJ plugin</a>
+      that includes syntax highlighting,
       syntax error highlighting, code formatting, auto-import and auto-complete.
     </p>
   </div>
@@ -78,10 +80,10 @@ layout: page
       Idiomatic Data Bindings
     </h4>
     <p>
-      Courier generates language idiomatic generated data bindings that look and feel natural to developers.
+      Courier generates language idiomatic data bindings that look and feel natural to developers.
     </p>
     <p>
-      E.g the Scala generator produces case classes, <code>Option</code>, default parameters, pattern matching, sealed traits and Scala collections.
+      For instance, the Scala generator produces code with case classes, <code>Option</code>s, default parameters, pattern matching, sealed traits and Scala collections.
     </p>
   </div>
 
