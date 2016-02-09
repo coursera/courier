@@ -23,7 +23,7 @@ layout: page
     between multiple systems and programming languages. For JSON, however,
     there are few systems that take a schema driven approach and none that
     provide satisfactory type systems. Courier's solves this problem, providing
-    a type safe, schema driven way of sharing data between backends, web and
+    a type safe, schema driven way of sharing JSON data between backends, web and
     mobile.
     </p>
   </div>
