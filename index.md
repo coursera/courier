@@ -13,6 +13,7 @@ layout: page
 </div>
 <hr>
 <div class="row">
+
   <div class="col-md-12">
     <a id="why-courier"></a>
     <h2>Why Courier?</h2>
@@ -26,6 +27,61 @@ layout: page
     a type safe, schema driven way of sharing JSON data between backends, web and
     mobile.
     </p>
+  </div>
+</div>
+
+<hr>
+
+<br>
+
+<div class="row">
+  <div class="col-md-6">
+
+<strong>Courier Schema</strong>
+<code><pre>
+record Fortune {
+  message: String
+  createdAt: DateTime
+}
+</pre></code>
+
+  </div>
+
+  <div class="col-md-6">
+
+<strong>JSON</strong>
+<code><pre>
+{
+  "message": "Today's your lucky day!",
+  "createdAt": "2016-02-08T16:22:33Z"
+}
+</pre></code>
+
+  </div>
+</div>
+
+<div class="row">
+
+  <div class="col-md-6">
+
+<strong>Scala</strong>
+<code><pre>
+val fortune = Fortune(
+  message = "Today's your lucky day!",
+  createdAt = DateTime.now())
+</pre></code>
+
+  </div>
+  <div class="col-md-6">
+
+<strong>Swift</strong>
+<code><pre>
+let fortune = Fortune(
+  message: "Today's your lucky day!",
+  createdAt:
+    NSDate(timeIntervalSinceNow: 0))
+</pre></code>
+
   </div>
 </div>
 
