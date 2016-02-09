@@ -10,3 +10,5 @@ record FortuneCookie {
   certainty: float?
   luckyNumbers: array[int]
 }
+
+

@@ -7,12 +7,6 @@ Modern data interchange system for web + mobile stacks that combines an expressi
 
 <br>
 
-<center>
-  <img src="http://coursera.github.io/courier/images/courier-intellij.png" width="50%" />
-</center>
-
-<br>
-
 <p align="center"><a href="http://coursera.github.io/courier/#getting-started">Getting Started</a> | <a href="http://coursera.github.io/courier/#documentation">Documentation</a> | <a href="https://groups.google.com/d/forum/courier">Discussion Group</a></p>
 
 #### Why Courier?
