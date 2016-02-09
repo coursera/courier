@@ -204,7 +204,7 @@ object DataTemplates {
     */
   private[this] def companion(clazz: Class[_]): AnyRef = {
     val companion = Class.forName(
-      clazz.getName + "$", true, Thread.currentThread().getContextClassLoader())
+      clazz.getName + "$", true, clazz.getClassLoader)
     companion.getField("MODULE$").get(null)
   }
 
