@@ -5,7 +5,9 @@ layout: page
 <div class="row">
   <div class="col-md-12">
     <p class="lead">
-      Courier is a modern data interchange system for web + mobile stacks that combines an expressive schema language with language idiomatic data binding generators.
+      Courier is a modern data interchange system for web + mobile stacks that
+      combines an expressive schema language with language idiomatic data
+      binding generators.
     </p>
   </div>
 </div>
@@ -15,13 +17,14 @@ layout: page
     <a id="why-courier"></a>
     <h2>Why Courier?</h2>
     <p class="lead">
-    Courier is the only comprehensive, schema based data system centered around JSON.
-    Binary protocols, such as Protobuf and Thrift have proven that data
+    Courier is the only comprehensive, schema based data system centered around
+    JSON. Binary protocols, such as Protobuf and Thrift have proven that data
     schemas are an excellent way to share the structure of data messaged
-    between multiple systems and programming languages. For JSON, however, there are
-    few systems available that take this schema driven approach. Courier's
-    fills this niche, providing a type safe way of sharing data between
-    backends, web and mobile.
+    between multiple systems and programming languages. For JSON, however,
+    there are few systems that take a schema driven approach and none that
+    provide satisfactory type systems. Courier's solves this problem, providing
+    a type safe, schema driven way of sharing data between backends, web and
+    mobile.
     </p>
   </div>
 </div>
@@ -35,11 +38,13 @@ layout: page
 <br>
 <div class="row">
   <div class="col-md-4" style="text-align: center;">
-  <h4>
-    Build for JSON.. and Binary
-  </h4>
-  <p>Courier serializes to natural looking JSON but also supports multiple binary data protocols including Avro, PSON and BSON.</p>
-
+    <h4>
+      Build for JSON.. and Binary
+    </h4>
+    <p>
+      Courier serializes to natural looking JSON but also supports multiple
+      binary data protocols including Avro, PSON and BSON.
+    </p>
   </div>
 
   <div class="col-md-4" style="text-align: center;">
@@ -48,16 +53,24 @@ layout: page
     </h4>
     <p>
       Courier is a concise but comprehensive schema language, based on
-      Pegasus and Avro, and with language features from Scala, Swift, and Avro IDL.
+      Pegasus and Avro, and with language features from Scala, Swift, and Avro
+      IDL.
     </p>
   </div>
+
   <div class="col-md-4" style="text-align: center;">
     <h4>
       Language interoperability
     </h4>
-    <p>Full support for <strong>Scala</strong>, <strong>Java</strong>, <strong>Swift</strong> and  <strong>Javascript</strong></p>
     <p>
-      Courier enables languages share a common understanding of the structure of the data they read and write using binding generators to eliminate the tedious and error prone process of manually writing serializers.
+      Full support for <strong>Scala</strong>, <strong>Java</strong>,
+      <strong>Swift</strong> and  <strong>Javascript</strong>
+    </p>
+    <p>
+      Courier schemas enable languages to easily share the structure of the
+      data they read and write, and Courier's data binding code generators
+      eliminate the tedious and error prone process of manually writing
+      serializers.
     </p>
   </div>
 </div>
@@ -71,7 +84,7 @@ layout: page
       Courier has a full featured
       <a href="https://plugins.jetbrains.com/plugin/8005?pr=idea">IntelliJ plugin</a>
       that includes syntax highlighting,
-      syntax error highlighting, code formatting, auto-import and auto-complete.
+      syntax error indication, code formatting, auto-import and auto-complete.
     </p>
   </div>
 
@@ -80,10 +93,13 @@ layout: page
       Idiomatic Data Bindings
     </h4>
     <p>
-      Courier generates language idiomatic data bindings that look and feel natural to developers.
+      Courier generates language idiomatic data bindings that look and feel
+      natural to developers.
     </p>
     <p>
-      For instance, the Scala generator produces code with case classes, <code>Option</code>s, default parameters, pattern matching, sealed traits and Scala collections.
+      For instance, the Scala generator produces code with case classes,
+      <code>Option</code>s, default parameters, pattern matching, sealed traits
+      and Scala collections.
     </p>
   </div>
 
@@ -94,7 +110,9 @@ layout: page
 
     <p>
       Courier is built on the
-      <a href="https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates">Pegasus</a> data system, an efficient JVM data system that is in large scale production use at Linkedin.
+      <a href="https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates">Pegasus</a>
+      data system, an efficient JVM data system that is in large scale
+      production use at Linkedin.
     </p>
   </div>
 </div>
@@ -103,7 +121,7 @@ layout: page
 
 <div class="row">
   <div class="col-md-12" style="text-align: center;">
-    <a href="/gettingstarted/#getting-started" role="button" class="btn btn-primary btn-lg">Get Started</a>
+    <a href="{{ site.github.url }}/gettingstarted/#getting-started" role="button" class="btn btn-primary btn-lg">Get Started</a>
   </div>
 </div>
 
