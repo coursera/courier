@@ -159,9 +159,9 @@ object CourierPlugin extends Plugin {
         log.debug("Courier resolver path: " + resolverPath)
         log.debug("Courier source path: " + src)
         log.debug("Courier destination path: " + dst)
-        log.info("Courier incremental changed: " + changed.map(_.absolutePath).toArray)
-        log.info("Courier incremental references file: " + incrementalReferencesFile.absolutePath)
-        log.info("Courier incremental source root: " + src.absolutePath)
+        log.debug("Courier [incremental] changed files: " + changed.map(_.absolutePath))
+        log.debug("Courier [incremental] references file: " + incrementalReferencesFile.absolutePath)
+        log.debug("Courier [incremental] sources directory: " + src.absolutePath)
         try {
           val generator = generatorClass.newInstance()
           val result = new DefaultGeneratorRunner().run(

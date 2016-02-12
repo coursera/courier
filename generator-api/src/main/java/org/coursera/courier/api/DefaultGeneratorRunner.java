@@ -159,7 +159,7 @@ public class DefaultGeneratorRunner implements GeneratorRunner {
 
     if (incrementalPass) {
       Collection<File> allFiles = FileUtils.listFiles(
-        targetDirectory, new String[] { "scala" }, true);
+        targetDirectory, new String[] { "scala" }, true); // TODO: pass in language file extension
 
       return new DefaultGeneratorResult(
         parseResult.getSourceFiles(),
