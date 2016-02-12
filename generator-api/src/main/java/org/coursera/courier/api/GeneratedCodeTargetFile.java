@@ -29,8 +29,12 @@ public class GeneratedCodeTargetFile {
   }
 
   public GeneratedCodeTargetFile(String name, String namespace, String languageFileExtension) {
-    String namespacePath = namespace.replace(".", File.separator);
-    this.relativePath = new File(namespacePath, name + "." + languageFileExtension).getPath();
+    if (namespace != null) {
+      String namespacePath = namespace.replace(".", File.separator);
+      this.relativePath = new File(namespacePath, name + "." + languageFileExtension).getPath();
+    } else {
+      this.relativePath = name + "." + languageFileExtension;
+    }
   }
 
   public File toFile(File targetDirectory) {

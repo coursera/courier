@@ -332,6 +332,7 @@ object Courier extends Build with OverridablePublishSettings {
     IO.withTemporaryFile("courier", "output") { tmpFile =>
       val outStream = new java.io.FileOutputStream(tmpFile)
       try {
+        //val args = Seq(dst.toString, src.toString, src.toString, "/Users/jbetz/base/coursera/courier/reference-suite/src/main/courier", "/Users/jbetz/base/coursera/courier/reference-suite/src/main/courier/org/coursera/records/Note.courier", "/Users/jbetz/Desktop/referenced-by.json") ++ additionalArgs
         val args = Seq(dst.toString, src.toString, src.toString) ++ additionalArgs
         val exitValue =
           Fork.java(

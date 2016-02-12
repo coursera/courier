@@ -22,6 +22,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils
 import org.coursera.courier.ScalaGenerator
 import org.coursera.courier.api.DefaultGeneratorRunner
 import org.coursera.courier.api.GeneratorRunnerOptions
+import org.coursera.courier.api.GeneratorRunnerOptions.IncrementalCompilationOptions
 import org.coursera.courier.api.ParserForFileFormat
 import org.coursera.courier.api.PegasusCodeGenerator
 import org.coursera.courier.grammar.CourierSchemaParserFactory
@@ -76,6 +77,9 @@ object CourierPlugin extends Plugin {
     "Version file for cache busting 'courierCacheSources' when the Courier generator version is " +
     "bumped")
 
+  val courierIncrementalReferencesFile = taskKey[File](
+    "Tracks references between courier files for use during incremental builds")
+
   val packageDataModel = taskKey[File]("Produces a data model jar containing only pdsc files")
 
   val generateTyperefs = settingKey[Boolean](
@@ -108,6 +112,9 @@ object CourierPlugin extends Plugin {
     courierVersionFile in conf :=
       (streams in conf).value.cacheDirectory / "VERSION",
 
+    courierIncrementalReferencesFile in conf :=
+      (streams in conf).value.cacheDirectory / "incrementalReferences.json",
+
     courierCacheSources in conf := (streams in conf).value.cacheDirectory / "pdsc.sources",
 
     watchSources in conf := ((courierSourceDirectory in conf).value ** sourceFileFilter).get,
@@ -131,6 +138,7 @@ object CourierPlugin extends Plugin {
       val resolverPath = resolverPathFiles.mkString(pathSeparator)
 
       val versionFile = (courierVersionFile in conf).value
+      val incrementalReferencesFile = (courierIncrementalReferencesFile in conf).value
       val cacheFileSources = (courierCacheSources in conf).value
       val sourceFiles = (src ** sourceFileFilter).get
       val previousScalaFiles = (dst ** "*.scala").get
@@ -140,7 +148,7 @@ object CourierPlugin extends Plugin {
         IO.write(versionFile, s"$VERSION\n")
       }
 
-      val (anyFilesChanged, cacheSourceFiles) = {
+      val (anyFilesChanged, cacheSourceFiles, changed: Seq[File]) = {
         prepareCacheUpdate(cacheFileSources, sourceFiles :+ versionFile, s)
       }
 
@@ -151,6 +159,9 @@ object CourierPlugin extends Plugin {
         log.debug("Courier resolver path: " + resolverPath)
         log.debug("Courier source path: " + src)
         log.debug("Courier destination path: " + dst)
+        log.info("Courier incremental changed: " + changed.map(_.absolutePath).toArray)
+        log.info("Courier incremental references file: " + incrementalReferencesFile.absolutePath)
+        log.info("Courier incremental source root: " + src.absolutePath)
         try {
           val generator = generatorClass.newInstance()
           val result = new DefaultGeneratorRunner().run(
@@ -162,7 +173,12 @@ object CourierPlugin extends Plugin {
                 .setDefaultPackage(namespacePrefix.getOrElse(""))
                 .setGenerateTyperefs(genTyperefs)
               .addParserForFileFormat(
-                new ParserForFileFormat("courier", new CourierSchemaParserFactory())))
+                new ParserForFileFormat("courier", new CourierSchemaParserFactory()))
+              .setIncrementalGenerationOptions(
+                new IncrementalCompilationOptions(
+                  changed.map(_.absolutePath).toArray,
+                  incrementalReferencesFile.absolutePath, // TODO: replace by stream
+                  src.absolutePath)))
 
           // NOTE: Deleting stale files does not work properly with courier activated on two
           // different projects.
@@ -232,13 +248,18 @@ object CourierPlugin extends Plugin {
    * modify dates to `cacheFile`.
    */
   private[this] def prepareCacheUpdate(cacheFile: File, sourceFiles: Seq[File],
-                         streams: std.TaskStreams[_]): (Boolean, () => Unit) = {
+                         streams: std.TaskStreams[_]): (Boolean, () => Unit, Seq[File]) = {
     val fileToModifiedMap = sourceFiles.map(f => f -> FileInfo.lastModified(f)).toMap
 
     val (_, previousFileToModifiedMap) = Sync.readInfo(cacheFile)(FileInfo.lastModified.format)
     //we only care about the source files here
     val relation = Seq.fill(sourceFiles.size)(file(".")).zip(sourceFiles)
-
+    val changed = fileToModifiedMap.flatMap { case (file, ts) =>
+      previousFileToModifiedMap.get(file) match {
+        case Some(previousTs) if ts == previousTs => None
+        case _ => Some(file)
+      }
+    }.toSeq
     streams.log.debug(
       s"${fileToModifiedMap.size} <- current VS previous -> ${previousFileToModifiedMap.size}")
     val anyFilesChanged = !cacheFile.exists || (previousFileToModifiedMap != fileToModifiedMap)
@@ -246,7 +267,7 @@ object CourierPlugin extends Plugin {
       Sync.writeInfo(cacheFile, Relation.empty[File, File] ++ relation.toMap,
         sourceFiles.map(f => f -> FileInfo.lastModified(f)).toMap)(FileInfo.lastModified.format)
     }
-    (anyFilesChanged, updateCache)
+    (anyFilesChanged, updateCache, changed)
   }
 
   /**

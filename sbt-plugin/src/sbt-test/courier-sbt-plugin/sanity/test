@@ -3,5 +3,7 @@
 $ exists target/scala-2.10/src_managed/main/courier/org/coursera/fortune/Fortune.scala
 $ exists target/scala-2.10/src_managed/main/courier/org/coursera/fortune/Note.scala
 $ exists target/streams/compile/courierVersionFile/$global/streams/VERSION
+$ exists target/streams/compile/courierIncrementalReferencesFile/$global/streams/incrementalReferences.json
 $ exists target/scala-2.10/src_managed/test/courier/org/coursera/TestRecord.scala
 $ exists target/streams/test/courierVersionFile/$global/streams/VERSION
+$ exists target/streams/test/courierIncrementalReferencesFile/$global/streams/incrementalReferences.json

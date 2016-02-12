@@ -18,6 +18,7 @@ package org.coursera.courier.api;
 
 import com.linkedin.data.schema.DataSchema;
 import com.linkedin.data.schema.NamedDataSchema;
+import com.linkedin.data.schema.RecordDataSchema;
 import com.linkedin.data.schema.TyperefDataSchema;
 import com.linkedin.pegasus.generator.spec.ArrayTemplateSpec;
 import com.linkedin.pegasus.generator.spec.ClassTemplateSpec;
@@ -40,8 +41,14 @@ public class ClassTemplateSpecs {
     Set<ClassTemplateSpec> results = new HashSet<ClassTemplateSpec>();
     if (spec instanceof RecordTemplateSpec) {
       RecordTemplateSpec recordSpec = (RecordTemplateSpec)spec;
+      RecordDataSchema schema = recordSpec.getSchema();
       for (RecordTemplateSpec.Field field: recordSpec.getFields()) {
         results.add(field.getType());
+        RecordDataSchema fieldRecord = field.getSchemaField().getRecord();
+        if (fieldRecord != null && fieldRecord != schema) {
+          // Found an "include" record. Add it.
+          // TODO(jbetz): figure out how to get includes added correctly..
+        }
       }
     } else if (spec instanceof UnionTemplateSpec) {
       UnionTemplateSpec unionSpec = (UnionTemplateSpec)spec;

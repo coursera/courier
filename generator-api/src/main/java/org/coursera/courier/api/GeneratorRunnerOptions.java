@@ -27,6 +27,23 @@ public class GeneratorRunnerOptions {
   private String targetDirectoryPath;
   private String[] sources;
 
+  private IncrementalCompilationOptions incrementalCompilationOptions;
+
+  public static class IncrementalCompilationOptions {
+    public final String[] changedSources;
+    public final String referencedByFilePath;
+    public final String sourceDirectoryPath;
+
+    public IncrementalCompilationOptions(
+        String[] changedSources,
+        String referencedByFilePath,
+        String sourceDirectoryPath) {
+      this.changedSources = changedSources;
+      this.referencedByFilePath = referencedByFilePath;
+      this.sourceDirectoryPath = sourceDirectoryPath;
+    }
+  }
+
   private String defaultPackage = "";
   private String dataNamespace = "org.coursera.courier.data";
 
@@ -43,7 +60,7 @@ public class GeneratorRunnerOptions {
     this.targetDirectoryPath = targetDirectoryPath;
     this.sources = sources;
     this.resolverPath = resolverPath;
-    this.parsersForFileFormats = new ArrayList<ParserForFileFormat>();
+    this.parsersForFileFormats = new ArrayList<>();
     this.parsersForFileFormats.add(new ParserForFileFormat("pdsc", SchemaParserFactory.instance()));
     this.parsersForFileFormats.add(new ParserForFileFormat("courier", new CourierSchemaParserFactory()));
   }
@@ -75,6 +92,11 @@ public class GeneratorRunnerOptions {
 
   public GeneratorRunnerOptions addParserForFileFormat(ParserForFileFormat parserForFormat) {
     this.parsersForFileFormats.add(parserForFormat);
+    return this;
+  }
+
+  public GeneratorRunnerOptions setIncrementalGenerationOptions(IncrementalCompilationOptions incrementalCompilationOptions) {
+    this.incrementalCompilationOptions = incrementalCompilationOptions;
     return this;
   }
 
@@ -114,4 +136,7 @@ public class GeneratorRunnerOptions {
     return parsersForFileFormats;
   }
 
+  public IncrementalCompilationOptions getIncrementalCompilationOptions() {
+    return incrementalCompilationOptions;
+  }
 }

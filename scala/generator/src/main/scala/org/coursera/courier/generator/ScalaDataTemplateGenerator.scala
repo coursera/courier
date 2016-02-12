@@ -21,6 +21,7 @@ import com.linkedin.pegasus.generator.PegasusDataTemplateGenerator
 import org.coursera.courier.ScalaGenerator
 import org.coursera.courier.api.DefaultGeneratorRunner
 import org.coursera.courier.api.GeneratorRunnerOptions
+import org.coursera.courier.api.GeneratorRunnerOptions.IncrementalCompilationOptions
 
 import scala.collection.JavaConverters._
 
@@ -31,15 +32,26 @@ import scala.collection.JavaConverters._
  */
 object ScalaDataTemplateGenerator {
   def main(args: Array[String]) {
-    if (args.length != 3) {
+    if (args.length < 3) {
       println(
         s"Usage: ${ScalaDataTemplateGenerator.getClass.getName} " +
-          s"targetDirectoryPath resolverPath sourcePath1[:sourcePath2]+")
+          s"targetDirectoryPath resolverPath sourcePath1[:sourcePath2]+ [sourceDirectoryPath incrementalSourcePath:[incrementalSourcePath2]+ referencedByFilePath]")
       System.exit(1)
     }
     val targetDirectoryPath = args(0)
     val resolverPath = args(1)
     val sources = args(2).split(java.io.File.pathSeparator)
+
+    val incrementalOptions = if (args.length > 3) {
+      val sourceDirectoryPath = args(3)
+      val incrementalSources = args(4).split(java.io.File.pathSeparator)
+      val referencedByFilePath = args(5)
+      Some(new IncrementalCompilationOptions(
+        incrementalSources,
+        referencedByFilePath,
+        sourceDirectoryPath))
+    } else None
+
     val generateImported =
       Option(System.getProperty(PegasusDataTemplateGenerator.GENERATOR_GENERATE_IMPORTED))
         .exists(_.toBoolean)
@@ -47,17 +59,23 @@ object ScalaDataTemplateGenerator {
     val generateTyperefs = false
     val generatePredef = false // set to true temporarily to manually generateRecord predef
 
+    val options = new GeneratorRunnerOptions(
+      targetDirectoryPath,
+      sources,
+      resolverPath)
+      .setDefaultPackage(defaultPackage)
+      .setDataNamespace(CourierPredef.dataNamespace)
+      .setGenerateImported(generateImported)
+      .setGenerateTyperefs(generateTyperefs)
+      .setGeneratePredef(generatePredef)
+
+    incrementalOptions.foreach { io =>
+      options.setIncrementalGenerationOptions(io)
+    }
+
     val result = new DefaultGeneratorRunner().run(
       new ScalaGenerator(),
-      new GeneratorRunnerOptions(
-        targetDirectoryPath,
-        sources,
-        resolverPath)
-        .setDefaultPackage(defaultPackage)
-        .setDataNamespace(CourierPredef.dataNamespace)
-        .setGenerateImported(generateImported)
-        .setGenerateTyperefs(generateTyperefs)
-        .setGeneratePredef(generatePredef))
+      options)
 
     result.getTargetFiles.asScala.foreach { file =>
       System.out.println(file.getAbsolutePath)
