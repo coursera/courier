@@ -5,7 +5,7 @@ layout: page
 Validation
 ==========
 
-Data can be validated against a schema using ~~~ValidateDataAgainstSchema.validate()~~~, e.g.:
+Data can be validated against a schema using `ValidateDataAgainstSchema.validate()`, e.g.:
 
 ~~~ scala
 val recordToValidate = new RecordToValidate(/*...*/)
