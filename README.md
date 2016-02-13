@@ -16,11 +16,11 @@ Courier is the only comprehensive, schema based data system centered around JSON
 To learn more, see [coursera.github.io/courier](http://coursera.github.io/courier/)
 
 
-h6. License
+#### License
 
 Courier is [Apache 2.0 Licensed](LICENSE.txt).
 
-h6. Contributing
+#### Contributing
 
 For development and submitting pull requests, please see the
 [Contributing document](CONTRIBUTING.md).
