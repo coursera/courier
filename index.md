@@ -165,10 +165,10 @@ let fortune = Fortune(
     </h4>
 
     <p>
-      Courier is built on the
-      <a href="https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates">Pegasus</a>
-      data system, an efficient JVM data system that is in large scale
-      production use at Linkedin.
+      Courier is built on
+      <a href="https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates">Pegasus</a>,
+      an efficient JVM data system that is in large scale
+      production use at Linkedin and Coursera.
     </p>
   </div>
 </div>
