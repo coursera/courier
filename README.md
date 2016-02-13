@@ -7,7 +7,7 @@ Modern data interchange system for web + mobile stacks that combines an expressi
 
 <br>
 
-<p align="center"><a href="http://coursera.github.io/courier/#getting-started">Getting Started</a> | <a href="http://coursera.github.io/courier/#documentation">Documentation</a> | <a href="https://groups.google.com/d/forum/courier">Discussion Group</a></p>
+<p align="center"><a href="http://coursera.github.io/courier/gettingstarted">Getting Started</a> | <a href="http://coursera.github.io/courier/schemalanguage/">Schema Language</a> | <a href="http://coursera.github.io/courier/dataprotocols">Data Protocols</a></p>
 
 #### Why Courier?
 
