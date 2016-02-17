@@ -111,7 +111,7 @@ public class SwiftSyntax {
   /**
    * Returns the escaped fully qualified name of a {@link ClassTemplateSpec}.
    *
-   * @param spec to build a escaped fully qualified name for.
+   * @param spec to createGeneratorRunState a escaped fully qualified name for.
    *
    * @return the escaped fullname.
    */
@@ -243,7 +243,7 @@ public class SwiftSyntax {
   }
 
   /**
-   * @param field field to build a default literal for.
+   * @param field field to createGeneratorRunState a default literal for.
    *
    * @return A swift source code string representing the literal value of the field default, or null
    * if the field does not have a default.

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.coursera.courier.incremental;
+package org.coursera.courier.generator;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -56,5 +56,11 @@ public class ReferenceGraphTest {
     Set<String> referencesD = graph1.getDirectlyReferencedBy("D");
     Assert.assertTrue(referencesD.size() == 1);
     Assert.assertTrue(referencesD.contains("A"));
+  }
+
+  @Test
+  public void build() throws Throwable {
+    // TODO(jbetz): Add a good unit test suite for reference graph construction
+    //ReferenceGraph.buildReferenceGraph();
   }
 }

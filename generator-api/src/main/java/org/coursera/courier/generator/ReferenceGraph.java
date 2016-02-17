@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.coursera.courier.incremental;
+package org.coursera.courier.generator;
 
 import com.linkedin.data.DataList;
 import com.linkedin.data.DataMap;
@@ -36,6 +36,8 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
+// TODO(jbetz): Consider splitting the labels (Strings) out into a separate data struct and
+// just use int ids for the nodes?
 public class ReferenceGraph {
   private Set<String> nodes;
   private Map<String, Set<String>> references;
@@ -161,7 +163,7 @@ public class ReferenceGraph {
   }
 
   public interface SpecToGraphLabelTransformer {
-    String toLabel(ClassTemplateSpec spec);
+    String toLabel(NamedDataSchema schema);
   }
 
   public static ReferenceGraph buildReferenceGraph(
@@ -170,14 +172,14 @@ public class ReferenceGraph {
     ReferenceGraph graph = new ReferenceGraph();
 
     for(ClassTemplateSpec referencerSpec: specs) {
-      Set<ClassTemplateSpec> referencedSet =
-        ClassTemplateSpecs.directReferencedTypes(referencerSpec);
-      for (ClassTemplateSpec referenceeSpec: referencedSet) {
-        if (referenceeSpec != referencerSpec &&
-          referenceeSpec.getSchema() instanceof NamedDataSchema) {
+      Set<NamedDataSchema> referencedSet =
+        ReferenceResolver.referencedNamedTypes(referencerSpec);
+      for (NamedDataSchema referenceeSchema: referencedSet) {
+        if (referenceeSchema != referencerSpec.getSchema() &&
+          referencerSpec.getSchema() instanceof NamedDataSchema) {
           graph.putReference(
-            transformer.toLabel(referencerSpec),
-            transformer.toLabel(referenceeSpec));
+            transformer.toLabel((NamedDataSchema)referencerSpec.getSchema()),
+            transformer.toLabel(referenceeSchema));
         }
       }
     }

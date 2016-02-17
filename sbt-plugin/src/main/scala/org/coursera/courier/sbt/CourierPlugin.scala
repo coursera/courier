@@ -91,7 +91,7 @@ object CourierPlugin extends Plugin {
    */
   val courierSettings: Seq[Def.Setting[_]] =
     // TODO(jbetz): The below addition of pegasusArtifacts results in SBT projects that
-    // fail to build correctly. This needs to be fixed and tested carefully before re-enabling.
+    // fail to createGeneratorRunState correctly. This needs to be fixed and tested carefully before re-enabling.
     courierSettings(Compile) ++ courierSettings(Test)/* ++ pegasusArtifacts(Compile)*/ ++ Seq(
 
     courierPrefix := Some("scala"),

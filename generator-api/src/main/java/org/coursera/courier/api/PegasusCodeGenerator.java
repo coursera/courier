@@ -47,7 +47,7 @@ public interface PegasusCodeGenerator {
   public Collection<DataSchema> definedSchemas();
 
   /**
-   * Used for the "src/main/{language}" paths of build systems.
+   * Used for the "src/main/{language}" paths of createGeneratorRunState systems.
    */
   public String buildLanguage();
 

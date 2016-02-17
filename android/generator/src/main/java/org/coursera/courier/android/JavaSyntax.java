@@ -73,7 +73,7 @@ public class JavaSyntax {
   /**
    * Returns the escaped fully qualified name of a {@link ClassTemplateSpec}.
    *
-   * @param spec to build a escaped fully qualified name for.
+   * @param spec to createGeneratorRunState a escaped fully qualified name for.
    *
    * @return the escaped fullname.
    */

@@ -19,22 +19,21 @@ package org.coursera.courier.api;
 import com.linkedin.data.schema.DataSchema;
 import com.linkedin.data.schema.DataSchemaLocation;
 import com.linkedin.pegasus.generator.DataSchemaParser;
-import com.linkedin.pegasus.generator.DefaultGeneratorResult;
 import com.linkedin.pegasus.generator.GeneratorResult;
 import com.linkedin.pegasus.generator.spec.ClassTemplateSpec;
 import org.apache.commons.io.FileUtils;
-import org.coursera.courier.incremental.ReferenceGraph;
+import org.coursera.courier.generator.BatchRun;
+import org.coursera.courier.generator.FullIncrementalRun;
+import org.coursera.courier.generator.GeneratorRun;
+import org.coursera.courier.generator.IncrementalRun;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -70,32 +69,10 @@ public class DefaultGeneratorRunner implements GeneratorRunner {
       specGenerator.registerDefinedSchema(defined);
     }
 
-    // TODO(jbetz): Trim the references file list to those that have actually changed or that are
-    // new.  This needs to be computed from the data in the references file plus the list of
-    // changed+new files provided by the build system (which should also be provided as an input
-    // to this runner class). The result of the computation should be reduced set of files for the
-    // getSources() list.
-    GeneratorRunnerOptions.IncrementalCompilationOptions incrementalOptions =
-      options.getIncrementalCompilationOptions();
+    GeneratorRun generatorRun = createGeneratorRunState(options);
 
-    String[] sourcesToGenerate;
-    boolean incrementalPass = false;
-    if (incrementalOptions != null) {
-      File referencedBy = new File(incrementalOptions.referencedByFilePath);
-      if (!referencedBy.exists()) {
-        sourcesToGenerate = options.getSources();
-      } else {
-        Set<String> changed = new HashSet<>(Arrays.asList(incrementalOptions.changedSources));
-        Set<String> incrementalSources =
-          ReferenceGraph.load(referencedBy).getTransitivelyReferencedBy(changed);
-        sourcesToGenerate = incrementalSources.toArray(new String[incrementalSources.size()]);
-        incrementalPass = true;
-      }
-    } else {
-      sourcesToGenerate = options.getSources();
-    }
-
-    DataSchemaParser.ParseResult parseResult = schemaParser.parseSources(sourcesToGenerate);
+    DataSchemaParser.ParseResult parseResult =
+      schemaParser.parseSources(generatorRun.getSourcesToParse());
 
     for (Map.Entry<DataSchema, DataSchemaLocation> entry: parseResult.getSchemaAndLocations().entrySet()) {
       specGenerator.generate(entry.getKey(), entry.getValue());
@@ -122,92 +99,33 @@ public class DefaultGeneratorRunner implements GeneratorRunner {
       }
     }
 
-    // TODO(jbetz): Write references to a file for subsequent builds, the file name should be
-    // provided as an input to this runner class
-    if (incrementalOptions != null) {
-      File referencedBy = new File(incrementalOptions.referencedByFilePath);
-      SpecTransformer transformer = new SpecTransformer(
-        new File(incrementalOptions.sourceDirectoryPath));
-      if (incrementalPass) {
-        // Full reference graph before the change
-        ReferenceGraph graphToUpdate = ReferenceGraph.load(referencedBy);
-        // Partial reference graph that includes all references from the changed types
-        ReferenceGraph delta = ReferenceGraph.buildReferenceGraph(topLevelSpecs, transformer);
-        System.err.println("delta: " + delta);
-        graphToUpdate.applyDelta(delta);
-        graphToUpdate.save(referencedBy);
-      } else {
-        ReferenceGraph.buildReferenceGraph(topLevelSpecs, transformer).save(referencedBy);
-      }
-    }
-
       // Write the resulting files.
     Collection<File> targetFiles = new HashSet<File>();
     for (GeneratedCode result: generated) {
       targetFiles.add(writeCode(targetDirectory, result));
     }
 
-    // Delete any unrecognized files from target directory.
-    // TODO(jbetz): Sort out how deletion should work for incremental.
-    /*try {
-      deleteUnrecognizedFiles(targetDirectory, targetFiles);
-    } catch (IOException e) {
-      throw new IOException(
-          "Unexpected error while clearing unused files from targetDirectory:" +
-              targetDirectory.getAbsolutePath(), e);
-    }*/
-
-    if (incrementalPass) {
-      Collection<File> allFiles = FileUtils.listFiles(
-        targetDirectory, new String[] { "scala" }, true); // TODO: pass in language file extension
-
-      return new DefaultGeneratorResult(
-        parseResult.getSourceFiles(),
-        allFiles,
-        allFiles);
-    } else {
-      // CourierPlugin.prepareCacheUpdate checks if the generator needs to run using an SBT utility,
-      // so if we get here we know we should unconditionally run the generator. As a result, the
-      // modifiedFiles are always the same as the target files. (if we instead, used
-      // FileUtils.upToDate here to do the check, modifiedFiles might be empty if all files are
-      // upToDate).
-      Collection<File> modifiedFiles = targetFiles;
-
-      return new DefaultGeneratorResult(
-        parseResult.getSourceFiles(),
-        targetFiles,
-        modifiedFiles);
-    }
+    return generatorRun.buildResult(topLevelSpecs, targetDirectory, parseResult, targetFiles);
   }
 
-  private static class SpecTransformer implements ReferenceGraph.SpecToGraphLabelTransformer {
-    private File targetDirectory;
-
-    public SpecTransformer(File targetDirectory) {
-      this.targetDirectory = targetDirectory;
-    }
-
-    @Override
-    public String toLabel(ClassTemplateSpec spec) {
-      return new GeneratedCodeTargetFile(
-        spec.getClassName(), spec.getNamespace(), "courier")
-        .toFile(targetDirectory).getAbsolutePath();
-    }
-  }
-
-  @SuppressWarnings("unchecked")
-  private void deleteUnrecognizedFiles(
-      File targetDirectory, Collection<File> targetFiles) throws IOException {
-    Collection<File> existingFiles =
-        (Collection<File>)FileUtils.listFiles(targetDirectory, null, true);
-
-    for (File existingFile : existingFiles) {
-      if (!targetFiles.contains(existingFile)) {
-        FileUtils.forceDelete(existingFile);
+  /**
+   * Selects the type of generator run to use for the given options.
+   */
+  public static GeneratorRun createGeneratorRunState(GeneratorRunnerOptions options) throws IOException {
+    GeneratorRunnerOptions.IncrementalCompilationOptions incrementalOptions =
+      options.getIncrementalCompilationOptions();
+    if (incrementalOptions != null) {
+      File targetDirectory = new File(options.getTargetDirectoryPath());
+      boolean requiresFullRun = !(new File(incrementalOptions.referencedByFilePath).exists());
+      if (requiresFullRun) {
+        return new FullIncrementalRun(incrementalOptions, targetDirectory);
+      } else {
+        return new IncrementalRun(incrementalOptions, targetDirectory);
       }
+    } else {
+      return new BatchRun(options.getSources());
     }
   }
-
 
   /**
    * Currently, one ClassDefinition is provided per .pdsc file. But some of those .pdsc contain
