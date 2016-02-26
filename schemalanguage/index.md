@@ -14,7 +14,17 @@ primitives, enums, unions, maps and arrays.
 
 For example, a basic record type containing a few fields
 
-{% include file_format_specific.html name="record_example" %}
+~~~
+namespace org.example
+
+import org.example.time.DateTime
+
+record Example {
+  field1: string
+  field2: int?
+  field3: DateTime
+}
+~~~
 
 will be generated as:
 
@@ -26,19 +36,43 @@ case class Example(field1: String, field2: Option[Int], field3: DateTime)
 [Record Fields](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates#record-field-attributes)
 may be optional or may have default values.
 
-{% include file_format_specific.html name="record_fields" %}
+Schema Field                                 | Generated Scala
+---------------------------------------------|------------------------------------------------------
+`field: string`                              | `case class Record(field: String)`
+`field: string = "message"`                  | `case class Record(field: String = "message")`
+`field: string?`                             | `case class Record(field: Option[String] = None)`
 
 #### Doc Strings
 
 Types and fields may be documented using "doc strings".
 
-{% include file_format_specific.html name="docstring" %}
+~~~
+/**
+ * Doc strings may be added to types. This doc should describe the purposes
+ * of the Example type.
+ *
+ * Doc strings may be formatted using
+ * [Markdown](https://daringfireball.net/projects/markdown/).
+ */
+record Example {
+  /**
+   * Doc strings may also be added to fields.
+   */
+   field: string
+}
+~~~
 
 #### Deprecation
 
 Types and fields may be deprecated.
 
-{% include file_format_specific.html name="deprecated" %}
+~~~
+@deprecated("Use record X instead.")
+record Example {
+  @deprecated("Use field x instead.")
+  field: string
+}
+~~~
 
 
 #### Including fields
@@ -46,7 +80,11 @@ Types and fields may be deprecated.
 Records may [include fields from other records](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates#including-fields-from-another-record)
 using `"include"`:
 
-{% include file_format_specific.html name="record_include_example" %}
+~~~
+record WithIncluded {
+  ...AnotherRecord
+}
+~~~
 
 In pegasus, field inclusion does not imply inheritance, it is merely a
 convenience to reduce duplication when writing schemas.
@@ -92,7 +130,9 @@ Array Type
 [Pegasus Arrays](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates#array-type)
 are defined with a `items` type using the form:
 
-{% include file_format_specific.html name="array_example" %}
+~~~
+array[org.example.Fortune]
+~~~
 
 Arrays bind to the Scala `IndexedSeq` type:
 
@@ -110,7 +150,13 @@ ExampleRecord(fortunes = Seq(Fortune(...), Fortune(...)))
 
 For example, to define a field of a record containing an array, use:
 
-{% include file_format_specific.html name="array_in_record" %}
+~~~
+namespace org.example.fortune
+
+record Fortune {
+  arrayField: array[int]
+}
+~~~
 
 This will bind to:
 
@@ -126,7 +172,10 @@ The array types for all primitive value types (`IntArray`, `StringArray`, ...) a
 provided in the `courier-runtime` artifact in the `org.coursera.courier.data` package. The generator
 is aware of these classes and will refer to them instead of generating them when primitive arrays are used.
 
-{% include file_format_specific.html name="array_examples" %}
+Schema type                                         | Scala type
+----------------------------------------------------|--------------------------------------------------
+`array[int]`                                        | `org.coursera.courier.data.IntArray` (predefined)
+`array[org.example.Record]`                         | `org.example.RecordArray` (generated)
 
 All generated Arrays implement Scala's `IndexedSeq`, `Traversable` and `Product` traits and behave
 like a standard Scala collection type.
@@ -171,7 +220,9 @@ Map Type
 [Pegasus Maps](https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates#map-type)
 are defined with a `values` type, and an optional `keys` type, using the form:
 
-{% include file_format_specific.html name="map_explicit_key" %}
+~~~
+map[int, org.example.Fortune]
+~~~
 
 Maps bind to the Scala `Map` type:
 
@@ -189,7 +240,9 @@ Fortune(Map("a" -> 1, "b" -> 2))
 
 If no "keys" type is specified, the key type will default to "string". For example:
 
-{% include file_format_specific.html name="map_implicit_key" %}
+~~~
+map[string, org.example.Note]
+~~~
 
 will bind to:
 
@@ -204,7 +257,13 @@ is used to serialize/deserialize complex type keys to JSON strings.
 
 To define a field of a record containing a map, use:
 
-{% include file_format_specific.html name="map_in_record" %}
+~~~
+namespace org.example.fortune
+
+record Fortune {
+  mapField: map[string, int]
+}
+~~~
 
 This will bind to:
 
@@ -217,7 +276,11 @@ and be generated as `case class Fortune(mapField: IntMap)`.
 Like arrays, map values can be of any type, and the map types for all primitives
 are predefined.
 
-{% include file_format_specific.html name="map_examples" %}
+Schema type                                                                        | Scala type
+-----------------------------------------------------------------------------------|------------------------------------------------
+`map[string, int]`                                                                 | `org.coursera.courier.data.IntMap` (predefined)
+`map[string, org.example.Record`                                                   | `org.example.RecordMap` (generated)
+`map[org.example.SimpleId, org.example.Record]`                                    | `org.example.SimpleIdToRecordMap` (generated)
 
 All generated Maps implement Scala's `Map` and `Iterable` traits and behave
 like a standard Scala collection type. The contain an implicit converter so that a Scala `Map`
@@ -264,12 +327,16 @@ type except union: primitive, record, enum, map or array.
 
 Unions types are defined in using the form:
 
-{% include file_format_specific.html name="union_structure" %}
+~~~
+union[MemberType1, MemberType2]
+~~~
 
 For example, a union that holds an `int`, `string` or a `Fortune`
 would be defined as:
 
-{% include file_format_specific.html name="union_example" %}
+~~~
+union[int, string, org.example.Fortune]
+~~~
 
 The member type names also serve as the "member keys" (sometimes called "union tags"),
 and identify which union member type data holds.
@@ -285,7 +352,13 @@ Schema type           | Member key            | Example JSON data
 Let's look at an example of a union in use.  To define a field of a record containing a
 union of two other records, we would define:
 
-{% include file_format_specific.html name="union_in_record" %}
+~~~
+namespace org.example
+
+record Question {
+  answerFormat: union[MultipleChoice, TextEntry]
+}
+~~~
 
 This will be generated as:
 
@@ -372,7 +445,15 @@ Enum Type
 
 Enums types may contain any number of symbols, for example:
 
-{% include file_format_specific.html name="enum_example" %}
+~~~
+namespace org.example
+
+enum Fruits {
+  APPLE
+  BANANA
+  ORANGE
+}
+~~~
 
 This will be generated as:
 
@@ -394,11 +475,23 @@ Fruits.Fruits
 
 Enums are referenced in other schemas either by name, e.g.:
 
-{% include file_format_specific.html name="enum_in_record" %}
+~~~
+namespace org.example
+
+record FruitBasket {
+  fruit: org.example.Fruits
+}
+~~~
 
 ..or by inlining their type definition, e.g.:
 
-{% include file_format_specific.html name="enum_inline" %}
+~~~
+namespace org.example
+
+record FruitBasket {
+  fruit: enum Fruits { APPLE, BANANA, ORANGE }
+}
+~~~
 
 This fully generated enum looks like:
 
@@ -421,7 +514,22 @@ Enums are represented in JSON as strings, e.g. `"APPLE"`
 Doc comments, `@deprecation` and properties may be added directly to enum
 symbols:
 
-{% include file_format_specific.html name="enum_properties_example" %}
+~~~
+namespace org.example
+
+enum Fruits {
+  @color = "red"
+  APPLE
+
+  /** Yum. */
+  @color = "yellow"
+  BANANA
+
+  @deprecated
+  @color = "orange"
+  ORANGE
+}
+~~~
 
 Properties can easily be accessed from Scala code:
 
@@ -457,7 +565,11 @@ They can be used for a variety of purposes. A few common uses:
 
 (1) Provide a name for a union, map, or array so that it can be referenced by name. E.g.:
 
-{% include file_format_specific.html name="typeref_example" %}
+~~~
+namespace org.example
+
+typeref AnswerTypes = union[MultipleChoice, TextEntry]
+~~~
 
 This will be generated as:
 
@@ -470,14 +582,24 @@ case class TextEntryMember(value: TextEntry) extends AnswerTypes
 And can be referred to from any other type using the name
 `org.example.AnswerTypes`, e.g.:
 
-{% include file_format_specific.html name="typeref_in_record" %}
+~~~
+namespace org.example
+
+record Question {
+  answerFormat: org.example.AnswerTypes
+}
+~~~
 
 This is particularly useful because unions, maps and arrays cannot otherwise be
 named directly like records and enums can.
 
 (2) Provide additional clarity when using primitive types for specific purposes.
 
-{% include file_format_specific.html name="typeref_for_timestamp" %}
+~~~
+namespace org.example
+
+typeref UnixTimestamp = long
+~~~
 
 No classes will be generated for this typeref. In Scala, typerefs to primitives
 are simply bound to their reference types (unless the typref is defined as a
@@ -507,7 +629,12 @@ case class SlugId(slug: String)
 
 Define a Pegasus typeref schema like:
 
-{% include file_format_specific.html name="custom_type_single_element" %}
+~~~
+namespace org.example.schemas
+
+@scala.class = "org.example.SlugId"
+typeref SlugId = string
+~~~
 
 ### Coercers
 
@@ -515,7 +642,13 @@ For example, [Joda time](http://www.joda.org/joda-time/) has a convenient
 `DateTime` class. If we wish to use this class in Scala to represent date times,
 all we need to do is define a pegasus custom type that binds to it:
 
-{% include file_format_specific.html name="custom_type_coercer" %}
+~~~
+namespace org.example
+
+@scala.class = "org.joda.time.DateTime"
+@scala.coercerClass = "org.coursera.models.common.DateTimeCoercer"
+typeref DateTime = string
+~~~
 
 The coercer is responsible for converting the pegasus "referenced" type, in this
 case `"string"` to the Joda `DateTime` class:
@@ -544,7 +677,13 @@ object DateTimeCoercer {
 Once a custom type is defined, it can be used in any type. For example, to use the DateTime
 custom type in a record:
 
-{% include file_format_specific.html name="custom_type_in_record" %}
+~~~
+namespace org.example
+
+record Fortune {
+  createdAt: org.example.DateTime
+}
+~~~
 
 This will be generated as:
 

@@ -57,7 +57,13 @@ To try it out, add a schema file:
 
 ##### /schemas/src/main/pegasus/org/example/fortune/Fortune.courier
 
-{% include file_format_specific.html name="sbt_fortune" %}
+~~~
+namespace org.example.fortune
+
+record Fortune {
+  message: string
+}
+~~~
 
 In SBT, run:
 

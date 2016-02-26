@@ -23,11 +23,23 @@ This validation will check that all data is of the correct type and that all req
 
 To include additional validation checks using the built-in validators, such as string regex check, simply add the validation property to a field, e.g.:
 
-{% include file_format_specific.html name="validation_example_field" %}
+~~~
+record JeopardyResponse {
+  @validate.regex = {
+    "regex": "^(What|Who) is"
+  }
+  question: string
+}
+~~~
 
 or to a type, e.g.:
 
-{% include file_format_specific.html name="validation_example_typeref" %}
+~~~
+@validate.regex = {
+  "regex": "^(What|Who) is"
+}
+typeref JeopardyAnswer = string
+~~~
 
 And then run the schema validator as usual.
 
@@ -58,7 +70,14 @@ class CustomValidator(config: DataMap) extends Validator {
 
 And then use the validator in schemas.
 
-{% include file_format_specific.html name="validation_custom_example" %}
+~~~
+@validate = {
+  "org.example.CustomValidator" = {
+    "customValidatorProperty" : "..."
+  }
+}
+typeref ExampleTyperef = string
+~~~
 
 It is also possible to assign a validator a short name. To do this,
 use the constructor of [DataSchemaAnnotationValidator](https://github.com/linkedin/rest.li/blob/master/data/src/main/java/com/linkedin/data/schema/validator/DataSchemaAnnotationValidator.java), e.g.:
