@@ -48,7 +48,7 @@ public class CourierFileType extends LanguageFileType {
       " */\n" +
       "@language.propertyKey = \"property value\"\n" +
       "record Fortune {\n" +
-      "  field1: int? = nil // comment 1\n" +
+      "  field1: int? // comment 1\n" +
       "  field2: array[int] = [1, 2, 3]\n" +
       "  /* comment 2 */\n" +
       "  @deprecated\n" +

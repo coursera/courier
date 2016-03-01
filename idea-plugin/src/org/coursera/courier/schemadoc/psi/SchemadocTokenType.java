@@ -19,5 +19,6 @@ public class SchemadocTokenType extends IElementType {
   public static TokenSet DOC_COMMENT_TOKENS = TokenSet.create(
     SchemadocTypes.DOC_COMMENT_START,
     SchemadocTypes.DOC_COMMENT_CONTENT,
+    SchemadocTypes.DOC_COMMENT_LEADING_ASTRISK,
     SchemadocTypes.DOC_COMMENT_END);
 }
