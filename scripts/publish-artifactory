@@ -1,9 +1,13 @@
 #!/bin/bash
 
-if [ -z $1 ]
+if [ -z $ARTIFACTORY_URL ]
   then
-    echo "Usage: publish-artifactory <artifactory_url> (e.g. https://example.org/artifactory)"
-    exit 1
+    if [ -z $1 ]
+      then
+        echo "Usage: publish-artifactory <artifactory_url> (e.g. https://example.org/artifactory)"
+        echo " ... or set the ARTIFACTORY_URL environment variable"
+        exit 1
+    fi
 fi
 
 ARTIFACTORY_URL=$1
