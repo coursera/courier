@@ -272,7 +272,7 @@ object Courier extends Build with OverridablePublishSettings {
     }
 
     object Coursera {
-      val courscala = "org.coursera" %% "courscala" % "0.0.2"
+      val courscala = "org.coursera" %% "courscala" % "0.0.3"
     }
   }
 

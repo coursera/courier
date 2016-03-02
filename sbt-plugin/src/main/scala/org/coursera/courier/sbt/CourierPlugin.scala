@@ -136,7 +136,7 @@ object CourierPlugin extends Plugin {
       val previousScalaFiles = (dst ** "*.scala").get
 
       if (!versionFile.exists() || IO.read(versionFile).trim != VERSION) {
-        log.info(s"Courier generator version update detected: $VERSION.")
+        log.info(s"Courier: Generator version update detected: $VERSION.")
         IO.write(versionFile, s"$VERSION\n")
       }
 
@@ -144,13 +144,14 @@ object CourierPlugin extends Plugin {
         prepareCacheUpdate(cacheFileSources, sourceFiles :+ versionFile, s)
       }
 
-      log.debug("Detected changed files: " + anyFilesChanged)
+      log.debug("Courier: Detected changed files: " + anyFilesChanged)
       val results = if (anyFilesChanged) {
         log.info(
-          s"Courier: Generating Scala bindings for .pdsc and .courier files for ${conf.name}.")
-        log.debug("Courier resolver path: " + resolverPath)
-        log.debug("Courier source path: " + src)
-        log.debug("Courier destination path: " + dst)
+          s"Courier: Generating Scala bindings for .pdsc and .courier files for '${conf.name}' " +
+          s"configuration.")
+        log.debug("Courier: Resolver path: " + resolverPath)
+        log.debug("Courier: Source path: " + src)
+        log.debug("Courier: Destination path: " + dst)
         try {
           val generator = generatorClass.newInstance()
           val result = new DefaultGeneratorRunner().run(
