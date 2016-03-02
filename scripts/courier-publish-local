@@ -1,4 +1,5 @@
 #!/bin/bash
-sbt fullpublish-mavenlocal
+sbt fullpublish-mavenlocal # publish courier to maven local so that the gradle build for gradle-plugin can depend on it
+sbt fullpublish-ivylocal
 (cd gradle-plugin; ./gradlew install)
 

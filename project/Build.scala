@@ -270,6 +270,10 @@ object Courier extends Build with OverridablePublishSettings {
       val version = "1.7.12"
       val slf4jSimple = "org.slf4j" % "slf4j-simple" % version
     }
+
+    object Coursera {
+      val courscala = "org.coursera" %% "courscala" % "0.0.2"
+    }
   }
 
   object Repos {
