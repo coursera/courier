@@ -8,17 +8,21 @@
   @enum.namespace.map { namespace => package @namespace }
 
   import javax.annotation.Generated
+  import com.linkedin.data.DataMap
   import com.linkedin.data.schema.EnumDataSchema
   import com.linkedin.data.template.DataTemplateUtil
-  import org.coursera.courier.templates.ScalaEnumerationTemplate
+  import org.coursera.courier.templates.ScalaEnumTemplate
+  import org.coursera.courier.templates.ScalaEnumTemplateSymbol
 }
 
-@ClassAnnotations(enum) object @enum.enumName extends ScalaEnumerationTemplate {
-  type @enum.enumName = TemplateValue
+sealed abstract class @(enum.enumName)(name: String, properties: Option[DataMap])
+  extends ScalaEnumTemplateSymbol(name, properties)
+
+@ClassAnnotations(enum) object @enum.enumName extends ScalaEnumTemplate[@(enum.enumName)] {
 
   @enum.symbols.map { symbol =>
     @enum.symbolScalaDocs.get(symbol).map { doc => @doc }
-    val @symbol = TemplateValue("@symbol")
+    case object @symbol extends @(enum.enumName)("@symbol", properties("@symbol"))
   }
 
   /**
@@ -27,14 +31,14 @@
    * May be present when data writer is using a version of enumeration with symbols not yet
    * known to the data reader.
    */
-  val $UNKNOWN = TemplateValue("$UNKNOWN")
+  case object $UNKNOWN extends @(enum.enumName)("$UNKNOWN", None)
 
   /**
    * Converts a string to an enumeration value. If the string does not match
    * any of the enumeration values, returns the \$UNKNOWN enumeration value.
    */
-  override def fromString(s: String): TemplateValue = {
-    values.find(_.toString == s).map(_.asInstanceOf[TemplateValue]).getOrElse($UNKNOWN)
+  override def withName(s: String): @enum.enumName = {
+    symbols.find(_.toString == s).getOrElse($UNKNOWN)
   }
 
   val SCHEMA = DataTemplateUtil.parseSchema(@("\"\"\"" + SchemaToJsonEncoder.schemaToJson(enum.enumSchema, JsonBuilder.Pretty.COMPACT) + "\"\"\"")).asInstanceOf[EnumDataSchema]

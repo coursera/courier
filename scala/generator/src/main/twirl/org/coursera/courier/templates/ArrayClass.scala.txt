@@ -55,7 +55,7 @@
         DataTemplateUtil.coerceOutput(any, classOf[@(primitiveItem.dataType)])
       }
       case enumItem: EnumDefinition => {
-        @(enumItem.enumName).fromString(any.asInstanceOf[String])
+        @(enumItem.enumName).withName(any.asInstanceOf[String])
       }
       case customItem: ClassDefinition => {
         DataTemplateUtil.coerceOutput(any, classOf[@(array.itemClass.scalaTypeFullname)])

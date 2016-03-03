@@ -24,7 +24,8 @@
   import org.coursera.courier.templates.ScalaRecordTemplate
   import org.coursera.courier.templates.ScalaArrayTemplate
   import org.coursera.courier.templates.ScalaUnionTemplate
-  import org.coursera.courier.templates.ScalaEnumerationTemplate
+  import org.coursera.courier.templates.ScalaEnumTemplate
+  import org.coursera.courier.templates.ScalaEnumTemplateSymbol
   import org.coursera.courier.companions.UnionCompanion
   import org.coursera.courier.companions.UnionMemberCompanion
   import org.coursera.courier.companions.UnionWithTyperefCompanion
@@ -81,7 +82,7 @@
       case enumField: EnumDefinition => {
         @FieldAnnotations(field) lazy val @(field.name): @(field.scalaTypeFullname) = @field.wrapAndMapIfOption {
             obtainDirect(@(record.scalaType).Fields.@(field.name), classOf[String])
-          } { value => @(enumField.enumFullname).fromString(@value) }
+          } { value => @(enumField.enumFullname).withName(@value) }
       }
       case customField: ClassDefinition => {
         @FieldAnnotations(field) lazy val @(field.name): @(field.scalaTypeFullname) = @field.wrapIfOption{obtainCustomType(@(record.scalaType).Fields.@(field.name), classOf[@(customField.scalaTypeFullname)])}

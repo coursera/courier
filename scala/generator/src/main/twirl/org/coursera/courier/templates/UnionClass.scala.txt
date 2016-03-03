@@ -109,7 +109,7 @@ object @(union.scalaType) extends UnionCompanion @(if(union.containingTyperef.is
           obtainDirect(@(member.classDefinition.memberName)Schema, classOf[@(customMember.scalaTypeFullname)], memberKey)
         }
         case enumMember: EnumDefinition => {
-          @(enumMember.enumFullname).fromString(
+          @(enumMember.enumFullname).withName(
             obtainDirect(@(member.classDefinition.memberName)Schema, classOf[String], memberKey))
         }
         case _: UnionDefinition => { @* Per Avro, unions are not allowed inside other unions. *@ }

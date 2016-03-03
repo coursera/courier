@@ -30,15 +30,8 @@ case class EnumDefinition(override val spec: EnumTemplateSpec) extends Definitio
 
   /**
    * The enumeration's type.
-   *
-   * It's important to note that the type for the Enumerations we generateRecord is
-   * different than the enumeration object's name.
-   *
-   * A enumeration type is `SomeEnum.SomeEnum`, where the first `SomeEnum` is the name of the
-   * enumeration scala object, and the second `SomeEnum` is a member type defined inside the
-   * object for the actual type of the enumeration.
    */
-  override def scalaType: String = s"$enumName.$enumName"
+  override def scalaType: String = enumName
 
   /**
    * Because the scalaType is not the same as the enumeration object name, we have separate fields

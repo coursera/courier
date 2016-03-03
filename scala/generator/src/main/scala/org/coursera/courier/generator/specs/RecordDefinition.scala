@@ -123,11 +123,11 @@ case class RecordDefinition(override val spec: RecordTemplateSpec) extends Defin
 
   private[this] def enumToDefault(enum: EnumDefinition, symbol: String): String = {
     val symbolLiteral = TypeConversions.toLiteral(symbol)
-    s"${enum.enumFullname}.fromString($symbolLiteral)"
+    s"${enum.enumFullname}.withName($symbolLiteral)"
   }
 
-  // TODO(jbetz): This is an "ugly" way to generateRecord the default value. If/when we have time,
-  // we should instead generateRecord the default entirely in scala types, e.g.:
+  // TODO(jbetz): This is an "ugly" way to generate the default value. If/when we have time,
+  // we should instead generate the default entirely in scala types, e.g.:
   // Foo(Bar(1), Baz(2)) instead of the current
   // Foo(DataTemplates.mapLiteral("""{ "bar": 1, "baz": 2 }"""), ...)
   private[this] def dataMapToDefault(definition: Definition, data: DataMap): String = {

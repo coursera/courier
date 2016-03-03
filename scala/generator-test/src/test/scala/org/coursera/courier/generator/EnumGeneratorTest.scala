@@ -16,7 +16,6 @@
 
 package org.coursera.courier.generator
 
-import org.coursera.courier.templates.ScalaEnumerationTemplate
 import org.coursera.enums.EnumProperties
 import org.coursera.enums.Fruits
 import org.junit.Test
@@ -25,14 +24,9 @@ class EnumGeneratorTest extends GeneratorTest with SchemaFixtures {
 
   @Test
   def testSimpleEnum(): Unit = {
-    assert(Fruits.fromString("APPLE") === Fruits.APPLE)
-    assert(Fruits.fromString("BWAHH") === Fruits.$UNKNOWN)
-    assert(Fruits.values.contains(Fruits.BANANA) === true)
-  }
-
-  @Test
-  def testCompare(): Unit = {
-    assert(EnumProperties.APPLE.compare(EnumProperties.ORANGE) < 0)
+    assert(Fruits.withName("APPLE") === Fruits.APPLE)
+    assert(Fruits.withName("BWAHH") === Fruits.$UNKNOWN)
+    assert(Fruits.symbols.contains(Fruits.BANANA) === true)
   }
 
   @Test
@@ -42,13 +36,13 @@ class EnumGeneratorTest extends GeneratorTest with SchemaFixtures {
     }
     assert(maybeColor === Some("yellow"))
 
-    val orange = EnumProperties.fromString("ORANGE")
-    assert(Set(EnumProperties.BANANA, EnumProperties.ORANGE).contains(orange))
+    val orange = EnumProperties.withName("ORANGE")
+    assert(Set[EnumProperties](EnumProperties.BANANA, EnumProperties.ORANGE).contains(orange))
   }
 
   @Test
   def testEnumProperties_ref(): Unit = {
-    def toColor(entry: EnumProperties.EnumProperties): String = {
+    def toColor(entry: EnumProperties): String = {
       entry.property("color").collect {
         case color: String => color
       }.getOrElse(throw new RuntimeException())
