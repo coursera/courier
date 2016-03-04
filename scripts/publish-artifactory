@@ -1,16 +1,16 @@
 #!/bin/bash
 
-if [ -z $ARTIFACTORY_URL ]
+if [ -z $1 ]
   then
-    if [ -z $1 ]
+    if [ -z $ARTIFACTORY_URL ]
       then
         echo "Usage: publish-artifactory <artifactory_url> (e.g. https://example.org/artifactory)"
         echo " ... or set the ARTIFACTORY_URL environment variable"
         exit 1
     fi
+else
+  ARTIFACTORY_URL=$1
 fi
-
-ARTIFACTORY_URL=$1
 
 sbt fullpublish-mavenlocal # publish courier to maven local so that the gradle build for gradle-plugin can depend on it
 
