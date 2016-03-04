@@ -124,6 +124,10 @@ The code generator is an extension of the Rest.li SBT Plugin, for more details, 
 For testing,
 `.courier` (or `.pdsc`) files only needed for tests may be added to `src/test/pegasus`.
 
+### Scala (Maven)
+
+See [Maven Plugin](https://github.com/coursera/courier/tree/master/maven-plugin).
+
 ### Java (Gradle)
 
 See [Gradle Plugin](https://github.com/coursera/courier/tree/master/gradle-plugin).
