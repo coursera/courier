@@ -29,11 +29,15 @@ def replace(file_path, pattern, subst):
 versionLocations = {
     'gradle': {
         'regex': re.compile(r'courierVersion=(.*)'),
-        'glob': '**/gradle.properties'
+        'glob': 'gradle-plugin/gradle.properties'
     },
     'sbt': {
         'regex': re.compile(r'version in ThisBuild := "(.*)"'),
         'glob': 'version.sbt'
+    },
+    'maven': {
+        'regex': re.compile(r'<courierVersion>(.*)</courierVersion>'),
+        'glob': 'maven-plugin/pom.xml'
     }
 }
 

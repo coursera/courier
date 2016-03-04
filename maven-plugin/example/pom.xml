@@ -1,0 +1,74 @@
+<!--
+  ~ Copyright 2016 Coursera Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <name>Courier Maven Example</name>
+
+  <groupId>org.coursera.courier</groupId>
+  <artifactId>courier-maven-example</artifactId>
+  <version>${courierVersion}</version>
+
+  <properties>
+    <scalaMajorVersion>2.11</scalaMajorVersion>
+    <scalaVersion>2.11.5</scalaVersion>
+    <courierVersion>1.2.2</courierVersion>
+  </properties>
+
+  <build>
+    <sourceDirectory>src/main/scala</sourceDirectory>
+    <testSourceDirectory>src/test/scala</testSourceDirectory>
+    <plugins>
+      <plugin>
+        <groupId>org.coursera.courier</groupId>
+        <artifactId>courier-maven-plugin</artifactId>
+        <version>${courierVersion}</version>
+        <executions>
+          <execution>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>schemas</goal>
+            </goals>
+            <configuration>
+              <sourceDirectory>${project.basedir}/src/main/courier</sourceDirectory>
+              <outputDirectory>${project.basedir}/src/main/scala</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>net.alchim31.maven</groupId>
+        <artifactId>scala-maven-plugin</artifactId>
+        <version>3.2.1</version>
+      </plugin>
+
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala-library</artifactId>
+      <version>${scalaVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.coursera.courier</groupId>
+      <artifactId>courier-runtime_${scalaMajorVersion}</artifactId>
+      <version>${courierVersion}</version>
+    </dependency>
+  </dependencies>
+</project>
