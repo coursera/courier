@@ -9,7 +9,7 @@ record Fortune {
   /**
    * The fortune telling.
    */
-  telling: FortuneTelling // comment 1
+  telling: FortuneTelling
 
-  createdAt: /* comment 2 */ DateTime
+  createdAt: DateTime
 }

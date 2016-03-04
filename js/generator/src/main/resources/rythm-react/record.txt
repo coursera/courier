@@ -1,0 +1,31 @@
+@args com.linkedin.pegasus.generator.spec.RecordTemplateSpec record
+@import com.linkedin.pegasus.generator.spec.ClassTemplateSpec
+@import com.linkedin.pegasus.generator.spec.RecordTemplateSpec.Field
+@import com.linkedin.pegasus.generator.spec.PrimitiveTemplateSpec
+@import com.linkedin.pegasus.generator.spec.MapTemplateSpec
+@import com.linkedin.pegasus.generator.spec.UnionTemplateSpec
+@import com.linkedin.pegasus.generator.spec.ArrayTemplateSpec
+@import org.coursera.courier.api.ClassTemplateSpecs
+@import org.coursera.courier.schema.TypedDefinitions
+@import com.linkedin.data.schema.DataSchema.Type
+@import org.coursera.courier.js.JsSyntax
+
+/* @@flow */
+
+import React from 'react';
+
+@{ String className = JsSyntax.escapeKeyword(record.getClassName()) }
+
+@for(String name: JsSyntax.imports(record)) {
+  import @name from '../propTypes/@name';
+}
+
+// TODO: Should we generate a class?
+var @className = React.PropTypes.shape({
+  @for(Field field: record.getFields()).join(",") {
+    @{ String fieldName = JsSyntax.escapeKeyword(field.getSchemaField().getName()); }
+    @fieldName: @JsSyntax.propType(field.getType(), field.getSchemaField().getOptional())
+  }
+});
+
+module.exports = @className;

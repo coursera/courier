@@ -136,6 +136,17 @@ object Courier extends Build with OverridablePublishSettings {
   lazy val swiftGenerator = Project(id = "swift-generator", base = swiftDir / "generator")
     .dependsOn(generatorApi)
 
+  lazy val swiftGeneratorTest = Project(
+      id = "swift-generator-test", base = swiftDir / "generator-test")
+    .dependsOn(swiftGenerator)
+
+  private[this] val jsDir = file("js")
+  lazy val jsGenerator = Project(id = "js-generator", base = jsDir / "generator")
+    .dependsOn(generatorApi)
+
+  lazy val jsGeneratorTest = Project(id = "js-generator-test", base = jsDir / "generator-test")
+    .dependsOn(jsGenerator)
+
   lazy val courierSbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
     .dependsOn(scalaGenerator)
 
@@ -345,7 +356,8 @@ object Courier extends Build with OverridablePublishSettings {
               args,
             None,
             CustomOutput(outStream))
-        val outputLines = scala.io.Source.fromFile(tmpFile).getLines().toSeq
+        val outputLines = scala.io.Source.fromFile(tmpFile).getLines()
+          .filter(f => f.endsWith(".scala") || f.endsWith(".java")).toSeq
         if (exitValue != 0) {
           outputLines.foreach(println)
           sys.error(s"Code generator failed with exit code: $exitValue")

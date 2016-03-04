@@ -1,0 +1,28 @@
+@args com.linkedin.pegasus.generator.spec.UnionTemplateSpec union
+@import com.linkedin.pegasus.generator.spec.UnionTemplateSpec.Member
+@import org.coursera.courier.schema.TypedDefinitions
+@import org.coursera.courier.js.JsSyntax
+
+/* @@flow */
+
+import React from 'react';
+
+@{ String className = JsSyntax.escapeKeyword(union.getClassName()) }
+
+@if (TypedDefinitions.isTypedDefinition(union)) {
+
+  // Typed definition format:
+  // https://github.com/coursera/courier/blob/master/generator-api/src/main/java/org/coursera/courier/schema/TypedDefinitions.java#L33
+
+  @{ Map<String, String> typeNamesByMemberKey = TypedDefinitions.getTypedDefinitionMapping(union, false); }
+  var @className = React.PropTypes.shape({
+    "typeName": React.PropTypes.oneOf([@for(Member member: union.getMembers()).join(", ") { '@(typeNamesByMemberKey.get(member.getSchema().getUnionMemberKey()))' } ]),
+    // TODO: Prop types for the "definition" part of a union.
+    //"definition": React.PropTypes.oneOfType([@for(Member member: union.getMembers()).join(", ") { @JsSyntax.propType(member.getClassTemplateSpec()) }])
+  });
+} else {
+  // TODO: Handle basic pegasus unions. See: https://github.com/linkedin/rest.li/wiki/DATA-Data-Schema-and-Templates#how-data-is-serialized-for-transport
+  var @className = React.PropTypes.object;
+}
+
+module.exports = @className;

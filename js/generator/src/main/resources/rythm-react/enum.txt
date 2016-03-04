@@ -1,0 +1,14 @@
+@args com.linkedin.pegasus.generator.spec.EnumTemplateSpec enumeration
+@import org.coursera.courier.js.JsSyntax
+@import org.coursera.courier.js.JsDocEscaping
+@import com.linkedin.data.DataMap
+
+/* @@flow */
+
+import React from 'react';
+
+@{ String className = JsSyntax.escapeKeyword(enumeration.getClassName()) }
+
+var @className = React.PropTypes.oneOf([@for(String symbol: enumeration.getSchema().getSymbols()).join(", ") {'@symbol'}]);
+
+module.exports = @className;

@@ -1,11 +1,2 @@
-.gradle
-build/
-
 generator/build
 testsuite/testsuiteTests/generated
-
-# Ignore Gradle GUI config
-gradle-app.setting
-
-# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
-!gradle-wrapper.jar
