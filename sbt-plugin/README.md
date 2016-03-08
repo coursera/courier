@@ -41,4 +41,12 @@ TODO
 ----
 
 [ ] Make this an auto-plugin that automatically adds all necessary settings to projects.
-[ ] Incremental code generation?
+[ ] Incremental code generation? An attempt at implementing this has been started. The work-in-progress
+    is available in the 'incremental' branch (https://github.com/coursera/courier/tree/incremental).
+    This is technically challenging to implement, largely due to how DataSchema's are represented,
+    which makes it difficult to determine which types reside in which .courier files.
+    We decided not to land this branch due to both these technical issues around DataSchemas and
+    also due because we discovered that the main performance bottleneck for Scala generation was
+    the scalariform code formatter's performance (it consumed ~96% of the generator's running time),
+    and so we focused our efforts on replacing it with the "poor man's'" code formatter.
+

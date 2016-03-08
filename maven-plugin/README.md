@@ -1,6 +1,8 @@
 Courier Maven Plugin
 ====================
 
+Experimental!
+
 Usage
 ------
 

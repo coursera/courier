@@ -48,4 +48,5 @@ TODO
       typeref properties (if they have the same name, they collide), which is unreasonable.
 * [ ] Replace typedDefinition and flatTypedDefinition with @tag, @tagField and @memberField (or similar).
 * [ ] Add custom error reporting and error test cases for potential syntax errors
-* [ ] Add linter support as separate tool usable from arc
+* [ ] Add linter support as separate tool usable from the command line so it may be integrated with
+      tools like Phabricator's 'arc'.

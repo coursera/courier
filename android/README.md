@@ -1,6 +1,8 @@
 Courier Data Binding Generator for Android
 ==========================================
 
+Experimental!
+
 Gradle Configuration
 --------------------
 
@@ -12,8 +14,8 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'org.coursera.courier:courier-gradle-plugin:0.16.8'
-        classpath 'org.coursera.courier:courier-android-generator:0.16.8'
+        classpath 'org.coursera.courier:courier-gradle-plugin:2.0.0'
+        classpath 'org.coursera.courier:courier-android-generator:2.0.0'
     }
 }
 ```
@@ -29,7 +31,7 @@ courier {
 
 dependencies {
     compile 'com.google.code.gson:gson:2.3.1'
-    courierCompile 'org.coursera.courier:courier-android-runtime:0.16.8'
+    courierCompile 'org.coursera.courier:courier-android-runtime:2.0.0'
 }
 ```
 
@@ -299,7 +301,12 @@ TODO
 
 ### Migrate to a streaming Jackson parser
 
-Jackson can easily outperform GSON, we should migrate to it.
+Jackson can easily outperform GSON, we should migrate to it. The main technical difficulty
+with doing so is transition to streaming serialization/deserialization, where deserializing
+typed definitions, in particular, will be difficult, mainly because the 'typeName' may
+appear after the 'definition' in the JSON being deserialized. When 'typeName' appears
+after 'definition', the deserializer won't know what type to deserialize the 'definition' to and
+will need to accumulate the 'definition' JSON until the 'typeName' is encountered.
 
 ### Add validation support
 

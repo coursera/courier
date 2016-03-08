@@ -1,6 +1,8 @@
 Courier Data Binding Generator for Swift
 ========================================
 
+Experimental!
+
 Running the generator from the command line
 -------------------------------------------
 
@@ -350,8 +352,9 @@ TODO
 ----
 
 * [ ] Figure out the best way to distribute the 'fat jar'.
-* [ ] Automate distribution of the Fat Jar, and generally make the distribution sane
-* [ ] Publish Fat Jar to remote repos?
+* [ ] Automate distribution of the Fat Jar
+* [ ] Publish Fat Jar to remote repos? Typically fat jars should not be published to maven/ivy
+      repos, but maybe it should be hosted for easy download elsewhere?
 * [ ] Look into adding NSCoding support (see:
   http://swiftandpainless.com/nscoding-and-swift-structs/?utm_campaign=Swift+Developer+Weekly&utm_medium=email&utm_source=Swift_Developer_Weekly_27
   and https://github.com/nicklockwood/AutoCoding)
