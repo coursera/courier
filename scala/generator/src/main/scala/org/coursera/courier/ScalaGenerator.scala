@@ -29,6 +29,8 @@ import org.coursera.courier.generator.specs.PrimitiveDefinition
 import org.coursera.courier.generator.specs.RecordDefinition
 import org.coursera.courier.generator.specs.TyperefDefinition
 import org.coursera.courier.generator.specs.UnionDefinition
+import org.coursera.courier.lang.DocCommentStyle
+import org.coursera.courier.lang.PoorMansCStyleSourceFormatter
 import org.coursera.courier.templates.txt.ArrayClass
 import org.coursera.courier.templates.txt.EnumClass
 import org.coursera.courier.templates.txt.FixedClass
@@ -51,6 +53,7 @@ class ScalaGenerator()
 
   // TODO(jbetz): Make configurable
   val generateTyperefs = false
+  val formatter = new PoorMansCStyleSourceFormatter(2, DocCommentStyle.ASTRISK_MARGIN)
 
   override def generate(topLevelSpec: Definition): Option[ScalaGeneratedCode] = {
     val maybeCode = topLevelSpec match {
@@ -83,7 +86,7 @@ class ScalaGenerator()
     }
     maybeCode.map { code =>
       val formattedCode = try {
-        ScalaFormatter.format(code)
+        formatter.format(code)
       } catch {
         case _: ScalaParserException => code
       }

@@ -98,16 +98,17 @@ case class RecordField(field: Field) extends Deprecatable {
    * expression.
    */
   def wrapIfOption(expr: Txt): Txt = {
+    val trimmedExpr = Txt(expr.body.trim)
     if (isOptional) {
       typ match {
         case primitive: PrimitiveDefinition
             if TypeConversions.isScalaValueType(primitive.primitiveSchema) =>
-          Txt(s"Option($expr).map(${primitive.maybeUnbox(Txt("_"))})")
+          Txt(s"Option($trimmedExpr).map(${primitive.maybeUnbox(Txt("_"))})")
         case _: Any =>
-          Txt(s"Option($expr)")
+          Txt(s"Option($trimmedExpr)")
       }
     } else {
-      expr
+      trimmedExpr
     }
   }
 
@@ -128,10 +129,11 @@ case class RecordField(field: Field) extends Deprecatable {
    * the option with the provided `f` function.
    */
   def wrapAndMapIfOption(ref: Txt)(f: Txt => Txt): Txt = {
+    val trimmedRef = Txt(ref.body.trim)
     if (isOptional) {
-      Txt(s"Option($ref).map(value => ${f(Txt("value"))})")
+      Txt(s"Option($trimmedRef).map(value => ${f(Txt("value"))})")
     } else {
-      f(ref)
+      f(trimmedRef)
     }
   }
 

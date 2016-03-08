@@ -67,9 +67,7 @@ object @(union.scalaType) extends UnionCompanion @(if(union.containingTyperef.is
   }
 
   def apply(union: DataMap, conversion: DataConversion): @(union.scalaType) = {
-    require(
-      union.size == 1,
-      "Malformed union DataMap, exactly one field must be present and must be a member key")
+    require(union.size == 1, "Malformed union DataMap, exactly one field must be present and must be a member key")
 
     val unionTag = union.keySet().iterator().next()
     unionTag match {
@@ -109,8 +107,7 @@ object @(union.scalaType) extends UnionCompanion @(if(union.containingTyperef.is
           obtainDirect(@(member.classDefinition.memberName)Schema, classOf[@(customMember.scalaTypeFullname)], memberKey)
         }
         case enumMember: EnumDefinition => {
-          @(enumMember.enumFullname).withName(
-            obtainDirect(@(member.classDefinition.memberName)Schema, classOf[String], memberKey))
+          @(enumMember.enumFullname).withName(obtainDirect(@(member.classDefinition.memberName)Schema, classOf[String], memberKey))
         }
         case _: UnionDefinition => { @* Per Avro, unions are not allowed inside other unions. *@ }
       }
@@ -162,8 +159,7 @@ object @(union.scalaType) extends UnionCompanion @(if(union.containingTyperef.is
     }
   }
 
-  case class $UnknownMember private[@(union.scalaType)](
-      private[@(union.scalaType)] val dataMap: DataMap)
+  case class $UnknownMember private[@(union.scalaType)](private[@(union.scalaType)] val dataMap: DataMap)
     extends @(union.scalaType)(dataMap) {
 
     def declaringTyperefSchema: Option[TyperefDataSchema] = {

@@ -73,10 +73,12 @@ public class PoorMansCStyleSourceFormatter {
     for (String line: lines) {
       line = line.trim();
 
+      // skip repeated empty lines
       boolean isEmpty = (line.length() == 0);
       if (isEmpty && ((isPreviousLineEmpty || isPreviousLinePreamble) || scope.size() > 2)) continue;
 
-      if (scope.peek() == Scope.COMMENT && line.startsWith("*") && docCommentStyle == DocCommentStyle.ASTRISK_MARGIN) {
+      if (scope.peek() == Scope.COMMENT && line.startsWith("*") &&
+        docCommentStyle == DocCommentStyle.ASTRISK_MARGIN) {
         result.append(" "); // align javadoc continuation
       }
 
@@ -94,7 +96,11 @@ public class PoorMansCStyleSourceFormatter {
       boolean isCaseStmt = scope.peek() == Scope.SWITCH &&
         (line.startsWith("case ") || line.startsWith("default"));
 
-      result.append(StringUtils.repeat(indent, indentLevel - (isCaseStmt ? 1 : 0)));
+      boolean isDeclContinuation =
+        line.startsWith("extends") || line.startsWith("with") || line.startsWith("implements");
+
+      result.append(StringUtils.repeat(
+          indent, indentLevel - (isCaseStmt ? 1 : 0) + (isDeclContinuation ? 1 : 0)));
 
       result.append(line);
       result.append('\n');
