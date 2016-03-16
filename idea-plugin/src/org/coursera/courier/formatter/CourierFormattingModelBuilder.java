@@ -31,6 +31,7 @@ import static org.coursera.courier.psi.CourierTypes.NAMESPACE_DECLARATION;
 import static org.coursera.courier.psi.CourierTypes.NAMESPACE_KEYWORD;
 import static org.coursera.courier.psi.CourierTypes.QUESTION_MARK;
 import static org.coursera.courier.psi.CourierTypes.TYPE_DECLARATION;
+import static org.coursera.courier.schemadoc.psi.SchemadocTypes.DOC_COMMENT_LEADING_ASTRISK;
 
 public class CourierFormattingModelBuilder implements FormattingModelBuilder {
   @NotNull
