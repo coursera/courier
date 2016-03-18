@@ -45,6 +45,9 @@
     <stubElementTypeHolder class="org.coursera.courier.psi.CourierTypes" />
     <stubIndex implementation="org.coursera.courier.psi.CourierNameStubIndex" />
     <stubIndex implementation="org.coursera.courier.psi.CourierFullnameStubIndex" />
+
+    <!-- Schemadoc -->
+    <lang.formatter language="Schemadoc" implementationClass="org.coursera.courier.formatter.SchemadocFormattingModelBuilder"/>
   </extensions>
 
   <application-components>
