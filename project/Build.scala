@@ -136,6 +136,11 @@ object Courier extends Build with OverridablePublishSettings {
   lazy val swiftGenerator = Project(id = "swift-generator", base = swiftDir / "generator")
     .dependsOn(generatorApi)
 
+  private[this] val typescriptLiteDir = file("typescript-lite")
+  lazy val typescriptLiteGenerator = Project(id = "typescript-lite-generator", base = typescriptLiteDir / "generator")
+    .dependsOn(generatorApi)
+
+
   lazy val courierSbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
     .dependsOn(scalaGenerator)
 
@@ -166,6 +171,7 @@ object Courier extends Build with OverridablePublishSettings {
     s";project android-generator;$publishCommand" +
     s";project android-runtime;$publishCommand" +
     s";project swift-generator;$publishCommand" +
+    s";project typescript-lite-generator;$publishCommand" +
     s";++$sbtScalaVersion;project scala-generator;$publishCommand" +
     s";++$currentScalaVersion;project scala-generator;$publishCommand" +
     s";++$sbtScalaVersion;project sbt-plugin;$publishCommand" +
@@ -182,7 +188,8 @@ object Courier extends Build with OverridablePublishSettings {
       androidGenerator,
       androidGeneratorTest,
       androidRuntime,
-      swiftGenerator)
+      swiftGenerator,
+      typescriptLiteGenerator)
     .settings(runtimeVersionSettings)
     .settings(packagedArtifacts := Map.empty) // disable publish for root aggregate module
     .settings(

@@ -1,0 +1,11 @@
+@args com.linkedin.pegasus.generator.spec.RecordTemplateSpec record, org.coursera.courier.tslite.TSSyntax syntax
+@import org.coursera.courier.schema.TypedDefinitions
+@import com.linkedin.pegasus.generator.spec.ClassTemplateSpec
+@import org.coursera.courier.api.ClassTemplateSpecs
+@import com.linkedin.pegasus.generator.spec.UnionTemplateSpec
+
+@for(ClassTemplateSpec enclosed: ClassTemplateSpecs.allContainedTypes(record)) {
+  @if (enclosed instanceof UnionTemplateSpec) {
+    @union(enclosed, syntax)
+  }
+}

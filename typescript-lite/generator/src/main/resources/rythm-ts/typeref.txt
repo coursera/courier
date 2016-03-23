@@ -1,0 +1,11 @@
+@args com.linkedin.pegasus.generator.spec.TyperefTemplateSpec typeref, org.coursera.courier.tslite.TSSyntax syntax
+@import com.linkedin.pegasus.generator.spec.ClassTemplateSpec
+@import com.linkedin.data.schema.TyperefDataSchema
+
+@{ String className = syntax.escapeKeyword(typeref.getClassName()) }
+@{ ClassTemplateSpec refType = ClassTemplateSpec.createFromDataSchema(typeref.getSchema().getRef()) }
+
+@syntax.openNamespace(typeref)
+  @classAnnotations(typeref.getSchema())
+  export type @className = @syntax.toTypeString(refType, true);
+@syntax.closeNamespace(typeref)

@@ -1,0 +1,9 @@
+@args com.linkedin.data.schema.NamedDataSchema schema
+@import java.util.Calendar
+@import org.coursera.courier.tslite.TSDocEscaping
+
+@* Add any scaladoc and deprecated annotations as well as the Generated annotation. *@
+@{Map<String, Object> props = schema.getProperties() }
+
+@TSDocEscaping.stringToDocComment(schema.getDoc())
+@TSDocEscaping.deprecatedToString(props.get("deprecated"))

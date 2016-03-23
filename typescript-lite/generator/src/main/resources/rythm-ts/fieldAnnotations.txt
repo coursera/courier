@@ -1,0 +1,9 @@
+@args com.linkedin.pegasus.generator.spec.RecordTemplateSpec.Field field
+@import org.coursera.courier.tslite.TSDocEscaping
+@import com.linkedin.data.schema.RecordDataSchema
+
+@{RecordDataSchema.Field schemaField = field.getSchemaField() }
+@{Map<String, Object> props = schemaField.getProperties() }
+
+@TSDocEscaping.stringToDocComment(schemaField.getDoc())
+@TSDocEscaping.deprecatedToString(props.get("deprecated"))

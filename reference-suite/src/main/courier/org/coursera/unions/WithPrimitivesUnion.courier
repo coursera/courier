@@ -1,5 +1,6 @@
 namespace org.coursera.unions
 
+@typescript.omit // TODO(eboto): currently produces many getNumber functions.
 record WithPrimitivesUnion {
   `union`: union[int, long, float, double, boolean, string, bytes]
 }

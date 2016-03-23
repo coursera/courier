@@ -1,0 +1,36 @@
+@args com.linkedin.pegasus.generator.spec.UnionTemplateSpec union, org.coursera.courier.tslite.TSSyntax syntax
+@import org.coursera.courier.tslite.TSSyntax.EscapeOptions
+@import com.linkedin.pegasus.generator.spec.UnionTemplateSpec.Member
+@import org.coursera.courier.schema.TypedDefinitions
+
+@{ String className = syntax.escapeKeyword(union.getClassName(), EscapeOptions.MANGLE) }
+
+@if (union.getTyperefClass() != null) {
+  @classAnnotations(union.getTyperefClass().getSchema())
+}
+
+@if(union.getEnclosingClass() == null) {
+  @syntax.openNamespace(union)
+}
+
+  export type @className = @if (!union.getMembers().isEmpty()) @for(Member member: union.getMembers()) { @(className).@syntax.toUnionMemberName(member.getClassTemplateSpec()) @if (!member_isLast) { |} } } else { void};
+
+  export module @className {
+    @for(Member member: union.getMembers()) {
+      @{ String unionMemberInterfaceName = syntax.toUnionMemberName(member.getClassTemplateSpec()) }
+      @{ String unionLookupString = syntax.toTypeString(member.getClassTemplateSpec(), true) }
+      @{ String fullClassName = syntax.toTypeString(member.getClassTemplateSpec()) }
+      export interface @unionMemberInterfaceName {
+        "@unionLookupString": @fullClassName;
+      }
+      @{ String unionMemberName = syntax.toTypeString(member.getClassTemplateSpec()) }
+      export function get@(syntax.filterForUnionGetter(syntax.toTypeString(member.getClassTemplateSpec(), false)))(union: @className): @unionMemberName {
+        return union["@syntax.toTypeString(member.getClassTemplateSpec(), true)"] as @unionMemberName;
+      }
+
+    }
+  }
+
+@if(union.getEnclosingClass() == null) {
+  @syntax.closeNamespace(union)
+}

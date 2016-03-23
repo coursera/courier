@@ -1,0 +1,30 @@
+@args com.linkedin.pegasus.generator.spec.RecordTemplateSpec record, org.coursera.courier.tslite.TSSyntax syntax
+@import org.coursera.courier.tslite.TSSyntax.EscapeOptions
+@import com.linkedin.pegasus.generator.spec.ClassTemplateSpec
+@import com.linkedin.pegasus.generator.spec.RecordTemplateSpec.Field
+@import com.linkedin.pegasus.generator.spec.PrimitiveTemplateSpec
+@import com.linkedin.pegasus.generator.spec.MapTemplateSpec
+@import com.linkedin.pegasus.generator.spec.UnionTemplateSpec
+@import com.linkedin.pegasus.generator.spec.ArrayTemplateSpec
+@import org.coursera.courier.api.ClassTemplateSpecs
+@import org.coursera.courier.schema.TypedDefinitions
+@import com.linkedin.data.schema.DataSchema.Type
+
+@{ String className = syntax.escapeKeyword(record.getClassName(), EscapeOptions.MANGLE) }
+
+@syntax.openNamespace(record)
+  @classAnnotations(record.getSchema())
+  export interface @className {
+    @for(Field field: record.getFields()) {
+      @{ String fieldName = syntax.escapeKeyword(field.getSchemaField().getName()) }
+      @fieldAnnotations(field)
+      @fieldName @syntax.questionMarkIfOptional(field): @syntax.toTypeString(field);
+    }
+  }
+
+  @if(!ClassTemplateSpecs.allContainedTypes(record).isEmpty()) {
+    export module @className {
+      @enclosedTypes(record, syntax)
+    }
+  }
+@syntax.closeNamespace(record)
