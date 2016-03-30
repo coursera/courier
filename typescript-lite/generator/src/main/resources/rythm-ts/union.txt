@@ -28,16 +28,17 @@
         export interface @unionMemberInterfaceName extends @(className)Member {
           "@unionLookupString": @fullClassName;
         }
-        @{ String unionMemberName = syntax.toTypeString(member.getClassTemplateSpec()) }
-        export function get@(syntax.filterForUnionGetter(syntax.toTypeString(member.getClassTemplateSpec(), false)))(union: @className): @unionMemberName {
-          return union["@syntax.toTypeString(member.getClassTemplateSpec(), true)"] as @unionMemberName;
-        }
+      }
 
+      export function get(union: @className) {
+        return {
+          @for(Member member: union.getMembers()) {
+            @(syntax.filterForUnionGetterKey(syntax.toTypeString(member.getClassTemplateSpec(), false))): union["@syntax.toTypeString(member.getClassTemplateSpec(), true)"] as @syntax.toTypeString(member.getClassTemplateSpec()) @if(!member_isLast) {,}
+          }
+        };
       }
     }
-
   }
-
 @if(union.getEnclosingClass() == null) {
   @syntax.closeNamespace(union)
 }

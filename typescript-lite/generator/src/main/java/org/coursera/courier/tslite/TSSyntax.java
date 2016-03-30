@@ -220,6 +220,11 @@ public class TSSyntax {
     String punctuationEscaped = other.replaceAll("[\\p{Punct}\\p{Space}]", "");
     return Character.toUpperCase(punctuationEscaped.charAt(0)) + punctuationEscaped.substring(1);
   }
+
+  public String filterForUnionGetterKey(String other) {
+    String filtered = filterForUnionGetter(other);
+    return Character.toLowerCase(filtered.charAt(0)) + filtered.substring(1);
+  }
   // emit string representing type
   public String toTypeString(ClassTemplateSpec spec, boolean fullName) {
     if (spec == null) {

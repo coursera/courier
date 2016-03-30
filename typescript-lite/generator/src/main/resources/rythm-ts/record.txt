@@ -13,7 +13,7 @@
 @{ String className = syntax.escapeKeyword(record.getClassName(), EscapeOptions.MANGLE) }
 
 @syntax.openNamespace(record)
-  @classAnnotations(record.getSchema())
+@classAnnotations(record.getSchema())
   export interface @className {
     @for(Field field: record.getFields()) {
       @{ String fieldName = syntax.escapeKeyword(field.getSchemaField().getName()) }

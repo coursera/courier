@@ -15,6 +15,6 @@
 //
 namespace courier {
   export interface Map<ValueT> {
-    [key: string]: ValueT
+    [key: string]: ValueT;
   }
 }

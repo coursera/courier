@@ -106,27 +106,30 @@ namespace org.example {
 e.g. The result of [FortuneTelling.pdsc](https://github.com/coursera/courier/blob/master/reference-suite/src/main/pegasus/org/example/FortuneTelling.pdsc):
 ```typescript
 namespace org.example {
-    export type FortuneTelling =  FortuneTelling.FortuneCookieMember | FortuneTelling.MagicEightBallMember | FortuneTelling.StringMember;
-    export module FortuneTelling {
-        export interface FortuneCookieMember {
-            "org.example.FortuneCookie": org.example.FortuneCookie;
-        }
-        export function getFortuneCookie(union: FortuneTelling): org.example.FortuneCookie {
-            return union["org.example.FortuneCookie"] as org.example.FortuneCookie;
-        }
-        export interface MagicEightBallMember {
-            "org.example.MagicEightBall": org.example.MagicEightBall;
-        }
-        export function getMagicEightBall(union: FortuneTelling): org.example.MagicEightBall {
-            return union["org.example.MagicEightBall"] as org.example.MagicEightBall;
-        }
-        export interface StringMember {
-            "string": string;
-        }
-        export function getString(union: FortuneTelling): string {
-            return union["string"] as string;
-        }
+  export type FortuneTelling =  FortuneTelling.FortuneCookieMember | FortuneTelling.MagicEightBallMember | FortuneTelling.StringMember;
+  export module FortuneTelling {
+    export interface FortuneTellingMember {
+      [key: string]:  org.example.FortuneCookie | org.example.MagicEightBall | string;
     }
+    export interface FortuneCookieMember extends FortuneTellingMember {
+      "org.example.FortuneCookie": org.example.FortuneCookie;
+    }
+    export function getFortuneCookie(union: FortuneTelling): org.example.FortuneCookie {
+      return union["org.example.FortuneCookie"] as org.example.FortuneCookie;
+    }
+    export interface MagicEightBallMember extends FortuneTellingMember {
+      "org.example.MagicEightBall": org.example.MagicEightBall;
+    }
+    export function getMagicEightBall(union: FortuneTelling): org.example.MagicEightBall {
+      return union["org.example.MagicEightBall"] as org.example.MagicEightBall;
+    }
+    export interface StringMember extends FortuneTellingMember {
+      "string": string;
+    }
+    export function getString(union: FortuneTelling): string {
+      return union["string"] as string;
+    }
+  }
 }
 ```
 
@@ -146,6 +149,13 @@ if (fortuneCookie = FortuneTelling.getFortuneCookie(telling)) {
 } else {
   throw 'a fit because no one will tell your fortune';
 }
+
+// Or using const as I prefer
+
+const telling: FortuneTelling = /* Get the union from somewhere */;
+const fortuneCookie = FortuneTelling.getFortuneCookie(telling);
+const magicEightBall = FortuneTelling.getMagicEightBall(telling);
+const str = FortuneTelling.getString(telling);
 ```
 
 Projections and Optionality
