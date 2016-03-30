@@ -5,40 +5,36 @@
 
 @{ String className = syntax.escapeKeyword(union.getClassName(), EscapeOptions.MANGLE) }
 
+@for(String theImport : syntax.imports(union)) {
+  @theImport;
+}
+
 @if (union.getTyperefClass() != null) {
   @classAnnotations(union.getTyperefClass().getSchema())
 }
 
-@if(union.getEnclosingClass() == null) {
-  @syntax.openNamespace(union)
-}
+export type @className = @if (!union.getMembers().isEmpty()) @for(Member member: union.getMembers()) { @(className).@syntax.toUnionMemberName(member) @if (!member_isLast) { |} } } else { void};
 
-
-  export type @className = @if (!union.getMembers().isEmpty()) @for(Member member: union.getMembers()) { @(className).@syntax.toUnionMemberName(member.getClassTemplateSpec()) @if (!member_isLast) { |} } } else { void};
-
-  @if(!union.getMembers().isEmpty()) {
-    export module @className {
-      export interface @(className)Member {
-        [key: string]: @for(Member member: union.getMembers()){ @syntax.toTypeString(member.getClassTemplateSpec(), true) @if(!member_isLast){ |}};
-      }
-      @for(Member member: union.getMembers()) {
-        @{ String unionMemberInterfaceName = syntax.toUnionMemberName(member.getClassTemplateSpec()) }
-        @{ String unionLookupString = syntax.toTypeString(member.getClassTemplateSpec(), true) }
-        @{ String fullClassName = syntax.toTypeString(member.getClassTemplateSpec()) }
-        export interface @unionMemberInterfaceName extends @(className)Member {
-          "@unionLookupString": @fullClassName;
-        }
-      }
-
-      export function get(union: @className) {
-        return {
-          @for(Member member: union.getMembers()) {
-            @(syntax.filterForUnionGetterKey(syntax.toTypeString(member.getClassTemplateSpec(), false))): union["@syntax.toTypeString(member.getClassTemplateSpec(), true)"] as @syntax.toTypeString(member.getClassTemplateSpec()) @if(!member_isLast) {,}
-          }
-        };
-      }
+@if(!union.getMembers().isEmpty()) {
+export module @className {
+  export interface @(className)Member {
+    [key: string]: @for(Member member: union.getMembers()){ @syntax.toTypeString(member, false) @if(!member_isLast){ |}};
+  }
+  @for(Member member: union.getMembers()) {
+    @{ String unionMemberInterfaceName = syntax.toUnionMemberName(member) }
+    @{ String unionLookupString = syntax.toTypeString(member.getClassTemplateSpec(), true) }
+    @{ String memberClassName = syntax.toTypeString(member, false) }
+    export interface @unionMemberInterfaceName extends @(className)Member {
+      "@unionLookupString": @memberClassName;
     }
   }
-@if(union.getEnclosingClass() == null) {
-  @syntax.closeNamespace(union)
+
+  export function unpack(union: @className) {
+    return {
+      @for(Member member: union.getMembers()) {
+        @(syntax.filterForUnionGetterKey(syntax.toTypeString(member, false))): union["@syntax.toTypeString(member.getClassTemplateSpec(), true)"] as @syntax.toTypeString(member, false) @if(!member_isLast) {,}
+      }
+    };
+  }
+}
 }

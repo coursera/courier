@@ -16,15 +16,26 @@
 
 package org.coursera.courier.tslite;
 
+import com.linkedin.data.schema.ArrayDataSchema;
+import com.linkedin.data.schema.DataSchema;
 import com.linkedin.data.schema.DataSchema.Type;
 import com.linkedin.data.schema.EnumDataSchema;
+import com.linkedin.data.schema.MapDataSchema;
+import com.linkedin.data.schema.NamedDataSchema;
 import com.linkedin.data.schema.RecordDataSchema;
 import com.linkedin.data.schema.TyperefDataSchema;
+import com.linkedin.data.schema.UnionDataSchema;
+import com.linkedin.data.template.UnionTemplate;
+import com.linkedin.pegasus.generator.CodeUtil;
 import com.linkedin.pegasus.generator.spec.*;
+import org.coursera.courier.api.ClassTemplateSpecs;
 import org.coursera.courier.tslite.TSProperties.Optionality;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -207,9 +218,45 @@ public class TSSyntax {
 
   public String toTypeString(RecordTemplateSpec.Field field, boolean fullName) {
     if (field.getSchemaField() != null && field.getSchemaField().getType() instanceof TyperefDataSchema) {
-      return ((TyperefDataSchema) field.getSchemaField().getType()).getFullName();
+      TyperefDataSchema typerefSchema = (TyperefDataSchema) field.getSchemaField().getType();
+      String className = fullName? typerefSchema.getFullName(): typerefSchema.getName();
+      return className;
+    } else if (field.getType() instanceof ArrayTemplateSpec) {
+      // Prevent Array<"null"> when you have arrays of anonymous unions
+      ArrayTemplateSpec arrSpec = (ArrayTemplateSpec) field.getType();
+      if (arrSpec.getItemClass() instanceof UnionTemplateSpec) {
+        return "Array<" + getUnionStringWithRelation(fullName, (UnionTemplateSpec) arrSpec.getItemClass()) + ">";
+      } else {
+        return toTypeString(field.getType(), fullName);
+      }
+    } else if (field.getType() instanceof MapTemplateSpec)  {
+      MapTemplateSpec mapSpec = (MapTemplateSpec) field.getType();
+      if (mapSpec.getValueClass() instanceof UnionTemplateSpec) {
+        return "Map<" + getUnionStringWithRelation(fullName, (UnionTemplateSpec) mapSpec.getValueClass()) + ">";
+      } else {
+        return toTypeString(field.getType(), fullName);
+      }
     } else {
       return toTypeString(field.getType(), fullName);
+    }
+  }
+
+  private String getUnionStringWithRelation(boolean fullName, UnionTemplateSpec itemUnionSpec) {
+    ClassTemplateSpec enclosingClass = itemUnionSpec.getEnclosingClass();
+    String unionName = itemUnionSpec.getClassName();
+    if (enclosingClass != null) {
+      String enclosingClassPart = fullName? enclosingClass.getFullName(): enclosingClass.getClassName();
+      unionName = enclosingClassPart + "." + unionName;
+    }
+    return escapeKeyword(unionName, EscapeOptions.MANGLE);
+  }
+
+  public String toTypeString(UnionTemplateSpec.Member member, boolean fullName) {
+    if (member.getSchema() instanceof TyperefDataSchema) {
+      TyperefDataSchema typerefSchema = (TyperefDataSchema) member.getSchema();
+      return fullName? typerefSchema.getFullName(): typerefSchema.getName();
+    } else {
+      return toTypeString(member.getClassTemplateSpec(), fullName);
     }
   }
 
@@ -223,7 +270,9 @@ public class TSSyntax {
 
   public String filterForUnionGetterKey(String other) {
     String filtered = filterForUnionGetter(other);
-    return Character.toLowerCase(filtered.charAt(0)) + filtered.substring(1);
+    String lowerCased = Character.toLowerCase(filtered.charAt(0)) + filtered.substring(1);
+
+    return escapeKeyword(lowerCased, EscapeOptions.MANGLE);
   }
   // emit string representing type
   public String toTypeString(ClassTemplateSpec spec, boolean fullName) {
@@ -236,7 +285,6 @@ public class TSSyntax {
       return escapedName(spec, fullName);
     }
     Type schemaType = spec.getSchema().getType();
-
     if (schemaType == Type.INT) {
       return "number";
     } else if (schemaType == Type.LONG) {
@@ -262,10 +310,19 @@ public class TSSyntax {
     } else if (schemaType == Type.UNION) {
       return escapedName(spec, fullName);
     } else if (schemaType == Type.MAP) {
-      return "courier.Map<" + toTypeString(((MapTemplateSpec) spec).getValueClass(), fullName) + ">";
+      MapTemplateSpec mapSpec = (MapTemplateSpec) spec;
+      MapDataSchema mapSchema = mapSpec.getSchema();
+      DataSchema valueSchema = mapSchema.getValues();
+      return "Map<" + toTypeString(ClassTemplateSpec.createFromDataSchema(valueSchema), fullName) + ">";
     } else if (schemaType == Type.ARRAY) {
       ArrayTemplateSpec arraySpec = (ArrayTemplateSpec) spec;
-      return "Array<" + toTypeString(((ArrayTemplateSpec) spec).getItemClass(), fullName) + ">";
+      ArrayDataSchema arraySchema = arraySpec.getSchema();
+      DataSchema itemSchema = arraySchema.getItems();
+      if (itemSchema instanceof UnionDataSchema) {
+        UnionDataSchema unionSchema = (UnionDataSchema) itemSchema;
+
+      }
+      return "Array<" + toTypeString(ClassTemplateSpec.createFromDataSchema(itemSchema), fullName) + ">";
     } else if (schemaType == Type.TYPEREF) {
       TyperefDataSchema typerefSchema = (TyperefDataSchema) spec.getSchema();
       return toFullname(fullName? typerefSchema.getNamespace(): null, escapeKeyword(typerefSchema.getName()));
@@ -274,25 +331,92 @@ public class TSSyntax {
     }
   }
 
-  public static String openNamespace(ClassTemplateSpec spec) {
-    String ns = spec.getNamespace();
-    if (ns != null && !"".equals(ns)) {
-      return new StringBuffer()
-          .append("namespace ")
-          .append(ns)
-          .append(" {")
-          .toString();
+  public Set<String> imports(ClassTemplateSpec spec) {
+    Type schemaType = spec.getSchema().getType();
+    boolean isEnclosedClass = spec.getEnclosingClass() != null;
+    if (isEnclosedClass) {
+      // the external class will be responsible for generating the imports for the whole module
+      return new HashSet<>();
     } else {
-      return "";
+      return importsInner(spec);
     }
   }
 
-  public static String closeNamespace(ClassTemplateSpec spec) {
-    String ns = spec.getNamespace();
-    if (ns != null && !"".equals(ns)) {
-      return "}";
+  private Set<String> importsInner(ClassTemplateSpec spec) {
+    Type schemaType = spec.getSchema().getType();
+    Set<String> imports = new HashSet<>();
+
+    if (schemaType == Type.RECORD) {
+      RecordTemplateSpec recordSpec = (RecordTemplateSpec) spec;
+      for (RecordTemplateSpec.Field fieldSpec : recordSpec.getFields()) {
+        imports.addAll(tsModule(fieldSpec.getSchemaField().getType()));
+      }
+      Set<ClassTemplateSpec> containedTypes = ClassTemplateSpecs.allContainedTypes(spec);
+      for (ClassTemplateSpec containedSpec: containedTypes) {
+        imports.addAll(importsInner(containedSpec));
+      }
+    } else if (schemaType == Type.UNION) {
+      UnionTemplateSpec unionSpec = (UnionTemplateSpec) spec;
+      for (UnionTemplateSpec.Member member: unionSpec.getMembers()) {
+        imports.addAll(tsModule(member.getSchema()));
+      }
+    } else if (schemaType == Type.ARRAY) {
+      ArrayTemplateSpec arraySpec = (ArrayTemplateSpec) spec;
+      imports.addAll(importsInner(arraySpec.getItemClass()));
+    } else if (schemaType == Type.TYPEREF) {
+      TyperefTemplateSpec typerefSpec = (TyperefTemplateSpec) spec;
+      imports.addAll(tsModule(typerefSpec.getSchema().getRef()));
+    }
+
+    return imports;
+  }
+
+  public Set<String> tsModule(DataSchema typeSpec) {
+    Set<String> imports = new HashSet<>();
+    if (typeSpec == null) {
+      return imports;
+    }
+
+    String moduleName = null;
+    String className = null;
+
+    if (typeSpec instanceof TyperefDataSchema) {
+      TyperefDataSchema typerefSchema = ((TyperefDataSchema) typeSpec);
+      className = typerefSchema.getName();
+      moduleName = typerefSchema.getNamespace() + "." + className;
+    } else if (typeSpec instanceof EnumDataSchema) {
+      className = ((EnumDataSchema) typeSpec).getName();
+      moduleName = ((EnumDataSchema) typeSpec).getNamespace() + "." + className;
+    } else if (typeSpec instanceof RecordDataSchema) {
+      className = ((RecordDataSchema) typeSpec).getName();
+      moduleName = ((RecordDataSchema) typeSpec).getNamespace() + "." + className;
+    } else if (typeSpec instanceof MapDataSchema) {
+      imports.addAll(tsModule(((MapDataSchema) typeSpec).getValues()));
+      className = "Map";
+      moduleName = "CourierRuntime";
+    } else if (typeSpec instanceof UnionDataSchema) {
+      for (DataSchema memberSchema: ((UnionDataSchema) typeSpec).getTypes()) {
+        imports.addAll(tsModule(memberSchema));
+      }
+    } else if (typeSpec instanceof ArrayDataSchema) {
+      DataSchema itemSchema = ((ArrayDataSchema) typeSpec).getItems();
+      imports.addAll(tsModule(itemSchema));
+    }
+
+    if (moduleName != null && className != null) {
+      imports.add("import { " + className + " } from \"./" + moduleName + "\"");
+    }
+
+    return imports;
+  }
+
+  public String toUnionMemberName(UnionTemplateSpec.Member member) {
+    if (member.getSchema() instanceof TyperefDataSchema) {
+      TyperefDataSchema typerefSchema = ((TyperefDataSchema) member.getSchema());
+      String className = typerefSchema.getName();
+      return className + "Member";
     } else {
-      return "";
+      return toUnionMemberName(member.getClassTemplateSpec());
     }
   }
 
@@ -303,7 +427,7 @@ public class TSSyntax {
    * @param spec provides the union member type to get the name for.
    * @return a typescript source code string identifying the union member.
    */
-  public static String toUnionMemberName(ClassTemplateSpec spec) {
+  public String toUnionMemberName(ClassTemplateSpec spec) {
     if (spec.getSchema() == null) { // custom type
       return spec.getClassName() + "Member";
     }

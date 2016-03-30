@@ -49,17 +49,21 @@ How code is generated
 e.g. the result of [Fortune.courier](https://github.com/coursera/courier/blob/master/reference-suite/src/main/courier/org/example/Fortune.courier):
 
 ```typescript
-namespace org.example {
-    /**
-     * A fortune.
-     */
-    export interface Fortune {
-        /**
-         * The fortune telling.
-         */
-        telling : org.example.FortuneTelling;
-        createdAt : org.example.common.DateTime;
-    }
+// ./my-tslite-bindings/org.example.Fortune.ts
+import { FortuneTelling } from "./org.example.FortuneTelling";
+import { DateTime } from "./org.example.common.DateTime";
+
+/**
+ * A fortune.
+ */
+export interface Fortune {
+
+  /**
+   * The fortune telling.
+   */
+  telling : FortuneTelling;
+
+  createdAt : DateTime;
 }
 ```
 
@@ -74,88 +78,90 @@ namespace org.example {
 e.g. the result of [MagicEightBallAnswer.courier](https://github.com/coursera/courier/blob/master/reference-suite/src/main/courier/org/example/MagicEightBallAnswer.courier):
 
 ```typescript
-namespace org.example {
-    /**
-    * Magic eight ball answers.
-    */
-    export type MagicEightBallAnswer =  "IT_IS_CERTAIN"  | "ASK_AGAIN_LATER"  | "OUTLOOK_NOT_SO_GOOD";
-    export module MagicEightBallAnswer {
-        export const IT_IS_CERTAIN: MagicEightBallAnswer = "IT_IS_CERTAIN";
-        export const ASK_AGAIN_LATER: MagicEightBallAnswer = "ASK_AGAIN_LATER";
-        export const OUTLOOK_NOT_SO_GOOD: MagicEightBallAnswer = "OUTLOOK_NOT_SO_GOOD";
-    }
+// ./my-tslite-bindings/org.example.MagicEightBallAnswer.ts
+/**
+ * Magic eight ball answers.
+ */
+export type MagicEightBallAnswer =  "IT_IS_CERTAIN"  | "ASK_AGAIN_LATER"  | "OUTLOOK_NOT_SO_GOOD" ;
+export module MagicEightBallAnswer {
+
+  export const IT_IS_CERTAIN: MagicEightBallAnswer = "IT_IS_CERTAIN";
+
+  export const ASK_AGAIN_LATER: MagicEightBallAnswer = "ASK_AGAIN_LATER";
+
+  export const OUTLOOK_NOT_SO_GOOD: MagicEightBallAnswer = "OUTLOOK_NOT_SO_GOOD";
 }
 ```
 
 **Arrays:**
 
-* Arrays are represented as a typescript array.
+* Arrays are represented as typescript arrays.
 
 **Maps:**
 
-* Maps are represented as a javascript object, as interfaced by `courier.Map<ValueT>`
+* Maps are represented as javascript objects, as interfaced by `courier.Map<ValueT>`
 * Only string-keyed maps are currently supported.
 
 **Unions:**
 
 * Unions are represented as an intersection type between all the members of the union.
-* Run-time accessors are provided to test each aspect of the union
-* Unlike other serializers, no `UNKNOWN$` member is generated for the union. If the result falls out of
-  all the provided accessors, then conclude that it was an unknown union member (see second example)
+* A Run-time `unpack` accessor is provided to test each aspect of the union
+* Unlike other serializers, no `UNKNOWN$` member is generated for the union. If all provided accessors end up yielding
+  undefined, then conclude that it was an unknown union member (see second example)
 
 e.g. The result of [FortuneTelling.pdsc](https://github.com/coursera/courier/blob/master/reference-suite/src/main/pegasus/org/example/FortuneTelling.pdsc):
 ```typescript
-namespace org.example {
-  export type FortuneTelling =  FortuneTelling.FortuneCookieMember | FortuneTelling.MagicEightBallMember | FortuneTelling.StringMember;
-  export module FortuneTelling {
-    export interface FortuneTellingMember {
-      [key: string]:  org.example.FortuneCookie | org.example.MagicEightBall | string;
-    }
-    export interface FortuneCookieMember extends FortuneTellingMember {
-      "org.example.FortuneCookie": org.example.FortuneCookie;
-    }
-    export function getFortuneCookie(union: FortuneTelling): org.example.FortuneCookie {
-      return union["org.example.FortuneCookie"] as org.example.FortuneCookie;
-    }
-    export interface MagicEightBallMember extends FortuneTellingMember {
-      "org.example.MagicEightBall": org.example.MagicEightBall;
-    }
-    export function getMagicEightBall(union: FortuneTelling): org.example.MagicEightBall {
-      return union["org.example.MagicEightBall"] as org.example.MagicEightBall;
-    }
-    export interface StringMember extends FortuneTellingMember {
-      "string": string;
-    }
-    export function getString(union: FortuneTelling): string {
-      return union["string"] as string;
-    }
+// file: my-tslite-bindings/org.example.FortuneTelling.ts
+import { MagicEightBall } from "./org.example.MagicEightBall";
+import { FortuneCookie } from "./org.example.FortuneCookie";
+
+export type FortuneTelling =  FortuneTelling.FortuneCookieMember | FortuneTelling.MagicEightBallMember | FortuneTelling.StringMember;
+export module FortuneTelling {
+  export interface FortuneTellingMember {
+    [key: string]:  FortuneCookie | MagicEightBall | string;
+  }
+
+  export interface FortuneCookieMember extends FortuneTellingMember {
+    "org.example.FortuneCookie": FortuneCookie;
+  }
+
+  export interface MagicEightBallMember extends FortuneTellingMember {
+    "org.example.MagicEightBall": MagicEightBall;
+  }
+
+  export interface StringMember extends FortuneTellingMember {
+    "string": string;
+  }
+
+  export function unpack(union: FortuneTelling) {
+    return {
+      fortuneCookie: union["org.example.FortuneCookie"] as FortuneCookie,
+      magicEightBall: union["org.example.MagicEightBall"] as MagicEightBall,
+      string_: union["string"] as string
+    };
   }
 }
 ```
 
 Here's how you would use one:
 ```typescript
-const telling: FortuneTelling = /* Get the union from somewhere...probably the wire */;
-let fortuneCookie: FortuneCookie;
-let magicEightBall: MagicEightBall;
-let str: string;
+import { FortuneTelling } from "./my-tslite-bindings/org.example.FortuneTelling";
+import { MacigEightBall } from "./my-tslite-bindings/org.example.MagicEightBall";
+import { FortuneCookie } from "./my-tslite-bindings/org.example.FortuneCookie";
 
-if (fortuneCookie = FortuneTelling.getFortuneCookie(telling)) {
+const telling: FortuneTelling = /* Get the union from somewhere...probably the wire */;
+
+const { fortuneCookie, magicEightBall, string_ } = FortuneTelling.unpack(telling);
+
+if (fortuneCookie) {
   // do something with fortuneCookie
-} else if (magicEightBall = FortuneTelling.getMagicEightBall(telling)) {
+} else if (magicEightBall) {
   // do something with magicEightBall
-} else if (str = FortuneTelling.getString(telling)) {
+} else if (string_) {
   // do something with str
 } else {
   throw 'a fit because no one will tell your fortune';
 }
-
-// Or using const as I prefer
-
-const telling: FortuneTelling = /* Get the union from somewhere */;
-const fortuneCookie = FortuneTelling.getFortuneCookie(telling);
-const magicEightBall = FortuneTelling.getMagicEightBall(telling);
-const str = FortuneTelling.getString(telling);
 ```
 
 Projections and Optionality
@@ -189,9 +195,8 @@ typeref DateTime = long
 
 This results in a typescript file:
 ```typescript
-namespace org.coursera.customtypes {
-    export type DateTime = number;
-}
+// ./my-tslite-bindings/org.coursera.customtypes.DateTime.ts
+export type DateTime = number;
 ```
 
 JSON Serialization / Deserialization
@@ -200,15 +205,19 @@ JSON Serialization / Deserialization
 JSON serialization is trivial in typescript. Just take use `JSON.stringify` on any courier type that compiles.
 
 ```typescript
-const message: org.coursera.records.Message = {"body": "Hello Pegasus!"};
+import { Message } from "./my-tslite-bindings/org.coursera.records.Message";
+
+const message: Message = {"body": "Hello Pegasus!"};
 const messageJson = JSON.stringify(message);
 ```
 
 And of course you can read results as well.
 
 ```typescript
+import { Message } from "./my-tslite-bindings/org.coursera.records.Message";
+
 const messageStr: string = /* Get the message string somehow */
-const message = JSON.parse(messageStr) as org.coursera.records.Message;
+const message = JSON.parse(messageStr) as Message;
 ```
 
 Runtime library

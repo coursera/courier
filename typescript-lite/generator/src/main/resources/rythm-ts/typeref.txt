@@ -2,10 +2,12 @@
 @import com.linkedin.pegasus.generator.spec.ClassTemplateSpec
 @import com.linkedin.data.schema.TyperefDataSchema
 
+@for(String theImport : syntax.imports(typeref)) {
+  @theImport;
+}
+
 @{ String className = syntax.escapeKeyword(typeref.getClassName()) }
 @{ ClassTemplateSpec refType = ClassTemplateSpec.createFromDataSchema(typeref.getSchema().getRef()) }
 
-@syntax.openNamespace(typeref)
-  @classAnnotations(typeref.getSchema())
-  export type @className = @syntax.toTypeString(refType, true);
-@syntax.closeNamespace(typeref)
+@classAnnotations(typeref.getSchema())
+export type @className = @syntax.toTypeString(refType, false);

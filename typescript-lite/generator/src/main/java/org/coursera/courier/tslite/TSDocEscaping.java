@@ -45,7 +45,7 @@ public class TSDocEscaping {
     if (emptyDeprecated) {
       return "";
     } else if (deprecatedProp instanceof String) {
-      return "/** @deprecated \"" + deprecatedProp + " */";
+      return "/** @deprecated " + deprecatedProp + " */";
     } else {
       return "/** @deprecated */";
     }

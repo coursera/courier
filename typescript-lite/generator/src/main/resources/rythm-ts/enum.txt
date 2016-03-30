@@ -6,20 +6,18 @@
 
 @{ String className = TSSyntax.escapeKeyword(enumeration.getClassName(), EscapeOptions.MANGLE) }
 
-@TSSyntax.openNamespace(enumeration)
-  @{Map<String, String> tsSymbolDocs = enumeration.getSchema().getSymbolDocs()}
-  @{Map<String, Object> tsProps = enumeration.getSchema().getProperties()}
-  @{DataMap tsDeprecatedSymbols = (DataMap)tsProps.get("deprecatedSymbols")}
+@{Map<String, String> tsSymbolDocs = enumeration.getSchema().getSymbolDocs()}
+@{Map<String, Object> tsProps = enumeration.getSchema().getProperties()}
+@{DataMap tsDeprecatedSymbols = (DataMap)tsProps.get("deprecatedSymbols")}
 
-  @classAnnotations(enumeration.getSchema())
-  export type @className = @if(!enumeration.getSchema().getSymbols().isEmpty()){@for(String symbol: enumeration.getSchema().getSymbols()) { "@symbol" @if(!symbol_isLast) { |}}}else{void};
+@classAnnotations(enumeration.getSchema())
+export type @className = @if(!enumeration.getSchema().getSymbols().isEmpty()){@for(String symbol: enumeration.getSchema().getSymbols()) { "@symbol" @if(!symbol_isLast) { |}}}else{void};
 
-  export module @className {
-    @for(String symbol: enumeration.getSchema().getSymbols()) {
-      @{String tsSymbolDoc = tsSymbolDocs.get(symbol)}
-      @if (tsSymbolDoc != null) { @TSDocEscaping.stringToDocComment(tsSymbolDoc) }
-      @if(tsDeprecatedSymbols != null) {/** @TSDocEscaping.deprecatedToString(tsDeprecatedSymbols.get(symbol)) */}
-      export const @(TSSyntax.escapeKeyword(symbol)): @className = "@symbol";
-    }
+export module @className {
+  @for(String symbol: enumeration.getSchema().getSymbols()) {
+    @{String tsSymbolDoc = tsSymbolDocs.get(symbol)}
+    @if (tsSymbolDoc != null) { @TSDocEscaping.stringToDocComment(tsSymbolDoc) }
+    @if(tsDeprecatedSymbols != null) {/** @TSDocEscaping.deprecatedToString(tsDeprecatedSymbols.get(symbol)) */}
+    export const @(TSSyntax.escapeKeyword(symbol)): @className = "@symbol";
   }
-@TSSyntax.closeNamespace(enumeration)
+}
