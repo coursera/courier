@@ -22,6 +22,7 @@ import com.linkedin.data.schema.DataSchema.Type;
 import com.linkedin.data.schema.EnumDataSchema;
 import com.linkedin.data.schema.MapDataSchema;
 import com.linkedin.data.schema.NamedDataSchema;
+import com.linkedin.data.schema.PrimitiveDataSchema;
 import com.linkedin.data.schema.RecordDataSchema;
 import com.linkedin.data.schema.TyperefDataSchema;
 import com.linkedin.data.schema.UnionDataSchema;
@@ -274,6 +275,23 @@ public class TSSyntax {
 
     return escapeKeyword(lowerCased, EscapeOptions.MANGLE);
   }
+
+  public String unionLookupString(UnionTemplateSpec.Member member) {
+    return member.getSchema().getUnionMemberKey();
+  }
+
+  public String unionUnpackString(UnionTemplateSpec.Member member) {
+    DataSchema schema = member.getSchema();
+    String unpackNameBase;
+    if (schema instanceof PrimitiveDataSchema) {
+      unpackNameBase = schema.getUnionMemberKey();
+    } else {
+      unpackNameBase = toTypeString(member, false);
+    }
+
+    return filterForUnionGetterKey(unpackNameBase);
+  }
+
   // emit string representing type
   public String toTypeString(ClassTemplateSpec spec, boolean fullName) {
     if (spec == null) {

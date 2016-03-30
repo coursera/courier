@@ -22,7 +22,7 @@ export module @className {
   }
   @for(Member member: union.getMembers()) {
     @{ String unionMemberInterfaceName = syntax.toUnionMemberName(member) }
-    @{ String unionLookupString = syntax.toTypeString(member.getClassTemplateSpec(), true) }
+    @{ String unionLookupString = syntax.unionLookupString(member) }
     @{ String memberClassName = syntax.toTypeString(member, false) }
     export interface @unionMemberInterfaceName extends @(className)Member {
       "@unionLookupString": @memberClassName;
@@ -32,7 +32,7 @@ export module @className {
   export function unpack(union: @className) {
     return {
       @for(Member member: union.getMembers()) {
-        @(syntax.filterForUnionGetterKey(syntax.toTypeString(member, false))): union["@syntax.toTypeString(member.getClassTemplateSpec(), true)"] as @syntax.toTypeString(member, false) @if(!member_isLast) {,}
+        @(syntax.unionUnpackString(member)): union["@syntax.unionLookupString(member)"] as @syntax.toTypeString(member, false) @if(!member_isLast) {,}
       }
     };
   }

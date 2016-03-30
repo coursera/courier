@@ -1,0 +1,5 @@
+node_modules
+.tmp
+typings
+tslite-bindings
+npm-debug.log

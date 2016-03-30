@@ -1,13 +1,13 @@
 name := "courier-typescript-lite-generator-test"
 
-plainJavaProjectSettings
-
-junitTestSettings
-
 packagedArtifacts := Map.empty // do not publish
 
 libraryDependencies ++= Seq(
   ExternalDependencies.JodaTime.jodaTime)
+
+autoScalaLibrary := false
+
+crossPaths := false
 
 // Test Generator
 forkedVmCourierGeneratorSettings
@@ -18,6 +18,19 @@ forkedVmCourierClasspath := (dependencyClasspath in Runtime in typescriptLiteGen
 
 forkedVmSourceDirectory := (sourceDirectory in referenceSuite).value / "main" / "courier"
 
-forkedVmCourierDest := file("typescript") / "testsuite" / "testsuiteTests" / "generated"
+forkedVmCourierDest := file("typescript-lite") / "testsuite" / "src" / "expected-successes" / "tslite-bindings"
 
-forkedVmAdditionalArgs := Seq("REQUIRED_FIELDS_MAY_BE_ABSENT", "EQUATABLE")
+forkedVmAdditionalArgs := Seq("STRICT")
+
+
+lazy val npmTest = taskKey[Unit]("Executes NPM test")
+
+npmTest in Test := {
+  val result = """./typescript-lite/testsuite/full-build.sh"""!
+
+  if (result != 0) {
+    throw new RuntimeException("NPM Build Failed")
+  }
+}
+
+(test in Test) <<= (npmTest in Test).dependsOn(test in Test)
