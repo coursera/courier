@@ -39,6 +39,7 @@
     "jspm_packages",
     "typings/browser",
     "typings/browser.d.ts",
-    "src/compilation-failures"
+    "src/compilation-failures",
+    "src/tslite-bindings"
   ]
 }

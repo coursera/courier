@@ -136,6 +136,51 @@ import { Timestamp } from "../tslite-bindings/org.example.common.Timestamp";
 import { DateTime as OtherDateTime } from "../tslite-bindings/org.example.other.DateTime";
 import { record } from "../tslite-bindings/org.example.record";
 import { WithPrimitivesUnion } from "../tslite-bindings/org.coursera.unions.WithPrimitivesUnion";
+import * as ts from "typescript";
+
+import CustomMatcherFactories = jasmine.CustomMatcherFactories;
+import CompilerOptions = ts.CompilerOptions;
+import TranspileOptions = ts.TranspileOptions;
+import Diagnostic = ts.Diagnostic;
+
+// Add a jasmine matcher that will attempt to compile a ts file and report
+// any compilation errors
+const toCompileMatcher: CustomMatcherFactories = {
+  toCompile: (util: any, customEqualityTesters: any) => {
+    return {
+      compare: (fileName: any, message:any) => {
+        const result: any = {};
+        var compilerOptions: CompilerOptions = {
+          project: "/Users/eboto/code/courier/typescript-lite/testsuite/tsconfig.json",
+          diagnostics: true
+        };
+
+        const program = ts.createProgram(
+          [fileName],
+          compilerOptions
+        );
+
+        const errors = program.getGlobalDiagnostics()
+          .concat(program.getSemanticDiagnostics())
+          .concat(program.getDeclarationDiagnostics())
+          .concat(program.getSyntacticDiagnostics());
+        const errorStr = errors.reduce((accum: any, err: Diagnostic) => {
+          const errFile = err.file;
+          const msgText = ts.flattenDiagnosticMessageText(err.messageText, "\n");
+          const nextAccum = accum + `\n${errFile.path}:${errFile.pos}\n${msgText}\n`;
+          return nextAccum;
+        }, "");
+
+        result.pass = (errors.length == 0);
+        if (!result.pass) {
+          result.message = `Compilation expectation failed: ${message} Error was: ${errorStr}`;
+        }
+
+        return result;
+      }
+    };
+  }
+};
 
 //
 // Only test the runtime behavior of Unions
@@ -186,6 +231,33 @@ describe("Unions", () => {
   });
 });
 
+//
+// Now attempt to compile our examples from src/compilation-failures. They should all fail.
+//
+describe("The typescript compiler", () => {
+  beforeEach(() => {
+    jasmine.addMatchers(toCompileMatcher);
+  });
+
+  const expectations = [
+    ["should not allow unions with incorrect lookup keys", "union_bad-lookup-string.ts"],
+    ["should not allow the body of the union to be malformed", "union_bad-body-content.ts"],
+    ["should not allow records to have the wrong field type", "record_wrong-field-type.ts"],
+    ["should not allow enums with a bad string value", "enum_bad-string.ts"],
+    ["should not allow typerefs with the wrong root type", "typeref_wrong-type.ts"],
+    ["should not allow the wrong type as the item of a primitive array", "array_bad-item-type.ts"],
+    ["should not allow the wrong type as the item of an enum array", "array_bad-item-type-enum-expected.ts"],
+    ["should not allow the wrong type as the value of a map", "map_bad-value-type.ts"]
+  ];
+
+  expectations.forEach((expectationPair) => {
+    const [testCaseName, fileTest] = expectationPair;
+    it(testCaseName, () => {
+      expect(`src/compilation-failures/${fileTest}`).not.toCompile("It was expected to fail.");
+    })
+  });
+});
+
 describe("Enums", () => {
   it("Should have successful accessors", () => {
     const fruit1: Fruits = "APPLE";
@@ -200,23 +272,23 @@ describe("Enums", () => {
 //
 // Compilation will fail if generation failed in compatibility with these known-good json types.
 //
-const fortune_fortuneCookie = {
+const customint: CustomInt = 1; // typerefs should work
+
+const boolid: BooleanId = true;
+const byteid: ByteId = "bytes just a string baby!";
+const ref_of_a_ref: CustomIntWrapper = 1;
+const fortune_fortuneCookie: Fortune = {
   "telling": {
     "org.example.FortuneCookie": {
       "message": " a message",
       "certainty": 0.1,
-      "luckyNumbers": [1, 2, 3],
-      "map": {"x": 1, "y": 2},
-      "simple": { "message": "a simple message" },
-      "simpleArray": [ { "message": "M1" } ],
-      "simpleMap": { "message1": { "message": "M1" } },
-      "arrayArray": [[1, 2], [3, 4]]
+      "luckyNumbers": [1, 2, 3]
     }
   },
   "createdAt": "2015-01-01T00:00:00.000Z"
 };
 
-const fortune_magicEightBall = {
+const fortune_magicEightBall: Fortune = {
   "telling": {
     "org.example.MagicEightBall": {
       "question": "A question",
@@ -226,12 +298,15 @@ const fortune_magicEightBall = {
   "createdAt": "2015-01-01T00:00:00.000Z"
 };
 
-const fortuneCookie = {
+const fortuneCookie: FortuneCookie = {
   "message": " a message",
   "certainty": 0.1,
-  "luckyNumbers": [1, 2, 3],
-  "map": {"x": 1, "y": 2},
-  "simple": { "message": "a simple message" }
+  "luckyNumbers": [1, 2, 3]
+};
+
+const fortuneCookie_lackingOptional: FortuneCookie = {
+  "message": "a message",
+  "luckyNumbers": [1, 2, 3]
 };
 
 const kw_escaping: KeywordEscaping = {

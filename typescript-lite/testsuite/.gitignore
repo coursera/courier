@@ -1,5 +1,5 @@
 node_modules
 .tmp
 typings
-tslite-bindings
+src/tslite-bindings
 npm-debug.log

@@ -20,7 +20,7 @@ forkedVmCourierClasspath := (dependencyClasspath in Runtime in typescriptLiteGen
 
 forkedVmSourceDirectory := (sourceDirectory in referenceSuite).value / "main" / "courier"
 
-forkedVmCourierDest := file("typescript-lite") / "testsuite" / "src" / "expected-successes" / "tslite-bindings"
+forkedVmCourierDest := file("typescript-lite") / "testsuite" / "src" / "tslite-bindings"
 
 forkedVmAdditionalArgs := Seq("STRICT")
 
