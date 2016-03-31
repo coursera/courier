@@ -1,40 +1,28 @@
-@args com.linkedin.pegasus.generator.spec.UnionTemplateSpec union, org.coursera.courier.tslite.TSSyntax syntax
-@import org.coursera.courier.tslite.TSSyntax.EscapeOptions
-@import com.linkedin.pegasus.generator.spec.UnionTemplateSpec.Member
-@import org.coursera.courier.schema.TypedDefinitions
+@args org.coursera.courier.tslite.TSSyntax.TSUnionSyntax union
+@import org.coursera.courier.tslite.TSSyntax.TSUnionSyntax
+@import org.coursera.courier.tslite.TSSyntax.TSUnionMemberSyntax
 
-@{ String className = syntax.escapeKeyword(union.getClassName(), EscapeOptions.MANGLE) }
+@union.imports()
 
-@for(String theImport : syntax.imports(union)) {
-  @theImport;
-}
+@union.docString()
+export type @union.typeName() = @union.memberUnionTypeExpression();
+@if(union.requiresCompanionModule()) {
+  export module @union.typeName() {
+    export interface @union.memberBaseTypeName() {
+      [key: string]: @union.unionTypeExpression();
+    }
 
-@if (union.getTyperefClass() != null) {
-  @classAnnotations(union.getTyperefClass().getSchema())
-}
-
-export type @className = @if (!union.getMembers().isEmpty()) @for(Member member: union.getMembers()) { @(className).@syntax.toUnionMemberName(member) @if (!member_isLast) { |} } } else { void};
-
-@if(!union.getMembers().isEmpty()) {
-export module @className {
-  export interface @(className)Member {
-    [key: string]: @for(Member member: union.getMembers()){ @syntax.toTypeString(member, false) @if(!member_isLast){ |}};
-  }
-  @for(Member member: union.getMembers()) {
-    @{ String unionMemberInterfaceName = syntax.toUnionMemberName(member) }
-    @{ String unionLookupString = syntax.unionLookupString(member) }
-    @{ String memberClassName = syntax.toTypeString(member, false) }
-    export interface @unionMemberInterfaceName extends @(className)Member {
-      "@unionLookupString": @memberClassName;
+    @for(TSUnionMemberSyntax member: union.members()) {
+      export interface @member.unionMemberTypeName() extends @union.memberBaseTypeName() {
+        "@member.unionMemberKey()": @member.typeName();
+      }
+    }
+    export function unpack(union: @union.typeName()) {
+      return {
+        @for(TSUnionMemberSyntax member: union.members()) {
+          @member.unpackString(): union["@member.unionMemberKey()"] as @(member.typeName())@if(!member_isLast){,}
+        }
+      };
     }
   }
-
-  export function unpack(union: @className) {
-    return {
-      @for(Member member: union.getMembers()) {
-        @(syntax.unionUnpackString(member)): union["@syntax.unionLookupString(member)"] as @syntax.toTypeString(member, false) @if(!member_isLast) {,}
-      }
-    };
-  }
-}
 }

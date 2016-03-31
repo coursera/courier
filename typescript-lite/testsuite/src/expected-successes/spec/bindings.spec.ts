@@ -45,13 +45,15 @@ import { WithTypedKeyMap } from "../tslite-bindings/org.coursera.maps.WithTypedK
 import { CourierFile } from "../tslite-bindings/org.coursera.records.CourierFile";
 import { JsonTest } from "../tslite-bindings/org.coursera.records.JsonTest";
 import { Message } from "../tslite-bindings/org.coursera.records.Message";
+import { WithAnonymousUnionArray } from "../tslite-bindings/org.coursera.arrays.WithAnonymousUnionArray";
 import { Note } from "../tslite-bindings/org.coursera.records.Note";
 import { WithDateTime } from "../tslite-bindings/org.coursera.records.WithDateTime";
 import { WithFlatTypedDefinition } from "../tslite-bindings/org.coursera.records.WithFlatTypedDefinition";
 import { WithInclude } from "../tslite-bindings/org.coursera.records.WithInclude";
 import { WithTypedDefinition } from "../tslite-bindings/org.coursera.records.WithTypedDefinition";
 import { WithUnion } from "../tslite-bindings/org.coursera.records.WithUnion";
-import {  } from "../tslite-bindings/org.coursera.records.class.";
+import { Fixed8 } from "../tslite-bindings/org.coursera.fixed.Fixed8";
+import { class_ as EscapedClassRecord} from "../tslite-bindings/org.coursera.records.class";
 import { Simple } from "../tslite-bindings/org.coursera.records.primitivestyle.Simple";
 import { WithComplexTypes } from "../tslite-bindings/org.coursera.records.primitivestyle.WithComplexTypes";
 import { WithPrimitives } from "../tslite-bindings/org.coursera.records.primitivestyle.WithPrimitives";

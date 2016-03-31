@@ -122,18 +122,19 @@ public class TypeScriptLiteGenerator implements PegasusCodeGenerator {
     TSProperties TSProperties = globalConfig.lookupTSProperties(templateSpec);
     if (TSProperties.omit) return null;
 
-    TSSyntax syntax = new TSSyntax(templateSpec, TSProperties, globalConfig);
-
+    TSSyntax syntax = new TSSyntax(TSProperties);
     try {
       if (templateSpec instanceof RecordTemplateSpec) {
-        code = engine.render("rythm-ts/record.txt", templateSpec, syntax);
+        code = engine.render("rythm-ts/record.txt", syntax.new TSRecordSyntax((RecordTemplateSpec) templateSpec));
       } else if (templateSpec instanceof EnumTemplateSpec) {
-        code = engine.render("rythm-ts/enum.txt", templateSpec);
+        code = engine.render("rythm-ts/enum.txt", syntax.new TSEnumSyntax((EnumTemplateSpec) templateSpec));
       } else if (templateSpec instanceof UnionTemplateSpec) {
-        code = engine.render("rythm-ts/union.txt", templateSpec, syntax);
+        code = engine.render("rythm-ts/union.txt", syntax.new TSUnionSyntax((UnionTemplateSpec) templateSpec));
       } else if (templateSpec instanceof TyperefTemplateSpec) {
         TyperefTemplateSpec typerefSpec = (TyperefTemplateSpec) templateSpec;
-        code = engine.render("rythm-ts/typeref.txt", typerefSpec, syntax);
+        code = engine.render("rythm-ts/typeref.txt", syntax.TSTyperefSyntaxCreate(typerefSpec));
+      } else if (templateSpec instanceof FixedTemplateSpec) {
+        code = engine.render("rythm-ts/fixed.txt", syntax.TSFixedSyntaxCreate((FixedTemplateSpec) templateSpec));
       } else {
         return null; // Indicates that we are declining to generate code for the type (e.g. map or array)
       }
