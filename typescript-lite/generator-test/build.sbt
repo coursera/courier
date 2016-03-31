@@ -26,6 +26,8 @@ forkedVmAdditionalArgs := Seq("STRICT")
 lazy val npmTest = taskKey[Unit]("Executes NPM test")
 
 npmTest in Test := {
+  (forkedVmCourierGenerator in Compile).value
+
   val result = """./typescript-lite/testsuite/full-build.sh"""!
 
   if (result != 0) {
@@ -33,4 +35,4 @@ npmTest in Test := {
   }
 }
 
-(test in Test) <<= (npmTest in Test).dependsOn(test in Test)
+test in Test := (npmTest in Test).value
