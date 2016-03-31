@@ -1,3 +1,5 @@
+import sbt.inc.Analysis
+
 name := "courier-typescript-lite-generator-test"
 
 packagedArtifacts := Map.empty // do not publish
@@ -22,11 +24,16 @@ forkedVmCourierDest := file("typescript-lite") / "testsuite" / "src" / "expected
 
 forkedVmAdditionalArgs := Seq("STRICT")
 
+(compile in Compile) := {
+  (forkedVmCourierGenerator in Compile).value
+
+  Analysis.Empty
+}
 
 lazy val npmTest = taskKey[Unit]("Executes NPM test")
 
 npmTest in Test := {
-  (forkedVmCourierGenerator in Compile).value
+  (compile in Compile).value
 
   val result = """./typescript-lite/testsuite/full-build.sh"""!
 
