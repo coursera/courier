@@ -30,8 +30,6 @@ Features missing in action
 * **Non-JSON serialization**. Although courier supports more compact binary formats (PSON, Avro, BSON), Typescript-lite
   bindings currently only supports valid JSON objects.
 * **Default values**. As with the other points, default values require a runtime.
-* **Test suites**. We haven't yet written tests against the reference suite for these bindings (though we've
-  verified them by eye)
 * **Flat-typed definitions**. This was just an oversight. Gotta add these.
 
 Running the generator from the command line
@@ -253,9 +251,7 @@ Testing
 TODO
 ----
 
-* [ ] Write some tests
 * [ ] Add support for flat type definitions
-* [ ] Clean up the gnarly implementation, which is just a fuddled around version of the Swift impl.
 * [ ] Figure out the best way to distribute the 'fat jar'.
 * [ ] Consider getting rid of the string literal constants in generated enums. They may not give much for the wire cost.
 * [ ] Automate distribution of the Fat Jar
