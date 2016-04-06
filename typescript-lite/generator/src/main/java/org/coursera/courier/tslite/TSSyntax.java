@@ -160,7 +160,7 @@ public class TSSyntax {
   private static String escapeKeyword(String symbol, EscapeStrategy strategy) {
     if (tsKeywords.contains(symbol)) {
       if (strategy.equals(EscapeStrategy.MANGLE)) {
-        return symbol + "_";
+        return symbol + "$";
       } else {
         return "\"" + symbol + "\"";
       }

@@ -27,6 +27,7 @@ Features missing in action
 * **Keyed maps**. Javascript objects naturally only support string-keyed maps. Since we are avoiding runtime
   overhead as much as possible we did not want to introduce a new type, nor the means to serialize said type.
     * Integrating `Immutable.js` would make a lot of sense when we want to expand into this direction.
+    * These bindings will coerce keyed maps into string-keyed maps (which they are on the wire anyways)
 * **Non-JSON serialization**. Although courier supports more compact binary formats (PSON, Avro, BSON), Typescript-lite
   bindings currently only supports valid JSON objects.
 * **Default values**. As with the other points, default values require a runtime.
@@ -70,7 +71,6 @@ export interface Fortune {
 
 * Enums are represented as [string literal types](https://basarat.gitbooks.io/typescript/content/docs/types/stringLiteralType.html).
 * Convenience constants matching the string literals are provided despite having a runtime cost
-  * TODO(erem) We should consider changing this. Not sure if the benefit outweighs the wire cost.
 * Unlike other bindings, Typescript-lite does not include an `UNKNOWN$` option. In case of wire inconsistency
   you will have to just fall through to `undefined`.
 
@@ -92,6 +92,24 @@ export module MagicEightBallAnswer {
 }
 ```
 
+```typescript
+// Some other file
+// You can use it like this
+
+const answer: MagicEightBallAnswer = "IT_IS_CERTAIN";
+switch(answer) {
+  case MagicEightBallAnswer.IT_IS_CERTAIN:
+    // do something
+    break;
+  case MagicEightBallAnswer.ASK_AGAIN_LATER:
+    // do something
+    break;
+  default:
+    // you should probably always check this...in case you got some new unexpected
+    // value from a new version of the server software. This is the equivalent of
+    // testing UNKNOWN$
+}
+```
 **Arrays:**
 
 * Arrays are represented as typescript arrays.
@@ -136,7 +154,7 @@ export module FortuneTelling {
     return {
       fortuneCookie: union["org.example.FortuneCookie"] as FortuneCookie,
       magicEightBall: union["org.example.MagicEightBall"] as MagicEightBall,
-      string_: union["string"] as string
+      string$: union["string"] as string
     };
   }
 }
@@ -156,7 +174,7 @@ if (fortuneCookie) {
   // do something with fortuneCookie
 } else if (magicEightBall) {
   // do something with magicEightBall
-} else if (string_) {
+} else if (string$) {
   // do something with str
 } else {
   throw 'a fit because no one will tell your fortune';
@@ -166,18 +184,54 @@ if (fortuneCookie) {
 Projections and Optionality
 ---------------------------
 
-It is common to send and receive partial data through REST.  This
-is very commonly used when a subset of fields of a resources are "projected".
+These bindings do not currently support projections. If you need to use projections, then
+generate your bindings with Optionality of REQUIRED_FIELDS_MAY_BE_ABSENT rather than STRICT
+as the 4th argument to the generator tool.
 
-Since even fields that are marked as required in a Pegasus schema may be absent when data is
-projected, Courier's [Optionality](https://github.com/coursera/courier/blob/master/typescript/generator/src/main/java/org.coursera.courier.tslite.TSProperties.java#L31)
-settings defaults to REQUIRED_FIELDS_MAY_BE_ABSENT.  This allows a single
-generated typescript struct to be used for bindings to unprojected and projected data.
+That said, here is a good way we could evolve to support projections:
 
-If this behaviour is not desired, one may set `Optionality` to `STRICT`.
+I think [Intersection types](https://basarat.gitbooks.io/typescript/content/docs/types/type-system.html#intersection-type) may be a good approach in typescript
 
-See the [Optionality property docs](https://github.com/coursera/courier/blob/master/typescript/generator/src/main/java/org.coursera.courier.tslite.TSProperties.java#L8)
-for details on how to set the `Optionality` property.
+Imagine the following courier type:
+
+```
+record Message {
+  id: string;
+  subject: string;
+  body: string;
+}
+```
+
+If we wanted to support projections, we could generate the following types
+
+```typescript
+module Message {
+  interface Id {
+    id: string;
+  }
+  interface Subject {
+    subject: string;
+  }
+
+  interface Body {
+     body: string;
+  }
+}
+type Message = Message.Id & Message.Subject & Message.Body;
+```
+
+In your application code when you request some projection, instead of using the Message type you could just safely cast the message down to its component projections! For example:
+
+```typescript
+function getMessageIdAndBody(id: string): Promise<Message.Id & Message.Body> {
+  return http.get('/messages/' + id + '?projection=(id,body)').then((resp) => {
+    return resp.data as (Message.Id & Message.Body);
+  })
+}
+```
+
+Any attempt to access `message.subject` from the results of that function would of course fail at compile time.
+
 
 Custom Types
 ------------
@@ -253,7 +307,6 @@ TODO
 
 * [ ] Add support for flat type definitions
 * [ ] Figure out the best way to distribute the 'fat jar'.
-* [ ] Consider getting rid of the string literal constants in generated enums. They may not give much for the wire cost.
 * [ ] Automate distribution of the Fat Jar
 * [ ] Publish Fat Jar to remote repos? Typically fat jars should not be published to maven/ivy
       repos, but maybe it should be hosted for easy download elsewhere?

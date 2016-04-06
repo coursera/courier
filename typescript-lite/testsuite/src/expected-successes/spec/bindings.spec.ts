@@ -33,7 +33,7 @@ import { Fruits } from "../tslite-bindings/org.coursera.enums.Fruits";
 import { DefaultLiteralEscaping } from "../tslite-bindings/org.coursera.escaping.DefaultLiteralEscaping";
 import { KeywordEscaping } from "../tslite-bindings/org.coursera.escaping.KeywordEscaping";
 import { ReservedClassFieldEscaping } from "../tslite-bindings/org.coursera.escaping.ReservedClassFieldEscaping";
-import { class_ } from "../tslite-bindings/org.coursera.escaping.class";
+import { class$ } from "../tslite-bindings/org.coursera.escaping.class";
 import { WithFixed8 } from "../tslite-bindings/org.coursera.fixed.WithFixed8";
 import { Toggle } from "../tslite-bindings/org.coursera.maps.Toggle";
 import { WithComplexTypesMap } from "../tslite-bindings/org.coursera.maps.WithComplexTypesMap";
@@ -53,7 +53,7 @@ import { WithInclude } from "../tslite-bindings/org.coursera.records.WithInclude
 import { WithTypedDefinition } from "../tslite-bindings/org.coursera.records.WithTypedDefinition";
 import { WithUnion } from "../tslite-bindings/org.coursera.records.WithUnion";
 import { Fixed8 } from "../tslite-bindings/org.coursera.fixed.Fixed8";
-import { class_ as EscapedClassRecord} from "../tslite-bindings/org.coursera.records.class";
+import { class$ as EscapedClassRecord} from "../tslite-bindings/org.coursera.records.class";
 import { Simple } from "../tslite-bindings/org.coursera.records.primitivestyle.Simple";
 import { WithComplexTypes } from "../tslite-bindings/org.coursera.records.primitivestyle.WithComplexTypes";
 import { WithPrimitives } from "../tslite-bindings/org.coursera.records.primitivestyle.WithPrimitives";
@@ -265,6 +265,33 @@ describe("Enums", () => {
     const fruit1: Fruits = "APPLE";
     expect(fruit1).toEqual(Fruits.APPLE);
     expect(fruit1 == Fruits.APPLE).toBe(true);
+  });
+
+  it("Should have nice switch/case semantics", () => {
+    const fruit1: Fruits = "APPLE";
+    let result: string;
+    switch (fruit1) {
+      case "APPLE":
+        result = "It was an apple";
+        break;
+      case "PEAR":
+        result = "It was a pear";
+        break;
+      default:
+        result = "I don't know what it was.";
+    }
+
+    expect(result).toEqual("It was an apple");
+
+    switch (fruit1) {
+      case Fruits.APPLE:
+        result = "It's still an apple";
+        break;
+      default:
+        result = "Something else."
+    }
+
+    expect(result).toEqual("It's still an apple");
   });
 });
 
