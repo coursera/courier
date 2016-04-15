@@ -1,0 +1,13 @@
+@args org.coursera.courier.tslite.TSSyntax.TSEnumSyntax enumeration
+@import org.coursera.courier.tslite.TSSyntax.TSEnumSymbolSyntax
+
+@enumeration.docString()
+export type @enumeration.typeName() = @enumeration.stringLiteralUnion();
+@if(enumeration.requiresCompanionModule()) {
+  export module @enumeration.typeName() {
+    @for(TSEnumSymbolSyntax symbol : enumeration.symbols()) {
+      @symbol.docString()
+      export const @symbol.moduleConstValue(): @enumeration.typeName() = @symbol.stringLiteralValue();
+    }
+  }
+}

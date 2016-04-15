@@ -1,6 +1,9 @@
 language: scala
 scala: 2.10.5
 jdk: oraclejdk8
+node_js:
+  - "4"
+
 script:
   - sbt ++$TRAVIS_SCALA_VERSION fulltest
 
