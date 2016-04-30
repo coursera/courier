@@ -37,6 +37,7 @@ import org.rythmengine.resource.ClasspathResourceLoader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -86,7 +87,7 @@ public class TypeScriptLiteGenerator implements PegasusCodeGenerator {
       System.out.println(file.getAbsolutePath());
     }
 
-    InputStream runtime = ClassLoader.getSystemResourceAsStream("runtime/CourierRuntime.ts");
+    InputStream runtime = TypeScriptLiteGenerator.class.getClassLoader().getResourceAsStream("runtime/CourierRuntime.ts");
     IOUtils.copy(runtime, new FileOutputStream(new File(targetPath, "CourierRuntime.ts")));
   }
 
