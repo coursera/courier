@@ -5,6 +5,67 @@ layout: page
 Getting Started
 ---------------
 
+### Command line generator
+
+The easiest way to begin using courier is via the standalone command line tool. The standalone tool
+generates type safe bindings for any courier-supported language. Assuming Java (JRE) is already
+installed on your system, you can download the binary from
+[Bintray](https://dl.bintray.com/coursera/generic/courier) and install it by doing the following:
+
+~~~sh
+cd /tmp && \
+wget https://dl.bintray.com/coursera/generic/courier && \
+chmod a+x courier && \
+sudo mv courier /usr/local/bin
+~~~
+
+To generate typescript bindings, set up the following project structure:
+
+##### myProject/schemas/org/example/fortune/Fortune.courier
+
+~~~
+namespace org.example.fortune
+
+record Fortune {
+  message: string
+}
+~~~
+
+Then, in the the root of the project (`myProject`), to generate typescript bindings, execute:
+
+~~~
+$ courier ts output /tmp src
+myProject/output/org.example.fortune.Fortune.ts
+~~~
+
+Inside the `output` folder will be the generated typescript bindings.
+
+If you would like to modularize your code into multiple sub-projects, replace `/tmp` with the path
+to your common libraries. For example, if your project structure is as follows:
+
+~~~
+myProject/              # The top of the source tree for your project
+  -> common/            # Common code & libraries shared between home and admin sub-projects.
+    ->  schemas/        # A folder for your schemas
+      ->   Foo.courier  # Common courier models
+
+  -> home/              # Code related to the home page of your site.
+    -> schemas/
+      -> Main.courier   # Schemas for data models on the home page.
+
+  -> admin/             # Code related to an administrative interface.
+    -> schemas/
+      -> Admin.courier  # Schemas for the data models on the admin interface.
+~~~
+
+you can generate your `home`-related models, and your `admin`-related models by executing
+(respectively):
+
+~~~sh
+$ courier ts home/output common home/schemas
+$ courier ts admin/output common admin/schemas
+~~~
+
 ### IntelliJ Plugin
 
 Courier has full IntelliJ IDE support, including syntax highlighting, syntax error highlighting,
