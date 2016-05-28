@@ -86,7 +86,7 @@ public class TypeScriptLiteGenerator implements PegasusCodeGenerator {
       System.out.println(file.getAbsolutePath());
     }
 
-    InputStream runtime = ClassLoader.getSystemResourceAsStream("runtime/CourierRuntime.ts");
+    InputStream runtime = TypeScriptLiteGenerator.class.getClassLoader().getResourceAsStream("runtime/CourierRuntime.ts");
     IOUtils.copy(runtime, new FileOutputStream(new File(targetPath, "CourierRuntime.ts")));
   }
 

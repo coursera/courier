@@ -90,7 +90,7 @@ public class SwiftGenerator implements PegasusCodeGenerator {
       System.out.println(file.getAbsolutePath());
     }
 
-    InputStream runtime = ClassLoader.getSystemResourceAsStream("runtime/CourierRuntime.swift");
+    InputStream runtime = SwiftGenerator.class.getClassLoader().getResourceAsStream("runtime/CourierRuntime.swift");
     IOUtils.copy(runtime, new FileOutputStream(new File(targetPath, "CourierRuntime.swift")));
   }
 

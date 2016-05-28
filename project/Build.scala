@@ -140,6 +140,34 @@ object Courier extends Build with OverridablePublishSettings {
   lazy val typescriptLiteGenerator = Project(id = "typescript-lite-generator", base = typescriptLiteDir / "generator")
     .dependsOn(generatorApi)
 
+  lazy val cli = Project(id = "courier-cli", base = file("cli"))
+    .dependsOn(
+      javaGenerator,
+      androidGenerator,
+      scalaGenerator,
+      typescriptLiteGenerator,
+      swiftGenerator
+    ).aggregate(
+      javaGenerator,
+      androidGenerator,
+      scalaGenerator,
+      typescriptLiteGenerator,
+      swiftGenerator
+    ).settings(
+      executableFile := {
+        val exeFile = target.value / "courier"
+        print(s"Writing executable file '$exeFile'...")
+        IO.write(exeFile, """#!/bin/bash
+                            |exec java -jar $0 "$@"
+                            |
+                            |""".stripMargin)
+        IO.append(exeFile, IO.readBytes(assembly.value))
+        exeFile.setExecutable(true)
+        println("written.")
+        exeFile
+      }
+  )
+
   lazy val typescriptLiteGeneratorTest = Project(
     id = "typescript-lite-generator-test", base = typescriptLiteDir / "generator-test")
     .dependsOn(typescriptLiteGenerator)
@@ -193,7 +221,8 @@ object Courier extends Build with OverridablePublishSettings {
       androidRuntime,
       swiftGenerator,
       typescriptLiteGenerator,
-      typescriptLiteGeneratorTest)
+      typescriptLiteGeneratorTest,
+      cli)
     .settings(runtimeVersionSettings)
     .settings(packagedArtifacts := Map.empty) // disable publish for root aggregate module
     .settings(
@@ -368,6 +397,11 @@ object Courier extends Build with OverridablePublishSettings {
       }
     }
   }
+
+  //
+  // Other Commands
+  //
+  lazy val executableFile = taskKey[File]("Distributes the current version as an executable at cli/target/courier")
 }
 
 
