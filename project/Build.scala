@@ -154,24 +154,19 @@ object Courier extends Build with OverridablePublishSettings {
       typescriptLiteGenerator,
       swiftGenerator
     ).settings(
-      // Generate bin/courier. A small 12kb binary that downloads all jars and executes
-      // the courier-cli main class.
-      genBinary := {
-        val currVersion = version.value
-        val cmd =
-          "./project/coursier-1.0.0-M11" +
-         s"  bootstrap org.coursera.courier:courier-cli_2.10:$currVersion" +
-          "  --force" + // overwrite any existing file
-          "  --output ./bin/courier" +
-          "  --download-dir /tmp/.courier/libs" +
-          "  -M org.coursera.courier.cli.CourierCli"
-        val result = cmd!
-
-        if (result != 0) {
-          throw new RuntimeException("Coursier Bootstrap Failed")
-        }
+      executableFile := {
+        val exeFile = target.value / "courier"
+        print(s"Writing executable file '$exeFile'...")
+        IO.write(exeFile, """#!/bin/bash
+                            |exec java -jar $0 "$@"
+                            |
+                            |""".stripMargin)
+        IO.append(exeFile, IO.readBytes(assembly.value))
+        exeFile.setExecutable(true)
+        println("written.")
+        exeFile
       }
-    )
+  )
 
   lazy val typescriptLiteGeneratorTest = Project(
     id = "typescript-lite-generator-test", base = typescriptLiteDir / "generator-test")
@@ -238,16 +233,7 @@ object Courier extends Build with OverridablePublishSettings {
       addCommandAlias("fullpublish", publishCommands("publish")),
       addCommandAlias("fullpublish-signed", publishCommands("publish-signed")),
       addCommandAlias("fullpublish-ivylocal", publishCommands("publish-local")),
-      addCommandAlias("fullpublish-mavenlocal", publishCommands("publishM2")),
-
-
-      // Add command for distributing binary. Depend on publishLocal.
-      // Should eventually not do this, but rather be part of the release step
-      // immediately after publishing to Maven. The new binary version  should
-      // always be committed concurrently with the automated version-bump
-      // of version.sbt
-      addCommandAlias("dist", "; project courier-cli; publishLocal; genBinary")
-    )
+      addCommandAlias("fullpublish-mavenlocal", publishCommands("publishM2")))
 
   //
   // Dependencies
@@ -415,7 +401,7 @@ object Courier extends Build with OverridablePublishSettings {
   //
   // Other Commands
   //
-  lazy val genBinary = taskKey[Unit]("Distributes the current version as an executable in bin/courier")
+  lazy val executableFile = taskKey[File]("Distributes the current version as an executable at cli/target/courier")
 }
 
 

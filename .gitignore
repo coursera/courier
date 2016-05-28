@@ -17,9 +17,6 @@ project/plugins/project/
 .settings
 .target
 
-# Only until determining that this is a good binary distribution strat
-bin/courier
-
 # Scala IDE
 .scala_dependencies
 .project

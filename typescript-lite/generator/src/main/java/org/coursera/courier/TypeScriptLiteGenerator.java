@@ -37,7 +37,6 @@ import org.rythmengine.resource.ClasspathResourceLoader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 
