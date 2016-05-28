@@ -92,52 +92,66 @@ object Courier extends Build with OverridablePublishSettings {
   // Projects
   //
   lazy val schemaLanguage = Project(id = "schema-language", base = file("schema-language"))
+    .disablePlugins(bintray.BintrayPlugin)
 
   lazy val generatorApi = Project(id = "generator-api", base = file("generator-api"))
     .dependsOn(schemaLanguage)
+    .disablePlugins(bintray.BintrayPlugin)
 
   lazy val referenceSuite = Project(id = "reference-suite", base = file("reference-suite"))
+    .disablePlugins(bintray.BintrayPlugin)
 
   private[this] val scalaDir = file("scala")
 
   lazy val scalaGenerator = Project(id = "scala-generator", base = scalaDir / "generator")
     .dependsOn(scalaRuntime, generatorApi, schemaLanguage)
     .enablePlugins(SbtTwirl)
+    .disablePlugins(bintray.BintrayPlugin)
 
   lazy val scalaRuntime = Project(id = "scala-runtime", base = scalaDir / "runtime")
+    .disablePlugins(bintray.BintrayPlugin)
 
   lazy val scalaGeneratorTest = Project(
     id = "scala-generator-test", base = scalaDir / "generator-test")
     .dependsOn(scalaGenerator)
+    .disablePlugins(bintray.BintrayPlugin)
 
   private[this] val javaDir = file("java")
 
   lazy val javaGenerator = Project(id = "java-generator", base = javaDir / "generator")
     .dependsOn(generatorApi)
+    .disablePlugins(bintray.BintrayPlugin)
 
   lazy val javaGeneratorTest = Project(
     id = "java-generator-test", base = javaDir / "generator-test")
     .dependsOn(javaGenerator)
+    .disablePlugins(bintray.BintrayPlugin)
 
   lazy val javaRuntime = Project(id = "java-runtime", base = javaDir / "runtime")
+    .disablePlugins(bintray.BintrayPlugin)
 
   private[this] val androidDir = file("android")
 
   lazy val androidGenerator = Project(id = "android-generator", base = androidDir / "generator")
     .dependsOn(generatorApi)
+    .disablePlugins(bintray.BintrayPlugin)
 
   lazy val androidGeneratorTest = Project(
     id = "android-generator-test", base = androidDir / "generator-test")
     .dependsOn(androidGenerator, androidRuntime)
+    .disablePlugins(bintray.BintrayPlugin)
 
   lazy val androidRuntime = Project(id = "android-runtime", base = androidDir / "runtime")
+    .disablePlugins(bintray.BintrayPlugin)
 
   private[this] val swiftDir = file("swift")
   lazy val swiftGenerator = Project(id = "swift-generator", base = swiftDir / "generator")
     .dependsOn(generatorApi)
+    .disablePlugins(bintray.BintrayPlugin)
 
   lazy val courierSbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
     .dependsOn(scalaGenerator)
+    .disablePlugins(xerial.sbt.Sonatype)
 
   //
   // Publishing
@@ -157,9 +171,9 @@ object Courier extends Build with OverridablePublishSettings {
   // Until then we have to be very explicit about publishing exactly what we want, mainly
   // to avoid build failures that would happen if we tried to publish the sbt plugin with scala
   // 2.11.
-  def publishCommands(publishCommand: String) =
+  def publishCommands(publishCommand: String, sbtPluginCommand: Option[String] = None) = {
     // We do not cross build java projects:
-    s";project schema-language;$publishCommand" +
+    val baseCommand = s";project schema-language;$publishCommand" +
     s";project generator-api;$publishCommand" +
     s";project java-generator;$publishCommand" +
     s";project java-runtime;$publishCommand" +
@@ -168,9 +182,14 @@ object Courier extends Build with OverridablePublishSettings {
     s";project swift-generator;$publishCommand" +
     s";++$sbtScalaVersion;project scala-generator;$publishCommand" +
     s";++$currentScalaVersion;project scala-generator;$publishCommand" +
-    s";++$sbtScalaVersion;project sbt-plugin;$publishCommand" +
     s";++$sbtScalaVersion;project scala-runtime;$publishCommand" +
     s";++$currentScalaVersion;project scala-runtime;$publishCommand"
+    sbtPluginCommand.map { sbtPluginCommand =>
+      baseCommand + s";++$sbtScalaVersion;project sbt-plugin;$sbtPluginCommand"
+    }.getOrElse {
+      baseCommand
+    }
+  }
 
   lazy val root = Project(id = "courier", base = file("."))
     .aggregate(
@@ -191,8 +210,8 @@ object Courier extends Build with OverridablePublishSettings {
       addCommandAlias(s"fulltest", s";compile;test;fullpublish-ivylocal;" +
                       s"project courier;++$sbtScalaVersion;scripted"),
       addCommandAlias("fullpublish", publishCommands("publish")),
-      addCommandAlias("fullpublish-signed", publishCommands("publish-signed")),
-      addCommandAlias("fullpublish-ivylocal", publishCommands("publish-local")),
+      addCommandAlias("fullpublish-signed", publishCommands("publish-signed", Some("publish"))),
+      addCommandAlias("fullpublish-ivylocal", publishCommands("publish-local", Some("publish-local"))),
       addCommandAlias("fullpublish-mavenlocal", publishCommands("publishM2")))
 
   //
@@ -358,5 +377,3 @@ object Courier extends Build with OverridablePublishSettings {
     }
   }
 }
-
-
