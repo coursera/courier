@@ -14,7 +14,7 @@ installed on your system, you can download the binary from
 
 ~~~sh
 cd /tmp && \
-wget https://dl.bintray.com/coursera/generic/courier && \
+curl -sSLf https://dl.bintray.com/coursera/generic/courier > courier && \
 chmod a+x courier && \
 sudo mv courier /usr/local/bin
 ~~~
@@ -34,7 +34,7 @@ record Fortune {
 Then, in the the root of the project (`myProject`), to generate typescript bindings, execute:
 
 ~~~
-$ courier ts output /tmp src
+$ courier ts output /tmp schemas
 myProject/output/org.example.fortune.Fortune.ts
 ~~~
 
