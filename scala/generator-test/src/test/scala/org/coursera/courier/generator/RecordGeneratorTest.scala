@@ -28,6 +28,7 @@ import org.coursera.records.test.Simple
 import org.coursera.records.test.SimpleMap
 import org.coursera.records.test.WithComplexTypeDefaults
 import org.coursera.records.test.WithComplexTypes
+import org.coursera.records.test.WithInclude
 import org.coursera.records.test.WithInlineRecord
 import org.coursera.records.test.WithOptionalComplexTypeDefaults
 import org.coursera.records.test.WithOptionalComplexTypes
@@ -250,6 +251,26 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures {
 
       val copy = primitives.copy(intField = None)
       assert(copy.intField === None)
+    }
+  }
+
+  @Test
+  def testWithInclude(): Unit = {
+    val original = WithInclude(Some("message"), 1)
+    val roundTripped = WithInclude(roundTrip(original.data()), DataConversion.SetReadOnly)
+    val WithInclude(Some(message), int) = original
+    val reconstructed = WithInclude(Some(message), int)
+
+    assert(original === roundTripped)
+    assert(original === reconstructed)
+
+    Seq(original, roundTripped, reconstructed) foreach { record =>
+      assert(record.message.get === "message")
+      assert(record.direct === 1)
+
+      val copy = record.copy(message = Some("copy"))
+      assert(copy.message.get === "copy")
+      assert(copy.direct === 1)
     }
   }
 
