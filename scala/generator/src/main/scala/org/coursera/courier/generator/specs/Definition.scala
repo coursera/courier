@@ -59,7 +59,6 @@ abstract class Definition(val spec: ClassTemplateSpec) extends Deprecatable {
    */
   def scalaType: String = ScalaEscaping.escapeSymbol(spec.getClassName)
 
-
   /**
    * The namespace of the scala type, if any.
    *

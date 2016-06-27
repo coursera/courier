@@ -22,6 +22,7 @@ import com.linkedin.data.template.DataTemplate
 import com.linkedin.data.template.GetMode
 import com.linkedin.data.template.RecordTemplate
 import com.linkedin.data.template.SetMode
+import org.coursera.courier.companions.RecordCompanion
 import org.coursera.courier.templates.DataTemplates.DataConversion
 
 abstract class ScalaRecordTemplate(dataMap: DataMap, schema: RecordDataSchema)
