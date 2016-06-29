@@ -18,16 +18,17 @@ package org.coursera.courier.generator.customtypes
 
 import com.linkedin.data.template.Custom
 import com.linkedin.data.template.DirectCoercer
+import org.joda.time.DateTime
 
-class DateTimeCoercer extends DirectCoercer[CustomTime] {
+class DateTimeCoercer extends DirectCoercer[DateTime] {
 
-   override def coerceInput(obj: CustomTime): AnyRef = {
-     obj.timeString
+   override def coerceInput(obj: DateTime): AnyRef = {
+     obj.toString()
    }
 
-   override def coerceOutput(obj: Any): CustomTime = {
+   override def coerceOutput(obj: Any): DateTime = {
      obj match {
-       case string: String => new CustomTime(string)
+       case string: String => new DateTime(string)
        case _: Any =>
          throw new IllegalArgumentException(
            s"DateTime field must be string, but was ${obj.getClass}")

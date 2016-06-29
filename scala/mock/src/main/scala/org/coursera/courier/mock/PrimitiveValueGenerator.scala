@@ -1,5 +1,7 @@
 package org.coursera.courier.mock
 
+import scala.collection.immutable
+
 /**
  * Generates an alternating Boolean series `true`, `false`, `true`, `false`, ...
  */

@@ -8,7 +8,7 @@ class PrimitiveGeneratorTest extends JUnitSuite with AssertionsForJUnit {
 
   @Test
   def DoubleValueGenerator_Oto1(): Unit = {
-    val generator = new DoubleValueGenerator(0.0, 1.0)
+    val generator = new SpanningDoubleValueGenerator(0.0, 1.0)
     val numerator =   List(0, 1, 1, 1, 3, 1, 3, 5, 7)
     val denominator = List(1, 1, 2, 4, 4, 8, 8, 8, 8)
     val expected = numerator.zip(denominator).map { case (num, denom) => num.toDouble / denom }
