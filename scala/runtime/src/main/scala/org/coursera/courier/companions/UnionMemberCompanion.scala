@@ -16,10 +16,12 @@
 
 package org.coursera.courier.companions
 
+import org.coursera.courier.templates.ScalaUnionTemplate
+
 /**
  * Identifies companion objects of Courier generated union member types.
  */
-trait UnionMemberCompanion {
+trait UnionMemberCompanion[K <: ScalaUnionTemplate] {
   def memberKey: String
-  def unionCompanion: UnionCompanion
+  def unionCompanion: UnionCompanion[K]
 }

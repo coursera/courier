@@ -83,7 +83,7 @@
   override def clone(): DataTemplate[DataList] = this
 }
 
-object @(array.scalaType) extends ArrayCompanion {
+object @(array.scalaType) extends ArrayCompanion[@(array.scalaType)] {
   val SCHEMA = DataTemplateUtil.parseSchema(@("\"\"\"" + SchemaToJsonEncoder.schemaToJson(array.arraySchema, JsonBuilder.Pretty.COMPACT) + "\"\"\"")).asInstanceOf[ArrayDataSchema]
 
   @* Register custom types and coercers. *@
@@ -101,7 +101,12 @@ object @(array.scalaType) extends ArrayCompanion {
     new @(array.scalaType)(new DataList(collection.map(coerceOutput).toList.asJava))
   }
 
+  @@deprecated("Use `build` instead.", "2.0.3")
   def apply(dataList: DataList, conversion: DataConversion): @(array.scalaType) = {
+    build(dataList, conversion)
+  }
+
+  override def build(dataList: DataList, conversion: DataConversion): @(array.scalaType) = {
     new @(array.scalaType)(DataTemplates.makeImmutable(dataList, conversion))
   }
 

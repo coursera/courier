@@ -164,7 +164,7 @@
   override def clone(): @(record.scalaType) = this
 }
 
-object @(record.scalaType) extends RecordCompanion {
+object @(record.scalaType) extends RecordCompanion[@(record.scalaType)] {
   val SCHEMA = DataTemplateUtil.parseSchema(@("\"\"\"" + SchemaToJsonEncoder.schemaToJson(record.recordSchema, JsonBuilder.Pretty.COMPACT) + "\"\"\"")).asInstanceOf[RecordDataSchema]
 
   @* Register custom types and coercers. *@
@@ -191,7 +191,12 @@ object @(record.scalaType) extends RecordCompanion {
     $result
   }
 
+  @@deprecated("Use `build` instead.", "2.0.3")
   def apply(dataMap: DataMap, conversion: DataConversion): @(record.scalaType) = {
+    build(dataMap, conversion)
+  }
+
+  override def build(dataMap: DataMap, conversion: DataConversion): @(record.scalaType) = {
     new @(record.scalaType)(DataTemplates.makeImmutable(dataMap, conversion))
   }
 
