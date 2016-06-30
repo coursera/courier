@@ -4,11 +4,9 @@ import org.coursera.courier.companions.RecordCompanion
 import org.coursera.courier.templates.DataTemplates.DataConversion
 import org.coursera.courier.templates.ScalaRecordTemplate
 
-import scala.reflect.ClassTag
-
 class RecordGenerator[K <: ScalaRecordTemplate] private (
     companion: RecordCompanion[K],
-    config: RecordSchemaDataGeneratorFactory.Config) {
+    config: RecordSchemaDataGeneratorFactory.Config) extends RecordValueGenerator[K] {
 
   lazy val dataGenerator =
     new RecordSchemaDataGeneratorFactory(companion.SCHEMA, config).build()

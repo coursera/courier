@@ -17,6 +17,8 @@ sealed trait ValueGenerator[+K <: AnyRef] {
 
 }
 
+trait RecordValueGenerator[K <: ScalaRecordTemplate] extends ValueGenerator[K]
+
 class CoercedValueGenerator[K](
     values: Iterable[K],
     coercer: DirectCoercer[K]) extends ValueGenerator[AnyRef] {
@@ -41,17 +43,6 @@ final class CyclicGenerator[+K <: AnyRef] (generators: immutable.Seq[ValueGenera
     previousIndex = (previousIndex + 1) % generators.size
     generators(previousIndex).next()
   }
-}
-
-trait RecordValueGenerator[R <: ScalaRecordTemplate]
-  extends ValueGenerator[DataMap]
-    with StringKeyGenerator {
-
-  final override def next(): DataMap = nextRecord().data()
-
-  final override def nextKey(): String = ???
-
-  def nextRecord(): R
 }
 
 final class DataMapValueGenerator(
@@ -100,9 +91,11 @@ final class MapValueGenerator[K <: StringKeyGenerator, V <: ValueGenerator[_ <: 
 sealed trait PrimitiveValueGenerator[+K <: AnyRef] extends ValueGenerator[K]
 
 sealed trait UnboxedValueGenerator[U <: AnyVal, K <: AnyRef]
-  extends PrimitiveValueGenerator[K] {
+  extends PrimitiveValueGenerator[K] with StringKeyGenerator {
 
   def nextUnboxed(): U
+
+  final override def nextKey(): String = nextUnboxed().toString
 
 }
 
@@ -113,22 +106,16 @@ sealed trait StringKeyGenerator {
 }
 
 trait BooleanValueGenerator
-  extends UnboxedValueGenerator[Boolean, java.lang.Boolean]
-  with StringKeyGenerator {
+  extends UnboxedValueGenerator[Boolean, java.lang.Boolean] {
 
   final override def next(): java.lang.Boolean = Boolean.box(nextUnboxed())
-
-  final override def nextKey(): String = next().toString // TODO amory: check this
 
 }
 
 trait IntegerValueGenerator
-  extends UnboxedValueGenerator[Int, Integer]
-  with StringKeyGenerator {
+  extends UnboxedValueGenerator[Int, Integer] {
 
   final override def next(): Integer = Int.box(nextUnboxed())
-
-  final override def nextKey(): String = next().toString
 
 }
 

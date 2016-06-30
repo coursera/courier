@@ -86,9 +86,7 @@ private[mock] class RecordSchemaDataGeneratorFactory(
     getGeneratorClassName(dataSchema).map { generatorClassName =>
 
       Class.forName(generatorClassName).newInstance() match {
-        case generator: ValueGenerator[AnyRef] => generator
-        case generator: ValueGenerator[String] => generator
-        case generator: ValueGenerator[DataMap] => generator
+        case generator: ValueGenerator[_] => generator
         case other: Any => throw new GeneratorBuilderError(
           s"Expected custom generator with class $generatorClassName to be of type " +
           s"ValueGenerator[AnyRef].")
@@ -145,7 +143,8 @@ private[mock] class RecordSchemaDataGeneratorFactory(
         val itemGenerator = makeSchemaValueGenerator(name, schema.getItems)
         new ListValueGenerator(itemGenerator, config.defaultCollectionLength)
       case schema: MapDataSchema =>
-        val keyGenerator: StringKeyGenerator = ???
+        schema.getUnionMemberKey
+        val keyGenerator: StringKeyGenerator = makeMapKeyGenerator(name, schema)
         val valueGenerator = makeSchemaValueGenerator(name, schema.getValues)
         new MapValueGenerator(keyGenerator, valueGenerator, config.defaultCollectionLength)
       case schema: UnionDataSchema =>
@@ -157,6 +156,23 @@ private[mock] class RecordSchemaDataGeneratorFactory(
       case schema: FixedDataSchema =>
         throw GeneratorBuilderError(s"Unsupported schema type ${schema.getType} " +
           s"for schema $schema.")
+    }
+  }
+
+  private[this] def makeMapKeyGenerator(
+      name: String,
+      schema: MapDataSchema): StringKeyGenerator = {
+
+    Option(schema.getProperties.get("keys")).map {
+      case "int" => new IntegerRangeGenerator()
+      case "long" => new LongRangeGenerator()
+      case "float" => new SpanningFloatValueGenerator()
+      case "double" => new SpanningDoubleValueGenerator()
+      case "boolean" => new TrueFalseValueGenerator()
+      case keyType: String => throw GeneratorBuilderError(s"Unsupported map key type `$keyType`.")
+    }.getOrElse {
+      // `keys` property is absent for string-keyed maps
+      new PrefixedStringGenerator(s"${name}_key")
     }
   }
 }
