@@ -11,7 +11,7 @@ class RecordGenerator[K <: ScalaRecordTemplate] private (
   lazy val dataGenerator =
     new RecordSchemaDataGeneratorFactory(companion.SCHEMA, config).build()
 
-  def next(): K = companion.apply(dataGenerator.next(), DataConversion.SetReadOnly)
+  override def next(): K = companion.apply(dataGenerator.next(), DataConversion.SetReadOnly)
 
   /**
    * Set the generator for a named field.

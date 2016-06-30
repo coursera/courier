@@ -1,7 +1,15 @@
 package org.coursera.courier.mock
 
+import org.coursera.courier.companions.RecordCompanion
+import org.coursera.courier.generator.customtypes.CoercedCustomIntGenerator
+import org.coursera.courier.generator.customtypes.CustomInt
+import org.coursera.enums.Fruits
+import org.coursera.fixed.Fixed8
+import org.coursera.fixed.WithFixed8
+import org.coursera.maps.Toggle
 import org.coursera.maps.WithCustomTypesMap
 import org.coursera.maps.WithTypedKeyMap
+import org.coursera.records.test.Simple
 import org.example.Fortune
 import org.example.FortuneCookie
 import org.example.MagicEightBall
@@ -49,16 +57,31 @@ class RecordGeneratorTest extends JUnitSuite with AssertionsForJUnit {
   def build_WithCustomTypesMap(): Unit = {
     val generator = RecordGenerator(WithCustomTypesMap)
 
-    // Verify that the map includes values
+    // Verify that the map is non-empty
     assert(generator.next().ints.nonEmpty)
   }
 
-  @Ignore("Doesn't pass yet, as complex type keys are not yet supported.")
   @Test
   def build_WithTypedKeyMap(): Unit = {
+    def mapGenerator(keyGenerator: ValueGenerator[_ <: AnyRef]) =
+      new MapValueGenerator(keyGenerator, new PrefixedStringGenerator("value"), 3)
+
     val generator = RecordGenerator(WithTypedKeyMap)
+      .withGenerator("record", mapGenerator(RecordGenerator(Simple)))
+      .withGenerator("enum", mapGenerator(new CyclicEnumSymbolGenerator(Fruits.symbols)))
+      .withGenerator("custom", mapGenerator(new CoercedCustomIntGenerator))
+      .withGenerator("fixed", mapGenerator(new IntegerRangeFixedBytesGenerator(8)))
+      .withGenerator("samePackageEnum", mapGenerator(new CyclicEnumSymbolGenerator(Toggle.symbols)))
 
     val result = generator.next()
   }
+
+  @Test
+  def build_WithFixed8(): Unit = {
+    val generator = RecordGenerator(WithFixed8)
+
+    val result = generator.next()
+  }
+
 
 }

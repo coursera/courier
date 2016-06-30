@@ -2,9 +2,12 @@ package org.coursera.courier.mock
 
 import java.util
 
+import com.linkedin.data.ByteString
 import com.linkedin.data.DataList
 import com.linkedin.data.DataMap
 import com.linkedin.data.template.DirectCoercer
+import org.coursera.courier.codecs.InlineStringCodec
+import org.coursera.courier.templates.ScalaEnumTemplateSymbol
 import org.coursera.courier.templates.ScalaRecordTemplate
 
 import scala.collection.immutable
@@ -15,17 +18,32 @@ sealed trait ValueGenerator[+K <: AnyRef] {
 
   def next(): K
 
+  def nextKey(): String = InlineStringCodec.dataToString(next())
+
+  def map[V <: AnyRef](transform: K => V): ValueGenerator[V] = {
+    val delegate = this
+    new ValueGenerator[V] {
+      override def next(): V = transform(delegate.next())
+    }
+  }
 }
 
-trait RecordValueGenerator[K <: ScalaRecordTemplate] extends ValueGenerator[K]
+trait RecordValueGenerator[K <: ScalaRecordTemplate] extends ValueGenerator[K] {
+  override def nextKey(): String = InlineStringCodec.dataToString(next().data())
+}
 
-class CoercedValueGenerator[K](
-    values: Iterable[K],
-    coercer: DirectCoercer[K]) extends ValueGenerator[AnyRef] {
+trait EnumSymbolGenerator[K <: ScalaEnumTemplateSymbol] extends ValueGenerator[K] {
+  val symbols: immutable.Iterable[K]
+  override def nextKey(): String = next().toString()
+}
 
-  final override def next(): AnyRef = coercer.coerceInput(iterator.next())
+trait CoercedValueGenerator[K] extends ValueGenerator[AnyRef] {
 
-  private[this] val iterator = values.iterator
+  val coercer: DirectCoercer[K]
+
+  def nextValue(): K
+
+  final override def next(): AnyRef = coercer.coerceInput(nextValue())
 }
 
 final class ConstantValueGenerator[K <: AnyRef](value: K) extends ValueGenerator[K] {
@@ -72,9 +90,9 @@ final class ListValueGenerator[V <: ValueGenerator[_ <: AnyRef]](
   }
 }
 
-final class MapValueGenerator[K <: StringKeyGenerator, V <: ValueGenerator[_ <: AnyRef]](
-    keyGenerator: K,
-    valueGenerator: V,
+final class MapValueGenerator[V <: AnyRef](
+    keyGenerator: ValueGenerator[_ <: AnyRef],
+    valueGenerator: ValueGenerator[V],
     listLength: Int)
   extends ValueGenerator[DataMap] {
 
@@ -90,19 +108,8 @@ final class MapValueGenerator[K <: StringKeyGenerator, V <: ValueGenerator[_ <: 
 
 sealed trait PrimitiveValueGenerator[+K <: AnyRef] extends ValueGenerator[K]
 
-sealed trait UnboxedValueGenerator[U <: AnyVal, K <: AnyRef]
-  extends PrimitiveValueGenerator[K] with StringKeyGenerator {
-
+sealed trait UnboxedValueGenerator[U <: AnyVal, K <: AnyRef] extends PrimitiveValueGenerator[K] {
   def nextUnboxed(): U
-
-  final override def nextKey(): String = nextUnboxed().toString
-
-}
-
-sealed trait StringKeyGenerator {
-
-  def nextKey(): String
-
 }
 
 trait BooleanValueGenerator
@@ -137,8 +144,25 @@ trait DoubleValueGenerator extends UnboxedValueGenerator[Double, java.lang.Doubl
 
 }
 
-trait StringValueGenerator extends PrimitiveValueGenerator[String] with StringKeyGenerator {
+trait StringValueGenerator extends PrimitiveValueGenerator[String] {
 
   final override def nextKey(): String = next()
 
 }
+
+trait BytesValueGenerator extends PrimitiveValueGenerator[ByteString] {
+
+  final override def next(): ByteString = ByteString.copy(nextBytes())
+
+  def nextBytes(): Array[Byte]
+}
+
+trait FixedBytesValueGenerator extends PrimitiveValueGenerator[ByteString] {
+
+  final override def next(): ByteString = ByteString.copy(nextBytes())
+  final override def nextKey(): String = nextBytes().toString
+
+  def nextBytes(): Array[Byte]
+
+}
+

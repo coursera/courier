@@ -19,6 +19,7 @@ import com.linkedin.data.schema.RecordDataSchema.Field
 import com.linkedin.data.schema.StringDataSchema
 import com.linkedin.data.schema.TyperefDataSchema
 import com.linkedin.data.schema.UnionDataSchema
+import com.linkedin.data.template.DataTemplateUtil
 
 import collection.JavaConverters._
 
@@ -113,15 +114,13 @@ private[mock] class RecordSchemaDataGeneratorFactory(
       primitiveSchema: PrimitiveDataSchema): PrimitiveValueGenerator[_ <: AnyRef] = {
 
     primitiveSchema match {
-      case schema: BooleanDataSchema => new TrueFalseValueGenerator
-      case schema: IntegerDataSchema => new IntegerRangeGenerator()
-      case schema: LongDataSchema => new LongRangeGenerator()
-      case schema: FloatDataSchema => new SpanningFloatValueGenerator()
-      case schema: DoubleDataSchema => new SpanningDoubleValueGenerator()
-      case schema: StringDataSchema => new PrefixedStringGenerator(name)
-      case schema: BytesDataSchema =>
-        throw GeneratorBuilderError(s"Unsupported schema type ${primitiveSchema.getType} " +
-          s"for schema $primitiveSchema.")
+      case schema: BooleanDataSchema => booleanGenerator()
+      case schema: IntegerDataSchema => intGenerator()
+      case schema: LongDataSchema => longGenerator()
+      case schema: FloatDataSchema => floatGenerator()
+      case schema: DoubleDataSchema => doubleGenerator()
+      case schema: StringDataSchema => stringGenerator(name)
+      case schema: BytesDataSchema => bytesGenerator(name)
       case schema: NullDataSchema =>
         throw GeneratorBuilderError(s"Unsupported schema type ${primitiveSchema.getType} " +
           s"for schema $primitiveSchema.")
@@ -134,7 +133,7 @@ private[mock] class RecordSchemaDataGeneratorFactory(
 
     complexSchema match {
       case schema: EnumDataSchema =>
-        new CyclicEnumSymbolGenerator(schema.getSymbols.asScala.toList)
+        new CyclicEnumStringGenerator(schema.getSymbols.asScala.toSet)
       case schema: RecordDataSchema =>
         val builderConfig = config.copy(fieldGeneratorOverrides = Map.empty)
         new RecordSchemaDataGeneratorFactory(schema, builderConfig).build()
@@ -144,7 +143,7 @@ private[mock] class RecordSchemaDataGeneratorFactory(
         new ListValueGenerator(itemGenerator, config.defaultCollectionLength)
       case schema: MapDataSchema =>
         schema.getUnionMemberKey
-        val keyGenerator: StringKeyGenerator = makeMapKeyGenerator(name, schema)
+        val keyGenerator = makeMapKeyGenerator(name, schema)
         val valueGenerator = makeSchemaValueGenerator(name, schema.getValues)
         new MapValueGenerator(keyGenerator, valueGenerator, config.defaultCollectionLength)
       case schema: UnionDataSchema =>
@@ -153,28 +152,48 @@ private[mock] class RecordSchemaDataGeneratorFactory(
             memberSchema.getUnionMemberKey -> makeSchemaValueGenerator(name, memberSchema)))
         }
         new CyclicGenerator(generators)
-      case schema: FixedDataSchema =>
-        throw GeneratorBuilderError(s"Unsupported schema type ${schema.getType} " +
-          s"for schema $schema.")
+      case schema: FixedDataSchema => fixedGenerator(schema.getSize)
     }
   }
 
   private[this] def makeMapKeyGenerator(
       name: String,
-      schema: MapDataSchema): StringKeyGenerator = {
+      schema: MapDataSchema): ValueGenerator[_ <: AnyRef] = {
+
+    val stringKeyPrefix = s"${name}_key"
 
     Option(schema.getProperties.get("keys")).map {
-      case "int" => new IntegerRangeGenerator()
-      case "long" => new LongRangeGenerator()
-      case "float" => new SpanningFloatValueGenerator()
-      case "double" => new SpanningDoubleValueGenerator()
-      case "boolean" => new TrueFalseValueGenerator()
-      case keyType: String => throw GeneratorBuilderError(s"Unsupported map key type `$keyType`.")
+      case "int" => intGenerator()
+      case "long" => longGenerator()
+      case "float" => floatGenerator()
+      case "double" => doubleGenerator()
+      case "boolean" => booleanGenerator()
+      case "bytes" => bytesGenerator(stringKeyPrefix)
+      case data: DataMap => makeSchemaValueGenerator(stringKeyPrefix, dataToDataSchema(data))
+      case keyType: String =>
+        throw GeneratorBuilderError(
+          s"Unsupported map key type `$keyType`. Please define a custom generator for map field " +
+          s"'$name' in schema $recordSchema")
     }.getOrElse {
       // `keys` property is absent for string-keyed maps
-      new PrefixedStringGenerator(s"${name}_key")
+      stringGenerator(stringKeyPrefix)
     }
   }
+
+  private[this] def intGenerator(): IntegerValueGenerator = new IntegerRangeGenerator()
+  private[this] def longGenerator(): LongValueGenerator = new LongRangeGenerator()
+  private[this] def floatGenerator(): FloatValueGenerator = new SpanningFloatValueGenerator()
+  private[this] def doubleGenerator(): DoubleValueGenerator = new SpanningDoubleValueGenerator()
+  private[this] def booleanGenerator(): BooleanValueGenerator = new TrueFalseValueGenerator()
+  private[this] def stringGenerator(prefix: String): StringValueGenerator =
+    new PrefixedStringGenerator(prefix)
+
+  private[this] def bytesGenerator(prefix: String): BytesValueGenerator =
+    new StringBytesValueGenerator(prefix)
+
+  private[this] def fixedGenerator(length: Int): FixedBytesValueGenerator =
+    new IntegerRangeFixedBytesGenerator(length)
+
 }
 
 object RecordSchemaDataGeneratorFactory {
@@ -223,4 +242,19 @@ object RecordSchemaDataGeneratorFactory {
 
   case class GeneratorBuilderError(msg: String) extends IllegalArgumentException(msg)
 
+  def dataToDataSchema(data: DataMap): DataSchema = {
+    DataTemplateUtil.parseSchema(dataToJson(data))
+  }
+
+  private[this] def dataToJson(data: DataMap): String = {
+    val fieldStrings = data.entrySet.asScala.toList.map { entry =>
+      val key = entry.getKey
+      entry.getValue match {
+        case value: String => s""""$key":"$value""""
+        case number: Number => s"$key"
+        case _ => throw new IllegalAccessException("Unhandled")
+      }
+    }
+    "{" + fieldStrings.mkString(",") + "}"
+  }
 }

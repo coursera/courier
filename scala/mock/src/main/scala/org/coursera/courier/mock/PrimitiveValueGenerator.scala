@@ -156,3 +156,26 @@ class FixedLengthStringGenerator(
     }
   }
 }
+
+class StringBytesValueGenerator(
+    prefix: String,
+    intGenerator: IntegerValueGenerator = new IntegerRangeGenerator())
+  extends BytesValueGenerator {
+
+  override def nextBytes(): Array[Byte] = s"$prefix${intGenerator.nextUnboxed()}".getBytes
+}
+
+class IntegerRangeFixedBytesGenerator(
+    length: Int,
+    intGenerator: IntegerValueGenerator = new IntegerRangeGenerator())
+  extends FixedBytesValueGenerator {
+
+  override def nextBytes(): Array[Byte] = {
+    val bytes = intGenerator.next().toString.getBytes
+    if (bytes.size < length) {
+      bytes.padTo(length, Byte.MaxValue)
+    } else {
+      bytes.take(length)
+    }
+  }
+}
