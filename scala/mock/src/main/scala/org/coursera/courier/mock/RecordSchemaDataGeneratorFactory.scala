@@ -24,11 +24,11 @@ import collection.JavaConverters._
 
 import com.linkedin.data.schema.RecordDataSchema
 
-class RecordSchemaDataGeneratorBuilder private (
+private[mock] class RecordSchemaDataGeneratorFactory(
     recordSchema: RecordDataSchema,
-    config: RecordSchemaDataGeneratorBuilder.Config) {
+    config: RecordSchemaDataGeneratorFactory.Config) {
 
-  import RecordSchemaDataGeneratorBuilder._
+  import RecordSchemaDataGeneratorFactory._
 
   /**
    * @return A [[DataMapValueGenerator]] whose generated values conform to `recordSchema`.
@@ -42,80 +42,6 @@ class RecordSchemaDataGeneratorBuilder private (
   }
 
   /** Builder configuration methods */
-
-  /**
-   * Set the generator for a named field.
-   *
-   * @param fieldName Name of field.
-   * @param generator Field value generator.
-   * @return A new [[RecordSchemaDataGeneratorBuilder]]
-   */
-  def withGenerator(
-      fieldName: String,
-      generator: ValueGenerator[_ <: AnyRef]): RecordSchemaDataGeneratorBuilder = {
-
-    val field = recordSchema.getField(fieldName)
-    if (field != null) {
-      if (RecordSchemaDataGeneratorBuilder.validGeneratorForField(generator, field)) {
-        copyWithConfig(config.copy(
-          fieldGeneratorOverrides = config.fieldGeneratorOverrides.updated(fieldName, generator)))
-      } else {
-        throw new IllegalArgumentException(
-          s"Generator $generator will not generate valid data " +
-            s"for field $fieldName with schema:\n ${field.getType}")
-      }
-    } else {
-      throw new IllegalArgumentException(s"Record schema has is no field named $fieldName.")
-    }
-  }
-
-  /**
-   * Use default field values for schema fields that define them.
-   *
-   * @return updated builder.
-   */
-  def useDefaults(): RecordSchemaDataGeneratorBuilder =
-    copyWithConfig(config.copy(useSchemaDefaults = true))
-
-  /**
-   * Generate values, ignoring schema-defined defaults.
-   *
-   * @return updated builder.
-   */
-  def ignoreDefaults(): RecordSchemaDataGeneratorBuilder =
-    copyWithConfig(config.copy(useSchemaDefaults = false))
-
-  /**
-   * Generate values for all optional fields.
-   *
-   * @return updated builder.
-   */
-  def includeOptional(): RecordSchemaDataGeneratorBuilder =
-    copyWithConfig(config.copy(includeOptionalFields = true))
-
-  /**
-   * Do not generate values for optional fields.
-   *
-   * @return updated builder.
-   */
-  def excludeOptional(): RecordSchemaDataGeneratorBuilder =
-    copyWithConfig(config.copy(includeOptionalFields = false))
-
-  /**
-   * Set length for generated collections.
-   *
-   * @param collectionLength
-   * @return updated builder.
-   */
-  def withCollectionLength(collectionLength: Int): RecordSchemaDataGeneratorBuilder =
-    copyWithConfig(config.copy(defaultCollectionLength = collectionLength))
-
-
-  private[this] def copyWithConfig(config: RecordSchemaDataGeneratorBuilder.Config) =
-    new RecordSchemaDataGeneratorBuilder(recordSchema, config)
-
-  /** Generator resolution methods */
-
   private[this] def makeFieldGeneratorIfRequired(field: Field):
     Option[ValueGenerator[_ <: AnyRef]] = {
 
@@ -213,7 +139,7 @@ class RecordSchemaDataGeneratorBuilder private (
         new CyclicEnumSymbolGenerator(schema.getSymbols.asScala.toList)
       case schema: RecordDataSchema =>
         val builderConfig = config.copy(fieldGeneratorOverrides = Map.empty)
-        new RecordSchemaDataGeneratorBuilder(schema, builderConfig).build()
+        new RecordSchemaDataGeneratorFactory(schema, builderConfig).build()
       case schema: TyperefDataSchema => makeSchemaValueGenerator(name, schema.getRef)
       case schema: ArrayDataSchema =>
         val itemGenerator = makeSchemaValueGenerator(name, schema.getItems)
@@ -235,10 +161,10 @@ class RecordSchemaDataGeneratorBuilder private (
   }
 }
 
-object RecordSchemaDataGeneratorBuilder {
+object RecordSchemaDataGeneratorFactory {
 
-  def apply(recordSchema: RecordDataSchema): RecordSchemaDataGeneratorBuilder = {
-    new RecordSchemaDataGeneratorBuilder(recordSchema, Config())
+  def apply(recordSchema: RecordDataSchema): RecordSchemaDataGeneratorFactory = {
+    new RecordSchemaDataGeneratorFactory(recordSchema, Config())
   }
 
   val SCALA = "scala"
@@ -258,7 +184,7 @@ object RecordSchemaDataGeneratorBuilder {
       defaultCollectionLength: Int = 3,
       requireCustomGeneratorsForCoercedTypes: Boolean = true)
 
-  private def validGeneratorForField(
+  private[mock] def validGeneratorForField(
       generator: ValueGenerator[_ <: AnyRef], field: Field): Boolean = {
 
     // TODO amory: Actually check

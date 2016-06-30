@@ -1,6 +1,5 @@
 package org.coursera.courier.mock
 
-import org.coursera.courier.templates.DataTemplates.DataConversion
 import org.example.Fortune
 import org.example.FortuneCookie
 import org.example.MagicEightBall
@@ -9,12 +8,12 @@ import org.junit.Test
 import org.scalatest.junit.AssertionsForJUnit
 import org.scalatest.junit.JUnitSuite
 
-class RecordSchemaDataGeneratorBuilderTest extends JUnitSuite with AssertionsForJUnit {
+class RecordGeneratorTest extends JUnitSuite with AssertionsForJUnit {
 
   @Test
   def build_FortuneCookie(): Unit = {
-    val generator = RecordSchemaDataGeneratorBuilder(FortuneCookie.SCHEMA).build()
-    val cookie = FortuneCookie(generator.next(), DataConversion.SetReadOnly)
+    val generator = RecordGenerator(FortuneCookie)
+    val cookie = generator.next()
 
     assertResult("message0")(cookie.message)
     assertResult(Some(0.0))(cookie.certainty)
@@ -23,8 +22,8 @@ class RecordSchemaDataGeneratorBuilderTest extends JUnitSuite with AssertionsFor
 
   @Test
   def build_MagicEightBall(): Unit = {
-    val generator = RecordSchemaDataGeneratorBuilder(MagicEightBall.SCHEMA).build()
-    val eightBall = MagicEightBall(generator.next(), DataConversion.SetReadOnly)
+    val generator = RecordGenerator(MagicEightBall)
+    val eightBall = generator.next()
 
     assert(MagicEightBallAnswer.symbols.contains(eightBall.answer))
     assertResult("question0")(eightBall.question)
@@ -32,9 +31,9 @@ class RecordSchemaDataGeneratorBuilderTest extends JUnitSuite with AssertionsFor
 
   @Test
   def build_Fortune(): Unit = {
-    val generator = RecordSchemaDataGeneratorBuilder(Fortune.SCHEMA).build()
+    val generator = RecordGenerator(Fortune)
 
-    val fortunes = (1 to 3).map(_ => Fortune(generator.next(), DataConversion.SetReadOnly))
+    val fortunes = (1 to 3).map(_ => generator.next())
 
     // Verify all [[DateTime]] members are valid and distinct
     assertResult(fortunes.size)(fortunes.map(_.createdAt).toSet.size)

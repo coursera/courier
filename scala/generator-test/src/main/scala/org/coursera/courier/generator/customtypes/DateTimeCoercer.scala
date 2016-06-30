@@ -41,6 +41,6 @@ object DateTimeCoercer {
    registerCoercer()
 
    def registerCoercer(): Unit = {
-     Custom.registerCoercer(new DateTimeCoercer, classOf[CustomTime])
+     Custom.registerCoercer(new DateTimeCoercer, classOf[DateTime])
    }
  }

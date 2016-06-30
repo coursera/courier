@@ -17,5 +17,6 @@ import org.joda.time.DateTime
 import scala.collection.JavaConverters._
 
 
-type foo = Fortune
-
+def foo[K](companion: RecordCompanion[K]): K = {
+  val dataGenerator
+}

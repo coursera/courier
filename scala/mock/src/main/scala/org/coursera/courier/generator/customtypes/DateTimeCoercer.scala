@@ -19,16 +19,19 @@ package org.coursera.courier.generator.customtypes
 import com.linkedin.data.template.Custom
 import com.linkedin.data.template.DirectCoercer
 import org.joda.time.DateTime
+import org.joda.time.format.ISODateTimeFormat
 
 class DateTimeCoercer extends DirectCoercer[DateTime] {
 
+  private val FORMAT = ISODateTimeFormat.dateTime
+
   override def coerceInput(obj: DateTime): AnyRef = {
-    obj.toString()
+    obj.toString(FORMAT)
   }
 
   override def coerceOutput(obj: Any): DateTime = {
     obj match {
-      case string: String => new DateTime(string)
+      case string: String => DateTime.parse(string, FORMAT)
       case _: Any =>
         throw new IllegalArgumentException(
           s"DateTime field must be string, but was ${obj.getClass}")
