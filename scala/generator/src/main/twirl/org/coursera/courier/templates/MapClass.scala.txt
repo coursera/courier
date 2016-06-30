@@ -133,7 +133,7 @@
   override def clone(): DataTemplate[DataMap] = this
 }
 
-object @(map.scalaType) {
+object @(map.scalaType) extends MapCompanion[@(map.scalaType)]{
   val SCHEMA = DataTemplateUtil.parseSchema(@("\"\"\"" + SchemaToJsonEncoder.schemaToJson(map.mapSchema, JsonBuilder.Pretty.COMPACT) + "\"\"\"")).asInstanceOf[MapDataSchema]
   val KEY_SCHEMA = DataTemplateUtil.parseSchema(@("\"\"\"" + SchemaToJsonEncoder.schemaToJson(map.keySchema, JsonBuilder.Pretty.COMPACT) + "\"\"\""))
 
@@ -158,7 +158,12 @@ object @(map.scalaType) {
     new @(map.scalaType)(new DataMap(map.map { case (k, v) => coerceKeyOutput(k) -> coerceOutput(v) }.asJava))
   }
 
+  @@deprecated("Use `build` instead.", "2.0.3")
   def apply(dataMap: DataMap, conversion: DataConversion): @(map.scalaType) = {
+    build(dataMap, conversion)
+  }
+
+  override def build(dataMap: DataMap, conversion: DataConversion): @(map.scalaType) = {
     new @(map.scalaType)(DataTemplates.makeImmutable(dataMap, conversion))
   }
 
