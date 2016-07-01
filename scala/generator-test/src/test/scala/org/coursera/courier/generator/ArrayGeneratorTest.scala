@@ -53,7 +53,7 @@ class ArrayGeneratorTest extends GeneratorTest with SchemaFixtures {
       EmptyArray(Empty(), Empty(), Empty()),
       FruitsArray(Fruits.APPLE, Fruits.BANANA, Fruits.ORANGE))
 
-    val roundTripped = WithRecordArray(roundTrip(original.data()), DataConversion.SetReadOnly)
+    val roundTripped = WithRecordArray.build(roundTrip(original.data()), DataConversion.SetReadOnly)
     assert(original === roundTripped)
 
     Seq(original, roundTripped).foreach { record =>
@@ -72,7 +72,8 @@ class ArrayGeneratorTest extends GeneratorTest with SchemaFixtures {
       BooleanArray(false, true),
       StringArray("a", "b", "c"),
       BytesArray(bytes1, bytes2))
-    val roundTripped = WithPrimitivesArray(roundTrip(original.data()), DataConversion.SetReadOnly)
+    val roundTripped = WithPrimitivesArray.build(
+      roundTrip(original.data()), DataConversion.SetReadOnly)
 
     assert(original === roundTripped)
 
@@ -94,7 +95,8 @@ class ArrayGeneratorTest extends GeneratorTest with SchemaFixtures {
         WithCustomTypesArrayUnion.SimpleMember(Simple(Some("u1")))),
       Fixed8Array(Fixed8(bytesFixed8))
     )
-    val roundTripped =WithCustomTypesArray(roundTrip(original.data()), DataConversion.SetReadOnly)
+    val roundTripped = WithCustomTypesArray.build(
+      roundTrip(original.data()), DataConversion.SetReadOnly)
 
     assert(original === roundTripped)
 
@@ -116,7 +118,8 @@ class ArrayGeneratorTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testWrapImplicitsArrayArray(): Unit = {
     val original: SimpleArrayArray = Seq(Seq(Simple(Some("a"))), Seq(Simple(Some("b"))))
-    val roundTripped = SimpleArrayArray(roundTrip(original.data()), DataConversion.SetReadOnly)
+    val roundTripped = SimpleArrayArray.build(
+      roundTrip(original.data()), DataConversion.SetReadOnly)
     assert(original === roundTripped)
   }
 
@@ -125,7 +128,7 @@ class ArrayGeneratorTest extends GeneratorTest with SchemaFixtures {
     val original: SimpleMapArray = Seq(
       Map("k1" -> Simple(Some("a"))),
       Map("k2" -> Simple(Some("b"))))
-    val roundTripped = SimpleMapArray(roundTrip(original.data()), DataConversion.SetReadOnly)
+    val roundTripped = SimpleMapArray.build(roundTrip(original.data()), DataConversion.SetReadOnly)
     assert(original === roundTripped)
   }
 }

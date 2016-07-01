@@ -49,7 +49,7 @@ class UnionGeneratorTest extends GeneratorTest with SchemaFixtures {
 
     memberLiterals.foreach { memberLiteral =>
       val original = WithComplexTypesUnion(memberLiteral)
-      val roundTripped = WithComplexTypesUnion(
+      val roundTripped = WithComplexTypesUnion.build(
         roundTrip(original.data()), DataConversion.SetReadOnly)
 
       val WithComplexTypesUnion(unionMember) = original
@@ -94,7 +94,7 @@ class UnionGeneratorTest extends GeneratorTest with SchemaFixtures {
 
     memberLiterals.foreach { memberLiteral =>
       val original = WithPrimitivesUnion(memberLiteral)
-      val roundTripped = WithPrimitivesUnion(
+      val roundTripped = WithPrimitivesUnion.build(
         roundTrip(original.data()), DataConversion.SetReadOnly)
 
       val WithPrimitivesUnion(unionMember) = original
@@ -119,7 +119,7 @@ class UnionGeneratorTest extends GeneratorTest with SchemaFixtures {
         WithPrimitiveCustomTypesUnion.Union.CustomIntMember(
           CustomInt(1)))
 
-    val roundTripped = WithPrimitiveCustomTypesUnion(
+    val roundTripped = WithPrimitiveCustomTypesUnion.build(
       roundTrip(original.data()), DataConversion.SetReadOnly)
 
     val WithPrimitiveCustomTypesUnion(unionMember) = original

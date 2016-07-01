@@ -66,14 +66,16 @@ class TyperefGeneratorTest extends GeneratorTest with SchemaFixtures {
       EmptyMap("a" -> Empty()),
       EmptyArray(Empty()),
       UnionTyperef.IntMember(1))
-    val roundTripped = WithComplexTyperefs(roundTrip(original.data()), DataConversion.SetReadOnly)
+    val roundTripped = WithComplexTyperefs.build(
+      roundTrip(original.data()), DataConversion.SetReadOnly)
     assert(original === roundTripped)
   }
 
   @Test
   def testCustomTypeOfCustomType(): Unit = {
     val original = WithCustomIntWrapper(CustomIntWrapper(CustomInt(10)))
-    val roundTripped = WithCustomIntWrapper(roundTrip(original.data()), DataConversion.SetReadOnly)
+    val roundTripped = WithCustomIntWrapper.build(
+      roundTrip(original.data()), DataConversion.SetReadOnly)
     assert(original === roundTripped)
   }
 
@@ -94,7 +96,8 @@ class TyperefGeneratorTest extends GeneratorTest with SchemaFixtures {
     assert(original.customMap.head._2.title === "valuetitle")
     assert(original.customMap.head._2.body === "valuebody")
 
-    val roundTripped = WithCustomRecord(roundTrip(original.data()), DataConversion.SetReadOnly)
+    val roundTripped = WithCustomRecord.build(
+      roundTrip(original.data()), DataConversion.SetReadOnly)
     assert(original === roundTripped)
   }
 
@@ -112,7 +115,7 @@ class TyperefGeneratorTest extends GeneratorTest with SchemaFixtures {
         WithRecordCustomTypeUnion.Union.CustomRecordMember(
           CustomRecord("title", "body")))
     val roundTripped =
-      WithRecordCustomTypeUnion(roundTrip(original.data()), DataConversion.SetReadOnly)
+      WithRecordCustomTypeUnion.build(roundTrip(original.data()), DataConversion.SetReadOnly)
     assert(original === roundTripped)
   }
 

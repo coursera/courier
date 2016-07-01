@@ -71,7 +71,7 @@
       case unionField: UnionDefinition => {
         @FieldAnnotations(field) lazy val @(field.name): @(field.scalaTypeFullname) = @field.wrapAndMapIfOption {
           dataMap.getDataMap(@(record.scalaType).Fields.@(field.name).getName)
-        } { value => @(unionField.scalaTypeFullname)(@value, DataConversion.SetReadOnly) }
+        } { value => @(unionField.scalaTypeFullname).build(@value, DataConversion.SetReadOnly) }
       }
       case arrayField: ArrayDefinition => {
         @FieldAnnotations(field) lazy val @(field.name): @(field.scalaTypeFullname) = @field.wrapIfOption{obtainWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(arrayField.scalaTypeFullname)])}
@@ -189,11 +189,6 @@ object @(record.scalaType) extends RecordCompanion[@(record.scalaType)] {
     $result.setFields(@(record.fieldsAsParams))
     $dataMap.makeReadOnly()
     $result
-  }
-
-  @@deprecated("Use `build` instead.", "2.0.3")
-  def apply(dataMap: DataMap, conversion: DataConversion): @(record.scalaType) = {
-    build(dataMap, conversion)
   }
 
   override def build(dataMap: DataMap, conversion: DataConversion): @(record.scalaType) = {

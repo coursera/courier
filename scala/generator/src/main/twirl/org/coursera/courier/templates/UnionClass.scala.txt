@@ -68,11 +68,6 @@ object @(union.scalaType) extends UnionCompanion[@(union.scalaType)] @(if(union.
     }
   }
 
-  @@deprecated("Use `build` instead.", "2.0.3")
-  def apply(union: DataMap, conversion: DataConversion): @(union.scalaType) = {
-    build(union, conversion)
-  }
-
   def build(union: DataMap, conversion: DataConversion): @(union.scalaType) = {
     require(union.size == 1, "Malformed union DataMap, exactly one field must be present and must be a member key")
 

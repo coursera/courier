@@ -11,6 +11,7 @@ import com.linkedin.data.schema.MapDataSchema
 import com.linkedin.data.schema.DataSchema
 import com.linkedin.data.template.DataTemplate
 import com.linkedin.data.template.DataTemplateUtil
+import org.coursera.courier.companions.MapCompanion
 import org.coursera.courier.templates.DataTemplates
 import org.coursera.courier.templates.DataTemplates.DataConversion
 import scala.collection.generic.CanBuildFrom
@@ -78,7 +79,7 @@ final class LongToIntMap(private val dataMap: DataMap)
   override def copy(): DataTemplate[DataMap] = this
 }
 
-object LongToIntMap {
+object LongToIntMap extends MapCompanion[LongToIntMap] {
   val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"map","values":"int","keys":"long"}""").asInstanceOf[MapDataSchema]
   val KEY_SCHEMA = DataTemplateUtil.parseSchema(""""long"""")
 
@@ -92,7 +93,7 @@ object LongToIntMap {
     new LongToIntMap(new DataMap(map.map { case (k, v) => coerceKeyOutput(k) -> coerceOutput(v) }.asJava))
   }
 
-  def apply(dataMap: DataMap, conversion: DataConversion): LongToIntMap = {
+  def build(dataMap: DataMap, conversion: DataConversion): LongToIntMap = {
     new LongToIntMap(DataTemplates.makeImmutable(dataMap, conversion))
   }
 

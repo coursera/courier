@@ -11,8 +11,10 @@ import com.linkedin.data.schema.ArrayDataSchema
 import com.linkedin.data.schema.DataSchema
 import com.linkedin.data.template.DataTemplateUtil
 import com.linkedin.data.template.DataTemplate
+import org.coursera.courier.companions.ArrayCompanion
 import org.coursera.courier.templates.DataTemplates
 import org.coursera.courier.templates.DataTemplates.DataConversion
+import org.coursera.courier.templates.ScalaArrayTemplate
 import scala.collection.GenTraversable
 import scala.collection.JavaConverters._
 import scala.collection.generic.CanBuildFrom
@@ -24,7 +26,8 @@ final class LongArray(private val dataList: DataList)
   extends IndexedSeq[Long]
   with Product
   with GenTraversable[Long]
-  with DataTemplate[DataList] {
+  with DataTemplate[DataList]
+  with ScalaArrayTemplate {
 
   override def length: Int = dataList.size()
 
@@ -45,9 +48,11 @@ final class LongArray(private val dataList: DataList)
 
   override def data(): DataList = dataList
   override def copy(): DataTemplate[DataList] = this
+  override def copy(dataList: DataList, conversion: DataConversion): ScalaArrayTemplate =
+    LongArray.build(dataList, conversion)
 }
 
-object LongArray {
+object LongArray extends ArrayCompanion[LongArray] {
   val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"array","items":"long"}""").asInstanceOf[ArrayDataSchema]
 
   val empty = LongArray()
@@ -60,7 +65,7 @@ object LongArray {
     new LongArray(new DataList(collection.map(coerceOutput).toList.asJava))
   }
 
-  def apply(dataList: DataList, conversion: DataConversion): LongArray = {
+  def build(dataList: DataList, conversion: DataConversion): LongArray = {
     new LongArray(DataTemplates.makeImmutable(dataList, conversion))
   }
 
