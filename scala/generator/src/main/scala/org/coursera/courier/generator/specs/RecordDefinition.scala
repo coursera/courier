@@ -132,13 +132,13 @@ case class RecordDefinition(override val spec: RecordTemplateSpec) extends Defin
   // Foo(DataTemplates.mapLiteral("""{ "bar": 1, "baz": 2 }"""), ...)
   private[this] def dataMapToDefault(definition: Definition, data: DataMap): String = {
     val mapLiteral = TypeConversions.toLiteral(data)
-    s"${definition.scalaTypeFullname}($mapLiteral, DataConversion.SetReadOnly)"
+    s"${definition.scalaTypeFullname}.build($mapLiteral, DataConversion.SetReadOnly)"
   }
 
   // TODO(jbetz): Same as for maps, we should improve the default representation if/when we have
   // time
   private[this] def dataListToDefault(definition: Definition, data: DataList): String = {
     val arrayLiteral = TypeConversions.toLiteral(data)
-    s"${definition.scalaTypeFullname}($arrayLiteral, DataConversion.SetReadOnly)"
+    s"${definition.scalaTypeFullname}.build($arrayLiteral, DataConversion.SetReadOnly)"
   }
 }

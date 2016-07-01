@@ -31,7 +31,7 @@ class CustomRecordCoercer extends DirectCoercer[CustomRecord] {
   override def coerceOutput(obj: Any): CustomRecord = {
     obj match {
       case data: DataMap =>
-        val message = Message(data, DataConversion.SetReadOnly)
+        val message = Message.build(data, DataConversion.SetReadOnly)
         CustomRecord(message.title, message.body)
       case _: Any => throw new IllegalArgumentException()
     }

@@ -8,10 +8,10 @@
   def @(methodName)(any: AnyRef): @(inputClass.scalaTypeFullname) = {
     @inputClass match {
       case _: RecordDefinition | _: MapDefinition | _: UnionDefinition => {
-        @(inputClass.scalaTypeFullname)(any.asInstanceOf[DataMap], DataConversion.SetReadOnly)
+        @(inputClass.scalaTypeFullname).build(any.asInstanceOf[DataMap], DataConversion.SetReadOnly)
       }
       case _: ArrayDefinition => {
-        @(inputClass.scalaTypeFullname)(any.asInstanceOf[DataList], DataConversion.SetReadOnly)
+        @(inputClass.scalaTypeFullname).build(any.asInstanceOf[DataList], DataConversion.SetReadOnly)
       }
       case primitiveItem: PrimitiveDefinition => {
         DataTemplateUtil.coerceOutput(any, classOf[@(primitiveItem.dataType)])
@@ -156,11 +156,6 @@ object @(map.scalaType) extends MapCompanion[@(map.scalaType)]{
 
   def apply(map: Map[@(map.keyClass.scalaTypeFullname), @(map.valueClass.scalaTypeFullname)]): @(map.scalaType) = {
     new @(map.scalaType)(new DataMap(map.map { case (k, v) => coerceKeyOutput(k) -> coerceOutput(v) }.asJava))
-  }
-
-  @@deprecated("Use `build` instead.", "2.0.3")
-  def apply(dataMap: DataMap, conversion: DataConversion): @(map.scalaType) = {
-    build(dataMap, conversion)
   }
 
   override def build(dataMap: DataMap, conversion: DataConversion): @(map.scalaType) = {

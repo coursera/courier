@@ -46,10 +46,10 @@
   private[this] def coerceInput(any: AnyRef): @(array.itemClass.scalaTypeFullname) = {
     @array.itemClass match {
       case _: RecordDefinition | _: MapDefinition | _: UnionDefinition => {
-        @(array.itemClass.scalaTypeFullname)(any.asInstanceOf[DataMap], DataTemplates.DataConversion.SetReadOnly)
+        @(array.itemClass.scalaTypeFullname).build(any.asInstanceOf[DataMap], DataTemplates.DataConversion.SetReadOnly)
       }
       case _: ArrayDefinition => {
-        @(array.itemClass.scalaTypeFullname)(any.asInstanceOf[DataList], DataConversion.SetReadOnly)
+        @(array.itemClass.scalaTypeFullname).build(any.asInstanceOf[DataList], DataConversion.SetReadOnly)
       }
       case primitiveItem: PrimitiveDefinition => {
         DataTemplateUtil.coerceOutput(any, classOf[@(primitiveItem.dataType)])
@@ -99,11 +99,6 @@ object @(array.scalaType) extends ArrayCompanion[@(array.scalaType)] {
 
   def apply(collection: Traversable[@(array.itemClass.scalaTypeFullname)]): @(array.scalaType) = {
     new @(array.scalaType)(new DataList(collection.map(coerceOutput).toList.asJava))
-  }
-
-  @@deprecated("Use `build` instead.", "2.0.3")
-  def apply(dataList: DataList, conversion: DataConversion): @(array.scalaType) = {
-    build(dataList, conversion)
   }
 
   override def build(dataList: DataList, conversion: DataConversion): @(array.scalaType) = {
