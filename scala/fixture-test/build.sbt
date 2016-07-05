@@ -1,4 +1,4 @@
-name := "courier-generator-test"
+name := "courier-fixture-test"
 
 runtimeVersionSettings
 
@@ -23,5 +23,6 @@ forkedVmCourierClasspath := (dependencyClasspath in Runtime in scalaGenerator).v
 
 forkedVmSourceDirectory := (sourceDirectory in referenceSuite).value / "main" / "courier"
 forkedVmSourceDirectory := (sourceDirectory in testLib).value / "main" / "scala"
+forkedVmSourceDirectory := (sourceDirectory in scalaFixture).value / "main" / "scala"
 
 forkedVmCourierDest := target.value / s"scala-${scalaBinaryVersion.value}" / "courier"

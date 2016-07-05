@@ -106,13 +106,24 @@ object Courier extends Build with OverridablePublishSettings {
 
   lazy val scalaRuntime = Project(id = "scala-runtime", base = scalaDir / "runtime")
 
+  lazy val testLib = Project(
+    id = "scala-test-lib", base = scalaDir / "test-lib")
+    .dependsOn(scalaGenerator)
+
   lazy val scalaGeneratorTest = Project(
     id = "scala-generator-test", base = scalaDir / "generator-test")
     .dependsOn(scalaGenerator)
+    .dependsOn(testLib)
 
   lazy val scalaFixture = Project(
     id = "scala-fixture", base = scalaDir / "fixture")
     .dependsOn(scalaGenerator)
+
+  lazy val scalaFixtureTest = Project(
+    id = "scala-fixture-test", base = scalaDir / "fixture-test")
+    .dependsOn(scalaGenerator)
+    .dependsOn(scalaFixture)
+    .dependsOn(testLib)
 
   private[this] val javaDir = file("java")
 
@@ -219,8 +230,10 @@ object Courier extends Build with OverridablePublishSettings {
       schemaLanguage,
       scalaRuntime,
       courierSbtPlugin,
+      testLib,
       scalaGeneratorTest,
       scalaFixture,
+      scalaFixtureTest,
       androidGenerator,
       androidGeneratorTest,
       androidRuntime,
