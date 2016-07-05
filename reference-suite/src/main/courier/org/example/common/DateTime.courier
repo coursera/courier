@@ -5,5 +5,5 @@ namespace org.example.common
  */
 @scala.class = "org.joda.time.DateTime"
 @scala.coercerClass = "org.coursera.courier.generator.customtypes.DateTimeCoercer"
-@scala.mockGeneratorClass = "org.coursera.courier.generator.customtypes.CoercedDateTimeGenerator"
+@scala.fixtureGeneratorClass = "org.coursera.courier.generator.customtypes.CoercedDateTimeGenerator"
 typeref DateTime = string

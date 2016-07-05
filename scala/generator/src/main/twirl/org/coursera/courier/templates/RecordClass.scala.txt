@@ -167,6 +167,8 @@
 object @(record.scalaType) extends RecordCompanion[@(record.scalaType)] {
   val SCHEMA = DataTemplateUtil.parseSchema(@("\"\"\"" + SchemaToJsonEncoder.schemaToJson(record.recordSchema, JsonBuilder.Pretty.COMPACT) + "\"\"\"")).asInstanceOf[RecordDataSchema]
 
+  implicit val @(record.implicitCompanionName): RecordCompanion[@(record.scalaType)] = this
+
   @* Register custom types and coercers. *@
   @record.customInfosToRegister.map { case (field, customInfos) =>
     @customInfos.map { customInfo =>

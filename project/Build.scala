@@ -110,8 +110,8 @@ object Courier extends Build with OverridablePublishSettings {
     id = "scala-generator-test", base = scalaDir / "generator-test")
     .dependsOn(scalaGenerator)
 
-  lazy val scalaMock = Project(
-    id = "scala-mock", base = scalaDir / "mock")
+  lazy val scalaFixture = Project(
+    id = "scala-fixture", base = scalaDir / "fixture")
     .dependsOn(scalaGenerator)
 
   private[this] val javaDir = file("java")
@@ -220,7 +220,7 @@ object Courier extends Build with OverridablePublishSettings {
       scalaRuntime,
       courierSbtPlugin,
       scalaGeneratorTest,
-      scalaMock,
+      scalaFixture,
       androidGenerator,
       androidGeneratorTest,
       androidRuntime,

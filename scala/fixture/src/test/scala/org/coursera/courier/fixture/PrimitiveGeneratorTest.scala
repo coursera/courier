@@ -1,5 +1,10 @@
-package org.coursera.courier.mock
+package org.coursera.courier.fixture
 
+import org.coursera.courier.fixture.generator.FixedBytesValueGenerator
+import org.coursera.courier.fixture.generator.FixedLengthStringGenerator
+import org.coursera.courier.fixture.generator.IntegerRangeFixedBytesGenerator
+import org.coursera.courier.fixture.generator.SpanningDoubleValueGenerator
+import org.coursera.fixed.Fixed8
 import org.junit.Test
 import org.scalatest.junit.AssertionsForJUnit
 import org.scalatest.junit.JUnitSuite
@@ -27,6 +32,14 @@ class PrimitiveGeneratorTest extends JUnitSuite with AssertionsForJUnit {
     val generator = new FixedLengthStringGenerator("prefix", 6)
     val expected = (0 to 9).map(i => s"prefi$i") :+ "pref10"
     assertResult(expected)(expected.map(_ => generator.next()))
+  }
+
+
+  @Test
+  def FixedBytes(): Unit = {
+    val generator = new IntegerRangeFixedBytesGenerator(8).map(Fixed8(_))
+    val results = (0 to 10).map(_ => generator.next().data())
+    assertResult(results.size)(results.toSet.size)
   }
 
 }

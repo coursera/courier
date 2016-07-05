@@ -1,10 +1,11 @@
-package org.coursera.courier.mock
+package org.coursera.courier.fixture.generator
 
 import java.util
 
 import com.linkedin.data.ByteString
 import com.linkedin.data.DataList
 import com.linkedin.data.DataMap
+import com.linkedin.data.template.DataTemplate
 import com.linkedin.data.template.DirectCoercer
 import org.coursera.courier.codecs.InlineStringCodec
 import org.coursera.courier.templates.ScalaEnumTemplateSymbol
@@ -18,7 +19,14 @@ sealed trait ValueGenerator[+K <: AnyRef] {
 
   def next(): K
 
-  def nextKey(): String = InlineStringCodec.dataToString(next())
+  def nextKey(): String = {
+    val data = next() match {
+      case template: DataTemplate[_] => template.data().asInstanceOf[AnyRef]
+      case other: AnyRef => other
+    }
+    InlineStringCodec.dataToString(data)
+  }
+
 
   def map[V <: AnyRef](transform: K => V): ValueGenerator[V] = {
     val delegate = this
@@ -70,7 +78,11 @@ final class DataMapValueGenerator(
     val data = new DataMap()
 
     fieldGenerators.foreach { case (name, generator) =>
-      data.put(name, generator.next())
+      generator.next() match {
+        case None => ()
+        case Some(value: AnyRef) => data.put(name, value)
+        case value: AnyRef => data.put(name, value)
+      }
     }
 
     data.makeReadOnly()

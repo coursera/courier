@@ -1,4 +1,4 @@
-name := "courier-mock"
+name := "courier-fixture"
 
 runtimeVersionSettings
 

@@ -1,6 +1,4 @@
-package org.coursera.courier.mock
-
-import scala.collection.immutable
+package org.coursera.courier.fixture.generator
 
 /**
  * Generates an alternating Boolean series `true`, `false`, `true`, `false`, ...
@@ -109,9 +107,10 @@ class SpanningFloatValueGenerator(
   extends FloatValueGenerator {
   require(min < max, s"Min $min must be less than max $max.")
 
-  override def nextUnboxed(): Float = doubleSequence.nextUnboxed().toFloat
+  override def nextUnboxed(): Float = delegate.nextUnboxed().toFloat
 
-  private[this] val doubleSequence = new SpanningDoubleValueGenerator(min, max, intGenerator)
+  private[this] val delegate =
+    new SpanningDoubleValueGenerator(min, max, intGenerator)
 }
 
 /**
@@ -157,6 +156,12 @@ class FixedLengthStringGenerator(
   }
 }
 
+/**
+ * Generates a series of [[com.linkedin.data.ByteString]] values with prefix `prefix`
+ *
+ * @param prefix Prefix for generated results.
+ * @param intGenerator Generator whose results be appended to `prefix` to generate values.
+ */
 class StringBytesValueGenerator(
     prefix: String,
     intGenerator: IntegerValueGenerator = new IntegerRangeGenerator())
@@ -165,6 +170,12 @@ class StringBytesValueGenerator(
   override def nextBytes(): Array[Byte] = s"$prefix${intGenerator.nextUnboxed()}".getBytes
 }
 
+/**
+ * Generates a fixed-length series of [[com.linkedin.data.ByteString]] values.
+ *
+ * @param length Generated result length.
+ * @param intGenerator Generator whose results be appended to `prefix` to generate values.
+ */
 class IntegerRangeFixedBytesGenerator(
     length: Int,
     intGenerator: IntegerValueGenerator = new IntegerRangeGenerator())

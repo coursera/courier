@@ -1,7 +1,7 @@
 package org.coursera.courier.generator.customtypes
 
-import org.coursera.courier.mock.CoercedValueGenerator
-import org.coursera.courier.mock.IntegerRangeGenerator
+import org.coursera.courier.fixture.generator.CoercedValueGenerator
+import org.coursera.courier.fixture.generator.IntegerRangeGenerator
 
 class CoercedCustomIntGenerator extends CoercedValueGenerator[CustomInt] {
 
