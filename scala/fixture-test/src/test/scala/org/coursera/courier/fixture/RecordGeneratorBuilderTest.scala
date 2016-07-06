@@ -1,5 +1,6 @@
 package org.coursera.courier.fixture
 
+import org.coursera.courier.fixture.generator.DefaultGeneratorFactories
 import org.coursera.records.test.WithComplexTypeDefaults
 import org.example.Fortune
 import org.example.FortuneCookie

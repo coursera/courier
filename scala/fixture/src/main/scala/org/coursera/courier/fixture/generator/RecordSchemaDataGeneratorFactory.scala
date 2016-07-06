@@ -61,16 +61,26 @@ private[fixture] class RecordSchemaDataGeneratorFactory(
 
   private[this] def makeSchemaGenerator(name: String, dataSchema: DataSchema): Generator = {
 
-    // TODO: amory handle defaults
-    makeSchemaReferencedGenerator(name, dataSchema).getOrElse {
+    makeDefaultGeneratorForClassName(name, dataSchema).getOrElse {
+      makeSchemaReferencedGenerator(name, dataSchema).getOrElse {
 
-      if (config.requireCustomGeneratorsForCoercedTypes) verifyNoCoercer(dataSchema)
+        if (config.requireCustomGeneratorsForCoercedTypes) verifyNoCoercer(dataSchema)
 
-      dataSchema match {
-        case schema: PrimitiveDataSchema => makePrimitiveGenerator(name, schema)
-        case schema: ComplexDataSchema => makeComplexGenerator(name, schema)
+        dataSchema match {
+          case schema: PrimitiveDataSchema => makePrimitiveGenerator(name, schema)
+          case schema: ComplexDataSchema => makeComplexGenerator(name, schema)
+        }
       }
     }
+  }
+
+
+  private[this] def makeDefaultGeneratorForClassName(name: String, dataSchema: DataSchema):
+    Option[Generator] = {
+
+    getScalaClassName(dataSchema)
+      .flatMap(defaultGeneratorFactories.get)
+      .map(_.apply(name))
   }
 
   /**
@@ -168,6 +178,11 @@ object RecordSchemaDataGeneratorFactory {
   val SCALA = "scala"
   val COERCER_CLASS_PROPERTY = "coercerClass"
   val MOCK_GENERATOR_CLASS_PROPERTY = "fixtureGeneratorClass"
+  val CLASS_NAME_PROPERTY = "class"
+
+
+  def getScalaClassName(dataSchema: DataSchema): Option[String] =
+    getScalaProperty(dataSchema, CLASS_NAME_PROPERTY)
 
   def getCoercerClassName(dataSchema: DataSchema): Option[String] =
     getScalaProperty(dataSchema, COERCER_CLASS_PROPERTY)

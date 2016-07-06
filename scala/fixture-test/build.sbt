@@ -21,7 +21,6 @@ forkedVmCourierMainClass := "org.coursera.courier.generator.ScalaDataTemplateGen
 
 forkedVmCourierClasspath := (dependencyClasspath in Runtime in scalaGenerator).value.files
 
-forkedVmSourceDirectory := (sourceDirectory in referenceSuite).value / "main" / "courier"
 forkedVmSourceDirectory := (sourceDirectory in testLib).value / "main" / "scala"
 forkedVmSourceDirectory := (sourceDirectory in scalaFixture).value / "main" / "scala"
 

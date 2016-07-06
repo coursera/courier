@@ -28,6 +28,7 @@ object GeneratorUtil {
       case float: Float => Float.box(float)
       case double: Double => Double.box(double)
       case boolean: Boolean => Boolean.box(boolean)
+      case string: String => string
       case _ => throw new IllegalArgumentException(s"Non-data type for value $input.")
     }
   }
