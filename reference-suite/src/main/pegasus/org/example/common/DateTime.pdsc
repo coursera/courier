@@ -6,6 +6,7 @@
   "doc": "ISO 8601 date-time.",
   "scala": {
     "class": "org.joda.time.DateTime",
-    "coercerClass": "org.coursera.courier.generator.customtypes.DateTimeCoercer"
+    "coercerClass": "org.coursera.courier.generator.customtypes.DateTimeCoercer",
+    "fixtureGeneratorClass": "org.coursera.courier.generator.customtypes.CoercedDateTimeGenerator"
   }
 }
