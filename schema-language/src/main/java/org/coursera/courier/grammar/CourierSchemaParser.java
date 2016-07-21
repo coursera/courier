@@ -363,14 +363,14 @@ public class CourierSchemaParser extends SchemaParser {
 
     Map<String, Object> props = setProperties(context, schema);
 
-    Map<String, String> symbolDocs = new HashMap<String, String>();
+    Map<String, Object> symbolDocs = new HashMap<String, Object>();
     for (EnumSymbolDeclarationContext symbolDecl : symbolDecls) {
       if (symbolDecl.doc != null) {
         symbolDocs.put(symbolDecl.symbol.value, symbolDecl.doc.value);
       }
     }
     if (symbolDocs.size() > 0) {
-      props.put("symbolDocs", new DataMap(symbolDocs));
+      schema.setSymbolDocs(symbolDocs, errorMessageBuilder());
     }
 
     DataMap deprecatedSymbols = new DataMap();
