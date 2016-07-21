@@ -35,6 +35,15 @@ public class EnumTest {
     Assert.assertEquals(schema.getSymbolDocs().get("APPLE"), "An Apple.");
   }
 
+  @Test
+  public void roundTrip() throws IOException {
+    EnumDataSchema schema = (EnumDataSchema) TestSchema.loadCourier("org.coursera.enums.Fruits").schema;
+    String serialized = schema.toString();
+    EnumDataSchema parsed = (EnumDataSchema) DataTemplateUtil.parseSchema(serialized);
+    Assert.assertEquals(schema, parsed);
+  }
+
+
   private static class TestSchema {
     private final NamedDataSchema schema;
     private final DataSchemaResolver resolver;
