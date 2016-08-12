@@ -141,7 +141,7 @@
 
   override def hashCode: Int = ScalaRunTime._hashCode(this)
 
-  override def equals(that: Any): Boolean = ScalaRunTime._equals(this, that)
+  override def equals(that: Any): Boolean = canEqual(that) && ScalaRunTime._equals(this, that)
 
   override def toString: String = ScalaRunTime._toString(this)
 
