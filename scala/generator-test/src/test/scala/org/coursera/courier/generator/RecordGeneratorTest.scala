@@ -22,6 +22,8 @@ import org.coursera.courier.templates.DataTemplates
 import DataTemplates.DataConversion
 import org.coursera.courier.generator.customtypes.CustomInt
 import org.coursera.enums.Fruits
+import org.coursera.records.test.Empty
+import org.coursera.records.test.Empty2
 import org.coursera.records.test.InlineOptionalRecord
 import org.coursera.records.test.InlineRecord
 import org.coursera.records.test.Simple
@@ -31,7 +33,6 @@ import org.coursera.records.test.WithComplexTypes
 import org.coursera.records.test.WithInclude
 import org.coursera.records.test.WithInlineRecord
 import org.coursera.records.test.WithOptionalComplexTypeDefaults
-import org.coursera.records.test.WithOptionalComplexTypes
 import org.coursera.records.test.WithOptionalComplexTypesDefaultNone
 import org.coursera.records.test.WithOptionalPrimitiveCustomTypes
 import org.coursera.records.test.WithOptionalPrimitiveDefaultNone
@@ -444,5 +445,29 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures {
     mutableData.getDataMap("record").put("message", "updated message")
     val replacement = original.copy(mutableData, DataConversion.SetReadOnly)
     assert(replacement.record.get.message.get === "updated message")
+  }
+
+  @Test
+  def testEquality(): Unit = {
+    // Equality should work for identical records of the same type
+    val record = Empty()
+    val recordSame = Empty()
+    assert(record == recordSame)
+    assert(record.hashCode() == recordSame.hashCode())
+
+    // Records with the same fields but different types should not be equal
+    val recordSameFields = Empty2()
+    assert(record != recordSameFields)
+    assert(record.hashCode() != recordSameFields.hashCode())
+
+    // Records with the same fields but different types (even if the pathless record type names
+    // are the same) should not be equal.
+    import org.coursera.records.test.packaging.{Empty => EmptySameName}
+    val recordSameName = EmptySameName()
+    assert(record != recordSameName)
+    // Note that because hashCode only uses productPrefix, which is the name of the record
+    // without its path, record.hashCode() will actually equal recordSameName.hashCode().
+    // Fortunately, nothing should depend solely on hashCode() for determining whether two
+    // records match.
   }
 }
