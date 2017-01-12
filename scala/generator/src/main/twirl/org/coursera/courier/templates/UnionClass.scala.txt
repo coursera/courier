@@ -43,7 +43,7 @@
   override def hashCode: Int = ScalaRunTime._hashCode(this)
 }
 
-object @(union.scalaType) extends UnionCompanion @(if(union.containingTyperef.isDefined){"with UnionWithTyperefCompanion "}){
+object @(union.scalaType) extends UnionCompanion[@(union.scalaType)] @(if(union.containingTyperef.isDefined){"with UnionWithTyperefCompanion[" + union.scalaType + "] "}){
   val SCHEMA = DataTemplateUtil.parseSchema(@("\"\"\"" + SchemaToJsonEncoder.schemaToJson(union.unionSchema, JsonBuilder.Pretty.COMPACT) + "\"\"\"")).asInstanceOf[UnionDataSchema]
 
   @union.containingTyperef.flatMap(_.schema).map { typerefSchema =>
@@ -68,7 +68,12 @@ object @(union.scalaType) extends UnionCompanion @(if(union.containingTyperef.is
     }
   }
 
+  @@deprecated("Use `build` instead.", "2.0.3")
   def apply(union: DataMap, conversion: DataConversion): @(union.scalaType) = {
+    build(union, conversion)
+  }
+
+  def build(union: DataMap, conversion: DataConversion): @(union.scalaType) = {
     require(union.size == 1, "Malformed union DataMap, exactly one field must be present and must be a member key")
 
     val unionTag = union.keySet().iterator().next()
@@ -81,6 +86,7 @@ object @(union.scalaType) extends UnionCompanion @(if(union.containingTyperef.is
         @(union.scalaType).$UnknownMember(union)
     }
   }
+
 
   @* TODO(jbetz): Simplify select methods, put common code in ScalaUnionTemplate. *@
   @union.members.map { member =>
@@ -133,7 +139,7 @@ object @(union.scalaType) extends UnionCompanion @(if(union.containingTyperef.is
       }
     }
 
-    object @(member.classDefinition.memberName) extends UnionMemberCompanion {
+    object @(member.classDefinition.memberName) extends UnionMemberCompanion[@(union.scalaType)] {
       def apply(value: @(member.classDefinition.scalaTypeFullname)): @(member.classDefinition.memberName) = {
         val $dataMap = new DataMap
         val $result = new @(member.classDefinition.memberName)($dataMap)
