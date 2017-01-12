@@ -21,8 +21,8 @@
   },
   "homepage": "https://github.com/coursera/courier#readme",
   "dependencies": {
-    "jasmine": "^2.4.1",
-    "typescript": "^1.8.9",
-    "typings": "^0.7.10"
+    "jasmine": "2.4.1",
+    "typescript": "1.8.9",
+    "typings": "0.7.10"
   }
 }
