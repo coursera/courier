@@ -1,4 +1,4 @@
-name := "courier-generator-test"
+name := "courier-test-lib"
 
 runtimeVersionSettings
 
@@ -22,6 +22,5 @@ forkedVmCourierMainClass := "org.coursera.courier.generator.ScalaDataTemplateGen
 forkedVmCourierClasspath := (dependencyClasspath in Runtime in scalaGenerator).value.files
 
 forkedVmSourceDirectory := (sourceDirectory in referenceSuite).value / "main" / "courier"
-forkedVmSourceDirectory := (sourceDirectory in testLib).value / "main" / "scala"
 
 forkedVmCourierDest := target.value / s"scala-${scalaBinaryVersion.value}" / "courier"

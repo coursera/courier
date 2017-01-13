@@ -89,6 +89,12 @@ case class RecordDefinition(override val spec: RecordTemplateSpec) extends Defin
   def scalaDoc: Option[String] = Option(recordSchema.getDoc)
     .flatMap(ScaladocEscaping.stringToScaladoc)
 
+  def implicitCompanionName: String = {
+    val companionName = spec.getClassName
+    companionName.take(1).toLowerCase + companionName.tail + "Companion"
+  }
+
+
   private[this] def toDefaultLiteral(any: AnyRef, definition: Definition): String = {
     definition match {
       case _: PrimitiveDefinition | _: TyperefDefinition =>
