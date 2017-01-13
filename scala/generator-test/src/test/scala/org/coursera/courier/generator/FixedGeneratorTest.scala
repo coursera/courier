@@ -26,7 +26,7 @@ class FixedGeneratorTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testFixed(): Unit = {
     val original = WithFixed8(Fixed8(bytesFixed8))
-    val roundTripped = WithFixed8(roundTrip(original.data()), DataConversion.SetReadOnly)
+    val roundTripped = WithFixed8.build(roundTrip(original.data()), DataConversion.SetReadOnly)
 
     assert(original === roundTripped)
 

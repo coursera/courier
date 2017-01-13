@@ -53,7 +53,7 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testWithPrimitives(): Unit = {
     val original = WithPrimitives(1, 3000000000L, 3.3f, 4.4e38d, true, "str", bytes1)
-    val roundTripped = WithPrimitives(roundTrip(original.data()), DataConversion.SetReadOnly)
+    val roundTripped = WithPrimitives.build(roundTrip(original.data()), DataConversion.SetReadOnly)
     val WithPrimitives(int, long, float, double, boolean, string, b) = original
     val reconstructed = WithPrimitives(int, long, float, double, boolean, string, b)
 
@@ -77,7 +77,7 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures {
   def testWithOptionalPrimitives_Some(): Unit = {
     val original = WithOptionalPrimitives(
       Some(1), Some(3000000000L), Some(3.3f), Some(4.4e38d), Some(true), Some("str"), Some(bytes1))
-    val roundTripped = WithOptionalPrimitives(
+    val roundTripped = WithOptionalPrimitives.build(
       roundTrip(original.data()), DataConversion.SetReadOnly)
     val WithOptionalPrimitives(int, long, float, double, boolean, string, b) = original
     val reconstructed = WithOptionalPrimitives(int, long, float, double, boolean, string, b)
@@ -106,7 +106,7 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testWithOptionalPrimitives_None(): Unit = {
     val original = WithOptionalPrimitives(None, None, None, None, None, None, None)
-    val roundTripped = WithOptionalPrimitives(
+    val roundTripped = WithOptionalPrimitives.build(
       roundTrip(original.data()), DataConversion.SetReadOnly)
     val WithOptionalPrimitives(int, long, float, double, boolean, string, b) = original
     val reconstructed = WithOptionalPrimitives(int, long, float, double, boolean, string, b)
@@ -135,7 +135,7 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testWithPrimitiveTyperefs(): Unit = {
     val original = WithPrimitiveTyperefs(1, 3000000000L, 3.3f, 4.4e38d, true, "str", bytes1)
-    val roundTripped = WithPrimitiveTyperefs(
+    val roundTripped = WithPrimitiveTyperefs.build(
       roundTrip(original.data()), DataConversion.SetReadOnly)
     val WithPrimitiveTyperefs(int, long, float, double, boolean, string, b) = original
     val reconstructed = WithPrimitiveTyperefs(int, long, float, double, boolean, string, b)
@@ -161,7 +161,7 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures {
     val original = WithOptionalPrimitiveTyperefs(
       Some(1), Some(3000000000L), Some(3.3f), Some(4.4e38d), Some(true), Some("str"),
       Some(bytes1))
-    val roundTripped = WithOptionalPrimitiveTyperefs(
+    val roundTripped = WithOptionalPrimitiveTyperefs.build(
       roundTrip(original.data()), DataConversion.SetReadOnly)
     val WithOptionalPrimitiveTyperefs(int, long, float, double, boolean, string, b) = original
     val reconstructed = WithOptionalPrimitiveTyperefs(int, long, float, double, boolean, string, b)
@@ -190,7 +190,7 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testWithOptionalPrimitiveTyperefs_None(): Unit = {
     val original = WithOptionalPrimitiveTyperefs(None, None, None, None, None, None, None)
-    val roundTripped = WithOptionalPrimitiveTyperefs(
+    val roundTripped = WithOptionalPrimitiveTyperefs.build(
       roundTrip(original.data()), DataConversion.SetReadOnly)
     val WithOptionalPrimitiveTyperefs(int, long, float, double, boolean, string, b) = original
     val reconstructed = WithOptionalPrimitiveTyperefs(int, long, float, double, boolean, string, b)
@@ -218,7 +218,7 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testWithPrimitiveCustomTypes(): Unit = {
     val original = WithPrimitiveCustomTypes(CustomInt(1))
-    val roundTripped = WithPrimitiveCustomTypes(
+    val roundTripped = WithPrimitiveCustomTypes.build(
       roundTrip(original.data()), DataConversion.SetReadOnly)
     val WithPrimitiveCustomTypes(customInt) = original
     val reconstructed = WithPrimitiveCustomTypes(customInt)
@@ -239,7 +239,7 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testWithOptionalPrimitiveCustomTypes(): Unit = {
     val original = WithOptionalPrimitiveCustomTypes(Some(CustomInt(1)))
-    val roundTripped = WithOptionalPrimitiveCustomTypes(
+    val roundTripped = WithOptionalPrimitiveCustomTypes.build(
       roundTrip(original.data()), DataConversion.SetReadOnly)
     val WithOptionalPrimitiveCustomTypes(Some(customInt)) = original
     val reconstructed = WithOptionalPrimitiveCustomTypes(Some(customInt))
@@ -258,7 +258,7 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testWithInclude(): Unit = {
     val original = WithInclude(Some("message"), 1)
-    val roundTripped = WithInclude(roundTrip(original.data()), DataConversion.SetReadOnly)
+    val roundTripped = WithInclude.build(roundTrip(original.data()), DataConversion.SetReadOnly)
     val WithInclude(Some(message), int) = original
     val reconstructed = WithInclude(Some(message), int)
 
@@ -278,7 +278,7 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testWithInlineRecord_Some(): Unit = {
     val original = WithInlineRecord(InlineRecord(1), Some(InlineOptionalRecord("str")))
-    val roundTripped = WithInlineRecord(
+    val roundTripped = WithInlineRecord.build(
       roundTrip(original.data()), DataConversion.SetReadOnly)
     val WithInlineRecord(InlineRecord(int), Some(InlineOptionalRecord(string))) = original
     val reconstructed = WithInlineRecord(InlineRecord(int), Some(InlineOptionalRecord(string)))
@@ -299,7 +299,7 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testWithInlineRecord_None(): Unit = {
     val original = WithInlineRecord(InlineRecord(1), None)
-    val roundTripped = WithInlineRecord(
+    val roundTripped = WithInlineRecord.build(
       roundTrip(original.data()), DataConversion.SetReadOnly)
     val WithInlineRecord(InlineRecord(int), None) = original
     val reconstructed = WithInlineRecord(InlineRecord(int), None)
@@ -323,7 +323,7 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures {
       IntMap("a" -> 1),
       SimpleMap("a" -> Simple(Some("message"))),
       CustomInt(1))
-    val roundTripped = WithComplexTypes(
+    val roundTripped = WithComplexTypes.build(
       roundTrip(original.data()), DataConversion.SetReadOnly)
     val WithComplexTypes(simple, fruit, union, array, map, complexMap, custom) = original
     val reconstructed = WithComplexTypes(simple, fruit, union, array, map, complexMap, custom)
@@ -350,7 +350,7 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures {
       Map("a" -> 1),
       Map("a" -> Simple(Some("message"))),
       CustomInt(1))
-    val roundTripped = WithComplexTypes(
+    val roundTripped = WithComplexTypes.build(
       roundTrip(original.data()), DataConversion.SetReadOnly)
     val WithComplexTypes(simple, fruit, union, array, map, complexMap, custom) = original
     val reconstructed = WithComplexTypes(simple, fruit, union, array, map, complexMap, custom)

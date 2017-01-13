@@ -11,8 +11,10 @@ import com.linkedin.data.schema.ArrayDataSchema
 import com.linkedin.data.schema.DataSchema
 import com.linkedin.data.template.DataTemplateUtil
 import com.linkedin.data.template.DataTemplate
+import org.coursera.courier.companions.ArrayCompanion
 import org.coursera.courier.templates.DataTemplates
 import org.coursera.courier.templates.DataTemplates.DataConversion
+import org.coursera.courier.templates.ScalaArrayTemplate
 import scala.collection.GenTraversable
 import scala.collection.JavaConverters._
 import scala.collection.generic.CanBuildFrom
@@ -24,7 +26,8 @@ final class FloatArray(private val dataList: DataList)
   extends IndexedSeq[Float]
   with Product
   with GenTraversable[Float]
-  with DataTemplate[DataList] {
+  with DataTemplate[DataList]
+  with ScalaArrayTemplate {
 
   override def length: Int = dataList.size()
 
@@ -45,9 +48,11 @@ final class FloatArray(private val dataList: DataList)
 
   override def data(): DataList = dataList
   override def copy(): DataTemplate[DataList] = this
+  override def copy(dataList: DataList, conversion: DataConversion): ScalaArrayTemplate =
+    FloatArray.build(dataList, conversion)
 }
 
-object FloatArray {
+object FloatArray extends ArrayCompanion[FloatArray] {
   val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"array","items":"float"}""").asInstanceOf[ArrayDataSchema]
 
   val empty = FloatArray()
@@ -60,7 +65,7 @@ object FloatArray {
     new FloatArray(new DataList(collection.map(coerceOutput).toList.asJava))
   }
 
-  def apply(dataList: DataList, conversion: DataConversion): FloatArray = {
+  def build(dataList: DataList, conversion: DataConversion): FloatArray = {
     new FloatArray(DataTemplates.makeImmutable(dataList, conversion))
   }
 

@@ -78,7 +78,8 @@ class MapGeneratorTest extends GeneratorTest with SchemaFixtures {
         "a" -> WithComplexTypesMapUnion.IntMember(1),
         "b" -> WithComplexTypesMapUnion.StringMember("u1")),
       Fixed8Map("a" -> Fixed8(bytesFixed8)))
-    val roundTripped = WithComplexTypesMap(roundTrip(original.data()), DataConversion.SetReadOnly)
+    val roundTripped = WithComplexTypesMap.build(
+      roundTrip(original.data()), DataConversion.SetReadOnly)
     assert(original === roundTripped)
 
     Seq(original, roundTripped).foreach { record =>
@@ -98,7 +99,8 @@ class MapGeneratorTest extends GeneratorTest with SchemaFixtures {
       BooleanMap("a" -> true, "b" -> false, "c" -> true),
       StringMap("a" -> "string1", "b" -> "string2", "c" -> "string3"),
       BytesMap("a" -> bytes1, "b" -> bytes2, "c" -> bytes3))
-    val roundTripped = WithPrimitivesMap(roundTrip(original.data()), DataConversion.SetReadOnly)
+    val roundTripped = WithPrimitivesMap.build(
+      roundTrip(original.data()), DataConversion.SetReadOnly)
 
     assert(original === roundTripped)
 
@@ -112,7 +114,8 @@ class MapGeneratorTest extends GeneratorTest with SchemaFixtures {
     val json = load("WithCustomTypesMap.json")
     val original = WithCustomTypesMap(
       CustomIntMap("a" -> CustomInt(1), "b" -> CustomInt(2), "c" ->CustomInt(3)))
-    val roundTripped = WithCustomTypesMap(roundTrip(original.data()), DataConversion.SetReadOnly)
+    val roundTripped = WithCustomTypesMap.build(
+      roundTrip(original.data()), DataConversion.SetReadOnly)
 
     assert(original === roundTripped)
 
@@ -139,7 +142,7 @@ class MapGeneratorTest extends GeneratorTest with SchemaFixtures {
       Fixed8ToStringMap(Fixed8(bytesFixed8) -> "fixed"))
       /*RecordKeyToStringMap(RecordKey(100, false) -> "inlineRecord")*/ // TODO: fix
 
-    val roundTripped = WithTypedKeyMap(roundTrip(original.data()), DataConversion.SetReadOnly)
+    val roundTripped = WithTypedKeyMap.build(roundTrip(original.data()), DataConversion.SetReadOnly)
 
     assert(original === roundTripped)
 
@@ -162,7 +165,7 @@ class MapGeneratorTest extends GeneratorTest with SchemaFixtures {
     val original: SimpleArrayMap = Map(
       "k1" -> Seq(Simple(Some("a"))),
       "k2" -> Seq(Simple(Some("b"))))
-    val roundTripped = SimpleArrayMap(roundTrip(original.data()), DataConversion.SetReadOnly)
+    val roundTripped = SimpleArrayMap.build(roundTrip(original.data()), DataConversion.SetReadOnly)
     assert(original === roundTripped)
   }
 
@@ -171,7 +174,7 @@ class MapGeneratorTest extends GeneratorTest with SchemaFixtures {
     val original: SimpleMapMap = Map(
       "k1" -> Map("kk1" -> Simple(Some("a"))),
       "k2" -> Map("kk2" -> Simple(Some("b"))))
-    val roundTripped = SimpleMapMap(roundTrip(original.data()), DataConversion.SetReadOnly)
+    val roundTripped = SimpleMapMap.build(roundTrip(original.data()), DataConversion.SetReadOnly)
     assert(original === roundTripped)
   }
 }

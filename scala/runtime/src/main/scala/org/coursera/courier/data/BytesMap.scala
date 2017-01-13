@@ -11,6 +11,7 @@ import com.linkedin.data.schema.MapDataSchema
 import com.linkedin.data.schema.DataSchema
 import com.linkedin.data.template.DataTemplate
 import com.linkedin.data.template.DataTemplateUtil
+import org.coursera.courier.companions.MapCompanion
 import org.coursera.courier.templates.DataTemplates
 import org.coursera.courier.templates.DataTemplates.DataConversion
 import scala.collection.generic.CanBuildFrom
@@ -78,7 +79,7 @@ final class BytesMap(private val dataMap: DataMap)
   override def copy(): DataTemplate[DataMap] = this
 }
 
-object BytesMap {
+object BytesMap extends MapCompanion[BytesMap] {
   val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"map","values":"bytes"}""").asInstanceOf[MapDataSchema]
   val KEY_SCHEMA = DataTemplateUtil.parseSchema(""""string"""")
 
@@ -92,7 +93,7 @@ object BytesMap {
     new BytesMap(new DataMap(map.map { case (k, v) => coerceKeyOutput(k) -> coerceOutput(v) }.asJava))
   }
 
-  def apply(dataMap: DataMap, conversion: DataConversion): BytesMap = {
+  def build(dataMap: DataMap, conversion: DataConversion): BytesMap = {
     new BytesMap(DataTemplates.makeImmutable(dataMap, conversion))
   }
 

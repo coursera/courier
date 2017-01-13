@@ -83,7 +83,7 @@ class SingleElementCaseClassCoercerTest extends GeneratorTest with SchemaFixture
         StringIdWrapper(StringId("wrapped")),
         CaseClassCustomIntWrapper(CustomInt(999)))
     val roundTripped =
-      WithCaseClassCustomType(roundTrip(original.data()), DataConversion.SetReadOnly)
+      WithCaseClassCustomType.build(roundTrip(original.data()), DataConversion.SetReadOnly)
 
     assert(roundTripped.short.id === 1)
     assert(roundTripped.byte.id === 0x01)

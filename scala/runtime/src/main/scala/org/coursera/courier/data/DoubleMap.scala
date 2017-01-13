@@ -11,6 +11,7 @@ import com.linkedin.data.schema.MapDataSchema
 import com.linkedin.data.schema.DataSchema
 import com.linkedin.data.template.DataTemplate
 import com.linkedin.data.template.DataTemplateUtil
+import org.coursera.courier.companions.MapCompanion
 import org.coursera.courier.templates.DataTemplates
 import org.coursera.courier.templates.DataTemplates.DataConversion
 import scala.collection.generic.CanBuildFrom
@@ -78,7 +79,7 @@ final class DoubleMap(private val dataMap: DataMap)
   override def copy(): DataTemplate[DataMap] = this
 }
 
-object DoubleMap {
+object DoubleMap extends MapCompanion[DoubleMap] {
   val SCHEMA = DataTemplateUtil.parseSchema("""{"type":"map","values":"double"}""").asInstanceOf[MapDataSchema]
   val KEY_SCHEMA = DataTemplateUtil.parseSchema(""""string"""")
 
@@ -92,7 +93,7 @@ object DoubleMap {
     new DoubleMap(new DataMap(map.map { case (k, v) => coerceKeyOutput(k) -> coerceOutput(v) }.asJava))
   }
 
-  def apply(dataMap: DataMap, conversion: DataConversion): DoubleMap = {
+  def build(dataMap: DataMap, conversion: DataConversion): DoubleMap = {
     new DoubleMap(DataTemplates.makeImmutable(dataMap, conversion))
   }
 
