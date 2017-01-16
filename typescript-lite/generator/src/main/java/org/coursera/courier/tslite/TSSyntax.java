@@ -139,7 +139,7 @@ public class TSSyntax {
 
   /** Different choices for how to escaping symbols that match reserved ts keywords. */
   private static enum EscapeStrategy {
-    /** Adds an underscore after the symbol name when escaping. e.g.: class becomes class$*/
+    /** Adds a dollar sign after the symbol name when escaping. e.g.: class becomes class$ */
     MANGLE,
 
     /** Quotes the symbol when escaping. e.g.: class becomes "class" */
