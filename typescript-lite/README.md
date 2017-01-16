@@ -89,6 +89,8 @@ export module MagicEightBallAnswer {
   export const ASK_AGAIN_LATER: MagicEightBallAnswer = "ASK_AGAIN_LATER";
 
   export const OUTLOOK_NOT_SO_GOOD: MagicEightBallAnswer = "OUTLOOK_NOT_SO_GOOD";
+
+  export const all: Array<MagicEightBallAnswer> = ["IT_IS_CERTAIN", "ASK_AGAIN_LATER", "OUTLOOK_NOT_SO_GOOD"];
 }
 ```
 
@@ -109,6 +111,8 @@ switch(answer) {
     // value from a new version of the server software. This is the equivalent of
     // testing UNKNOWN$
 }
+
+console.log(MagicEightBallAnswer.all); // logs all possible enum values to console
 ```
 **Arrays:**
 
