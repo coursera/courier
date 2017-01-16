@@ -293,6 +293,10 @@ describe("Enums", () => {
 
     expect(result).toEqual("It's still an apple");
   });
+
+  it("Should be enumerated with the .all function", () => {
+    expect(Fruits.all).toEqual(["APPLE", "BANANA", "ORANGE", "PINEAPPLE"]);
+  });
 });
 
 
