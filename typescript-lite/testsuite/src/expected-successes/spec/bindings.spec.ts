@@ -139,6 +139,7 @@ import { DateTime as OtherDateTime } from "../tslite-bindings/org.example.other.
 import { record } from "../tslite-bindings/org.example.record";
 import { WithPrimitivesUnion } from "../tslite-bindings/org.coursera.unions.WithPrimitivesUnion";
 import * as ts from "typescript";
+const fs = require('fs');
 
 import CustomMatcherFactories = jasmine.CustomMatcherFactories;
 import CompilerOptions = ts.CompilerOptions;
@@ -292,6 +293,15 @@ describe("Enums", () => {
     }
 
     expect(result).toEqual("It's still an apple");
+  });
+
+  it("Should transcribe both the class-level and symbol-level documentation from the courier spec", () => {
+    const fruitsFile = fs.readFileSync("src/tslite-bindings/org.coursera.enums.Fruits.ts").toString();
+    const typeComment = "An enum dedicated to the finest of the food groups.";
+    const symbolComment = "An Apple.";
+
+    expect(fruitsFile).toContain(typeComment);
+    expect(fruitsFile).toContain(symbolComment);
   });
 });
 
