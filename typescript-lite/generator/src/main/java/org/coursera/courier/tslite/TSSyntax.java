@@ -36,6 +36,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
 
 /**
  * Main work-horse for populating the ts-lite Rythm templates.
@@ -945,8 +946,7 @@ public class TSSyntax {
     }
 
     public String docString() {
-      DataMap docsBySymbol = (DataMap) _dataSchema.getProperties().getOrDefault("symbolDocs", new DataMap());
-      String symbolDoc = docsBySymbol.getString(_symbolString);
+      String symbolDoc = _dataSchema.getSymbolDocs().get(_symbolString);
       DataMap deprecatedSymbols = (DataMap) _dataSchema.getProperties().get("deprecatedSymbols");
       Object symbolDeprecation = null;
 
