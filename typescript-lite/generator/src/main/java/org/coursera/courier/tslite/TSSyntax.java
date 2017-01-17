@@ -140,7 +140,7 @@ public class TSSyntax {
 
   /** Different choices for how to escaping symbols that match reserved ts keywords. */
   private static enum EscapeStrategy {
-    /** Adds an underscore after the symbol name when escaping. e.g.: class becomes class_*/
+    /** Adds a dollar sign after the symbol name when escaping. e.g.: class becomes class$ */
     MANGLE,
 
     /** Quotes the symbol when escaping. e.g.: class becomes "class" */
@@ -989,28 +989,29 @@ public class TSSyntax {
     }
 
     /**
-     * Creates the string literal union for this enum. E.g. for Fruits { APPLE, ORANGE } it will produce
+     * Creates the string literal union for this enum.
      *
-     * export type Fruit = "APPLE" | "ORANGE";
+     * e.g. for Fruits { APPLE, ORANGE } it will produce the following valid typescript:
+     *
+     * "APPLE" | "ORANGE"
      **/
     public String stringLiteralUnion() {
       List<TSEnumSymbolSyntax> symbols = this.symbols();
-      if (this.symbols().size() == 0) {
+      if (symbols.size() == 0) {
         return "void"; // Helps us compile if some bozo declared an empty union.
       } else {
-        StringBuilder sb = new StringBuilder();
-
-        for (int i = 0; i < symbols.size(); i++) {
-          TSEnumSymbolSyntax symbol = symbols.get(i);
-          boolean isLast = (i + 1 == symbols.size());
-          sb.append(symbol.stringLiteralValue());
-
-          if (!isLast) {
-            sb.append(" | ");
-          }
-        }
-        return sb.toString();
+        return this._interleaveSymbolStrings(" | ");
       }
+    }
+
+    /**
+     * Creates the typescript array literal for all values of this enum.
+     * e.g. for Fruits { APPLE, ORANGE } it will produce the following valid typescript:
+     *
+     * ["APPLE", "ORANGE"]
+     */
+    public String arrayLiteral() {
+      return "[" + this._interleaveSymbolStrings(", ") + "]";
     }
 
     @Override
@@ -1026,6 +1027,22 @@ public class TSSyntax {
         symbols.add(new TSEnumSymbolSyntax(_template, _dataSchema, symbol));
       }
       return symbols;
+    }
+
+    private String _interleaveSymbolStrings(String delimiter) {
+      List<TSEnumSymbolSyntax> symbols = this.symbols();
+
+      StringBuilder sb = new StringBuilder();
+      for (int i = 0; i < symbols.size(); i++) {
+        TSEnumSymbolSyntax symbol = symbols.get(i);
+        boolean isLast = (i + 1 == symbols.size());
+        sb.append(symbol.stringLiteralValue());
+
+        if (!isLast) {
+          sb.append(delimiter);
+        }
+      }
+      return sb.toString();
     }
   }
 }

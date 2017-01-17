@@ -302,6 +302,9 @@ describe("Enums", () => {
 
     expect(fruitsFile).toContain(typeComment);
     expect(fruitsFile).toContain(symbolComment);
+
+  it("Should be enumerated with the .all function", () => {
+    expect(Fruits.all).toEqual(["APPLE", "BANANA", "ORANGE", "PINEAPPLE"]);
   });
 });
 
