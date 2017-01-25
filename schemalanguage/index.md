@@ -314,7 +314,7 @@ SimpleIdToRecordMap(SimpleId(id = 1000) -> Record(field = 1)) |`{ "(id~1000)": {
 
 Ordinarily, maps are defined inline inside other types. But if needed,
 typerefs allow a map to be defined in a separate `.courier` (or `.pdsc`) file and be assigned a
-unique type name name. See below for more details about typerefs.
+unique type name. See below for more details about typerefs.
 
 Union Type
 ----------
@@ -391,7 +391,7 @@ Here's how the `AnswerFormat` union can be used to create a new `Question`:
 Scala Expression                                     | Equivalent JSON data
 -----------------------------------------------------|-----------------------------------------------------
 `Question(TextEntryMember(TextEntry(...)))`           | `{ "answerFormat": { "org.example.TextEntry": { ... } } }`
-`Question(MultipleChoiceMmeber(MultipleChoice(...)))` | `{ "answerFormat": { "org.example.MultipleChoice": { ... } }}`
+`Question(MultipleChoiceMember(MultipleChoice(...)))` | `{ "answerFormat": { "org.example.MultipleChoice": { ... } }}`
 
 To read the union, pattern matching may be used, e.g.:
 
@@ -575,7 +575,7 @@ This will be generated as:
 
 ~~~ scala
 abstract class AnswerTypes
-case class MutlipleChoiceMember(value: MutlipleChoice) extends AnswerTypes
+case class MultipleChoiceMember(value: MultipleChoice) extends AnswerTypes
 case class TextEntryMember(value: TextEntry) extends AnswerTypes
 ~~~
 
