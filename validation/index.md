@@ -12,7 +12,7 @@ val recordToValidate = new RecordToValidate(/*...*/)
 val options = new ValidationOptions()
 val annotationValidator = new DataSchemaAnnotationValidator(recordToValidate.schema())
 val validationResult = ValidateDataAgainstSchema.validate(recordToValidate, options, annotationValidator)
-if(!result.isValid()) {
+if(!validationResult.isValid()) {
   // ...
 } else {
   // ...
