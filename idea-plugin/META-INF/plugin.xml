@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>org.coursera.courier.plugin</id>
   <name>Courier schema language</name>
-  <version>1.5.0</version>
+  <version>1.5.2</version>
   <vendor url="https://groups.google.com/forum/#!forum/courier">Courier OSS Project</vendor>
 
   <description><![CDATA[
@@ -17,6 +17,7 @@
   <idea-version since-build="131"/>
 
   <depends>com.intellij.modules.lang</depends>
+  <depends>org.intellij.scala</depends>
 
   <extensions defaultExtensionNs="com.intellij">
     <!-- Add your extensions here -->
@@ -38,6 +39,8 @@
     <lang.refactoringSupport language="Courier" implementationClass="org.coursera.courier.CourierRefactoringSupportProvider"/>
     <lang.findUsagesProvider language="Courier" implementationClass="org.coursera.courier.CourierFindUsagesProvider"/>
     <gotoClassContributor implementation="org.coursera.courier.CourierChooseByNameContributor"/>
+
+    <generatedSourcesFilter implementation="org.coursera.courier.CourierGeneratedSourcesFilter"/>
 
     <lang.foldingBuilder language="Courier" implementationClass="org.coursera.courier.CourierFoldingBuilder" />
     <lang.importOptimizer language="Courier" implementationClass="org.coursera.courier.CourierImportOptimizer" />
