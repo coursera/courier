@@ -222,7 +222,9 @@ object Courier extends Build with OverridablePublishSettings {
     s";++$currentScalaVersion;project scala-generator;$publishCommand" +
     s";++$sbtScalaVersion;project sbt-plugin;$publishCommand" +
     s";++$sbtScalaVersion;project scala-runtime;$publishCommand" +
-    s";++$currentScalaVersion;project scala-runtime;$publishCommand"
+    s";++$currentScalaVersion;project scala-runtime;$publishCommand" +
+    s";++$sbtScalaVersion;project scala-fixture;$publishCommand" +
+    s";++$currentScalaVersion;project scala-fixture;$publishCommand"
 
   lazy val root = Project(id = "courier", base = file("."))
     .aggregate(
