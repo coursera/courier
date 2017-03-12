@@ -1,0 +1,4 @@
+@args org.coursera.courier.py3.Py3Syntax.Py3FixedSyntax fixed
+
+@fixed.docString()
+@fixed.typeName() = str;

@@ -1,0 +1,38 @@
+@args org.coursera.courier.py3.Py3Syntax.Py3EnumSyntax enumeration
+@import org.coursera.courier.py3.Py3Syntax.Py3EnumSymbolSyntax
+
+class @enumeration.typeName():
+    AVRO_SCHEMA = @enumeration.avroSchemaJson()
+
+    class Value:
+        def __init__(self, name):
+           self.name = name
+           self.data = name
+
+        def __str__(self):
+          return self.name
+
+        def __repr__(self):
+           return '@(enumeration.typeName()).Value("%s")' % self.name
+@for(Py3EnumSymbolSyntax symbol : enumeration.symbols()) {
+    @symbol.docString()
+    @symbol.moduleConstValue() = Value(@symbol.stringLiteralValue());
+
+}
+    ALL = [@for(Py3EnumSymbolSyntax symbol : enumeration.symbols()) { @symbol.moduleConstValue(), }]
+
+    @@classmethod
+    def find_by_name(cls, name):
+        try:
+            return cls.__BY_NAME[name]
+        except KeyError:
+            raise KeyError('"%s" is invalid value for courier enum "@enumeration.typeName()". Valid values are: %s' % (
+              name,
+              [value.name for value in @(enumeration.typeName()).ALL]
+            ))
+
+    @@classmethod
+    def from_data(cls, data):
+        return cls.find_by_name(data)
+
+    __BY_NAME = dict([(symbol.name, symbol) for symbol in ALL])

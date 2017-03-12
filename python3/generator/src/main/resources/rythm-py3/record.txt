@@ -1,0 +1,58 @@
+@args org.coursera.courier.py3.Py3Syntax.Py3RecordSyntax record
+@import org.coursera.courier.py3.Py3Syntax.Py3UnionSyntax
+@import org.coursera.courier.py3.Py3Syntax.Py3RecordFieldSyntax
+@record.imports()
+class @record.typeName():
+    AVRO_SCHEMA = @record.avroSchemaJson()
+
+    def __init__(self, data=None):
+        self.data = data or {}
+
+    @@classmethod
+    def create(cls, @for(Py3RecordFieldSyntax field: record.fields()) {@field.accessorName(), }):
+        """ Create a @record.typeName() from its fields.
+
+        @for(Py3RecordFieldSyntax field: record.fields()) {
+        @@param @field.accessorName() - @field.typeName()
+        }
+        """
+        record = cls(data={})
+        @for(Py3RecordFieldSyntax field: record.fields()) {
+        record.@field.accessorName() = @field.accessorName()
+        }
+        return record
+
+    def __str__(self):
+      return '@(record.typeName())(' + \
+        @for(Py3RecordFieldSyntax field: record.fields()) {
+          '@(field.accessorName())=' + str(self.@(field.accessorName())) + \
+        }
+      ')'
+
+    def __repr__(self):
+      return '@(record.typeName())(' + repr(self.data) + ')';
+
+    def __eq__(self, other):
+      return isinstance(other, @(record.typeName())) and self.data == other.data
+
+@for(Py3RecordFieldSyntax field: record.fields()) {
+    #
+    # '@field.accessorName()' property
+    #
+    @{ String setter = field.accessorName() + ".setter" }
+    @@property
+    def @field.accessorName() (self):
+        @field.docString()
+        field_data = self.data.get('@field.jsonKey()')
+        field_constructor = @(field.constructor())
+        return field_data and field_constructor(field_data)
+
+
+    @@@setter
+    def @field.accessorName() (self, value):
+        @field.docString()
+        self.data['@field.jsonKey()'] = courier.data_value(value)
+}@if(record.requiresCompanionModule()) { @for(Py3UnionSyntax union: record.enclosedUnions()) {
+     @union(union, 1)
+  }
+}

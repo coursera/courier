@@ -5,4 +5,5 @@ record ReservedClassFieldEscaping {
   schema: string
   copy: string
   clone: string
+  pass: string?
 }

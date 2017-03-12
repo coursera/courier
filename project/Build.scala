@@ -155,19 +155,25 @@ object Courier extends Build with OverridablePublishSettings {
   lazy val typescriptLiteGenerator = Project(id = "typescript-lite-generator", base = typescriptLiteDir / "generator")
     .dependsOn(generatorApi)
 
+  private[this] val python3Dir = file("python3")
+  lazy val python3Generator = Project(id = "python3-generator", base = python3Dir / "generator")
+    .dependsOn(generatorApi)
+
   lazy val cli = Project(id = "courier-cli", base = file("cli"))
     .dependsOn(
       javaGenerator,
       androidGenerator,
       scalaGenerator,
       typescriptLiteGenerator,
-      swiftGenerator
+      swiftGenerator,
+      python3Generator
     ).aggregate(
       javaGenerator,
       androidGenerator,
       scalaGenerator,
       typescriptLiteGenerator,
-      swiftGenerator
+      swiftGenerator,
+      python3Generator
     ).settings(
       executableFile := {
         val exeFile = target.value / "courier"
@@ -186,6 +192,11 @@ object Courier extends Build with OverridablePublishSettings {
   lazy val typescriptLiteGeneratorTest = Project(
     id = "typescript-lite-generator-test", base = typescriptLiteDir / "generator-test")
     .dependsOn(typescriptLiteGenerator)
+
+  lazy val python3GeneratorTest = Project(
+    id = "python3-generator-test", base = python3Dir / "generator-test")
+    .dependsOn(python3Generator)
+
 
   lazy val courierSbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
     .dependsOn(scalaGenerator)
@@ -218,6 +229,7 @@ object Courier extends Build with OverridablePublishSettings {
     s";project android-runtime;$publishCommand" +
     s";project swift-generator;$publishCommand" +
     s";project typescript-lite-generator;$publishCommand" +
+    s";project python3-generator;$publishCommand" +
     s";++$sbtScalaVersion;project scala-generator;$publishCommand" +
     s";++$currentScalaVersion;project scala-generator;$publishCommand" +
     s";++$sbtScalaVersion;project sbt-plugin;$publishCommand" +

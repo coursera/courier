@@ -1,0 +1,6 @@
+@args org.coursera.courier.py3.Py3Syntax.Py3TyperefSyntax typeref
+
+@typeref.imports()
+
+@typeref.docString()
+@typeref.typeName() = @typeref.refTypeConstructor()
