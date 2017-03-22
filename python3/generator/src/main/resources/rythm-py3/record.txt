@@ -36,6 +36,7 @@ class @record.typeName():
       return isinstance(other, @(record.typeName())) and self.data == other.data
 
 @for(Py3RecordFieldSyntax field: record.fields()) {
+
     #
     # '@field.accessorName()' property
     #

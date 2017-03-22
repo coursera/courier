@@ -54,10 +54,6 @@ def data_value(courier_object_or_primitive):
         # Serialize ints and strs directly
         return courier_object_or_primitive
 
-
-
-        return courier_object_or_primitive
-
 def array(courier_type):
     return lambda items: Array(courier_type, items)
 
@@ -116,8 +112,7 @@ class Map (MutableMapping):
         return self.data.__len__()
 
     def __getitem__(self, key):
-        item_data = self.data.__getitem__(key)
-        return item_data and self._construct_item(item_data)
+        return self._construct_item(self.data.__getitem__(key))
 
     def __setitem__(self, key, value):
         return self.data.__setitem__(key, data_value(value))
