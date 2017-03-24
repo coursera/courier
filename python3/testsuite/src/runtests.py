@@ -211,8 +211,15 @@ class TestCourierBindings(unittest.TestCase):
               'answer': 'Well this isnt a valid enum'
             })
 
+        def invalid_8ball_from_construction():
+            return MagicEightBall(
+                question="Will I ever love again?"
+                # missing answer
+            )
+
         self.assertRaises(courier.ValidationError, invalidate_eight_ball)
         self.assertRaises(courier.ValidationError, invalid_8ball_from_data)
+        self.assertRaises(TypeError, invalid_8ball_from_construction)
 
     def test_record_validate_deep(self):
         pass

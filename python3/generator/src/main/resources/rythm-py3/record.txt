@@ -11,7 +11,7 @@ class @(record.typeName())(courier.Record):
         @if(!record.fields().isEmpty()){        if data is None:}
             @for(Py3RecordFieldSyntax field: record.fields()) {
             if @field.accessorName() is courier.REQUIRED:
-                raise courier.ValidationError('"@field.accessorName()" is required to create a "@record.typeName()", but was not provided')
+                raise TypeError('__init__() missing required keyword argument: \'@field.accessorName()\'')
             elif @field.accessorName() not in [None, courier.OPTIONAL]:
                 self.data['@field.jsonKey()'] = courier.data_value(@field.accessorName())
             }
