@@ -157,9 +157,9 @@ class TestCourierBindings(unittest.TestCase):
         self.assertTrue(MagicEightBallAnswer.OUTLOOK_NOT_SO_GOOD in MagicEightBallAnswer.ALL)
 
     def test_enum_from_string(self):
-        good_answer = courier.loads(MagicEightBallAnswer, '"IT_IS_CERTAIN"')
+        good_answer = courier.parse(MagicEightBallAnswer, '"IT_IS_CERTAIN"')
         self.assertEqual(good_answer, MagicEightBallAnswer.IT_IS_CERTAIN)
-        self.assertRaises(courier.ValidationError, lambda: courier.loads(MagicEightBallAnswer, '"WELL_THIS_DOESNT_EXIST"'))
+        self.assertRaises(courier.ValidationError, lambda: courier.parse(MagicEightBallAnswer, '"WELL_THIS_DOESNT_EXIST"'))
 
     def test_enum_empty(self):
         self.assertEqual(len(EmptyEnum.ALL), 0)
@@ -181,11 +181,11 @@ class TestCourierBindings(unittest.TestCase):
         answer = MagicEightBallAnswer.IT_IS_CERTAIN
         eight_ball = MagicEightBall(question=question, answer=answer)
         expected_json = """{"question": "Will I ever love again?", "answer": "IT_IS_CERTAIN"}"""
-        serialized_json = courier.dumps(eight_ball)
-        reloaded_eight_ball = courier.loads(MagicEightBall, serialized_json)
+        serialized_json = courier.serialize(eight_ball)
+        reloaded_eight_ball = courier.parse(MagicEightBall, serialized_json)
         self.assertEqual(eight_ball.question, question)
         self.assertEqual(eight_ball.answer, answer)
-        self.assertEqual(courier.dumps(eight_ball), expected_json)
+        self.assertEqual(courier.serialize(eight_ball), expected_json)
         self.assertEqual(reloaded_eight_ball, eight_ball)
 
     def test_record_set_and_get(self):
@@ -196,7 +196,7 @@ class TestCourierBindings(unittest.TestCase):
         eight_ball.answer = MagicEightBallAnswer.ASK_AGAIN_LATER
         self.assertEqual(eight_ball.question, "??")
         self.assertEqual(eight_ball.answer, MagicEightBallAnswer.ASK_AGAIN_LATER)
-        self.assertEqual(courier.dumps(eight_ball), """{"question": "??", "answer": "ASK_AGAIN_LATER"}""")
+        self.assertEqual(courier.serialize(eight_ball), """{"question": "??", "answer": "ASK_AGAIN_LATER"}""")
 
     def test_record_validate_shallow(self):
         eight_ball = self.__make_eight_ball()
@@ -236,11 +236,11 @@ class TestCourierBindings(unittest.TestCase):
 
     def test_record_without_namespace(self):
         record = WithoutNamespace(field1="herp")
-        self.assertEqual(courier.loads(WithoutNamespace, courier.dumps(record)), record)
+        self.assertEqual(courier.parse(WithoutNamespace, courier.serialize(record)), record)
 
     def test_record_with_reserved_name(self):
         record = class_(private="herp")
-        self.assertEqual(courier.dumps(record), """{"private": "herp"}""")
+        self.assertEqual(courier.serialize(record), """{"private": "herp"}""")
 
     def test_with_include(self):
         """" TODO(py3): see reference suite WithInclude.courier """
@@ -302,11 +302,11 @@ class TestCourierBindings(unittest.TestCase):
         courier.validate(rec) # should not throw
         expected_str = """{"ints": [1, 2, 3, 4], "longs": [5, 6, 7, 8], "floats": [9.0, 10.0, 11.0, 12.0], "doubles": [13.0, 14.0, 15.0, 16.0], "booleans": [true, false], "strings": ["seventeen", "eighteen"], "bytes": []}"""
 
-        self.assertEqual(courier.dumps(rec), expected_str)
-        self.assertEqual(courier.loads(WithPrimitivesArray, expected_str), rec)
+        self.assertEqual(courier.serialize(rec), expected_str)
+        self.assertEqual(courier.parse(WithPrimitivesArray, expected_str), rec)
 
         rec.ints = [100, 101]
-        self.assertTrue('"ints": [100, 101]' in courier.dumps(rec))
+        self.assertTrue('"ints": [100, 101]' in courier.serialize(rec))
 
     def test_array_and_map_complex(self):
         custom_ints = [1, 2]
@@ -330,7 +330,7 @@ class TestCourierBindings(unittest.TestCase):
         )
         courier.validate(rec) # should not throw
         json = """{"ints": [1, 2], "arrays": [[{"message": "Hello"}, {"message": "world"}], [{"message": "Bonjour"}, {"message": "tout le monde"}]], "maps": [{"greeting": {"message": "Hello"}}, {"greeting": {"message": "Bonjour"}}], "unions": [], "fixed": []}"""
-        self.assertEqual(courier.loads(WithCustomTypesArray, json), rec)
+        self.assertEqual(courier.parse(WithCustomTypesArray, json), rec)
 
         # Exercise the courier.Arrays
         self.assertEqual(len(rec.arrays), 2)
@@ -354,7 +354,7 @@ class TestCourierBindings(unittest.TestCase):
         self.assertRaises(KeyError, lambda: french_map['world'])
         french_map['world'] = tout_le_monde
         self.assertEqual(french_map['world'], tout_le_monde)
-        courier.dumps(rec)
+        courier.serialize(rec)
 
 
     def __make_eight_ball(self):

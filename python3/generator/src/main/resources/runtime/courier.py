@@ -19,7 +19,7 @@ import avro.schema
 import json
 from collections.abc import MutableSequence, MutableMapping
 
-def loads(courier_type, json_str):
+def parse(courier_type, json_str):
     json_obj = json.loads(json_str)
     needs_validation = hasattr(courier_type, 'AVRO_SCHEMA') and courier_type.AVRO_SCHEMA is not INVALID_SCHEMA
     if (not needs_validation or avro.io.Validate(courier_type.AVRO_SCHEMA, json_obj)):
@@ -28,7 +28,7 @@ def loads(courier_type, json_str):
     else:
         raise ValidationError("Invalid json string while reading a '%s' type: %s" % (courier_type, json_str))
 
-def dumps(courier_object):
+def serialize(courier_object):
     return json.dumps(data_value(courier_object))
 
 def validate(courier_object):
