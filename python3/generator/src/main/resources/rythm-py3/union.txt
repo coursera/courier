@@ -9,7 +9,7 @@
 @union.imports()
 
 @indent()class @union.typeName():
-@indent()    AVRO_SCHEMA = @union.avroSchemaJson();
+@indent()    AVRO_SCHEMA = courier.parse_avro_schema(@union.avroSchemaJson());
 @indent()
 @indent()    def __init__(self, data):
 @indent()        """ Create a @union.typeName() from a dict (probably loaded from json).

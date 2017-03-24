@@ -1,8 +1,10 @@
 @args org.coursera.courier.py3.Py3Syntax.Py3EnumSyntax enumeration
 @import org.coursera.courier.py3.Py3Syntax.Py3EnumSymbolSyntax
 
+@enumeration.imports()
+
 class @enumeration.typeName():
-    AVRO_SCHEMA = @enumeration.avroSchemaJson()
+    AVRO_SCHEMA = courier.parse_avro_schema(@enumeration.avroSchemaJson())
 
     class Value:
         def __init__(self, name):

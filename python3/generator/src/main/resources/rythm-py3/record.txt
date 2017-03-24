@@ -4,7 +4,7 @@
 @record.imports()
 
 class @(record.typeName())(courier.Record):
-    AVRO_SCHEMA = @record.avroSchemaJson()
+    AVRO_SCHEMA = courier.parse_avro_schema(@record.avroSchemaJson())
 
     def __init__(self, data=None, @for(Py3RecordFieldSyntax field: record.fields()) {@field.accessorName()=@field.constructorDefault(), }):
         super(@record.typeName(), self).__init__(data)
@@ -39,30 +39,11 @@ class @(record.typeName())(courier.Record):
     @{ String setter = field.accessorName() + ".setter" }
     @@property
     def @field.accessorName() (self):
-        return self._get_data_field(
-            data_key='@field.jsonKey()',
-            type_constructor=@field.constructor()
-        )
+        return self._get_data_field(data_key='@field.jsonKey()', type_constructor=@field.constructor())
 
     @@@setter
     def @field.accessorName() (self, new_value):
-        @field.docString()
-        data_key = '@field.jsonKey()'
-        old_data_value = courier.UNINITIALIZED
-        if data_key in self.data:
-            old_data_value = self.data[data_key]
-
-        if new_value is None:
-            del self.data[data_key]
-        else:
-            self.data[data_key] = courier.data_value(new_value)
-
-        try:
-            courier.validate(self)
-        except courier.ValidationError:
-            if old_data_value is not courier.UNINITIALIZED:
-                self.data[data_key] = old_data_value
-            raise courier.ValidationError('%s is not a valid value for @(record.typeName()).@field.accessorName()' % new_value)
+        return self._set_data_field('@field.jsonKey()', new_value)
 }@if(record.requiresCompanionModule()) { @for(Py3UnionSyntax union: record.enclosedUnions()) {
      @union(union, 1)
   }

@@ -203,7 +203,6 @@ public class Py3Syntax {
     }
 
     static Py3Import COURIER_RUNTIME = new Py3Import("courier", "", ImportStrategy.MODULE_AS_SELF);
-
     public static enum ImportStrategy {
       TYPE_FROM_EPONYMOUS_MODULE, MODULE_AS_SELF
     }
@@ -221,9 +220,7 @@ public class Py3Syntax {
     if (doc != null && !"".equals(doc)) {
       StringBuilder docStr = new StringBuilder(TRIPLE_QUOTE);
 
-      if (doc != null) {
-        docStr.append(doc.trim());
-      }
+      docStr.append(doc.trim());
 
       if (deprecation != null) {
         docStr.append("\n\n").append("@deprecated");
@@ -1205,6 +1202,10 @@ public class Py3Syntax {
         symbols.add(new Py3EnumSymbolSyntax(_template, _dataSchema, symbol));
       }
       return symbols;
+    }
+
+    public String imports() {
+      return Py3Import.COURIER_RUNTIME.relativeImport(this._dataSchema.getNamespace());
     }
 
     private String _interleaveSymbolStrings(String delimiter) {

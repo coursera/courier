@@ -21,9 +21,9 @@ from collections.abc import MutableSequence, MutableMapping
 
 def loads(courier_type, json_str):
     json_obj = json.loads(json_str)
-    needs_validation = hasattr(courier_type, 'AVRO_SCHEMA')
-    if (not needs_validation or avro.io.Validate(avro.schema.Parse(courier_type.AVRO_SCHEMA), json_obj)):
-        constructor = courier_type.from_data if (hasattr(courier_type, 'from_data')) else courier_type;
+    needs_validation = hasattr(courier_type, 'AVRO_SCHEMA') and courier_type.AVRO_SCHEMA is not INVALID_SCHEMA
+    if (not needs_validation or avro.io.Validate(courier_type.AVRO_SCHEMA, json_obj)):
+        constructor = courier_type.from_data if (hasattr(courier_type, 'from_data')) else courier_type
         return constructor(json_obj)
     else:
         raise ValidationError("Invalid json string while reading a '%s' type: %s" % (courier_type, json_str))
@@ -33,14 +33,22 @@ def dumps(courier_object):
 
 def validate(courier_object):
     can_validate = hasattr(courier_object, '__class__') and \
-        hasattr(courier_object.__class__, 'AVRO_SCHEMA')
+        hasattr(courier_object.__class__, 'AVRO_SCHEMA') and \
+        courier_object.AVRO_SCHEMA is not INVALID_SCHEMA
     if not can_validate:
         return
     else:
         value = data_value(courier_object)
-        schema = avro.schema.Parse(courier_object.__class__.AVRO_SCHEMA)
+        schema = courier_object.__class__.AVRO_SCHEMA
         if not avro.io.Validate(schema, value):
             raise ValidationError('Validity check failed for %s' % repr(courier_object))
+
+def parse_avro_schema(schema_json):
+    try:
+        return avro.schema.Parse(schema_json)
+    except (avro.schema.SchemaParseException, json.decoder.JSONDecodeError) as e:
+        print(str(e))
+        return INVALID_SCHEMA
 
 def data_value(courier_object_or_primitive):
     if (hasattr(courier_object_or_primitive, 'data')):
@@ -68,8 +76,22 @@ class Record:
     def __init__(self, data=None):
         self.data = data if data is not None else {}
 
-    def _set_data_field(self, data_key, type_constructor, new_value):
-        pass
+    def _set_data_field(self, data_key, new_value):
+        old_data_value = UNINITIALIZED
+        if data_key in self.data:
+            old_data_value = self.data[data_key]
+
+        if new_value is None:
+            del self.data[data_key]
+        else:
+            self.data[data_key] = data_value(new_value)
+
+        try:
+            validate(self)
+        except ValidationError:
+            if old_data_value is not UNINITIALIZED:
+                self.data[data_key] = old_data_value
+            raise ValidationError('%s is not a valid value for %s.%s' % (new_value, self.__class__.__name__, data_key))
 
     def _get_data_field(self, data_key, type_constructor):
         field_data = self.data.get(data_key)
@@ -140,3 +162,4 @@ class Map (MutableMapping):
 REQUIRED = "__COURIER_REQUIRED__"
 OPTIONAL = "__COURIER_OPTIONAL__"
 UNINITIALIZED = "__COURIER_UNINITIALIZED__"
+INVALID_SCHEMA = "__COURIER_INVALID_SCHEMA__"
