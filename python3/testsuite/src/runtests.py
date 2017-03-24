@@ -179,7 +179,7 @@ class TestCourierBindings(unittest.TestCase):
     def test_record_json_dumps_and_loads(self):
         question = 'Will I ever love again?'
         answer = MagicEightBallAnswer.IT_IS_CERTAIN
-        eight_ball = MagicEightBall.create(question=question, answer=answer)
+        eight_ball = MagicEightBall(question=question, answer=answer)
         expected_json = """{"question": "Will I ever love again?", "answer": "IT_IS_CERTAIN"}"""
         serialized_json = courier.dumps(eight_ball)
         reloaded_eight_ball = courier.loads(MagicEightBall, serialized_json)
@@ -191,7 +191,7 @@ class TestCourierBindings(unittest.TestCase):
     def test_record_set_and_get(self):
         question = 'Will I ever love again?'
         answer = MagicEightBallAnswer.IT_IS_CERTAIN
-        eight_ball = MagicEightBall.create(question=question, answer=answer)
+        eight_ball = MagicEightBall(question=question, answer=answer)
         eight_ball.question = "??"
         eight_ball.answer = MagicEightBallAnswer.ASK_AGAIN_LATER
         self.assertEqual(eight_ball.question, "??")
@@ -201,14 +201,18 @@ class TestCourierBindings(unittest.TestCase):
     def test_record_validate_shallow(self):
         eight_ball = self.__make_eight_ball()
         courier.validate(eight_ball) # should be valid immediately after creation
-        eight_ball.question = 1234
-        self.assertRaises(courier.ValidationError, lambda: courier.validate(eight_ball))
 
-        eight_ball = MagicEightBall({
-            'question': '??',
-            'answer': 'Well this isnt a valid enum'
-        })
-        self.assertRaises(courier.ValidationError, lambda: courier.validate(eight_ball))
+        def invalidate_eight_ball():
+            eight_ball.question = 1234
+
+        def invalid_8ball_from_data():
+            return MagicEightBall({
+              'question': '??',
+              'answer': 'Well this isnt a valid enum'
+            })
+
+        self.assertRaises(courier.ValidationError, invalidate_eight_ball)
+        self.assertRaises(courier.ValidationError, invalid_8ball_from_data)
 
     def test_record_validate_deep(self):
         pass
@@ -231,11 +235,11 @@ class TestCourierBindings(unittest.TestCase):
         pass
 
     def test_record_without_namespace(self):
-        record = WithoutNamespace.create(field1="herp")
+        record = WithoutNamespace(field1="herp")
         self.assertEqual(courier.loads(WithoutNamespace, courier.dumps(record)), record)
 
     def test_record_with_reserved_name(self):
-        record = class_.create(private="herp")
+        record = class_(private="herp")
         self.assertEqual(courier.dumps(record), """{"private": "herp"}""")
 
     def test_with_include(self):
@@ -270,7 +274,7 @@ class TestCourierBindings(unittest.TestCase):
 
     def test_union(self):
         union = WithComplexTypesUnion.Union.create(
-          py3bindings.org.coursera.records.test.Empty.Empty.create()
+          py3bindings.org.coursera.records.test.Empty.Empty()
         )
 
         self.assertIsNone(union.as_Fruits)
@@ -286,7 +290,7 @@ class TestCourierBindings(unittest.TestCase):
         booleans = [True, False]
         strings = ["seventeen", "eighteen"]
 
-        rec = WithPrimitivesArray.create(
+        rec = WithPrimitivesArray(
             ints = ints,
             longs = longs,
             floats = floats,
@@ -306,10 +310,10 @@ class TestCourierBindings(unittest.TestCase):
 
     def test_array_and_map_complex(self):
         custom_ints = [1, 2]
-        hello = Simple.create(message="Hello")
-        world = Simple.create(message="world")
-        bonjour = Simple.create(message="Bonjour")
-        tout_le_monde = Simple.create(message="tout le monde")
+        hello = Simple(message="Hello")
+        world = Simple(message="world")
+        bonjour = Simple(message="Bonjour")
+        tout_le_monde = Simple(message="tout le monde")
         arrays = [[hello, world], [bonjour, tout_le_monde]]
         maps = [
           {'greeting': hello },
@@ -317,7 +321,7 @@ class TestCourierBindings(unittest.TestCase):
         ]
         unions = []
         fixed = []
-        rec = WithCustomTypesArray.create(
+        rec = WithCustomTypesArray(
             ints = custom_ints,
             arrays = arrays,
             maps = maps,
@@ -354,7 +358,7 @@ class TestCourierBindings(unittest.TestCase):
 
 
     def __make_eight_ball(self):
-        return MagicEightBall.create(
+        return MagicEightBall(
             question='Will I ever love again?',
             answer=MagicEightBallAnswer.IT_IS_CERTAIN
         )

@@ -2,25 +2,21 @@
 @import org.coursera.courier.py3.Py3Syntax.Py3UnionSyntax
 @import org.coursera.courier.py3.Py3Syntax.Py3RecordFieldSyntax
 @record.imports()
-class @record.typeName():
+
+class @(record.typeName())(courier.Record):
     AVRO_SCHEMA = @record.avroSchemaJson()
 
-    def __init__(self, data=None):
-        self.data = data or {}
+    def __init__(self, data=None, @for(Py3RecordFieldSyntax field: record.fields()) {@field.accessorName()=@field.constructorDefault(), }):
+        super(@record.typeName(), self).__init__(data)
+        @if(!record.fields().isEmpty()){        if data is None:}
+            @for(Py3RecordFieldSyntax field: record.fields()) {
+            if @field.accessorName() is courier.REQUIRED:
+                raise courier.ValidationError('"@field.accessorName()" is required to create a "@record.typeName()", but was not provided')
+            elif @field.accessorName() not in [None, courier.OPTIONAL]:
+                self.data['@field.jsonKey()'] = courier.data_value(@field.accessorName())
+            }
 
-    @@classmethod
-    def create(cls, @for(Py3RecordFieldSyntax field: record.fields()) {@field.accessorName(), }):
-        """ Create a @record.typeName() from its fields.
-
-        @for(Py3RecordFieldSyntax field: record.fields()) {
-        @@param @field.accessorName() - @field.typeName()
-        }
-        """
-        record = cls(data={})
-        @for(Py3RecordFieldSyntax field: record.fields()) {
-        record.@field.accessorName() = @field.accessorName()
-        }
-        return record
+        courier.validate(self)
 
     def __str__(self):
       return '@(record.typeName())(' + \
@@ -43,16 +39,30 @@ class @record.typeName():
     @{ String setter = field.accessorName() + ".setter" }
     @@property
     def @field.accessorName() (self):
-        @field.docString()
-        field_data = self.data.get('@field.jsonKey()')
-        field_constructor = @(field.constructor())
-        return field_data and field_constructor(field_data)
-
+        return self._get_data_field(
+            data_key='@field.jsonKey()',
+            type_constructor=@field.constructor()
+        )
 
     @@@setter
-    def @field.accessorName() (self, value):
+    def @field.accessorName() (self, new_value):
         @field.docString()
-        self.data['@field.jsonKey()'] = courier.data_value(value)
+        data_key = '@field.jsonKey()'
+        old_data_value = courier.UNINITIALIZED
+        if data_key in self.data:
+            old_data_value = self.data[data_key]
+
+        if new_value is None:
+            del self.data[data_key]
+        else:
+            self.data[data_key] = courier.data_value(new_value)
+
+        try:
+            courier.validate(self)
+        except courier.ValidationError:
+            if old_data_value is not courier.UNINITIALIZED:
+                self.data[data_key] = old_data_value
+            raise courier.ValidationError('%s is not a valid value for @(record.typeName()).@field.accessorName()' % new_value)
 }@if(record.requiresCompanionModule()) { @for(Py3UnionSyntax union: record.enclosedUnions()) {
      @union(union, 1)
   }

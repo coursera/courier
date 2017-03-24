@@ -893,6 +893,10 @@ public class Py3Syntax {
       return constructorQualifiedByEnclosingClass(this._fieldSyntax());
     }
 
+    public String constructorDefault() {
+      return _schemaField().getOptional()? "courier.OPTIONAL": "courier.REQUIRED";
+    }
+
     public String docString() {
       return docComment(
           _schemaField().getDoc(),

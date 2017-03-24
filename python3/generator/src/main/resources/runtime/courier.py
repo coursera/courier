@@ -64,6 +64,17 @@ class ValidationError(Exception):
     def __init__(self, message):
         super(ValidationError, self).__init__(message)
 
+class Record:
+    def __init__(self, data=None):
+        self.data = data if data is not None else {}
+
+    def _set_data_field(self, data_key, type_constructor, new_value):
+        pass
+
+    def _get_data_field(self, data_key, type_constructor):
+        field_data = self.data.get(data_key)
+        return field_data and type_constructor(field_data)
+
 class Array(MutableSequence):
     def __init__(self, courier_index_type, data = []):
         self.data = data
@@ -125,3 +136,7 @@ class Map (MutableMapping):
     #
     def __repr__(self):
         return 'courier.Map(' + repr(self.data) + ')'
+
+REQUIRED = "__COURIER_REQUIRED__"
+OPTIONAL = "__COURIER_OPTIONAL__"
+UNINITIALIZED = "__COURIER_UNINITIALIZED__"
