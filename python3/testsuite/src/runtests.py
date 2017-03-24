@@ -74,7 +74,7 @@ from py3bindings.org.coursera.records.test.OptionalIntTyperef import OptionalInt
 from py3bindings.org.coursera.records.test.OptionalLongTyperef import OptionalLongTyperef
 from py3bindings.org.coursera.records.test.OptionalStringTyperef import OptionalStringTyperef
 from py3bindings.org.coursera.records.test.packaging.Empty import Empty
-# TODO(erem): Fix this from py3bindings.org.coursera.records.test.RecursivelyDefinedRecord import RecursivelyDefinedRecord
+# TODO(py3): Fix this from py3bindings.org.coursera.records.test.RecursivelyDefinedRecord import RecursivelyDefinedRecord
 from py3bindings.org.coursera.records.test.Simple import Simple
 from py3bindings.org.coursera.records.test.StringTyperef import StringTyperef
 from py3bindings.org.coursera.records.test.With22Fields import With22Fields
