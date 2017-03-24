@@ -218,6 +218,7 @@ class TestCourierBindings(unittest.TestCase):
             )
 
         self.assertRaises(courier.ValidationError, invalidate_eight_ball)
+        courier.validate(eight_ball) # the invalid changes should not have stuck
         self.assertRaises(courier.ValidationError, invalid_8ball_from_data)
         self.assertRaises(TypeError, invalid_8ball_from_construction)
 
