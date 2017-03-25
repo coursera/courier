@@ -285,10 +285,7 @@ class TestCourierBindings(unittest.TestCase):
           value=py3bindings.org.coursera.records.test.Empty.Empty()
         )
 
-        self.assertIsNone(union.as_Fruits)
-        self.assertIsNone(union.as_Simple_map)
-        self.assertIsNone(union.as_Simple_array)
-        self.assertIsNotNone(union.as_Empty)
+        self.assertEqual(union.value, py3bindings.org.coursera.records.test.Empty.Empty())
 
     def test_array_primitive(self):
         ints = [1,2,3,4]

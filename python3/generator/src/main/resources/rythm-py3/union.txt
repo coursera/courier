@@ -11,6 +11,13 @@
 @indent()class @(union.typeName())(courier.Union):
 @indent()    AVRO_SCHEMA = courier.parse_avro_schema(@union.avroSchemaJson());
 @indent()
+@indent()    _MEMBERS_BY_KEY = {
+             @for(Py3UnionMemberSyntax member: union.members()) {
+
+@indent()        '@member.unionMemberKey()': {'type': @member.typeName(), 'constructor': @member.constructor() },
+@indent()    }
+
+@indent()    }
 @indent()    #TODO(py3): Put all possible members and constructors here, rather than doing your giant if statements in the __init__
 @indent()    def __init__(self, value=courier.REQUIRED, data=None):
 @indent()        """ Create a @union.typeName() from a dict (probably loaded from json).
@@ -26,12 +33,9 @@
 @indent()            new_data = {}
 @indent()            if value is courier.REQUIRED:
 @indent()                raise TypeError('__init__() missing required argument: value')
-          @for(Py3UnionMemberSyntax member: union.members()) {
-
-@indent()            if isinstance(value, @member.typeName()):
-@indent()                new_data={ '@member.unionMemberKey()': courier.data_value(value) }
-@indent()        }
-
+@indent()            for (member_key, type_info) in self.__class__._MEMBERS_BY_KEY.items():
+@indent()                if isinstance(value, type_info['type']):
+@indent()                    new_data = { member_key: courier.data_value(value) }
 @indent()            if not new_data:
 @indent()                # TODO(py3): better error here
 @indent()                raise ValueError('Unacceptable value "%s" for schema %s' % (value, str(self.__class__.AVRO_SCHEMA)))
@@ -46,6 +50,10 @@
 @indent()    def from_data(cls, data):
 @indent()        return cls(data=data)
 @indent()
+@indent()    @@property
+@indent()    def value(self):
+@indent()       for (key, value) in self.data.items():
+@indent()           return self.__class__._MEMBERS_BY_KEY[key]['constructor'](value)
             @for(Py3UnionMemberSyntax member: union.members()) {
 @indent()
 @indent()    #
