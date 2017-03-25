@@ -11,7 +11,7 @@
 @indent()class @(union.typeName())(courier.Union):
 @indent()    AVRO_SCHEMA = courier.parse_avro_schema(@union.avroSchemaJson());
 @indent()
-@indent()    def __init__(self, data=None, value=courier.REQUIRED):
+@indent()    def __init__(self, value=courier.REQUIRED, data=None):
 @indent()        super(self.__class__, self).__init__(data)
 @indent()        """ Create a @union.typeName() from a dict (probably loaded from json).
 @indent()
@@ -35,6 +35,10 @@
 @indent()                # TODO(py3): better error here
 @indent()                raise ValueError('Unacceptable value "%s" for schema %s' % (value, str(self.__class__.AVRO_SCHEMA)))
 @indent()        courier.validate(self)
+@indent()
+@indent()    @@classmethod
+@indent()    def from_data(cls, data):
+@indent()        return cls(data=data)
 @indent()
             @for(Py3UnionMemberSyntax member: union.members()) {
 @indent()
