@@ -366,10 +366,7 @@ class TestCourierBindings(unittest.TestCase):
 
 
     def __make_eight_ball(self):
-        return MagicEightBall(
-            question='Will I ever love again?',
-            answer=MagicEightBallAnswer.IT_IS_CERTAIN
-        )
+        return MagicEightBall('Will I ever love again?', MagicEightBallAnswer.IT_IS_CERTAIN)
 
 if __name__ == '__main__':
     unittest.main()
