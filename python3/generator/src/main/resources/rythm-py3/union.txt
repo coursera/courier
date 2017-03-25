@@ -8,10 +8,11 @@
 
 @union.imports()
 
-@indent()class @union.typeName():
+@indent()class @(union.typeName())(courier.Union):
 @indent()    AVRO_SCHEMA = courier.parse_avro_schema(@union.avroSchemaJson());
 @indent()
-@indent()    def __init__(self, data):
+@indent()    def __init__(self, data=None, value=courier.REQUIRED):
+@indent()        super(self.__class__, self).__init__(data)
 @indent()        """ Create a @union.typeName() from a dict (probably loaded from json).
 @indent()
 @indent()        You probably want to use the `create` method instead.
@@ -21,15 +22,20 @@
 @indent()        }
 @indent()        """
 @indent()        self.data = data
+@indent()        if data is None:
+@indent()            if value is courier.REQUIRED:
+@indent()                raise TypeError('__init__() missing required argument: value')
+          @for(Py3UnionMemberSyntax member: union.members()) {
+
+@indent()            if isinstance(value, @member.typeName()):
+@indent()                self.data={ '@member.unionMemberKey()': courier.data_value(value) }
+@indent()        }
+
+@indent()            if value is courier.REQUIRED:
+@indent()                # TODO(py3): better error here
+@indent()                raise ValueError('Unacceptable value "%s" for schema %s' % (value, str(self.__class__.AVRO_SCHEMA)))
+@indent()        courier.validate(self)
 @indent()
-@indent()    @@classmethod
-@indent()    def create(cls, value):
-@indent()        data_value = courier.data_value(value)
-@indent()      @for(Py3UnionMemberSyntax member: union.members()) {        if isinstance(value, @member.typeName()):
-@indent()            return cls(data={ '@member.unionMemberKey()': data_value })
-@indent()     }
-@indent()
-@indent()        raise courier.ValidationError('%s was not a valid option for @(union.typeName())' % value)
             @for(Py3UnionMemberSyntax member: union.members()) {
 @indent()
 @indent()    #

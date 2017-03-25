@@ -125,7 +125,7 @@ from py3bindings.org.coursera.unions.IntCustomType import IntCustomType
 from py3bindings.org.coursera.unions.IntTyperef import IntTyperef
 from py3bindings.org.coursera.unions.WithComplexTypesUnion import WithComplexTypesUnion
 from py3bindings.org.coursera.unions.WithCustomUnionTestId import WithCustomUnionTestId
-from py3bindings.org.coursera.unions.WithEmptyUnion import WithEmptyUnion
+# TODO(py3): Do we have to support this edge case? from py3bindings.org.coursera.unions.WithEmptyUnion import WithEmptyUnion
 from py3bindings.org.coursera.unions.WithPrimitiveCustomTypesUnion import WithPrimitiveCustomTypesUnion
 from py3bindings.org.coursera.unions.WithPrimitivesUnion import WithPrimitivesUnion
 from py3bindings.org.coursera.unions.WithPrimitiveTyperefsUnion import WithPrimitiveTyperefsUnion
@@ -281,8 +281,8 @@ class TestCourierBindings(unittest.TestCase):
         pass
 
     def test_union(self):
-        union = WithComplexTypesUnion.Union.create(
-          py3bindings.org.coursera.records.test.Empty.Empty()
+        union = WithComplexTypesUnion.Union(
+          value=py3bindings.org.coursera.records.test.Empty.Empty()
         )
 
         self.assertIsNone(union.as_Fruits)

@@ -97,6 +97,14 @@ class Record:
         field_data = self.data.get(data_key)
         return field_data and type_constructor(field_data)
 
+class Union:
+    def __init__(self, data=None):
+        self.data = data if data is not None else {}
+
+    def _set_union(self, data_key, new_value):
+        old_data = self.data
+
+
 class Array(MutableSequence):
     def __init__(self, courier_index_type, data = []):
         self.data = data
@@ -126,7 +134,7 @@ class Array(MutableSequence):
     def __repr__(self):
         return 'courier.Array(' + repr(self.data) + ')'
 
-class Map (MutableMapping):
+class Map(MutableMapping):
     def __init__(self, courier_index_type, data = {}):
         self.data = data
         self._construct_item = courier_index_type.from_data if hasattr(courier_index_type, 'from_data') else courier_index_type
