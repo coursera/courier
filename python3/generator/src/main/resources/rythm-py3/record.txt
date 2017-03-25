@@ -6,7 +6,7 @@
 class @(record.typeName())(courier.Record):
     AVRO_SCHEMA = courier.parse_avro_schema(@record.avroSchemaJson())
 
-    def __init__(self, data=None, @for(Py3RecordFieldSyntax field: record.fields()) {@field.accessorName()=@field.constructorDefault(), }):
+    def __init__(self, @for(Py3RecordFieldSyntax field: record.fields()) {@field.accessorName()=@field.constructorDefault(), }data=None):
         super(self.__class__, self).__init__(data)
         @if(!record.fields().isEmpty()){        if data is None:}
             @for(Py3RecordFieldSyntax field: record.fields()) {
@@ -17,6 +17,10 @@ class @(record.typeName())(courier.Record):
             }
 
         courier.validate(self)
+
+    @@classmethod
+    def from_data(cls, data):
+      return cls(data=data)
 
     def __str__(self):
       return '@(record.typeName())(' + \
