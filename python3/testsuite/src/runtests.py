@@ -198,6 +198,24 @@ class TestCourierBindings(unittest.TestCase):
         self.assertEqual(eight_ball.answer, MagicEightBallAnswer.ASK_AGAIN_LATER)
         self.assertEqual(courier.serialize(eight_ball), """{"question": "??", "answer": "ASK_AGAIN_LATER"}""")
 
+    def test_record_optional_field(self):
+        no_fields_from_data = courier.parse(WithOptionalPrimitives, '{}')
+        no_fields_from_value = WithOptionalPrimitives()
+        self.assertIsNone(no_fields_from_data.intField)
+        self.assertIsNone(no_fields_from_value.intField)
+        self.assertEqual(no_fields_from_data, no_fields_from_value)
+        self.assertEqual(courier.serialize(no_fields_from_data), '{}')
+
+        int_field_from_data = courier.parse(WithOptionalPrimitives, '{"intField":1}')
+        int_field_from_value = WithOptionalPrimitives(intField=1)
+        self.assertEqual(int_field_from_data.intField, 1)
+        self.assertEqual(int_field_from_value.intField, 1)
+        self.assertEqual(int_field_from_data, int_field_from_value)
+        self.assertEqual(courier.serialize(int_field_from_data), '{"intField": 1}')
+
+        int_field_from_value.intField = None
+        self.assertEqual(courier.serialize(int_field_from_value), '{}')
+
     def test_record_validate_shallow(self):
         eight_ball = self.__make_eight_ball()
         courier.validate(eight_ball) # should be valid immediately after creation

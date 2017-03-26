@@ -88,7 +88,8 @@ class Record:
             old_data_value = self.data[data_key]
 
         if new_value in [None, OPTIONAL]:
-            del self.data[data_key]
+            if data_key in self.data:
+                del self.data[data_key]
         else:
             courier_obj = construct_object(new_value, field_type_constructor)
             self.data[data_key] = data_value(courier_obj)
@@ -135,7 +136,7 @@ class Union:
                 new_member_key = member_key
             elif isinstance(new_value, type):
                 new_member_key = member_key
-        if not new_member_key:
+        if new_member_key is None:
             # TODO(py3): better error here
             raise ValueError('Unacceptable value "%s" for union schema %s' % (repr(new_value), str(self.__class__.AVRO_SCHEMA)))
 

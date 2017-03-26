@@ -886,17 +886,6 @@ public class Py3Syntax {
       return _fieldTypeSyntax().modulesRequiredToUse();
     }
 
-    /**
-     * Just returns a "?" if this was an optional field either due to being decalred optional, or opting not to pass
-     * the STRICT directive into the generator.
-     **/
-    public String questionMarkIfOptional() {
-      boolean isFieldOptional = _schemaField().getOptional();
-      boolean markFieldAsOptional = isFieldOptional || Py3Properties.optionality == org.coursera.courier.py3.Py3Properties.Optionality.REQUIRED_FIELDS_MAY_BE_ABSENT;
-
-      return markFieldAsOptional? "?": "";
-    }
-
     //
     // Private members
     //

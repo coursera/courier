@@ -2,6 +2,7 @@
 @import org.coursera.courier.py3.Py3Syntax.Py3UnionSyntax
 @import org.coursera.courier.py3.Py3Syntax.Py3RecordFieldSyntax
 @record.imports()
+import json
 
 class @(record.typeName())(courier.Record):
     AVRO_SCHEMA = courier.parse_avro_schema(@record.avroSchemaJson())
