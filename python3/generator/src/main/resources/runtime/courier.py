@@ -82,19 +82,19 @@ class Record:
     def __init__(self, data=None):
         self.data = data if data is not None else {}
 
-    def _set_data_field(self, data_key, new_value, field_type_constructor):
+   def _set_data_field(self, data_key, new_value, field_type_constructor, validate_new_value=True):
         old_data_value = UNINITIALIZED
         if data_key in self.data:
             old_data_value = self.data[data_key]
 
-        if new_value is None:
+        if new_value in [None, OPTIONAL]:
             del self.data[data_key]
         else:
             courier_obj = construct_object(new_value, field_type_constructor)
             self.data[data_key] = data_value(courier_obj)
 
         try:
-            validate(self)
+            validate_new_value and validate(self)
         except ValidationError:
             if old_data_value is not UNINITIALIZED:
                 self.data[data_key] = old_data_value

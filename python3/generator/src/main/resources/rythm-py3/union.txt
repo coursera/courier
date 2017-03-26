@@ -58,22 +58,11 @@
 @indent()    def value(self):
 @indent()       for (key, value) in self.data.items():
 @indent()           return self.__class__._MEMBERS_BY_KEY[key]['constructor'](value)
-            @for(Py3UnionMemberSyntax member: union.members()) {
-@indent()
-@indent()    #
-@indent()    # '@member.typeName()' union member
-@indent()    #
-@indent()    @@property
-@indent()    def @(member.accessorName())(self):
-@indent()        member_data = self.data.get('@member.unionMemberKey()')
-@indent()        return member_data and @(member.constructor())(member_data)
-@indent()
-@indent()}
 @indent()
 @indent()    def __repr__(self):
 @indent()        return '@(union.typeName())(' + repr(self.data) + ')';
 @indent()
 @indent()    def __eq__(self, other):
-@indent()        return isinstance(other, @(union.typeName())) and self.data == other.data
+@indent()        return isinstance(other, self.__class__) and self.data == other.data
 @indent()
 @indent()
