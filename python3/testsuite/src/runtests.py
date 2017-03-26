@@ -275,7 +275,7 @@ class TestCourierBindings(unittest.TestCase):
             @py3.omit
             record Message {
               title: string?
-              body: string?
+              body: string?a
             }
         """
         pass
@@ -286,6 +286,33 @@ class TestCourierBindings(unittest.TestCase):
         )
 
         self.assertEqual(union.value, py3bindings.org.coursera.records.test.Empty.Empty())
+
+    def test_union_as_record_field(self):
+        record = WithComplexTypesUnion(union=Fruits.APPLE)
+        def assert_json_equal(json):
+            self.assertEqual(courier.serialize(record), json)
+        assert_json_equal("""{"union": {"org.coursera.enums.Fruits": "APPLE"}}""")
+
+        record.union = Fruits.ORANGE
+        assert_json_equal("""{"union": {"org.coursera.enums.Fruits": "ORANGE"}}""")
+
+        record.union = py3bindings.org.coursera.records.test.Empty.Empty()
+        assert_json_equal("""{"union": {"org.coursera.records.test.Empty": {}}}""")
+
+
+        def bad_type_should_raise_value_error():
+            record.union = 1
+
+        self.assertRaises(ValueError, bad_type_should_raise_value_error)
+
+        # After raising, the union should still be in its last good state
+        self.assertEqual(record.union, py3bindings.org.coursera.records.test.Empty.Empty())
+
+        # I should be able to set the union explicitly
+        union = WithComplexTypesUnion.Union(Fruits.APPLE)
+        record.union = union
+        self.assertEqual(record.union, Fruits.APPLE)
+
 
     def test_array_primitive(self):
         ints = [1,2,3,4]

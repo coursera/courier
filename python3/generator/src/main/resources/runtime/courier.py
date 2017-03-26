@@ -62,6 +62,12 @@ def data_value(courier_object_or_primitive):
         # Serialize ints and strs directly
         return courier_object_or_primitive
 
+def construct_object(value, constructor):
+    if hasattr(constructor, 'from_self_or_value'):
+        return constructor.from_self_or_value(value)
+    else:
+        return value
+
 def array(courier_type):
     return lambda items: Array(courier_type, items)
 
@@ -76,7 +82,7 @@ class Record:
     def __init__(self, data=None):
         self.data = data if data is not None else {}
 
-    def _set_data_field(self, data_key, new_value):
+    def _set_data_field(self, data_key, new_value, field_type_constructor):
         old_data_value = UNINITIALIZED
         if data_key in self.data:
             old_data_value = self.data[data_key]
@@ -84,7 +90,8 @@ class Record:
         if new_value is None:
             del self.data[data_key]
         else:
-            self.data[data_key] = data_value(new_value)
+            courier_obj = construct_object(new_value, field_type_constructor)
+            self.data[data_key] = data_value(courier_obj)
 
         try:
             validate(self)
@@ -95,7 +102,14 @@ class Record:
 
     def _get_data_field(self, data_key, type_constructor):
         field_data = self.data.get(data_key)
-        return field_data and type_constructor(field_data)
+        if field_data is not None:
+            # TODO(py3) unify all of these `from_data` calls
+            constructor = type_constructor.from_data if (hasattr(type_constructor, 'from_data')) else type_constructor
+            courier_obj = constructor(field_data)
+            if hasattr(courier_obj, 'as_value_type'):
+                return courier_obj.as_value_type
+            else:
+                return courier_obj
 
 class Union:
     def __init__(self, data=None):
@@ -104,11 +118,14 @@ class Union:
     def _set_union(self, data_key, new_value):
         old_data = self.data
 
+    @classmethod
+    def from_self_or_value(cls, self_or_value):
+        return self_or_value if isinstance(self_or_value, cls) else cls(value=self_or_value)
 
 class Array(MutableSequence):
     def __init__(self, courier_index_type, data = []):
         self.data = data
-        self._construct_item = courier_index_type.from_data if hasattr(courier_index_type, 'from_data') else courier_index_type
+        self._item_constructor = courier_index_type.from_data if hasattr(courier_index_type, 'from_data') else courier_index_type
 
     #
     # MutableSequence abstract method implementations
@@ -120,7 +137,8 @@ class Array(MutableSequence):
         return self._construct_item(self.data.__getitem__(key))
 
     def __setitem__(self, key, item):
-        return self.data.__setitem__(key, data_value(item))
+        courier_obj = construct_object(item, self._item_constructor)
+        return self.data.__setitem__(key, data_value(courier_obj))
 
     def __delitem__(self, key):
         return self.data.__delitem__(key)
@@ -134,10 +152,17 @@ class Array(MutableSequence):
     def __repr__(self):
         return 'courier.Array(' + repr(self.data) + ')'
 
+    #
+    # Private implementations
+    #
+    def _construct_item(self, item):
+        item = self._item_constructor(item)
+        return item if not hasattr(item, 'as_value_type') else item.as_value_type
+
 class Map(MutableMapping):
     def __init__(self, courier_index_type, data = {}):
         self.data = data
-        self._construct_item = courier_index_type.from_data if hasattr(courier_index_type, 'from_data') else courier_index_type
+        self._item_constructor = courier_index_type.from_data if hasattr(courier_index_type, 'from_data') else courier_index_type
 
     def items(self):
         for key in self.data:
@@ -155,8 +180,9 @@ class Map(MutableMapping):
     def __getitem__(self, key):
         return self._construct_item(self.data.__getitem__(key))
 
-    def __setitem__(self, key, value):
-        return self.data.__setitem__(key, data_value(value))
+    def __setitem__(self, key, item):
+        courier_obj = construct_object(item, self._item_constructor)
+        return self.data.__setitem__(key, data_value(courier_obj))
 
     def __delitem__(self, key):
         return self.data.__delitem__(key)
@@ -166,6 +192,13 @@ class Map(MutableMapping):
     #
     def __repr__(self):
         return 'courier.Map(' + repr(self.data) + ')'
+
+    #
+    # Private implementaitons
+    #
+    def _construct_item(self, item):
+        item = self._item_constructor(item)
+        return item if not hasattr(item, 'as_value_type') else item.as_value_type
 
 REQUIRED = "__COURIER_REQUIRED__"
 OPTIONAL = "__COURIER_OPTIONAL__"

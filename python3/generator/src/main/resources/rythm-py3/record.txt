@@ -13,7 +13,9 @@ class @(record.typeName())(courier.Record):
             if @field.accessorName() is courier.REQUIRED:
                 raise TypeError('__init__() missing required keyword argument: \'@field.accessorName()\'')
             elif @field.accessorName() not in [None, courier.OPTIONAL]:
-                self.data['@field.jsonKey()'] = courier.data_value(@field.accessorName())
+                @field.accessorName()_courier_obj = courier.construct_object(@field.accessorName(), @field.constructor())
+                @field.accessorName()_field_data = courier.data_value(@field.accessorName()_courier_obj)
+                self.data['@field.jsonKey()'] = @field.accessorName()_field_data
             }
 
         courier.validate(self)
@@ -43,11 +45,11 @@ class @(record.typeName())(courier.Record):
     @{ String setter = field.accessorName() + ".setter" }
     @@property
     def @field.accessorName() (self):
-        return self._get_data_field(data_key='@field.jsonKey()', type_constructor=@field.constructor())
+        return self._get_data_field('@field.jsonKey()', @field.constructor())
 
     @@@setter
     def @field.accessorName() (self, new_value):
-        return self._set_data_field('@field.jsonKey()', new_value)
+        return self._set_data_field('@field.jsonKey()', new_value, @field.constructor())
 }@if(record.requiresCompanionModule()) { @for(Py3UnionSyntax union: record.enclosedUnions()) {
      @union(union, 1)
   }

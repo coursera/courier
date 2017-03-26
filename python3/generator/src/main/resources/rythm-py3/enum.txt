@@ -6,22 +6,32 @@
 class @enumeration.typeName():
     AVRO_SCHEMA = courier.parse_avro_schema(@enumeration.avroSchemaJson())
 
-    class Value:
-        def __init__(self, name):
-           self.name = name
-           self.data = name
-
-        def __str__(self):
-          return self.name
-
-        def __repr__(self):
-           return '@(enumeration.typeName()).Value("%s")' % self.name
-@for(Py3EnumSymbolSyntax symbol : enumeration.symbols()) {
+    @for(Py3EnumSymbolSyntax symbol : enumeration.symbols()) {
     @symbol.docString()
-    @symbol.moduleConstValue() = Value(@symbol.stringLiteralValue());
+    @symbol.moduleConstValue() = courier.UNINITIALIZED
+    }
 
-}
-    ALL = [@for(Py3EnumSymbolSyntax symbol : enumeration.symbols()) { @symbol.moduleConstValue(), }]
+    ALL = courier.UNINITIALIZED
+    __BY_NAME = courier.UNINITIALIZED
+
+    def __init__(self, name):
+       self.name = name
+       self.data = name
+
+    def __str__(self):
+      return self.name
+
+    def __repr__(self):
+       return '@(enumeration.typeName())("%s")' % self.name
+
+    @@classmethod
+    def __init_statics__(cls):
+        if cls.ALL is courier.UNINITIALIZED:
+            @for(Py3EnumSymbolSyntax symbol : enumeration.symbols()) {
+            cls.@(symbol.moduleConstValue()) = cls(@symbol.stringLiteralValue());
+            }
+            cls.ALL = [@for(Py3EnumSymbolSyntax symbol : enumeration.symbols()) { cls.@(symbol.moduleConstValue()), }]
+            cls.__BY_NAME = dict([(symbol.name, symbol) for symbol in cls.ALL])
 
     @@classmethod
     def find_by_name(cls, name):
@@ -37,4 +47,4 @@ class @enumeration.typeName():
     def from_data(cls, data):
         return cls.find_by_name(data)
 
-    __BY_NAME = dict([(symbol.name, symbol) for symbol in ALL])
+@(enumeration.typeName()).__init_statics__()

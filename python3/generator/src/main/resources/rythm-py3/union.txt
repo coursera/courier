@@ -38,7 +38,7 @@
 @indent()                    new_data = { member_key: courier.data_value(value) }
 @indent()            if not new_data:
 @indent()                # TODO(py3): better error here
-@indent()                raise ValueError('Unacceptable value "%s" for schema %s' % (value, str(self.__class__.AVRO_SCHEMA)))
+@indent()                raise ValueError('Unacceptable value "%s" for union schema %s' % (repr(value), str(self.__class__.AVRO_SCHEMA)))
 @indent()            # Edit data mutably because it may belong to a larger data tree of
 @indent()            # some other object
 @indent()            self.data.clear()
@@ -49,6 +49,10 @@
 @indent()    @@classmethod
 @indent()    def from_data(cls, data):
 @indent()        return cls(data=data)
+@indent()
+@indent()    @@property
+@indent()    def as_value_type(self):
+@indent()        return self.value
 @indent()
 @indent()    @@property
 @indent()    def value(self):
