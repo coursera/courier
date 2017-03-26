@@ -11,9 +11,8 @@
 @indent()class @(union.typeName())(courier.Union):
 @indent()    AVRO_SCHEMA = courier.parse_avro_schema(@union.avroSchemaJson());
 @indent()
-@indent()    _MEMBERS_BY_KEY = {
+@indent()    _TYPES_BY_KEY = {
              @for(Py3UnionMemberSyntax member: union.members()) {
-
 @indent()        '@member.unionMemberKey()': {'type': @member.typeName(), 'constructor': @member.constructor() },
 @indent()    }
 
@@ -30,19 +29,7 @@
 @indent()        """
 @indent()        super(self.__class__, self).__init__(data)
 @indent()        if data is None:
-@indent()            new_data = {}
-@indent()            if value is courier.REQUIRED:
-@indent()                raise TypeError('__init__() missing required argument: value')
-@indent()            for (member_key, type_info) in self.__class__._MEMBERS_BY_KEY.items():
-@indent()                if isinstance(value, type_info['type']):
-@indent()                    new_data = { member_key: courier.data_value(value) }
-@indent()            if not new_data:
-@indent()                # TODO(py3): better error here
-@indent()                raise ValueError('Unacceptable value "%s" for union schema %s' % (repr(value), str(self.__class__.AVRO_SCHEMA)))
-@indent()            # Edit data mutably because it may belong to a larger data tree of
-@indent()            # some other object
-@indent()            self.data.clear()
-@indent()            self.data.update(new_data)
+@indent()            self._set_from_value(value)
 @indent()
 @indent()        courier.validate(self)
 @indent()
@@ -57,7 +44,7 @@
 @indent()    @@property
 @indent()    def value(self):
 @indent()       for (key, value) in self.data.items():
-@indent()           return self.__class__._MEMBERS_BY_KEY[key]['constructor'](value)
+@indent()           return self.__class__._TYPES_BY_KEY[key]['constructor'](value)
 @indent()
 @indent()    def __repr__(self):
 @indent()        return '@(union.typeName())(' + repr(self.data) + ')';

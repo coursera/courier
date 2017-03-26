@@ -604,26 +604,6 @@ public class Py3Syntax {
     }
 
     /**
-     * Returns the symbol used to access this union member's index in the union's "unpack" return object.
-     *
-     * For example, given union[FortuneCookie], the return object from "unpack" would be { fortuneCookie: union["namespace.FortuneCookie"] as FortuneCookie }
-     */
-    public String unpackString() {
-      DataSchema schema = _memberSchema();
-      String unpackNameBase;
-      if (schema instanceof PrimitiveDataSchema) {
-        unpackNameBase = schema.getUnionMemberKey();
-      } else {
-        unpackNameBase = _memberTypeSyntax().typeName();
-      }
-
-      String punctuationEscaped = unpackNameBase.replaceAll("[\\p{Punct}\\p{Space}]", "");
-      String lowerCased = Character.toLowerCase(punctuationEscaped.charAt(0)) + punctuationEscaped.substring(1);
-
-      return escapeKeyword(lowerCased, EscapeStrategy.MANGLE);
-    }
-
-    /**
      * Returns the union member class name for the given {@link ClassTemplateSpec} as a Typescript
      * source code string.
      *

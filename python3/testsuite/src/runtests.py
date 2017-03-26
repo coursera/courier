@@ -293,13 +293,13 @@ class TestCourierBindings(unittest.TestCase):
         def assert_json_equal(json):
             self.assertEqual(courier.serialize(record), json)
 
-        assert_json_equal("""{"union": {"org.coursera.enums.Fruits": "APPLE"}}""")
+        assert_json_equal('{"union": {"org.coursera.enums.Fruits": "APPLE"}}')
 
         record.union = Fruits.ORANGE
-        assert_json_equal("""{"union": {"org.coursera.enums.Fruits": "ORANGE"}}""")
+        assert_json_equal('{"union": {"org.coursera.enums.Fruits": "ORANGE"}}')
 
         record.union = py3bindings.org.coursera.records.test.Empty.Empty()
-        assert_json_equal("""{"union": {"org.coursera.records.test.Empty": {}}}""")
+        assert_json_equal('{"union": {"org.coursera.records.test.Empty": {}}}')
 
 
         def bad_type_should_raise_value_error():
@@ -315,6 +315,18 @@ class TestCourierBindings(unittest.TestCase):
         record.union = union
         self.assertEqual(record.union, Fruits.APPLE)
 
+    def test_union_of_arrays_and_maps(self):
+        record = WithComplexTypesUnion(union=[Simple('Hello world')])
+        self.assertEqual(len(record.union), 1)
+        self.assertEqual(record.union, [Simple('Hello world')])
+
+        record.union.append(Simple('Bonjour, tout le monde'))
+        self.assertEqual(len(record.union), 2)
+        self.assertEqual(record.union, [Simple('Hello world'), Simple('Bonjour, tout le monde')])
+        self.assertEqual(courier.serialize(record), '{"union": {"array": [{"message": "Hello world"}, {"message": "Bonjour, tout le monde"}]}}')
+        record.union = { 'a': Simple("a message") }
+        self.assertEqual(record.union['a'], Simple("a message"))
+        self.assertEqual(courier.serialize(record), '{"union": {"map": {"a": {"message": "a message"}}}}')
 
     def test_array_primitive(self):
         ints = [1,2,3,4]

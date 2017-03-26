@@ -82,7 +82,7 @@ class Record:
     def __init__(self, data=None):
         self.data = data if data is not None else {}
 
-   def _set_data_field(self, data_key, new_value, field_type_constructor, validate_new_value=True):
+    def _set_data_field(self, data_key, new_value, field_type_constructor, validate_new_value=True):
         old_data_value = UNINITIALIZED
         if data_key in self.data:
             old_data_value = self.data[data_key]
@@ -122,9 +122,31 @@ class Union:
     def from_self_or_value(cls, self_or_value):
         return self_or_value if isinstance(self_or_value, cls) else cls(value=self_or_value)
 
+    def _set_from_value(self, new_value):
+        old_data = self.data
+        new_data_value = data_value(new_value)
+        new_member_key = None
+
+        for (member_key, type_info) in self.__class__._TYPES_BY_KEY.items():
+            type = type_info['type']
+            if member_key == 'array' and isinstance(new_value, MutableSequence):
+                new_member_key = member_key
+            elif member_key == 'map' and isinstance(new_value, MutableMapping):
+                new_member_key = member_key
+            elif isinstance(new_value, type):
+                new_member_key = member_key
+        if not new_member_key:
+            # TODO(py3): better error here
+            raise ValueError('Unacceptable value "%s" for union schema %s' % (repr(new_value), str(self.__class__.AVRO_SCHEMA)))
+
+        # Edit data mutably because it may belong to a larger data tree of
+        # some other object
+        self.data.clear()
+        self.data[new_member_key] = new_data_value
+
 class Array(MutableSequence):
-    def __init__(self, courier_index_type, data = []):
-        self.data = data
+    def __init__(self, courier_index_type, data=None):
+        self.data = [] if data is None else data
         self._item_constructor = courier_index_type.from_data if hasattr(courier_index_type, 'from_data') else courier_index_type
 
     #
@@ -152,6 +174,9 @@ class Array(MutableSequence):
     def __repr__(self):
         return 'courier.Array(' + repr(self.data) + ')'
 
+    def __eq__(self, other):
+        return isinstance(other, MutableSequence) and data_value(self) == data_value(other)
+
     #
     # Private implementations
     #
@@ -160,8 +185,8 @@ class Array(MutableSequence):
         return item if not hasattr(item, 'as_value_type') else item.as_value_type
 
 class Map(MutableMapping):
-    def __init__(self, courier_index_type, data = {}):
-        self.data = data
+    def __init__(self, courier_index_type, data=None):
+        self.data = {} if data is None else data
         self._item_constructor = courier_index_type.from_data if hasattr(courier_index_type, 'from_data') else courier_index_type
 
     def items(self):
@@ -192,6 +217,9 @@ class Map(MutableMapping):
     #
     def __repr__(self):
         return 'courier.Map(' + repr(self.data) + ')'
+
+    def __eq__(self, other):
+        return isinstance(other, MutableMapping) and data_value(self) == data_value(other)
 
     #
     # Private implementaitons
