@@ -216,6 +216,26 @@ class TestCourierBindings(unittest.TestCase):
         int_field_from_value.intField = None
         self.assertEqual(courier.serialize(int_field_from_value), '{}')
 
+    def test_record_default_primitives(self):
+        num_defaults = NumericDefaults()
+        self.assertEqual(num_defaults.i, 2147483647)
+        self.assertEqual(num_defaults.l, 9223372036854775807)
+        self.assertEqual(num_defaults.f, 3.4028233E38)
+        self.assertEqual(num_defaults.d, 1.7976931348623157E308)
+
+        data = {'intWithDefault': 1, 'longWithDefault': 3000000000, 'floatWithDefault': 3.3, 'doubleWithDefault': 4.4e+38, 'booleanWithDefault': True, 'stringWithDefault': 'DEFAULT', 'bytesWithDefault': bytes('', 'UTF-8'), 'enumWithDefault': 'APPLE'}
+        prim_defaults = WithPrimitiveDefaults(data=data)
+#            intWithDefault=1,
+#            longWithDefault=1,
+#            floatWithDefault=1.0,
+#            doubleWithDefault=1.0,
+#            booleanWithDefault=True,
+#            stringWithDefault="1",
+#            bytesWithDefault='\u00FF',
+#            enumWithDefault=Fruits.APPLE
+#        )
+
+
     def test_record_validate_shallow(self):
         eight_ball = self.__make_eight_ball()
         courier.validate(eight_ball) # should be valid immediately after creation

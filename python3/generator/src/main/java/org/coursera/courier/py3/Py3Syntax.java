@@ -16,8 +16,10 @@
 
 package org.coursera.courier.py3;
 
+import com.linkedin.data.DataList;
 import com.linkedin.data.DataMap;
 import com.linkedin.data.avro.SchemaTranslator;
+import com.linkedin.data.codec.JacksonDataCodec;
 import com.linkedin.data.schema.DataSchema;
 import com.linkedin.data.schema.DataSchema.Type;
 import com.linkedin.data.schema.EnumDataSchema;
@@ -26,9 +28,11 @@ import com.linkedin.data.schema.PrimitiveDataSchema;
 import com.linkedin.data.schema.RecordDataSchema;
 import com.linkedin.data.schema.TyperefDataSchema;
 import com.linkedin.data.schema.UnionDataSchema;
+import com.linkedin.data.template.DataTemplateUtil;
 import com.linkedin.pegasus.generator.spec.*;
 import org.coursera.courier.api.ClassTemplateSpecs;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -457,13 +461,6 @@ public class Py3Syntax {
     }
   }
 
-  /** Pegasus types that should be rendered as "number" in typescript */
-  private static final Set<Type> Py3_NUMBER_TYPES = new HashSet<>(
-      Arrays.asList(
-          new Type[] { Type.INT, Type.LONG, Type.FLOAT, Type.DOUBLE }
-      )
-  );
-
   /** Pegasus types that should be rendered as "string" in typescript */
   private static final Set<Type> Py3_STRING_TYPES = new HashSet<>(
       Arrays.asList(
@@ -872,6 +869,26 @@ public class Py3Syntax {
 
     public String constructorDefault() {
       return _schemaField().getOptional()? "courier.OPTIONAL": "courier.REQUIRED";
+    }
+
+    public boolean hasDefaultValue() {
+      return _schemaField().getDefault() != null;
+    }
+    public String defaultValue() {
+      if (this.hasDefaultValue()) {
+        Object defaultValue = _schemaField().getDefault();
+        DataList throwawayList = new DataList();
+        throwawayList.add(defaultValue);
+        try {
+          String json = new JacksonDataCodec().listToString(throwawayList);
+          return json.substring(1, json.length() - 1);
+        } catch (IOException e) {
+          e.printStackTrace(System.err);
+          throw new RuntimeException(e);
+        }
+      } else {
+        return "";
+      }
     }
 
     public String docString() {
