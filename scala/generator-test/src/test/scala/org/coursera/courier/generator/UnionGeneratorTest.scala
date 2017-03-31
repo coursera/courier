@@ -155,4 +155,17 @@ class UnionGeneratorTest extends GeneratorTest with SchemaFixtures {
   def testUnionTyperefSchema(): Unit = {
     assert(TypedDefinition.TYPEREF_SCHEMA.getDereferencedDataSchema === TypedDefinition.SCHEMA)
   }
+
+  @Test
+  def testMemberUnapplyReturnsSomeType(): Unit = {
+    // If the member unapply methods return Option[X] instead of Some[X], then the scala compiler
+    // turns off match exhaustivity checking for match statements that use the member unapply
+    // methods. This test asserts that member unapply methods return Some[X], so that we get better
+    // exhaustivity checking for match statements involving courier unions.
+    assertCompiles("""
+      val recordMember = WithComplexTypesUnion.Union.EmptyMember(Empty())
+      WithComplexTypesUnion.Union.EmptyMember.unapply(recordMember): Some[Empty]
+    """)
+  }
+
 }

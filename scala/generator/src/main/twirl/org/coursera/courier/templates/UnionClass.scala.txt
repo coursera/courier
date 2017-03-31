@@ -148,7 +148,7 @@ object @(union.scalaType) extends UnionCompanion[@(union.scalaType)] @(if(union.
         new @(member.classDefinition.memberName)(dataMap)
       }
 
-      def unapply(member: @(member.classDefinition.memberName)): Option[@(member.classDefinition.scalaTypeFullname)] = {
+      def unapply(member: @(member.classDefinition.memberName)): Some[@(member.classDefinition.scalaTypeFullname)] = {
         Some(member.value)
       }
 
