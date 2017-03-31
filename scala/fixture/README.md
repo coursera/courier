@@ -109,7 +109,7 @@ implicit val defaultGenerator: DefaultGeneratorFactories = DefaultGeneratorFacto
 val fortune = fixture[Fortune]
 ```
 
-If we're certain that the same generator should be used in all scopes, we can annotate our `typref` definition, making our generator available to all record generators:
+If we're certain that the same generator should be used in all scopes, we can annotate our `typeref` definition, making our generator available to all record generators:
 
 ```
 @scala.class = "org.joda.time.DateTime"
