@@ -87,14 +87,14 @@ class MapFieldsTest extends JUnitSuite with AssertionsForJUnit {
     // data generator factory can infer key genertors for custom map types.
     implicit val defaultGenerator: DefaultGeneratorFactories =
       DefaultGeneratorFactories()
-        .set[Simple]((name: String) => simpleGenerator)
-        .set[Fruits]((name: String) => new CyclicEnumSymbolGenerator(Fruits))
+        .setUnchecked[Simple](simpleGenerator)
+        .set[Fruits](new CyclicEnumSymbolGenerator(Fruits))
         // name of `CustomInt` typref schema does not match `CustomInt` class name, so use
         // `setAlias` instead of `set[CustomInt]`
         .setAlias("org.coursera.customtypes.CustomInt",
           (name: String) => new CoercedCustomIntGenerator)
-        .set[Toggle]((name: String) => new CyclicEnumSymbolGenerator(Toggle))
-        .set[Fixed8]((name: String) => new IntegerRangeFixedBytesGenerator(8).map(Fixed8(_)))
+        .set[Toggle](new CyclicEnumSymbolGenerator(Toggle))
+        .setUnchecked[Fixed8](new IntegerRangeFixedBytesGenerator(8).map(Fixed8(_)))
 
     val element = fixtureGenerator[WithTypedKeyMap]
       .withCollectionLength(COLLECTION_LENGTH)

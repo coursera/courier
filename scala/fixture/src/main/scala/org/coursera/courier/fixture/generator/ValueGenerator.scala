@@ -14,7 +14,7 @@ import org.coursera.courier.templates.ScalaRecordTemplate
 import scala.collection.immutable
 
 // TODO amory: scaladoc
-
+sealed trait PegasusCompatibleValueGenerator
 sealed trait ValueGenerator[+K <: AnyRef] {
 
   def next(): K
@@ -26,7 +26,6 @@ sealed trait ValueGenerator[+K <: AnyRef] {
     }
     InlineStringCodec.dataToString(data)
   }
-
 
   def map[V <: AnyRef](transform: K => V): ValueGenerator[V] = {
     val delegate = this
@@ -40,12 +39,14 @@ trait RecordValueGenerator[K <: ScalaRecordTemplate] extends ValueGenerator[K] {
   override def nextKey(): String = InlineStringCodec.dataToString(next().data())
 }
 
-trait EnumSymbolGenerator[K <: ScalaEnumTemplateSymbol] extends ValueGenerator[K] {
+trait EnumSymbolGenerator[K <: ScalaEnumTemplateSymbol]
+  extends ValueGenerator[K]
+  with PegasusCompatibleValueGenerator {
   val symbols: immutable.Iterable[K]
   override def nextKey(): String = next().toString()
 }
 
-trait CoercedValueGenerator[K] extends ValueGenerator[AnyRef] {
+trait CoercedValueGenerator[K] extends ValueGenerator[AnyRef] with PegasusCompatibleValueGenerator {
 
   val coercer: DirectCoercer[K]
 
@@ -72,7 +73,9 @@ final class CyclicGenerator[+K <: AnyRef] (generators: immutable.Seq[ValueGenera
 }
 
 final class DataMapValueGenerator(
-    fieldGenerators: Map[String, ValueGenerator[_ <: AnyRef]]) extends ValueGenerator[DataMap] {
+    fieldGenerators: Map[String, ValueGenerator[_ <: AnyRef]])
+  extends ValueGenerator[DataMap]
+  with PegasusCompatibleValueGenerator {
 
   override def next(): DataMap = {
     val data = new DataMap()
@@ -118,7 +121,9 @@ final class MapValueGenerator[V <: AnyRef](
   }
 }
 
-sealed trait PrimitiveValueGenerator[+K <: AnyRef] extends ValueGenerator[K]
+sealed trait PrimitiveValueGenerator[+K <: AnyRef]
+  extends ValueGenerator[K]
+  with PegasusCompatibleValueGenerator
 
 sealed trait UnboxedValueGenerator[U <: AnyVal, K <: AnyRef] extends PrimitiveValueGenerator[K] {
   def nextUnboxed(): U

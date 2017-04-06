@@ -1,7 +1,8 @@
 package org.coursera.courier.fixture.generator
 
-import com.linkedin.data.ByteString
 import com.linkedin.data.schema.DataSchema
+import com.linkedin.data.template.DataTemplateUtil
+import com.linkedin.data.template.DirectCoercer
 import org.coursera.courier.fixture.generator.DefaultGeneratorFactories.GeneratorFactory
 
 import scala.reflect.ClassTag
@@ -32,12 +33,48 @@ class DefaultGeneratorFactories private(factories: Map[String, GeneratorFactory]
   /**
    * Set the generator factory for objects of type `T`.
    */
-  def set[T <: Any](
-      factory: GeneratorFactory)
+  def set[T <: AnyRef](
+      factory: String => ValueGenerator[AnyRef] with PegasusCompatibleValueGenerator)
       (implicit tag: ClassTag[T]): DefaultGeneratorFactories = {
-
     new DefaultGeneratorFactories(factories.updated(getName(tag.runtimeClass), factory))
   }
+
+  def set[T <: AnyRef](
+      generator: ValueGenerator[AnyRef] with PegasusCompatibleValueGenerator)
+      (implicit tag: ClassTag[T]): DefaultGeneratorFactories = {
+    set((name: String) => generator)
+  }
+
+  def set[T <: AnyRef](
+      factory: String => ValueGenerator[T],
+      coercer: DirectCoercer[T])
+    (implicit tag: ClassTag[T]): DefaultGeneratorFactories = {
+    val coercedFactory = (name: String) => factory(name).map(coercer.coerceInput)
+    new DefaultGeneratorFactories(factories.updated(getName(tag.runtimeClass), coercedFactory))
+  }
+
+  def set[T <: AnyRef](
+      generator: ValueGenerator[T],
+      coercer: DirectCoercer[T])
+    (implicit tag: ClassTag[T]): DefaultGeneratorFactories = {
+    set((name: String) => generator, coercer)
+  }
+
+  /**
+   * Set the generator factory for objects of type `T`.
+   */
+  def setUnchecked[T <: AnyRef](
+      factory: String => ValueGenerator[T])
+    (implicit tag: ClassTag[T]): DefaultGeneratorFactories = {
+    new DefaultGeneratorFactories(factories.updated(getName(tag.runtimeClass), factory))
+  }
+
+  def setUnchecked[T <: AnyRef](
+      generator: ValueGenerator[T])
+      (implicit tag: ClassTag[T]): DefaultGeneratorFactories = {
+    setUnchecked((name: String) => generator)
+  }
+
 
   /**
    * Set generator factory value by name.
