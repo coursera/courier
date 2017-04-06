@@ -470,4 +470,17 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures {
     // Fortunately, nothing should depend solely on hashCode() for determining whether two
     // records match.
   }
+
+  @Test
+  def testUnapplyReturnsSomeType(): Unit = {
+    // If the unapply method returns Option[X] instead of Some[X], then the scala compiler turns
+    // off match exhaustivity checking for match statements that use the unapply method. This test
+    // This test asserts that the unapply method returns Some[X], so that we get better
+    // exhaustivity checking for match statements involving courier records.
+    assertCompiles("""
+      val record = Simple("hello world")
+      Simple.unapply(record): Some[Simple]
+    """)
+  }
+
 }
