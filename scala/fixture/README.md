@@ -91,7 +91,7 @@ object ConstantDateTimeGenerator {
 ```
 
 
-The most local way to fix our generator erros is to override the `createdAt` field value for a single generator:
+The most local way to fix our generator errors is to override the `createdAt` field value for a single generator:
 ```
 val coercer = new DateTimeCoercer()
 
@@ -124,6 +124,8 @@ val fortune = fixture[Fortune]
 ```
 
 Local overrides take precedence over global overrides, so `@scala.fixtureGeneratorClass = ...` is overshadowed by `implicit val defaultGenerator: DefaultGeneratorFactories = ...` which is overshadowed by `fixtureGenerator[Fortune].withField(...)`  
+
+Note that, in most cases, your generator will need to coerce its values for them to be legal data elements. In the examples above `ConstantDateTimeGenerator extends CoercedValueGenerator[DateTime]` produce strings, rather than `DataTime`.
 
 See tests for advanced usage examples. 
 
