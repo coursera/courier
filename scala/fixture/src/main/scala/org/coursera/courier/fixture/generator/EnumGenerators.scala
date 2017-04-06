@@ -3,7 +3,6 @@ package org.coursera.courier.fixture.generator
 import org.coursera.courier.templates.ScalaEnumTemplate
 import org.coursera.courier.templates.ScalaEnumTemplateSymbol
 
-
 class CyclicEnumSymbolGenerator[K <: ScalaEnumTemplateSymbol](companion: ScalaEnumTemplate[K])
     extends EnumSymbolGenerator[K] {
 

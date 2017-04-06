@@ -11,9 +11,8 @@ class RecordGeneratorBuilder[K <: ScalaRecordTemplate](
     defaultGeneratorFactories: DefaultGeneratorFactories = DefaultGeneratorFactories())
   extends RecordValueGenerator[K] {
 
-  lazy val dataGenerator =
-    new RecordSchemaDataGeneratorFactory(companion.SCHEMA, customFieldGenerators, config, defaultGeneratorFactories)
-      .build()
+  lazy val dataGenerator = new RecordSchemaDataGeneratorFactory(
+      companion.SCHEMA, customFieldGenerators, config, defaultGeneratorFactories).build()
 
   override def next(): K = companion.build(dataGenerator.next(), DataConversion.SetReadOnly)
 

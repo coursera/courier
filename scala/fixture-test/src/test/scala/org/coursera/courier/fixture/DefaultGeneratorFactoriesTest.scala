@@ -9,8 +9,8 @@ import org.joda.time.DateTime
 import org.junit.Test
 import org.scalatest.junit.AssertionsForJUnit
 import org.scalatest.junit.JUnitSuite
-
 import FixtureSugar._
+import org.coursera.courier.fixture.generator.ConstantValueGenerator
 
 class DefaultGeneratorFactoriesTest extends JUnitSuite with AssertionsForJUnit {
 
