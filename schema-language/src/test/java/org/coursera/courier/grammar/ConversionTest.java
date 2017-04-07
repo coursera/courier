@@ -35,6 +35,7 @@ public class ConversionTest {
   public void courierToPdsc() throws IOException {
 
     String[] schemasNames = new String[] {
+      "org.example.Apostrophe",
       "org.example.Fortune",
       "org.example.FortuneCookie",
       "org.example.MagicEightBall",

@@ -1,0 +1,6 @@
+namespace org.example
+
+record Apostrophe {
+  // A single-line comment on the record's field can contain apostrophes.
+  field: int
+}
