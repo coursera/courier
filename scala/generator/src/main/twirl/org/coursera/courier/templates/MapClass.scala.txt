@@ -54,6 +54,7 @@
   }
 }
 
+@GeneratedFileNotice()
 @if(map.isTopLevel) {
   @map.namespace.map { namespace => package @namespace }
 

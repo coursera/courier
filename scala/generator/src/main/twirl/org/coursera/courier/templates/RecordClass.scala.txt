@@ -4,6 +4,7 @@
 @import com.linkedin.data.schema.JsonBuilder
 @import org.coursera.courier.generator.specs._
 
+@GeneratedFileNotice()
 @if(record.isTopLevel) {
   @record.namespace.map { namespace => package @namespace }
 
@@ -217,4 +218,3 @@ object @(record.scalaType) extends RecordCompanion[@(record.scalaType)] {
     }
   }
 }
-
