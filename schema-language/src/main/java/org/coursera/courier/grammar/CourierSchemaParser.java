@@ -318,6 +318,8 @@ public class CourierSchemaParser extends SchemaParser {
 
   private NamedDataSchema parseNamedType(
       NamedTypeDeclarationContext namedType) throws ParseException {
+    System.out.println("parseNamedType: "+namedType.getText());
+
     if (namedType.recordDeclaration() != null) {
       return parseRecord(namedType, namedType.recordDeclaration());
     } else if (namedType.typerefDeclaration() != null) {
@@ -329,10 +331,12 @@ public class CourierSchemaParser extends SchemaParser {
     } else if (namedType.keyDeclaration() != null) {
       // TODO(@kchen): can we just use record here since it's a DataSchema which is defined in
       // pegasus???
-      return parseRecord(namedType, namedType.recordDeclaration());
+      RecordDataSchema schema = parseRecord(namedType, namedType.recordDeclaration());
+      System.out.println("Key: " + schemasToString());
+      return schema;
     } else {
       throw new ParseException(namedType,
-        "Unrecognized named type parse node: " + namedType.getText());
+        namedType.getText() + ": Unrecognized named type parse node: " + namedType.getText());
     }
   }
 
