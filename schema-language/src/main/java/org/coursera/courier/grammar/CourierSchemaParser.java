@@ -328,12 +328,12 @@ public class CourierSchemaParser extends SchemaParser {
       return parseFixed(namedType, namedType.fixedDeclaration());
     } else if (namedType.enumDeclaration() != null) {
       return parseEnum(namedType, namedType.enumDeclaration());
-    } else if (namedType.keyDeclaration() != null) {
-      // TODO(@kchen): can we just use record here since it's a DataSchema which is defined in
-      // pegasus???
-      RecordDataSchema schema = parseRecord(namedType, namedType.recordDeclaration());
-      System.out.println("Key: " + schemasToString());
-      return schema;
+//    } else if (namedType.keyDeclaration() != null) {
+//      // TODO(@kchen): can we just use record here since it's a DataSchema which is defined in
+//      // pegasus???
+//      RecordDataSchema schema = parseRecord(namedType, namedType.recordDeclaration());
+//      System.out.println("Key: " + schemasToString());
+//      return schema;
     } else {
       throw new ParseException(namedType,
         namedType.getText() + ": Unrecognized named type parse node: " + namedType.getText());
