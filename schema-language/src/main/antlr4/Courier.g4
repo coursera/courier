@@ -20,8 +20,7 @@ typeReference returns [String value]: qualifiedIdentifier {
 typeDeclaration: namedTypeDeclaration | anonymousTypeDeclaration;
 
 namedTypeDeclaration: doc=schemadoc? props+=propDeclaration*
-  (recordDeclaration | enumDeclaration | typerefDeclaration | fixedDeclaration);
-  // (recordDeclaration | enumDeclaration | typerefDeclaration | fixedDeclaration | keyDeclaration);
+  (recordDeclaration | enumDeclaration | typerefDeclaration | fixedDeclaration | keyDeclaration);
 
 anonymousTypeDeclaration: unionDeclaration | arrayDeclaration | mapDeclaration;
 
@@ -40,6 +39,10 @@ propNameDeclaration returns [String name]: AT qualifiedIdentifier {
 propJsonValue: OPEN_PAREN jsonValue CLOSE_PAREN | EQ jsonValue;
 
 recordDeclaration returns [String name]: RECORD identifier recordDecl=fieldSelection {
+  $name = $identifier.value;
+};
+
+keyDeclaration returns [String name]: KEY identifier keyDecl=fieldSelection {
   $name = $identifier.value;
 };
 
@@ -139,7 +142,6 @@ NAMESPACE: 'namespace';
 RECORD: 'record';
 TYPEREF: 'typeref';
 UNION: 'union';
-KEY: 'key';
 
 OPEN_PAREN: '(';
 CLOSE_PAREN: ')';
@@ -172,3 +174,5 @@ STRING_LITERAL: '"' (ESC | ~["\\])* '"';
 ID: '`'? [A-Za-z_] [A-Za-z0-9_]* '`'?; // Avro/Pegasus identifiers with Scala/Swift escaping
 
 WS: [ \t\n\r\f,]+ -> skip;
+
+KEY: 'key';

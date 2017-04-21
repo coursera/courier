@@ -318,8 +318,6 @@ public class CourierSchemaParser extends SchemaParser {
 
   private NamedDataSchema parseNamedType(
       NamedTypeDeclarationContext namedType) throws ParseException {
-    System.out.println("parseNamedType: "+namedType.getText());
-
     if (namedType.recordDeclaration() != null) {
       return parseRecord(namedType, namedType.recordDeclaration());
     } else if (namedType.typerefDeclaration() != null) {
