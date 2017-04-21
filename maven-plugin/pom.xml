@@ -33,9 +33,9 @@
   </developers>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <scalaMajorVersion>2.11</scalaMajorVersion>
-    <scalaVersion>2.11.5</scalaVersion>
-    <courierVersion>2.1</courierVersion>
+    <scalaMajorVersion>2.1.01</scalaMajorVersion>
+    <scalaVersion>2.1.01.5</scalaVersion>
+    <courierVersion>2.1.0</courierVersion>
     <javaVersion>1.7</javaVersion>
   </properties>
   <url>http://github.com/coursera/courier</url>
@@ -126,7 +126,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
-            <version>2.10.3</version>
+            <version>2.1.00.3</version>
             <executions>
               <execution>
                 <id>attach-javadocs</id>
