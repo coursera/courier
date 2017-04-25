@@ -53,6 +53,7 @@ StringLiteral = \" ( [^\"\\] | \\ ( [\"\\/bfnrt] | u[0-9]{4} ) )* \"
   "namespace"            { return CourierTypes.NAMESPACE_KEYWORD; }
   "import"               { return CourierTypes.IMPORT_KEYWORD; }
   "record"               { return CourierTypes.RECORD_KEYWORD; }
+  "key"                  { return CourierTypes.KEY_KEYWORD; }
   "enum"                 { return CourierTypes.ENUM_KEYWORD; }
   "fixed"                { return CourierTypes.FIXED_KEYWORD; }
   "typeref"              { return CourierTypes.TYPEREF_KEYWORD; }

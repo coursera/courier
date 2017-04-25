@@ -57,6 +57,7 @@ import org.coursera.courier.grammar.CourierParser.FixedDeclarationContext;
 import org.coursera.courier.grammar.CourierParser.ImportDeclarationContext;
 import org.coursera.courier.grammar.CourierParser.ImportDeclarationsContext;
 import org.coursera.courier.grammar.CourierParser.JsonValueContext;
+import org.coursera.courier.grammar.CourierParser.KeyDeclarationContext;
 import org.coursera.courier.grammar.CourierParser.MapDeclarationContext;
 import org.coursera.courier.grammar.CourierParser.NamedTypeDeclarationContext;
 import org.coursera.courier.grammar.CourierParser.ObjectEntryContext;
@@ -164,6 +165,7 @@ public class CourierSchemaParser extends SchemaParser {
       parser.addErrorListener(errorRecorder);
 
       DocumentContext antlrDocument = parser.document();
+//      System.out.println("\n!!!!!!!!\n"+antlrDocument.toStringTree()+"\n!!!!!!!!\n");
       parse(antlrDocument);
 
       if (errorRecorder.errors.size() > 0) {
@@ -326,6 +328,8 @@ public class CourierSchemaParser extends SchemaParser {
       return parseFixed(namedType, namedType.fixedDeclaration());
     } else if (namedType.enumDeclaration() != null) {
       return parseEnum(namedType, namedType.enumDeclaration());
+    } else if (namedType.keyDeclaration() != null) {
+      return parseKey(namedType, namedType.keyDeclaration());
     } else {
       throw new ParseException(namedType,
         "Unrecognized named type parse node: " + namedType.getText());
@@ -469,9 +473,24 @@ public class CourierSchemaParser extends SchemaParser {
     return schema;
   }
 
-  private RecordDataSchema parseRecord(
+  private RecordDataSchema parseKey(
       NamedTypeDeclarationContext context,
-      RecordDeclarationContext record) throws ParseException {
+      KeyDeclarationContext key) throws ParseException {
+    Name name = toName(key.name);
+    RecordDataSchema schema = new RecordDataSchema(name, RecordDataSchema.RecordType.RECORD);
+
+    bindNameToSchema(name, schema);
+    FieldsAndIncludes fieldsAndIncludes = parseFields(schema, key.keyDecl);
+    schema.setFields(fieldsAndIncludes.fields, errorMessageBuilder());
+    validateDefaults(schema);
+    schema.setInclude(fieldsAndIncludes.includes);
+    setProperties(context, schema);
+    return schema;
+  }
+
+  private RecordDataSchema parseRecord(
+          NamedTypeDeclarationContext context,
+          RecordDeclarationContext record) throws ParseException {
     Name name = toName(record.name);
     RecordDataSchema schema = new RecordDataSchema(name, RecordDataSchema.RecordType.RECORD);
 

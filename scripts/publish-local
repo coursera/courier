@@ -1,9 +1,9 @@
 #!/bin/bash
 sbt fullpublish-mavenlocal # publish courier to maven local so that the gradle build for gradle-plugin can depend on it
 sbt fullpublish-ivylocal
-(cd gradle-plugin; ./gradlew install)
-if hash mvn 2>/dev/null; then
-    (cd maven-plugin; mvn clean install)
-else
-    echo "mvn not install, skipping publish for maven-plugin"
-fi
+#(cd gradle-plugin; ./gradlew install)
+#if hash mvn 2>/dev/null; then
+#    (cd maven-plugin; mvn clean install)
+#else
+#    echo "mvn not install, skipping publish for maven-plugin"
+#fi
