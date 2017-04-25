@@ -36,7 +36,8 @@ object Courier extends Build with OverridablePublishSettings {
 
   override lazy val settings = super.settings ++ overridePublishSettings ++
       Seq(
-        organization := "org.coursera.courier")
+        organization := "org.coursera.courier",
+        isSnapshot := true)
 
   //
   // Cross building

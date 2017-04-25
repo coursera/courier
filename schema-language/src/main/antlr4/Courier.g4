@@ -20,7 +20,8 @@ typeReference returns [String value]: qualifiedIdentifier {
 typeDeclaration: namedTypeDeclaration | anonymousTypeDeclaration;
 
 namedTypeDeclaration: doc=schemadoc? props+=propDeclaration*
-  (recordDeclaration | enumDeclaration | typerefDeclaration | fixedDeclaration | keyDeclaration);
+  (recordDeclaration | keyDeclaration | enumDeclaration | typerefDeclaration |
+  fixedDeclaration);
 
 anonymousTypeDeclaration: unionDeclaration | arrayDeclaration | mapDeclaration;
 
@@ -142,6 +143,7 @@ NAMESPACE: 'namespace';
 RECORD: 'record';
 TYPEREF: 'typeref';
 UNION: 'union';
+KEY: 'key';
 
 OPEN_PAREN: '(';
 CLOSE_PAREN: ')';
@@ -174,5 +176,3 @@ STRING_LITERAL: '"' (ESC | ~["\\])* '"';
 ID: '`'? [A-Za-z_] [A-Za-z0-9_]* '`'?; // Avro/Pegasus identifiers with Scala/Swift escaping
 
 WS: [ \t\n\r\f,]+ -> skip;
-
-KEY: 'key';

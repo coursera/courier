@@ -47,7 +47,8 @@ fullyQualifiedName ::= IDENTIFIER (DOT IDENTIFIER)*
 
 typeDeclaration ::= namedTypeDeclaration | anonymousTypeDeclaration
 
-namedTypeDeclaration ::= annotations? (recordDeclaration | enumDeclaration | typerefDeclaration | fixedDeclaration)
+namedTypeDeclaration ::= annotations? (recordDeclaration | enumDeclaration | typerefDeclaration |
+ fixedDeclaration | recordKeyDeclaration)
 
 anonymousTypeDeclaration ::= unionDeclaration | arrayDeclaration | mapDeclaration
 
@@ -69,6 +70,8 @@ propJsonValue ::= EQUALS jsonValue | propJsonValueWithParams
 propJsonValueWithParams ::= OPEN_PAREN jsonValue CLOSE_PAREN {pin=1}
 
 recordDeclaration ::= RECORD_KEYWORD typeNameDeclaration fieldSelection {pin=1}
+
+recordKeyDeclaration ::= RECORD_KEY_KEYWORD typeNameDeclaration fieldSelection {pin=1}
 
 enumDeclaration ::= ENUM_KEYWORD typeNameDeclaration enumSymbolDeclarations {pin=1}
 
