@@ -399,6 +399,8 @@ class TestCourierBindings(unittest.TestCase):
 
         rec.ints = [100, 101]
         self.assertTrue('"ints": [100, 101]' in courier.serialize(rec))
+        rec.strings = rec.strings[0:1]
+        self.assertTrue('"strings": ["seventeen"]' in courier.serialize(rec))
 
     def test_array_and_map_complex(self):
         custom_ints = [1, 2]
