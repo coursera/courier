@@ -1,18 +1,26 @@
+# Copyright 2017 Coursera Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# =============================================================================
+""" The courier runtime.
+
+This file was created and placed here during schema generation, so don't bother
+editing it. If we were doing this right we would distribute it as a package
+through `pip`, and that will probably eventually happen, but until then it gets
+generated right here. Where it's safe.
 """
- Copyright 2016 Coursera Inc.
 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
 
-     http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
-"""
 
 import avro.io
 import avro.schema
@@ -20,6 +28,8 @@ import json
 from collections.abc import MutableSequence, MutableMapping
 
 def parse(courier_type, json_str):
+    if (isinstance(json_str, bytes)):
+        json_str = json_str.decode('utf-8')
     json_obj = json.loads(json_str)
     needs_validation = hasattr(courier_type, 'AVRO_SCHEMA') and courier_type.AVRO_SCHEMA is not INVALID_SCHEMA
     if (not needs_validation or avro.io.Validate(courier_type.AVRO_SCHEMA, json_obj)):
@@ -223,7 +233,7 @@ class Map(MutableMapping):
         return isinstance(other, MutableMapping) and data_value(self) == data_value(other)
 
     #
-    # Private implementaitons
+    # Private implementations
     #
     def _construct_item(self, item):
         item = self._item_constructor(item)

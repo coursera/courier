@@ -25,8 +25,6 @@ import org.coursera.courier.api.GeneratedCode;
 import org.coursera.courier.api.GeneratedCodeTargetFile;
 import org.coursera.courier.api.GeneratorRunnerOptions;
 import org.coursera.courier.api.PegasusCodeGenerator;
-import org.coursera.courier.lang.DocCommentStyle;
-import org.coursera.courier.lang.PoorMansCStyleSourceFormatter;
 import org.coursera.courier.py3.GlobalConfig;
 import org.coursera.courier.py3.Py3Properties;
 import org.coursera.courier.py3.Py3Syntax;
@@ -37,6 +35,7 @@ import org.rythmengine.resource.ClasspathResourceLoader;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
@@ -88,8 +87,13 @@ public class Python3Generator implements PegasusCodeGenerator {
       System.out.println(file.getAbsolutePath());
     }
 
-    InputStream runtime = Python3Generator.class.getClassLoader().getResourceAsStream("runtime/courier.py");
-    IOUtils.copy(runtime, new FileOutputStream(new File(targetPath, "courier.py")));
+    _copyResourceToFile("runtime/courier.py", new File(targetPath, "courier.py"));
+    _copyResourceToFile("runtime/requirements.txt", new File(targetPath, "requirements.txt"));
+  }
+
+  private static void _copyResourceToFile(String resource, File targetFile) throws IOException {
+    InputStream runtime = Python3Generator.class.getClassLoader().getResourceAsStream(resource);
+    IOUtils.copy(runtime, new FileOutputStream(targetFile));
   }
 
   public Python3Generator() {
