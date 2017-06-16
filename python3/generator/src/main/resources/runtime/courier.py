@@ -167,7 +167,18 @@ class Array(MutableSequence):
         return self.data.__len__()
 
     def __getitem__(self, key):
-        return self._construct_item(self.data.__getitem__(key))
+        """Returns either an item or a slice of the Array. For details, see:
+        https://docs.python.org/3/reference/datamodel.html#object.__getitem__
+        Arguments:
+        key -- either an integer (index to the array), or a slice object
+        """
+        item_or_slice = self.data.__getitem__(key)
+        if isinstance(key, slice):
+            # The key was a slice. Return a new Courier Array.
+            return Array(self._item_constructor, data=item_or_slice)
+
+        # The key was an integer. Return an item of the underlying type.
+        return self._construct_item(item_or_slice)
 
     def __setitem__(self, key, item):
         courier_obj = construct_object(item, self._item_constructor)

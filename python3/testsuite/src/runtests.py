@@ -235,6 +235,14 @@ class TestCourierBindings(unittest.TestCase):
 #            enumWithDefault=Fruits.APPLE
 #        )
 
+    def test_courier_array_can_be_sliced(self):
+        """ There was a bug that caused slicing into an array of courier strings
+        to produce a python array instead of another Courier array.
+        
+        This tests that we produce the courier.Array instead.
+        """
+        courier_array = courier.Array(str, ['apples'])
+        self.assertEqual(courier_array, courier_array[0:1])
 
     def test_record_validate_shallow(self):
         eight_ball = self.__make_eight_ball()
