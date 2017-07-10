@@ -1,0 +1,11 @@
+{
+  "type": "record",
+  "name": "Apostrophe",
+  "namespace": "org.example",
+  "fields": [
+    {
+      "name": "field",
+      "type": "int"
+    }
+  ]
+}
