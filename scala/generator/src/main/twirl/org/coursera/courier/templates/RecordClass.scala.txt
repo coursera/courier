@@ -4,217 +4,242 @@
 @import com.linkedin.data.schema.JsonBuilder
 @import org.coursera.courier.generator.specs._
 
-@if(record.isTopLevel) {
-  @record.namespace.map { namespace => package @namespace }
+@if(record.properties.get("backend").exists(_ == "simple")) {
 
-  import javax.annotation.Generated
+  @if(record.isTopLevel) {
+    @record.namespace.map { namespace => package @namespace }
 
-  import com.linkedin.data.DataMap
-  import com.linkedin.data.schema.DataSchema
-  import com.linkedin.data.schema.UnionDataSchema
-  import com.linkedin.data.schema.TyperefDataSchema
-  import com.linkedin.data.template.Custom
-  import com.linkedin.data.template.DataTemplate
-  import com.linkedin.data.template.RecordTemplate
-  import com.linkedin.data.template.RequiredFieldNotPresentException
-  import com.linkedin.data.template.TemplateOutputCastException
-  import com.linkedin.data.template.UnionTemplate
-  import org.coursera.courier.templates.DataTemplates
-  import org.coursera.courier.templates.DataTemplates.DataConversion
-  import org.coursera.courier.templates.ScalaRecordTemplate
-  import org.coursera.courier.templates.ScalaArrayTemplate
-  import org.coursera.courier.templates.ScalaUnionTemplate
-  import org.coursera.courier.templates.ScalaEnumTemplate
-  import org.coursera.courier.templates.ScalaEnumTemplateSymbol
-  import org.coursera.courier.companions.UnionCompanion
-  import org.coursera.courier.companions.UnionMemberCompanion
-  import org.coursera.courier.companions.UnionWithTyperefCompanion
-  import org.coursera.courier.companions.RecordCompanion
-  import org.coursera.courier.companions.ArrayCompanion
-  import org.coursera.courier.companions.MapCompanion
-  import scala.runtime.ScalaRunTime
-  import com.linkedin.data.template.DataTemplateUtil
-  import com.linkedin.data.schema.RecordDataSchema
-  import com.linkedin.data.schema.UnionDataSchema
-  import com.linkedin.data.schema.TyperefDataSchema
-  import com.linkedin.data.schema.DataSchemaConstants
-  import com.linkedin.data.ByteString
-  import com.linkedin.data.DataList
-  import scala.collection.JavaConverters._
-  import scala.collection.immutable.Iterable
-  import scala.collection.immutable.MapLike
-  import scala.collection.mutable.Builder
-  import scala.collection.generic.CanBuildFrom
-  import com.linkedin.data.schema.MapDataSchema
-  import com.linkedin.data.schema.ArrayDataSchema
-  import scala.collection.GenTraversable
-  import org.coursera.courier.codecs.InlineStringCodec
-  import org.coursera.courier.coercers.SingleElementCaseClassCoercer
-  import scala.language.implicitConversions
-}
-
-@ClassAnnotations(record) final class @record.scalaType private (private val dataMap: DataMap)
-  extends ScalaRecordTemplate(dataMap, @(record.scalaType).SCHEMA) with Product {
-  @(record.scalaType) // force static initialization
-  import @(record.scalaType)._
-
-  @* Provide read access to all fields. *@
-  @record.fields.map { field =>
-    @* TODO(jbetz): Simplify obtain methods, see ScalaRecordTemplate notes. *@
-    @field.typ match {
-      case primitiveField: PrimitiveDefinition => {
-        @FieldAnnotations(field) lazy val @(field.name): @(field.scalaType) = @field.wrapIfOption{obtainDirect(@(record.scalaType).Fields.@(field.name), classOf[@(primitiveField.dataType)])}
-      }
-      case recordField: RecordDefinition => {
-        @FieldAnnotations(field) lazy val @(field.name): @(field.scalaTypeFullname) = @field.wrapIfOption{obtainWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(recordField.scalaTypeFullname)])}
-      }
-      case unionField: UnionDefinition => {
-        @FieldAnnotations(field) lazy val @(field.name): @(field.scalaTypeFullname) = @field.wrapAndMapIfOption {
-          dataMap.getDataMap(@(record.scalaType).Fields.@(field.name).getName)
-        } { value => @(unionField.scalaTypeFullname).build(@value, DataConversion.SetReadOnly) }
-      }
-      case arrayField: ArrayDefinition => {
-        @FieldAnnotations(field) lazy val @(field.name): @(field.scalaTypeFullname) = @field.wrapIfOption{obtainWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(arrayField.scalaTypeFullname)])}
-      }
-      case mapField: MapDefinition => {
-        @FieldAnnotations(field) lazy val @(field.name): @(field.scalaTypeFullname) = @field.wrapIfOption{obtainWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(mapField.scalaTypeFullname)])}
-      }
-      case enumField: EnumDefinition => {
-        @FieldAnnotations(field) lazy val @(field.name): @(field.scalaTypeFullname) = @field.wrapAndMapIfOption {
-            obtainDirect(@(record.scalaType).Fields.@(field.name), classOf[String])
-          } { value => @(enumField.enumFullname).withName(@value) }
-      }
-      case customField: ClassDefinition => {
-        @FieldAnnotations(field) lazy val @(field.name): @(field.scalaTypeFullname) = @field.wrapIfOption{obtainCustomType(@(record.scalaType).Fields.@(field.name), classOf[@(customField.scalaTypeFullname)])}
-      }
-      case fixedField: FixedDefinition => {
-        @FieldAnnotations(field) lazy val @(field.name): @(field.scalaTypeFullname) = @field.wrapIfOption{obtainWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(fixedField.scalaTypeFullname)])}
-      }
-    }
+    import com.linkedin.data.ByteString
+    import org.coursera.courier.schema.Schema
   }
 
-  @* Set all fields. Only called during initialization. *@
-  private def setFields(@(record.fieldParamDefs)): Unit = {
+  case class @record.scalaType (
+    @if(!record.fields.isEmpty) {
+      @*Trailing comma after all fields except last*@
+      @record.fields.init.map { field =>
+        @(field.name): @(field.scalaType),
+      }
+      @(record.fields.last.name): @(record.fields.last.scalaType)
+    } else {}
+  )
+  object @(record.scalaType) {
+    val SCHEMA = Schema[@record.scalaType].asJson
+  }
+
+} else {
+
+  @if(record.isTopLevel) {
+    @record.namespace.map { namespace => package @namespace }
+
+    import javax.annotation.Generated
+
+    import com.linkedin.data.DataMap
+    import com.linkedin.data.schema.DataSchema
+    import com.linkedin.data.schema.UnionDataSchema
+    import com.linkedin.data.schema.TyperefDataSchema
+    import com.linkedin.data.template.Custom
+    import com.linkedin.data.template.DataTemplate
+    import com.linkedin.data.template.RecordTemplate
+    import com.linkedin.data.template.RequiredFieldNotPresentException
+    import com.linkedin.data.template.TemplateOutputCastException
+    import com.linkedin.data.template.UnionTemplate
+    import org.coursera.courier.templates.DataTemplates
+    import org.coursera.courier.templates.DataTemplates.DataConversion
+    import org.coursera.courier.templates.ScalaRecordTemplate
+    import org.coursera.courier.templates.ScalaArrayTemplate
+    import org.coursera.courier.templates.ScalaUnionTemplate
+    import org.coursera.courier.templates.ScalaEnumTemplate
+    import org.coursera.courier.templates.ScalaEnumTemplateSymbol
+    import org.coursera.courier.companions.UnionCompanion
+    import org.coursera.courier.companions.UnionMemberCompanion
+    import org.coursera.courier.companions.UnionWithTyperefCompanion
+    import org.coursera.courier.companions.RecordCompanion
+    import org.coursera.courier.companions.ArrayCompanion
+    import org.coursera.courier.companions.MapCompanion
+    import scala.runtime.ScalaRunTime
+    import com.linkedin.data.template.DataTemplateUtil
+    import com.linkedin.data.schema.RecordDataSchema
+    import com.linkedin.data.schema.UnionDataSchema
+    import com.linkedin.data.schema.TyperefDataSchema
+    import com.linkedin.data.schema.DataSchemaConstants
+    import com.linkedin.data.ByteString
+    import com.linkedin.data.DataList
+    import scala.collection.JavaConverters._
+    import scala.collection.immutable.Iterable
+    import scala.collection.immutable.MapLike
+    import scala.collection.mutable.Builder
+    import scala.collection.generic.CanBuildFrom
+    import com.linkedin.data.schema.MapDataSchema
+    import com.linkedin.data.schema.ArrayDataSchema
+    import scala.collection.GenTraversable
+    import org.coursera.courier.codecs.InlineStringCodec
+    import org.coursera.courier.coercers.SingleElementCaseClassCoercer
+    import scala.language.implicitConversions
+  }
+
+  @ClassAnnotations(record) final class @record.scalaType private (private val dataMap: DataMap)
+    extends ScalaRecordTemplate(dataMap, @(record.scalaType).SCHEMA) with Product {
+    @(record.scalaType) // force static initialization
+    import @(record.scalaType)._
+
+    @* Provide read access to all fields. *@
     @record.fields.map { field =>
-      @* TODO(jbetz): Simplify put methods, see ScalaRecordTemplate notes. *@
+      @* TODO(jbetz): Simplify obtain methods, see ScalaRecordTemplate notes. *@
       @field.typ match {
         case primitiveField: PrimitiveDefinition => {
-          @field.applyIfOption(field.name) { value => putDirect(@(record.scalaType).Fields.@(field.name), classOf[@(primitiveField.dataType)], @primitiveField.maybeBox{@value})}
+          @FieldAnnotations(field) lazy val @(field.name): @(field.scalaType) = @field.wrapIfOption{obtainDirect(@(record.scalaType).Fields.@(field.name), classOf[@(primitiveField.dataType)])}
         }
         case recordField: RecordDefinition => {
-          @field.applyIfOption(field.name) { value => putWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(recordField.scalaTypeFullname)], @value)}
+          @FieldAnnotations(field) lazy val @(field.name): @(field.scalaTypeFullname) = @field.wrapIfOption{obtainWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(recordField.scalaTypeFullname)])}
         }
         case unionField: UnionDefinition => {
-          @field.applyIfOption(field.name) { value => dataMap.put(@(record.scalaType).Fields.@(field.name).getName, @(value).data())}
+          @FieldAnnotations(field) lazy val @(field.name): @(field.scalaTypeFullname) = @field.wrapAndMapIfOption {
+            dataMap.getDataMap(@(record.scalaType).Fields.@(field.name).getName)
+          } { value => @(unionField.scalaTypeFullname).build(@value, DataConversion.SetReadOnly) }
         }
         case arrayField: ArrayDefinition => {
-          @field.applyIfOption(field.name) { value => putWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(arrayField.scalaTypeFullname)], @value)}
+          @FieldAnnotations(field) lazy val @(field.name): @(field.scalaTypeFullname) = @field.wrapIfOption{obtainWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(arrayField.scalaTypeFullname)])}
         }
         case mapField: MapDefinition => {
-          @field.applyIfOption(field.name) { value => putWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(mapField.scalaTypeFullname)], @value)}
+          @FieldAnnotations(field) lazy val @(field.name): @(field.scalaTypeFullname) = @field.wrapIfOption{obtainWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(mapField.scalaTypeFullname)])}
         }
         case enumField: EnumDefinition => {
-          @field.applyIfOption(field.name) { value => putDirect(@(record.scalaType).Fields.@(field.name), classOf[String], @(value).toString)}
+          @FieldAnnotations(field) lazy val @(field.name): @(field.scalaTypeFullname) = @field.wrapAndMapIfOption {
+              obtainDirect(@(record.scalaType).Fields.@(field.name), classOf[String])
+            } { value => @(enumField.enumFullname).withName(@value) }
         }
         case customField: ClassDefinition => {
-          @field.applyIfOption(field.name) { value => putCustomType(@(record.scalaType).Fields.@(field.name), classOf[@(customField.scalaTypeFullname)], classOf[@(field.dataClass.rawDataType)], @customField.maybeBox{@value})}
+          @FieldAnnotations(field) lazy val @(field.name): @(field.scalaTypeFullname) = @field.wrapIfOption{obtainCustomType(@(record.scalaType).Fields.@(field.name), classOf[@(customField.scalaTypeFullname)])}
         }
         case fixedField: FixedDefinition => {
-          @field.applyIfOption(field.name) { value => putWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(fixedField.scalaTypeFullname)], @value)}
+          @FieldAnnotations(field) lazy val @(field.name): @(field.scalaTypeFullname) = @field.wrapIfOption{obtainWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(fixedField.scalaTypeFullname)])}
         }
       }
     }
-  }
 
-  override val productArity: Int = @(record.fields.size)
-
-  override def productElement(n: Int): Any =
-    n match {
-      @record.fields.zipWithIndex.map { case (field, i) =>
-      case @i => @field.name}
-      case _ => throw new IndexOutOfBoundsException(n.toString)
+    @* Set all fields. Only called during initialization. *@
+    private def setFields(@(record.fieldParamDefs)): Unit = {
+      @record.fields.map { field =>
+        @* TODO(jbetz): Simplify put methods, see ScalaRecordTemplate notes. *@
+        @field.typ match {
+          case primitiveField: PrimitiveDefinition => {
+            @field.applyIfOption(field.name) { value => putDirect(@(record.scalaType).Fields.@(field.name), classOf[@(primitiveField.dataType)], @primitiveField.maybeBox{@value})}
+          }
+          case recordField: RecordDefinition => {
+            @field.applyIfOption(field.name) { value => putWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(recordField.scalaTypeFullname)], @value)}
+          }
+          case unionField: UnionDefinition => {
+            @field.applyIfOption(field.name) { value => dataMap.put(@(record.scalaType).Fields.@(field.name).getName, @(value).data())}
+          }
+          case arrayField: ArrayDefinition => {
+            @field.applyIfOption(field.name) { value => putWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(arrayField.scalaTypeFullname)], @value)}
+          }
+          case mapField: MapDefinition => {
+            @field.applyIfOption(field.name) { value => putWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(mapField.scalaTypeFullname)], @value)}
+          }
+          case enumField: EnumDefinition => {
+            @field.applyIfOption(field.name) { value => putDirect(@(record.scalaType).Fields.@(field.name), classOf[String], @(value).toString)}
+          }
+          case customField: ClassDefinition => {
+            @field.applyIfOption(field.name) { value => putCustomType(@(record.scalaType).Fields.@(field.name), classOf[@(customField.scalaTypeFullname)], classOf[@(field.dataClass.rawDataType)], @customField.maybeBox{@value})}
+          }
+          case fixedField: FixedDefinition => {
+            @field.applyIfOption(field.name) { value => putWrapped(@(record.scalaType).Fields.@(field.name), classOf[@(fixedField.scalaTypeFullname)], @value)}
+          }
+        }
+      }
     }
 
-  override val productPrefix: String = "@(record.scalaType)"
+    override val productArity: Int = @(record.fields.size)
 
-  override def canEqual(that: Any): Boolean = that.isInstanceOf[@(record.scalaType)]
+    override def productElement(n: Int): Any =
+      n match {
+        @record.fields.zipWithIndex.map { case (field, i) =>
+        case @i => @field.name}
+        case _ => throw new IndexOutOfBoundsException(n.toString)
+      }
 
-  override def hashCode: Int = ScalaRunTime._hashCode(this)
+    override val productPrefix: String = "@(record.scalaType)"
 
-  override def equals(that: Any): Boolean = canEqual(that) && ScalaRunTime._equals(this, that)
+    override def canEqual(that: Any): Boolean = that.isInstanceOf[@(record.scalaType)]
 
-  override def toString: String = ScalaRunTime._toString(this)
+    override def hashCode: Int = ScalaRunTime._hashCode(this)
 
-  override def copy(): @(record.scalaType) = this
+    override def equals(that: Any): Boolean = canEqual(that) && ScalaRunTime._equals(this, that)
 
-  @if(record.fields.nonEmpty) {
-    def copy(@(record.copyFieldParamDefs)): @(record.scalaType) = {
+    override def toString: String = ScalaRunTime._toString(this)
+
+    override def copy(): @(record.scalaType) = this
+
+    @if(record.fields.nonEmpty) {
+      def copy(@(record.copyFieldParamDefs)): @(record.scalaType) = {
+        val $dataMap = new DataMap
+        val $result = new @(record.scalaType)($dataMap)
+        $result.setFields(@(record.fieldsAsParams))
+        $dataMap.makeReadOnly()
+        $result
+      }
+    }
+
+    override def copy(dataMap: DataMap, conversion: DataConversion): @(record.scalaType) = {
+      new @(record.scalaType)(DataTemplates.makeImmutable(dataMap, conversion))
+    }
+
+    override def clone(): @(record.scalaType) = this
+  }
+
+  object @(record.scalaType) extends RecordCompanion[@(record.scalaType)] {
+    val SCHEMA = DataTemplateUtil.parseSchema(@("\"\"\"" + SchemaToJsonEncoder.schemaToJson(record.recordSchema, JsonBuilder.Pretty.COMPACT) + "\"\"\"")).asInstanceOf[RecordDataSchema]
+
+    implicit val @(record.implicitCompanionName): RecordCompanion[@(record.scalaType)] = this
+
+    @* Register custom types and coercers. *@
+    @record.customInfosToRegister.map { case (field, customInfos) =>
+      @customInfos.map { customInfo =>
+        @registerCustomInfo(customInfo, field.dataClass)
+      }
+    }
+
+    @* Generate any contained types as inner classes. *@
+    @ContainedTypes(record)
+
+    private object Fields {
+      @record.fields.map { field =>
+      val @(field.name) = @(record.scalaType).SCHEMA.getField("@(field.pegasusName)")}
+    }
+
+    @* TODO(jbetz): Include defaults, if field is optional, provide way to default it to either none or a value. *@
+    def apply(@(record.fieldParamDefs)): @(record.scalaType) = {
       val $dataMap = new DataMap
       val $result = new @(record.scalaType)($dataMap)
       $result.setFields(@(record.fieldsAsParams))
       $dataMap.makeReadOnly()
       $result
     }
-  }
 
-  override def copy(dataMap: DataMap, conversion: DataConversion): @(record.scalaType) = {
-    new @(record.scalaType)(DataTemplates.makeImmutable(dataMap, conversion))
-  }
-
-  override def clone(): @(record.scalaType) = this
-}
-
-object @(record.scalaType) extends RecordCompanion[@(record.scalaType)] {
-  val SCHEMA = DataTemplateUtil.parseSchema(@("\"\"\"" + SchemaToJsonEncoder.schemaToJson(record.recordSchema, JsonBuilder.Pretty.COMPACT) + "\"\"\"")).asInstanceOf[RecordDataSchema]
-
-  implicit val @(record.implicitCompanionName): RecordCompanion[@(record.scalaType)] = this
-
-  @* Register custom types and coercers. *@
-  @record.customInfosToRegister.map { case (field, customInfos) =>
-    @customInfos.map { customInfo =>
-      @registerCustomInfo(customInfo, field.dataClass)
+    override def build(dataMap: DataMap, conversion: DataConversion): @(record.scalaType) = {
+      new @(record.scalaType)(DataTemplates.makeImmutable(dataMap, conversion))
     }
-  }
 
-  @* Generate any contained types as inner classes. *@
-  @ContainedTypes(record)
-
-  private object Fields {
-    @record.fields.map { field =>
-    val @(field.name) = @(record.scalaType).SCHEMA.getField("@(field.pegasusName)")}
-  }
-
-  @* TODO(jbetz): Include defaults, if field is optional, provide way to default it to either none or a value. *@
-  def apply(@(record.fieldParamDefs)): @(record.scalaType) = {
-    val $dataMap = new DataMap
-    val $result = new @(record.scalaType)($dataMap)
-    $result.setFields(@(record.fieldsAsParams))
-    $dataMap.makeReadOnly()
-    $result
-  }
-
-  override def build(dataMap: DataMap, conversion: DataConversion): @(record.scalaType) = {
-    new @(record.scalaType)(DataTemplates.makeImmutable(dataMap, conversion))
-  }
-
-  @* Scala, why you make unapply so complicated? *@
-  @record.fields.size match {
-    case 0 => {
-      def unapply(record: @(record.scalaType)): Boolean = true
-    }
-    case i if i <= 22 => { @* Scala tuples only exist up to Tuple22. *@
-      def unapply(record: @(record.scalaType)): Option[(@(record.fieldsAsTypeParams))] = {
-        try {
-          Some((@(record.prefixedFieldParams("record."))))
-        } catch {
-          case cast: TemplateOutputCastException => None
-          case notPresent: RequiredFieldNotPresentException => None
+    @* Scala, why you make unapply so complicated? *@
+    @record.fields.size match {
+      case 0 => {
+        def unapply(record: @(record.scalaType)): Boolean = true
+      }
+      case i if i <= 22 => { @* Scala tuples only exist up to Tuple22. *@
+        def unapply(record: @(record.scalaType)): Option[(@(record.fieldsAsTypeParams))] = {
+          try {
+            Some((@(record.prefixedFieldParams("record."))))
+          } catch {
+            case cast: TemplateOutputCastException => None
+            case notPresent: RequiredFieldNotPresentException => None
+          }
         }
       }
-    }
-    case _ => {
-      /* unapply() not available for records with more than 22 fields due to Scala's Tuple limit. */
+      case _ => {
+        /* unapply() not available for records with more than 22 fields due to Scala's Tuple limit. */
+      }
     }
   }
-}
 
+}
