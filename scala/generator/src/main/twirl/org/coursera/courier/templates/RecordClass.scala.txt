@@ -201,7 +201,10 @@ object @(record.scalaType) extends RecordCompanion[@(record.scalaType)] {
   @* Scala, why you make unapply so complicated? *@
   @record.fields.size match {
     case 0 => {
-      def unapply(record: @(record.scalaType)): Boolean = true
+      def unapply(record: @(record.scalaType)): Boolean = {
+        val _ = record // prevents warning about unused parameter
+        true
+      }
     }
     case i if i <= 22 => { @* Scala tuples only exist up to Tuple22. *@
       def unapply(record: @(record.scalaType)): Option[(@(record.fieldsAsTypeParams))] = {
