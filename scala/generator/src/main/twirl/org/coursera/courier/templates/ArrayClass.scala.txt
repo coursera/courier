@@ -4,6 +4,7 @@
 @import com.linkedin.data.schema.JsonBuilder
 @import org.coursera.courier.generator.specs._
 
+@GeneratedFileNotice()
 @if(array.isTopLevel) {
   @array.namespace.map { namespace => package @namespace }
 
@@ -168,4 +169,3 @@ object @(array.scalaType) extends ArrayCompanion[@(array.scalaType)] {
     }
   }
 }
-
