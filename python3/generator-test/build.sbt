@@ -33,8 +33,6 @@ forkedVmAdditionalArgs := Seq("STRICT")
 lazy val py3Test = taskKey[Unit]("Executes python unittest")
 
 py3Test in Test := {
-  (compile in Compile).value
-
   val result = """./python3/testsuite/full-build.sh"""!
 
   if (result != 0) {

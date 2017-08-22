@@ -20,14 +20,8 @@ import com.linkedin.data.DataList;
 import com.linkedin.data.DataMap;
 import com.linkedin.data.avro.SchemaTranslator;
 import com.linkedin.data.codec.JacksonDataCodec;
-import com.linkedin.data.schema.DataSchema;
+import com.linkedin.data.schema.*;
 import com.linkedin.data.schema.DataSchema.Type;
-import com.linkedin.data.schema.EnumDataSchema;
-import com.linkedin.data.schema.NamedDataSchema;
-import com.linkedin.data.schema.PrimitiveDataSchema;
-import com.linkedin.data.schema.RecordDataSchema;
-import com.linkedin.data.schema.TyperefDataSchema;
-import com.linkedin.data.schema.UnionDataSchema;
 import com.linkedin.data.template.DataTemplateUtil;
 import com.linkedin.pegasus.generator.spec.*;
 import org.coursera.courier.api.ClassTemplateSpecs;
@@ -243,6 +237,17 @@ public class Py3Syntax {
   private String _toAvroSchemaJsonSafe(DataSchema dataSchema) {
     try {
       return _tripleQuote(SchemaTranslator.dataToAvroSchemaJson(dataSchema));
+    } catch (Exception e) {
+      e.printStackTrace();
+      return "\"\"";
+    }
+  }
+
+  private String _toCourierSchemaJsonSafe(DataSchema dataSchema) {
+    try {
+      return SchemaToJsonEncoder
+              .schemaToJson(dataSchema, JsonBuilder.Pretty.COMPACT)
+              .replaceAll("\\\"", "\\\\\"");
     } catch (Exception e) {
       e.printStackTrace();
       return "\"\"";
@@ -707,6 +712,10 @@ public class Py3Syntax {
       return _toAvroSchemaJsonSafe(this._schema);
     }
 
+    public String courierSchemaJson() {
+      return _toCourierSchemaJsonSafe(this._schema);
+    }
+
     /** Return the whole python import block for the file in which this union is declared. */
     public String imports() {
       Set<Py3Import> allImports = new HashSet<>();
@@ -971,6 +980,10 @@ public class Py3Syntax {
       return _toAvroSchemaJsonSafe(this._schema);
     }
 
+    public String courierSchemaJson() {
+      return _toCourierSchemaJsonSafe(this._schema);
+    }
+
     @Override
     public Set<Py3Import> modulesRequiredToUse() {
       return _namedTypeSyntax.modulesRequiredToUse();
@@ -1140,6 +1153,10 @@ public class Py3Syntax {
 
     public String avroSchemaJson() {
       return _toAvroSchemaJsonSafe(this._dataSchema);
+    }
+
+    public String courierSchemaJson() {
+      return _toCourierSchemaJsonSafe(this._dataSchema);
     }
     /**
      * Returns true in the usual case that we need a module with the same name as this type in which to house

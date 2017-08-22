@@ -32,7 +32,7 @@ def parse(courier_type, json_str):
         json_str = json_str.decode('utf-8')
     json_obj = json.loads(json_str)
     needs_validation = hasattr(courier_type, 'AVRO_SCHEMA') and courier_type.AVRO_SCHEMA is not INVALID_SCHEMA
-    if (not needs_validation or avro.io.Validate(courier_type.AVRO_SCHEMA, json_obj)):
+    if (not needs_validation or avro.io.__validate_recursive(courier_type.AVRO_SCHEMA, json_obj)):
         constructor = courier_type.from_data if (hasattr(courier_type, 'from_data')) else courier_type
         return constructor(json_obj)
     else:
@@ -42,9 +42,12 @@ def serialize(courier_object):
     return json.dumps(data_value(courier_object))
 
 def validate(courier_object):
+    return __validate_courier(courier_object)
+
+def __validate_avro(courier_object):
     can_validate = hasattr(courier_object, '__class__') and \
-        hasattr(courier_object.__class__, 'AVRO_SCHEMA') and \
-        courier_object.AVRO_SCHEMA is not INVALID_SCHEMA
+                   hasattr(courier_object.__class__, 'AVRO_SCHEMA') and \
+                   courier_object.AVRO_SCHEMA is not INVALID_SCHEMA
     if not can_validate:
         return
     else:
@@ -53,12 +56,88 @@ def validate(courier_object):
         if not avro.io.Validate(schema, value):
             raise ValidationError('Validity check failed for %s' % repr(courier_object))
 
+def __validate_courier(courier_object):
+    can_validate = hasattr(courier_object, '__class__') and \
+                   hasattr(courier_object.__class__, 'SCHEMA') and \
+                   courier_object.SCHEMA is not INVALID_SCHEMA
+    if not can_validate:
+        return
+    else:
+        value = data_value(courier_object)
+        schema = courier_object.__class__.SCHEMA
+        __validate_recursive(schema, value)
+
+
+def __validate_recursive(expected_schema, datum, path = []):
+    """Determines if a python datum is an instance of a courier schema.
+
+    Args:
+      expected_schema: Schema to validate against.
+      datum: Datum to validate.
+    Returns:
+      True if the datum is an instance of the schema.
+    """
+    def __assert_validation(conditional, expected):
+        if not conditional:
+            raise ValidationError('Error at path %(path)s: Expected %(expected)s but found %(datum)s' % {
+                'path': ' / '.join([repr(path_item) for path_item in path]),
+                'expected': expected,
+                'datum': datum
+            })
+
+    schema_type = expected_schema.type
+    if schema_type == 'null':
+        __assert_validation(datum is None, expected='null')
+    elif schema_type == 'boolean':
+        __assert_validation(isinstance(datum, bool), expected='boolean')
+    elif schema_type == 'string':
+        __assert_validation(isinstance(datum, str), expected='string')
+    elif schema_type == 'bytes':
+        __assert_validation(isinstance(datum, bytes), expected='bytes')
+    elif schema_type in ['int', 'long']:
+        __assert_validation(isinstance(datum, int) or isinstance(datum, long), expected='int or long')
+    elif schema_type in ['float', 'double']:
+        __assert_validation(isinstance(datum, int) or isinstance(datum, float), expected='int or float')
+    elif schema_type == 'fixed':
+        __assert_validation(
+            isinstance(datum, bytes) and (len(datum) == expected_schema.size),
+            expected='bytes of length %s' % expected_schema.size
+        )
+    elif schema_type == 'enum':
+        __assert_validation(datum in expected_schema.symbols, expected='one of %s' % str(expected_schema.symbols))
+    elif schema_type == 'array':
+        __assert_validation(isinstance(datum, list), expected='a list')
+        for i, item in enumerate(datum):
+            __validate_recursive(expected_schema.items, item, path + [str(i)])
+    elif schema_type == 'map':
+        __assert_validation(isinstance(datum, dict), 'an object')
+        for name, value in datum.items():
+            __assert_validation(isinstance(name, str), expected='all keys to be strings')
+            __validate_recursive(expected_schema.values, values, path + [str(name)])
+    elif schema_type == 'union':
+        __assert_validation(isinstance(datum, dict) and len(datum) == 1, 'an object with one key')
+        union_member_key, union_branch_datum = datum.items().__iter__().__next__()
+        union_branch_schema = expected_schema.types_by_key.get(union_member_key)
+        __assert_validation(union_branch_schema, 'an object with a property in: %s' % repr(expected_schema.type_keys))
+        __validate_recursive(union_branch_schema, union_branch_datum)
+
+    elif schema_type == 'record':
+        __assert_validation(isinstance(datum, dict), expected='an object')
+        for field in expected_schema.fields:
+            __validate_recursive(field.type_schema, datum.get(field.name), path + [str(field.name)])
+    else:
+        raise ValidationError('Unknown schema type: %r' % schema_type)
+
 def parse_avro_schema(schema_json):
     try:
         return avro.schema.Parse(schema_json)
     except (avro.schema.SchemaParseException, json.decoder.JSONDecodeError) as e:
         print(str(e))
         return INVALID_SCHEMA
+
+def parse_schema(schema_json):
+    schema_data = json.loads(schema_json)
+    return DataSchema.from_data(schema_data)
 
 def data_value(courier_object_or_primitive):
     if (hasattr(courier_object_or_primitive, 'data')):
@@ -254,3 +333,71 @@ REQUIRED = "__COURIER_REQUIRED__"
 OPTIONAL = "__COURIER_OPTIONAL__"
 UNINITIALIZED = "__COURIER_UNINITIALIZED__"
 INVALID_SCHEMA = "__COURIER_INVALID_SCHEMA__"
+
+class DataSchema:
+    def __init__(self, data, schema_type = None):
+        self._data = data
+        cls = self.__class__
+        self.type = (hasattr(cls, 'TYPE') and cls.TYPE) or schema_type
+        if not self.type:
+            raise ValidationError('Schema must have a type, but none was provided on class %s, nor in the constructor' % cls.__name__)
+
+        if isinstance(data, dict):
+            self.namespace = data.get('namespace')
+            self.name = data.get('name')
+            self.full_name = self.namespace + '.' + self.name if self.namespace else self.name
+
+        self.union_member_key = self.full_name if hasattr(self, 'full_name') else self.type
+
+    def __repr__(self):
+        return str(self.__class__.__name__) + '(' + str(self._data) + ')'
+
+    @staticmethod
+    def from_data(data):
+        schema_type = 'union' if isinstance(data, list) \
+            else data.get('type') if isinstance(data, dict) \
+            else data
+        schema_class = SCHEMA_CLASSES_BY_TYPE.get(schema_type)
+
+        return schema_class(data) if schema_class else DataSchema(data, schema_type)
+
+class RecordDataSchema(DataSchema):
+    TYPE = 'record'
+    def __init__(self, data):
+        super(self.__class__, self).__init__(data)
+        self.fields = [RecordDataSchema.Field(field_schema) for field_schema in data['fields']]
+
+    class Field:
+        def __init__(self, data):
+            self._data = data
+            self.name = data['name']
+            self.type_schema = DataSchema.from_data(data['type'])
+
+class UnionDataSchema(DataSchema):
+    TYPE = 'union'
+    def __init__(self, data):
+        super(self.__class__, self).__init__(data)
+        self.types = [DataSchema.from_data(type_schema) for type_schema in data]
+        self.types_by_key = dict([(type_schema.union_member_key, type_schema) for type_schema in self.types])
+        self.type_keys = [type_schema.union_member_key for type_schema in self.types]
+        print(self.types)
+
+class EnumDataSchema(DataSchema):
+    TYPE = 'enum'
+    def __init__(self, data):
+        super(self.__class__, self).__init__(data)
+        self.type = 'enum'
+
+class TyperefDataSchema(DataSchema):
+    TYPE = 'typeref'
+    def __init__(self, data):
+        super(self.__class__, self).__init__(data)
+
+SCHEMA_CLASSES = [
+  RecordDataSchema,
+  UnionDataSchema,
+  EnumDataSchema,
+  TyperefDataSchema,
+]
+
+SCHEMA_CLASSES_BY_TYPE = dict([(cls.TYPE, cls) for cls in SCHEMA_CLASSES])

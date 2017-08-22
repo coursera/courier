@@ -1,0 +1,5 @@
+namespace org.coursera.records
+
+record RecordWithInlineUnion {
+  inlineUnion: union[Note]
+}

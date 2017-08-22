@@ -9,7 +9,8 @@
 @union.imports()
 
 @indent()class @(union.typeName())(courier.Union):
-@indent()    AVRO_SCHEMA = courier.parse_avro_schema(@union.avroSchemaJson());
+@indent()    AVRO_SCHEMA = courier.parse_avro_schema(@union.avroSchemaJson())
+@indent()    SCHEMA = courier.parse_schema("""@union.courierSchemaJson()""")
 @indent()
 @indent()    _TYPES_BY_KEY = {
              @for(Py3UnionMemberSyntax member: union.members()) {

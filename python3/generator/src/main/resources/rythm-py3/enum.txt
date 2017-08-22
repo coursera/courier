@@ -5,6 +5,7 @@
 
 class @enumeration.typeName():
     AVRO_SCHEMA = courier.parse_avro_schema(@enumeration.avroSchemaJson())
+    SCHEMA = courier.parse_schema("""@enumeration.courierSchemaJson()""")
 
     @for(Py3EnumSymbolSyntax symbol : enumeration.symbols()) {
     @symbol.docString()
