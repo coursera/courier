@@ -30,14 +30,20 @@ forkedVmAdditionalArgs := Seq("STRICT")
   Analysis.Empty
 }
 
-lazy val py3Test = taskKey[Unit]("Executes python unittest")
+lazy val py3Test = taskKey[Boolean]("Executes python unittest")
 
 py3Test in Test := {
+  // Comment out the following line to just run the tests without
+  // new generation.
+  (compile in Compile).value
+
   val result = """./python3/testsuite/full-build.sh"""!
 
   if (result != 0) {
     throw new RuntimeException("Python3 Build Failed")
   }
+
+  true
 }
 
 test in Test := (py3Test in Test).value

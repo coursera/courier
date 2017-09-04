@@ -1,6 +1,4 @@
 import py3bindings.courier as courier
-import avro.io
-import avro.schema
 from py3bindings.org.coursera.arrays.WithAnonymousUnionArray import WithAnonymousUnionArray
 from py3bindings.org.coursera.arrays.WithCustomArrayTestId import WithCustomArrayTestId
 from py3bindings.org.coursera.arrays.WithCustomTypesArray import WithCustomTypesArray
@@ -146,28 +144,27 @@ from py3bindings.WithoutNamespace import WithoutNamespace
 
 import unittest
 
-
 class TestCourierBindings(unittest.TestCase):
-    def _test_enum_find_by_name(self):
+    def test_enum_find_by_name(self):
         self.assertEqual(MagicEightBallAnswer.find_by_name('IT_IS_CERTAIN'), MagicEightBallAnswer.IT_IS_CERTAIN)
         self.assertRaises(KeyError, lambda: MagicEightBallAnswer.find_by_name('Does not exist'))
 
-    def _test_enum_all(self):
+    def test_enum_all(self):
         self.assertEqual(len(MagicEightBallAnswer.ALL), 3)
         self.assertTrue(MagicEightBallAnswer.IT_IS_CERTAIN in MagicEightBallAnswer.ALL)
         self.assertTrue(MagicEightBallAnswer.ASK_AGAIN_LATER in MagicEightBallAnswer.ALL)
         self.assertTrue(MagicEightBallAnswer.OUTLOOK_NOT_SO_GOOD in MagicEightBallAnswer.ALL)
 
-    def _test_enum_from_string(self):
+    def test_enum_from_string(self):
         good_answer = courier.parse(MagicEightBallAnswer, '"IT_IS_CERTAIN"')
         self.assertEqual(good_answer, MagicEightBallAnswer.IT_IS_CERTAIN)
         self.assertRaises(courier.ValidationError, lambda: courier.parse(MagicEightBallAnswer, '"WELL_THIS_DOESNT_EXIST"'))
 
-    def _test_enum_empty(self):
+    def test_enum_empty(self):
         self.assertEqual(len(EmptyEnum.ALL), 0)
         self.assertRaises(KeyError, lambda: EmptyEnum.find_by_name('ANYTHING'))
 
-    def _test_enum_properties(self):
+    def test_enum_properties(self):
         """ TODO(py3) Not yet implemented in python bindings. This is stuff like:
 
             enum EnumProperties {
@@ -178,7 +175,7 @@ class TestCourierBindings(unittest.TestCase):
         """
         pass
 
-    def _test_record_json_dumps_and_loads(self):
+    def test_record_json_dumps_and_loads(self):
         question = 'Will I ever love again?'
         answer = MagicEightBallAnswer.IT_IS_CERTAIN
         eight_ball = MagicEightBall(question=question, answer=answer)
@@ -190,7 +187,7 @@ class TestCourierBindings(unittest.TestCase):
         self.assertEqual(courier.serialize(eight_ball), expected_json)
         self.assertEqual(reloaded_eight_ball, eight_ball)
 
-    def _test_record_set_and_get(self):
+    def test_record_set_and_get(self):
         question = 'Will I ever love again?'
         answer = MagicEightBallAnswer.IT_IS_CERTAIN
         eight_ball = MagicEightBall(question=question, answer=answer)
@@ -200,7 +197,7 @@ class TestCourierBindings(unittest.TestCase):
         self.assertEqual(eight_ball.answer, MagicEightBallAnswer.ASK_AGAIN_LATER)
         self.assertEqual(courier.serialize(eight_ball), """{"question": "??", "answer": "ASK_AGAIN_LATER"}""")
 
-    def _test_record_optional_field(self):
+    def test_record_optional_field(self):
         no_fields_from_data = courier.parse(WithOptionalPrimitives, '{}')
         no_fields_from_value = WithOptionalPrimitives()
         self.assertIsNone(no_fields_from_data.intField)
@@ -218,7 +215,7 @@ class TestCourierBindings(unittest.TestCase):
         int_field_from_value.intField = None
         self.assertEqual(courier.serialize(int_field_from_value), '{}')
 
-    def _test_record_default_primitives(self):
+    def test_record_default_primitives(self):
         num_defaults = NumericDefaults()
         self.assertEqual(num_defaults.i, 2147483647)
         self.assertEqual(num_defaults.l, 9223372036854775807)
@@ -237,7 +234,7 @@ class TestCourierBindings(unittest.TestCase):
 #            enumWithDefault=Fruits.APPLE
 #        )
 
-    def _test_courier_array_can_be_sliced(self):
+    def test_courier_array_can_be_sliced(self):
         """ There was a bug that caused slicing into an array of courier strings
         to produce a python array instead of another Courier array.
         
@@ -246,7 +243,7 @@ class TestCourierBindings(unittest.TestCase):
         courier_array = courier.Array(str, ['apples'])
         self.assertEqual(courier_array, courier_array[0:1])
 
-    def _test_record_validate_shallow(self):
+    def test_record_validate_shallow(self):
         eight_ball = self.__make_eight_ball()
         courier.validate(eight_ball) # should be valid immediately after creation
 
@@ -270,39 +267,39 @@ class TestCourierBindings(unittest.TestCase):
         self.assertRaises(courier.ValidationError, invalid_8ball_from_data)
         self.assertRaises(TypeError, invalid_8ball_from_construction)
 
-    def _test_record_validate_deep(self):
+    def test_record_validate_deep(self):
         pass
 
-    def _test_record_with_typeref_field(self):
+    def test_record_with_typeref_field(self):
         pass
 
-    def _test_record_with_union_field(self):
+    def test_record_with_union_field(self):
         pass
 
-    def _test_record_with_list_field(self):
+    def test_record_with_list_field(self):
         pass
 
-    def _test_with_typed_definition(self):
+    def test_with_typed_definition(self):
         """ TODO(py3): see reference suite WithFlatTypedDefinition.courier """
         pass
 
-    def _test_with_flat_typed_definition(self):
+    def test_with_flat_typed_definition(self):
         """ TODO(py3): see reference suite WithFlatTypedDefinition.courier """
         pass
 
-    def _test_record_without_namespace(self):
+    def test_record_without_namespace(self):
         record = WithoutNamespace(field1="herp")
         self.assertEqual(courier.parse(WithoutNamespace, courier.serialize(record)), record)
 
-    def _test_record_with_reserved_name(self):
+    def test_record_with_reserved_name(self):
         record = class_(private="herp")
         self.assertEqual(courier.serialize(record), """{"private": "herp"}""")
 
-    def _test_with_include(self):
+    def test_with_include(self):
         """" TODO(py3): see reference suite WithInclude.courier """
         pass
 
-    def _test_json_property(self):
+    def test_json_property(self):
         """" TODO(py3): Implement support for @json property.
 
         But what does it do? It's supposed to work on a record like this:
@@ -315,7 +312,7 @@ class TestCourierBindings(unittest.TestCase):
         """
         pass
 
-    def _test_omit(self):
+    def test_omit(self):
         """" TODO(py3): Implement support for @py3.omit property
 
         For those types that we don't support generation for yet. Looks like:
@@ -328,7 +325,7 @@ class TestCourierBindings(unittest.TestCase):
         """
         pass
 
-    def _test_union(self):
+    def test_union(self):
         union = WithComplexTypesUnion.Union(
           value=py3bindings.org.coursera.records.test.Empty.Empty()
         )
@@ -336,20 +333,63 @@ class TestCourierBindings(unittest.TestCase):
         self.assertEqual(union.value, py3bindings.org.coursera.records.test.Empty.Empty())
 
     def _test_union_with_fields_that_have_args(self):
-        """ TODO: This bug is not fixed. Fix it """
-        union = WithRecordCustomTypeUnion(Message('Hello, Simon!', 'Blabla'))
-        print('**** ', union)
+        """ CustomRecord is a ref to org.coursera.records.test.Message. However, when it appears
+        in a Union it should have its own name as key.
+        
+        TODO: BROKEN. currently it appears as the typerefed type instead of as itself. Fix this!
+        """
+        union = WithRecordCustomTypeUnion(CustomRecord('Hello, Simon!', 'Blabla'))
 
     def test_record_with_inline_union(self):
+        """
+        Assert this behavior from https://avro.apache.org/docs/1.8.1/spec.html
+        
+        In record, enum and fixed definitions, the fullname is determined in one
+        of the following ways:
+        
+        A name only is specified, i.e., a name that contains no dots. In this
+        case the namespace is taken from the most tightly enclosing schema or
+        protocol. For example, if "name": "X" is specified, and this occurs
+        within a field of the record definition of org.foo.Y, then the fullname
+        is org.foo.X. If there is no enclosing namespace then the null namespace
+        is used.
+        """
+        # Use RecordWithInlineUnion because the 'Note' class of the InlineUnion
+        # does not receive a namespace in the serialized SCHEMA.
         from py3bindings.org.coursera.records.RecordWithInlineUnion import RecordWithInlineUnion
 
-        # rec = RecordWithInlineUnion(RecordWithInlineUnion.InlineUnion(Note('Hello, Simon!')))
-        data = {'org.coursera.records.Note': { 'text': 'Name' }}
+        data = {'org.coursera.records.Note': { 'text': 'hello' }}
+
+        # Assembling the union by hand should be valid and accessible via the accessor
+        # without creating any sort of exception
+        rec = RecordWithInlineUnion(inlineUnion=Note(text='hello'))
+        self.assertEqual(rec.inlineUnion, Note(text='hello'))
+        self.assertEqual(rec, self._serdes(rec))
+
+        # Same with assembling it by data
+        rec = RecordWithInlineUnion(data={'inlineUnion': {'org.coursera.records.Note': { 'text': 'hello' }}})
+        self.assertEqual(rec.inlineUnion, Note(text='hello'))
+        self.assertEqual(rec, self._serdes(rec))
+
+        # Same with assembling it by its member type (not advised)
         un = RecordWithInlineUnion.InlineUnion(data=data)
         rec = RecordWithInlineUnion(un)
-        print('**** ', rec)
+        self.assertEqual(rec.inlineUnion, Note(text='hello'))
+        self.assertEqual(rec, self._serdes(rec))
 
-    def _test_union_as_record_field(self):
+        # Same with assembling it from its `string` conformation which should also not have a
+        # namespace in the schema
+        rec = RecordWithInlineUnion(inlineUnion='hello')
+        self.assertEqual(rec.inlineUnion, 'hello')
+        self.assertEqual(rec, self._serdes(rec))
+
+        # Same with assembling it from its 'MagicEightBallAnswer' conformation, which
+        # should have a namespace
+        rec = RecordWithInlineUnion(inlineUnion=MagicEightBallAnswer.ASK_AGAIN_LATER)
+        self.assertEqual(rec.inlineUnion, MagicEightBallAnswer.ASK_AGAIN_LATER)
+        self.assertEqual(rec, self._serdes(rec))
+
+    def test_union_as_record_field(self):
         # We should be able to set the union by any of its unioned types
         record = WithComplexTypesUnion(union=Fruits.APPLE)
         def assert_json_equal(json):
@@ -377,8 +417,9 @@ class TestCourierBindings(unittest.TestCase):
         record.union = union
         self.assertEqual(record.union, Fruits.APPLE)
 
-    def _test_union_of_arrays_and_maps(self):
+    def test_union_of_arrays_and_maps(self):
         record = WithComplexTypesUnion(union=[Simple('Hello world')])
+
         self.assertEqual(len(record.union), 1)
         self.assertEqual(record.union, [Simple('Hello world')])
 
@@ -390,7 +431,7 @@ class TestCourierBindings(unittest.TestCase):
         self.assertEqual(record.union['a'], Simple("a message"))
         self.assertEqual(courier.serialize(record), '{"union": {"map": {"a": {"message": "a message"}}}}')
 
-    def _test_array_primitive(self):
+    def test_array_primitive(self):
         ints = [1,2,3,4]
         longs = [5,6,7,8]
         floats = [9.0,10.0,11.0,12.0]
@@ -418,7 +459,7 @@ class TestCourierBindings(unittest.TestCase):
         rec.strings = rec.strings[0:1]
         self.assertTrue('"strings": ["seventeen"]' in courier.serialize(rec))
 
-    def _test_array_and_map_complex(self):
+    def test_array_and_map_complex(self):
         custom_ints = [1, 2]
         hello = Simple(message="Hello")
         world = Simple(message="world")
@@ -466,9 +507,11 @@ class TestCourierBindings(unittest.TestCase):
         self.assertEqual(french_map['world'], tout_le_monde)
         courier.serialize(rec)
 
-
     def __make_eight_ball(self):
         return MagicEightBall('Will I ever love again?', MagicEightBallAnswer.IT_IS_CERTAIN)
+
+    def _serdes(self, courier_obj):
+        return courier.parse(courier_obj.__class__, courier.serialize(courier_obj))
 
 if __name__ == '__main__':
     unittest.main()

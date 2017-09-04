@@ -31,12 +31,12 @@ def parse(courier_type, json_str):
     if (isinstance(json_str, bytes)):
         json_str = json_str.decode('utf-8')
     json_obj = json.loads(json_str)
-    needs_validation = hasattr(courier_type, 'AVRO_SCHEMA') and courier_type.AVRO_SCHEMA is not INVALID_SCHEMA
-    if (not needs_validation or avro.io.__validate_recursive(courier_type.AVRO_SCHEMA, json_obj)):
-        constructor = courier_type.from_data if (hasattr(courier_type, 'from_data')) else courier_type
-        return constructor(json_obj)
-    else:
-        raise ValidationError("Invalid json string while reading a '%s' type: %s" % (courier_type, json_str))
+    needs_validation = hasattr(courier_type, 'SCHEMA') and courier_type.SCHEMA is not INVALID_SCHEMA
+    if needs_validation:
+        __validate_recursive(courier_type.SCHEMA, json_obj)
+
+    constructor = courier_type.from_data if (hasattr(courier_type, 'from_data')) else courier_type
+    return constructor(json_obj)
 
 def serialize(courier_object):
     return json.dumps(data_value(courier_object))
@@ -75,8 +75,10 @@ def __validate_recursive(expected_schema, datum, path = []):
       expected_schema: Schema to validate against.
       datum: Datum to validate.
     Returns:
-      True if the datum is an instance of the schema.
+      Throws a ValidationError if the datum is not an instance of the schema.
+      Otherwise returns None.
     """
+
     def __assert_validation(conditional, expected):
         if not conditional:
             raise ValidationError('Error at path %(path)s: Expected %(expected)s but found %(datum)s' % {
@@ -95,7 +97,7 @@ def __validate_recursive(expected_schema, datum, path = []):
     elif schema_type == 'bytes':
         __assert_validation(isinstance(datum, bytes), expected='bytes')
     elif schema_type in ['int', 'long']:
-        __assert_validation(isinstance(datum, int) or isinstance(datum, long), expected='int or long')
+        __assert_validation(isinstance(datum, int), expected='int or long')
     elif schema_type in ['float', 'double']:
         __assert_validation(isinstance(datum, int) or isinstance(datum, float), expected='int or float')
     elif schema_type == 'fixed':
@@ -113,18 +115,31 @@ def __validate_recursive(expected_schema, datum, path = []):
         __assert_validation(isinstance(datum, dict), 'an object')
         for name, value in datum.items():
             __assert_validation(isinstance(name, str), expected='all keys to be strings')
-            __validate_recursive(expected_schema.values, values, path + [str(name)])
+            # TODO: map validation is broken. Why? Unlike all other collections
+            # and records, the schema for Maps can contain the fullname of some
+            # other schema (e.g. org.example.TestRecord) without also inlining
+            # the content of that schema. That essentially kills the approach of
+            # using the base type's SCHEMA property for validation. Instead, if
+            # we want to validate the contents of maps, we will need to somehow
+            # keep a registry of schema fullnames to *DataSchema objects, so
+            # that we can look them up and perform validation when the fullname
+            # appears in the "values" properties of the map declaration.
+            # __validate_recursive(expected_schema.values, value, path + [str(name)])
     elif schema_type == 'union':
         __assert_validation(isinstance(datum, dict) and len(datum) == 1, 'an object with one key')
         union_member_key, union_branch_datum = datum.items().__iter__().__next__()
         union_branch_schema = expected_schema.types_by_key.get(union_member_key)
         __assert_validation(union_branch_schema, 'an object with a property in: %s' % repr(expected_schema.type_keys))
-        __validate_recursive(union_branch_schema, union_branch_datum)
+        __validate_recursive(union_branch_schema, union_branch_datum, path + [union_member_key])
 
     elif schema_type == 'record':
         __assert_validation(isinstance(datum, dict), expected='an object')
         for field in expected_schema.fields:
-            __validate_recursive(field.type_schema, datum.get(field.name), path + [str(field.name)])
+            value = datum.get(field.name)
+            if value is None and field.optional:
+                pass
+            else:
+                __validate_recursive(field.type_schema, datum.get(field.name), path + [str(field.name)])
     else:
         raise ValidationError('Unknown schema type: %r' % schema_type)
 
@@ -132,7 +147,6 @@ def parse_avro_schema(schema_json):
     try:
         return avro.schema.Parse(schema_json)
     except (avro.schema.SchemaParseException, json.decoder.JSONDecodeError) as e:
-        print(str(e))
         return INVALID_SCHEMA
 
 def parse_schema(schema_json):
@@ -335,69 +349,121 @@ UNINITIALIZED = "__COURIER_UNINITIALIZED__"
 INVALID_SCHEMA = "__COURIER_INVALID_SCHEMA__"
 
 class DataSchema:
-    def __init__(self, data, schema_type = None):
+    def __init__(self, data, schema_type=None, enclosing_schemas=[]):
         self._data = data
+        self._enclosing_schemas = enclosing_schemas
         cls = self.__class__
         self.type = (hasattr(cls, 'TYPE') and cls.TYPE) or schema_type
         if not self.type:
             raise ValidationError('Schema must have a type, but none was provided on class %s, nor in the constructor' % cls.__name__)
 
         if isinstance(data, dict):
-            self.namespace = data.get('namespace')
+            self.namespace = self._derive_namespace()
             self.name = data.get('name')
             self.full_name = self.namespace + '.' + self.name if self.namespace else self.name
 
-        self.union_member_key = self.full_name if hasattr(self, 'full_name') else self.type
+        self.union_member_key = getattr(self, 'full_name', None) or self.type
 
     def __repr__(self):
         return str(self.__class__.__name__) + '(' + str(self._data) + ')'
 
+    def _derive_namespace(self):
+        """
+        Encode namespace behavior from https://avro.apache.org/docs/1.8.1/spec.html. Quoted here:
+        In record, enum and fixed definitions, the fullname is determined in one of the following ways:
+
+          * A name and namespace are both specified. For example, one might use
+           "name": "X", "namespace": "org.foo" to indicate the fullname
+           org.foo.X.
+          
+          * A fullname is specified. If the name specified contains a dot, then
+            it is assumed to be a fullname, and any namespace also specified is
+            ignored. For example, use "name": "org.foo.X" to indicate the
+            fullname org.foo.X.
+          
+          * A name only is specified, i.e., a name that contains no dots. In
+            this case the namespace is taken from the most tightly enclosing
+            schema or protocol. For example, if "name": "X" is specified, and
+            this occurs within a field of the record definition of org.foo.Y,
+            then the fullname is org.foo.X. If there is no enclosing namespace
+            then the null namespace is used.
+            
+            References to previously defined names are as in the latter two cases above: if they contain a dot they are a fullname, if they do not contain a dot, the namespace is the namespace of the enclosing definition.
+
+            Primitive type names have no namespace and their names may not be defined in any namespace.
+        """
+        data = self._data
+        if isinstance(data, dict) and self.type in ['record', 'enum', 'fixed']:
+            ns_from_data = data.get('namespace')
+            enclosing_schema_nses = [enclosing_schema.namespace for enclosing_schema in self._enclosing_schemas if hasattr(enclosing_schema, 'namespace')]
+            ns_from_enclosing_schemas = len(enclosing_schema_nses) > 0 and enclosing_schema_nses[0]
+            return ns_from_data or ns_from_enclosing_schemas
+
     @staticmethod
-    def from_data(data):
+    def from_data(data, enclosing_schemas=[]):
         schema_type = 'union' if isinstance(data, list) \
             else data.get('type') if isinstance(data, dict) \
             else data
         schema_class = SCHEMA_CLASSES_BY_TYPE.get(schema_type)
 
-        return schema_class(data) if schema_class else DataSchema(data, schema_type)
+        return schema_class(data, enclosing_schemas=enclosing_schemas) if schema_class \
+            else DataSchema(data, schema_type=schema_type, enclosing_schemas=enclosing_schemas)
 
 class RecordDataSchema(DataSchema):
     TYPE = 'record'
-    def __init__(self, data):
-        super(self.__class__, self).__init__(data)
-        self.fields = [RecordDataSchema.Field(field_schema) for field_schema in data['fields']]
+    def __init__(self, data, enclosing_schemas=[]):
+        super(self.__class__, self).__init__(data, enclosing_schemas=enclosing_schemas)
+        self.fields = [RecordDataSchema.Field(field_schema, [self] + enclosing_schemas) for field_schema in data['fields']]
 
     class Field:
-        def __init__(self, data):
+        def __init__(self, data, enclosing_schemas=[]):
             self._data = data
             self.name = data['name']
-            self.type_schema = DataSchema.from_data(data['type'])
+            self.optional = data.get('optional', False)
+            self.type_schema = DataSchema.from_data(data['type'], enclosing_schemas=enclosing_schemas)
 
 class UnionDataSchema(DataSchema):
     TYPE = 'union'
-    def __init__(self, data):
-        super(self.__class__, self).__init__(data)
-        self.types = [DataSchema.from_data(type_schema) for type_schema in data]
+    def __init__(self, data, enclosing_schemas=[]):
+        super(self.__class__, self).__init__(data, enclosing_schemas=enclosing_schemas)
+        self.types = [DataSchema.from_data(type_schema, enclosing_schemas=[self] + self._enclosing_schemas) for type_schema in data]
         self.types_by_key = dict([(type_schema.union_member_key, type_schema) for type_schema in self.types])
         self.type_keys = [type_schema.union_member_key for type_schema in self.types]
-        print(self.types)
 
 class EnumDataSchema(DataSchema):
     TYPE = 'enum'
-    def __init__(self, data):
-        super(self.__class__, self).__init__(data)
+    def __init__(self, data, enclosing_schemas=[]):
+        super(self.__class__, self).__init__(data,  enclosing_schemas=enclosing_schemas)
         self.type = 'enum'
+
+        # An array of valid enum strings
+        self.symbols = data['symbols']
 
 class TyperefDataSchema(DataSchema):
     TYPE = 'typeref'
-    def __init__(self, data):
-        super(self.__class__, self).__init__(data)
+    def __init__(self, data, enclosing_schemas=[]):
+        super(self.__class__, self).__init__(data,  enclosing_schemas=enclosing_schemas)
+
+class ArrayDataSchema(DataSchema):
+    TYPE = 'array'
+    def __init__(self, data, enclosing_schemas=[]):
+        super(self.__class__, self).__init__(data,  enclosing_schemas=enclosing_schemas)
+        self.items = DataSchema.from_data(data['items'])
+
+class MapDataSchema(DataSchema):
+    TYPE = 'map'
+
+    def __init__(self, data, enclosing_schemas=[]):
+        super(self.__class__, self).__init__(data,  enclosing_schemas=enclosing_schemas)
+        self.values = DataSchema.from_data(data['values'])
 
 SCHEMA_CLASSES = [
-  RecordDataSchema,
-  UnionDataSchema,
-  EnumDataSchema,
-  TyperefDataSchema,
+    RecordDataSchema,
+    UnionDataSchema,
+    EnumDataSchema,
+    TyperefDataSchema,
+    ArrayDataSchema,
+    MapDataSchema,
 ]
 
 SCHEMA_CLASSES_BY_TYPE = dict([(cls.TYPE, cls) for cls in SCHEMA_CLASSES])

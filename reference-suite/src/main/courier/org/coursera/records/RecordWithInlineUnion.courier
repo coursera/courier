@@ -1,5 +1,7 @@
 namespace org.coursera.records
 
+import org.example.MagicEightBallAnswer
+
 record RecordWithInlineUnion {
-  inlineUnion: union[Note]
+  inlineUnion: union[Note, string, MagicEightBallAnswer]
 }

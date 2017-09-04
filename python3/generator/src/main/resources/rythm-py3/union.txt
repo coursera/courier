@@ -45,7 +45,9 @@
 @indent()    @@property
 @indent()    def value(self):
 @indent()       for (key, value) in self.data.items():
-@indent()           return self.__class__._TYPES_BY_KEY[key]['constructor'](value)
+@indent()           constructor_type = self.__class__._TYPES_BY_KEY[key]['constructor']
+@indent()           construct = constructor_type.from_data if (hasattr(constructor_type, 'from_data')) else constructor_type
+@indent()           return construct(value)
 @indent()
 @indent()    def __repr__(self):
 @indent()        return '@(union.typeName())(' + repr(self.data) + ')';
