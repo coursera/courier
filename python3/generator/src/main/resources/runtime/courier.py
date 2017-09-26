@@ -42,7 +42,7 @@ def serialize(courier_object):
     return json.dumps(data_value(courier_object))
 
 def validate(courier_object):
-    return __validate_courier(courier_object)
+    return __validate_avro(courier_object)
 
 def __validate_avro(courier_object):
     can_validate = hasattr(courier_object, '__class__') and \
@@ -124,6 +124,22 @@ def __validate_recursive(expected_schema, datum, path = []):
             # keep a registry of schema fullnames to *DataSchema objects, so
             # that we can look them up and perform validation when the fullname
             # appears in the "values" properties of the map declaration.
+            #
+            # At the time I wrote this code, I thought a middle ground could be
+            # to include data schemas of all imported types in each file.
+            #
+            # The java implementation of this solves the problem by keeping
+            # state of all encountered data schemas at generation time, and
+            # allowing lookup by name when generating the scala. See
+            # restli sources:SchemaParser.java::363, which is invoked int his context
+            # by:
+            #    SchemaParser.java:494 (dataMapToDataSchema, case MAP)
+            #    SchemaParser.java:1043 (getSchemaData, parseObject(obj))
+            #    SchemaParser.java:221 (parseObject, stringToDataSchema((String) object))
+            #    SchemaParser.java:363 (stringToDataSchema, lookupName)
+            #    SchemaParser.java:344 (lookupName, _resolver.findDataSchema(fullName, errorMessageBuilder())
+            #
+            # Below line is commented out until we replicate above for python:
             # __validate_recursive(expected_schema.values, value, path + [str(name)])
     elif schema_type == 'union':
         __assert_validation(isinstance(datum, dict) and len(datum) == 1, 'an object with one key')
@@ -140,6 +156,14 @@ def __validate_recursive(expected_schema, datum, path = []):
                 pass
             else:
                 __validate_recursive(field.type_schema, datum.get(field.name), path + [str(field.name)])
+
+    elif schema_type == 'typeref':
+        # TODO: we don't support typeref validation yet. As with maps (see giant
+        # document above), this would require being able to look up the
+        # referenced data schema at runtime, something we can not currently do.
+        #
+        # We can fix this by implementing some registry of data schemas sigh...
+        pass
     else:
         raise ValidationError('Unknown schema type: %r' % schema_type)
 
