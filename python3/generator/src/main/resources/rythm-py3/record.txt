@@ -23,8 +23,9 @@ class @(record.typeName())(courier.Record):
             else:
                 self._set_data_field('@field.jsonKey()', @field.accessorName(), @field.constructor(), validate_new_value=False)
             }
-
-            courier.validate(self)
+            @// validate only if the object was created from fields -- if its being created from data then validate can
+            @// be directly called by courier.parse.
+            @if(!record.fields().isEmpty()){            courier.validate(self)}
 
     @@classmethod
     def from_data(cls, data):
