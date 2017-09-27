@@ -162,6 +162,58 @@ run-main Example
 
 And that's it.  You've used Courier to write some JSON!.
 
+##### Using Avro
+
+If you want to use the Avro data protocol, you will need to add the following dependency to your `build.sbt`:
+```
+libraryDependencies += "com.linkedin.pegasus" % "data-avro" % "<insert version here>"
+```
+
+Then you can then obtain an Avro `Schema` and a `GenericRecord` for courier types :
+~~~ scala
+import com.linkedin.data.avro.{DataTranslator, SchemaTranslator}
+import org.example.fortune.Fortune
+import org.apache.avro.Schema
+import org.apache.avro.generic.GenericRecord
+
+class Main extends App{
+  val fortune = Fortune(message = "foo")
+  val avroSchema: Schema = SchemaTranslator.dataToAvroSchema(Fortune.SCHEMA)
+  val fortuneRecord: GenericRecord = DataTranslator.dataMapToGenericRecord(fortune.data(), Fortune.SCHEMA)
+}
+~~~
+
+These can be used to serializea a courier type :
+~~~ scala
+  // Serialize fortune to disk
+  import org.apache.avro.file.DataFileWriter
+  import org.apache.avro.generic.GenericDatumWriter
+
+  val file = new File("fortune.avro")
+  val datumWriter = new GenericDatumWriter[GenericRecord](avroSchema)
+  val dataFileWriter = new DataFileWriter[GenericRecord](datumWriter)
+  dataFileWriter.create(avroSchema, file)
+  dataFileWriter.append(fortuneRecord)
+  dataFileWriter.close()
+~~~
+
+or deserialize it :
+~~~ scala
+  // Deserialize fortune from disk
+  import org.apache.avro.file.DataFileReader
+  import org.apache.avro.generic.{GenericDatumReader, GenericRecord}
+
+  val datumReader = new GenericDatumReader[GenericRecord](avroSchema)
+  val dataFileReader = new DataFileReader[GenericRecord](file, datumReader)
+  while (dataFileReader.hasNext) {
+    val record: GenericRecord = dataFileReader.next()
+    val fortune = Fortune.build(
+      DataTranslator.genericRecordToDataMap(record, Fortune.SCHEMA, avroSchema),
+      DataConversion.SetReadOnly // alternatively DeepCopy
+    )
+    System.out.println(fortune)
+  }
+~~~
 #### How it Works
 
 The generator is run automatically before `src/main/scala` compilation. It also registers for
