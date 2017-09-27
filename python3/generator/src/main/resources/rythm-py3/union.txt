@@ -31,8 +31,6 @@
 @indent()        super(self.__class__, self).__init__(data)
 @indent()        if data is None:
 @indent()            self._set_from_value(value)
-@indent()
-@indent()        if data is None:
 @indent()            courier.validate(self)
 @indent()
 @indent()    @@classmethod
