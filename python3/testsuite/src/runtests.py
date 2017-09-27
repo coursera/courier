@@ -262,10 +262,18 @@ class TestCourierBindings(unittest.TestCase):
                 # missing answer
             )
 
+        def invalid_8ball_acceptable_without_validation_flag():
+            return courier.parse(MagicEightBall, """{
+              "question": "??",
+              "answer": "Well this isnt a valid enum"
+            }""", validate=False)
+
         self.assertRaises(courier.ValidationError, invalidate_eight_ball)
         courier.validate(eight_ball) # the invalid changes should not have stuck
         self.assertRaises(courier.ValidationError, invalid_8ball_from_data)
         self.assertRaises(TypeError, invalid_8ball_from_construction)
+        invalid_8ball_acceptable_without_validation_flag() # throws if broken
+
 
     def test_record_validate_deep(self):
         pass
