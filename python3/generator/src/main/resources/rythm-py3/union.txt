@@ -19,7 +19,7 @@
 
 @indent()    }
 @indent()    #TODO(py3): Put all possible members and constructors here, rather than doing your giant if statements in the __init__
-@indent()    def __init__(self, value=courier.REQUIRED, data=None):
+@indent()    def __init__(self, value=courier.REQUIRED, data=None, _courier_validate_on_init=False):
 @indent()        """ Create a @union.typeName() from a dict (probably loaded from json).
 @indent()
 @indent()        You probably want to use the `create` method instead.
@@ -32,7 +32,8 @@
 @indent()        if data is None:
 @indent()            self._set_from_value(value)
 @indent()
-@indent()        courier.validate(self)
+@indent()        if data is None:
+@indent()            courier.validate(self)
 @indent()
 @indent()    @@classmethod
 @indent()    def from_data(cls, data):

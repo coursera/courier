@@ -27,13 +27,13 @@ import avro.schema
 import json
 from collections.abc import MutableSequence, MutableMapping
 
-def parse(courier_type, json_str):
+def parse(courier_type, json_str, validate=True):
     if (isinstance(json_str, bytes)):
         json_str = json_str.decode('utf-8')
     json_obj = json.loads(json_str)
-    needs_validation = hasattr(courier_type, 'SCHEMA') and courier_type.SCHEMA is not INVALID_SCHEMA
+    needs_validation = hasattr(courier_type, 'SCHEMA') and courier_type.SCHEMA is not INVALID_SCHEMA and validate
     if needs_validation:
-        __validate_recursive(courier_type.SCHEMA, json_obj)
+        __validate_against_type(courier_type, json_obj)
 
     constructor = courier_type.from_data if (hasattr(courier_type, 'from_data')) else courier_type
     return constructor(json_obj)
@@ -43,6 +43,16 @@ def serialize(courier_object):
 
 def validate(courier_object):
     return __validate_avro(courier_object)
+
+def __validate_against_type(courier_type, datum):
+    return __validate_against_type_avro(courier_type, datum)
+
+def __validate_against_type_avro(courier_type, datum):
+    if not avro.io.Validate(courier_type.AVRO_SCHEMA, datum):
+        raise ValidationError("Invalid json string while reading a '%s' type: %s" % (courier_type, datum))
+
+def __validate_against_type_courier(courier_type, datum):
+    return __validate_recursive(courier_type.SCHEMA, datum)
 
 def __validate_avro(courier_object):
     can_validate = hasattr(courier_object, '__class__') and \
@@ -64,8 +74,7 @@ def __validate_courier(courier_object):
         return
     else:
         value = data_value(courier_object)
-        schema = courier_object.__class__.SCHEMA
-        __validate_recursive(schema, value)
+        __validate_against_type_courier(courier_object.__class__, value)
 
 
 def __validate_recursive(expected_schema, datum, path = []):

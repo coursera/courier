@@ -251,10 +251,10 @@ class TestCourierBindings(unittest.TestCase):
             eight_ball.question = 1234
 
         def invalid_8ball_from_data():
-            return MagicEightBall.from_data({
-              'question': '??',
-              'answer': 'Well this isnt a valid enum'
-            })
+            return courier.parse(MagicEightBall, """{
+              "question": "??",
+              "answer": "Well this isnt a valid enum"
+            }""")
 
         def invalid_8ball_from_construction():
             return MagicEightBall(

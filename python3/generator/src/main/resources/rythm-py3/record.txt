@@ -24,7 +24,8 @@ class @(record.typeName())(courier.Record):
                 self._set_data_field('@field.jsonKey()', @field.accessorName(), @field.constructor(), validate_new_value=False)
             }
 
-        courier.validate(self)
+        if data is None:
+            courier.validate(self)
 
     @@classmethod
     def from_data(cls, data):
