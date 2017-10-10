@@ -47,7 +47,7 @@ object Courier extends Build with OverridablePublishSettings {
   // version numbers:
 
   lazy val sbtScalaVersion = "2.10.5" // the version of Scala used by the current sbt version.
-  lazy val currentScalaVersion = "2.11.6" // The current scala version.
+  lazy val currentScalaVersion = "2.11.11" // The current scala version.
 
   // Our plugin runs as part of SBT so must use the same Scala version that SBT currently uses.
   lazy val pluginVersionSettings = Seq(
