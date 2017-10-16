@@ -207,13 +207,8 @@ object @(record.scalaType) extends RecordCompanion[@(record.scalaType)] {
       }
     }
     case i if i <= 22 => { @* Scala tuples only exist up to Tuple22. *@
-      def unapply(record: @(record.scalaType)): Option[(@(record.fieldsAsTypeParams))] = {
-        try {
-          Some((@(record.prefixedFieldParams("record."))))
-        } catch {
-          case cast: TemplateOutputCastException => None
-          case notPresent: RequiredFieldNotPresentException => None
-        }
+      def unapply(record: @(record.scalaType)): Some[(@(record.fieldsAsTypeParams))] = {
+        Some((@(record.prefixedFieldParams("record."))))
       }
     }
     case _ => {
