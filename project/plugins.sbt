@@ -4,7 +4,7 @@ resolvers += "sonatype-releases" at "https://oss.sonatype.org/content/repositori
 
 resolvers += "simplytyped" at "http://simplytyped.github.io/repo/releases"
 
-addSbtPlugin("com.typesafe.sbt" % "sbt-twirl" % "1.1.1")
+addSbtPlugin("com.typesafe.sbt" % "sbt-twirl" % "1.3.3")
 
 addSbtPlugin("com.github.gseitz" % "sbt-release" % "1.0.0")
 
