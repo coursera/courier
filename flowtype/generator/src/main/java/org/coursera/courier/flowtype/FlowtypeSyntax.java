@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.coursera.courier.tslite;
+package org.coursera.courier.flowtype;
 
 import com.linkedin.data.DataMap;
 import com.linkedin.data.schema.DataSchema;
@@ -29,7 +29,7 @@ import com.linkedin.pegasus.generator.spec.*;
 import org.coursera.courier.api.ClassTemplateSpecs;
 import org.coursera.courier.lang.DocCommentStyle;
 import org.coursera.courier.lang.DocEscaping;
-import org.coursera.courier.tslite.TSProperties.Optionality;
+import org.coursera.courier.flowtype.FlowtypeProperties.Optionality;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,7 +43,7 @@ import java.util.Map;
  *
  * Most work delegates to inner classes, so you probably want to look them (linked below)
  *
- * Specifically, {@link TSEnumSyntax}, {@link TSUnionSyntax}, {@link TSRecordSyntax}, and {@link TSTyperefSyntax} are
+ * Specifically, {@link TSEnumSyntax}, {@link TSUnionSyntax}, {@link TSRecordSyntax}, and {@link FlowtypeTyperefSyntax} are
  * used directly to populate the templates.
  *
  * @see TSPrimitiveTypeSyntax
@@ -51,19 +51,19 @@ import java.util.Map;
  * @see TSArraySyntax
  * @see TSUnionSyntax
  * @see TSMapSyntax
- * @see TSTyperefSyntax
+ * @see FlowtypeTyperefSyntax
  * @see TSRecordSyntax
  * @see TSFixedSyntax
  * @see TSRecordSyntax
  * @see TSUnionSyntax
  */
-public class TSSyntax {
+public class FlowtypeSyntax {
 
   /** Config properties passed from the command line parser */
-  private final TSProperties TSProperties;
+  private final FlowtypeProperties FlowtypeProperties;
 
-  public TSSyntax(TSProperties TSProperties) {
-    this.TSProperties = TSProperties;
+  public FlowtypeSyntax(FlowtypeProperties FlowtypeProperties) {
+    this.FlowtypeProperties = FlowtypeProperties;
   }
 
   /**
@@ -260,13 +260,13 @@ public class TSSyntax {
    * That class will perform the heavy lifting of rendering TS-specific strings into the template.
    *
    * @param template the ClassTemplate
-   * @return a TS*Syntax class (see {@link TSSyntax} class-level docs for more info)
+   * @return a TS*Syntax class (see {@link FlowtypeSyntax} class-level docs for more info)
    */
   private TSTypeSyntax createTypeSyntax(ClassTemplateSpec template) {
     if (template instanceof RecordTemplateSpec) {
       return new TSRecordSyntax((RecordTemplateSpec) template);
     } else if (template instanceof TyperefTemplateSpec) {
-      return TSTyperefSyntaxCreate((TyperefTemplateSpec) template);
+      return FlowtypeTyperefSyntaxCreate((TyperefTemplateSpec) template);
     } else if (template instanceof FixedTemplateSpec) {
       return TSFixedSyntaxCreate((FixedTemplateSpec) template);
     } else if (template instanceof EnumTemplateSpec) {
@@ -428,15 +428,15 @@ public class TSSyntax {
    *
    * Helps reduce code bloat for Records, Enums, and Typerefs.
    **/
-  private class TSNamedTypeSyntax {
+  private class FlowtypeNamedTypeSyntax {
     private final NamedDataSchema _dataSchema;
 
-    public TSNamedTypeSyntax(NamedDataSchema _dataSchema) {
+    public FlowtypeNamedTypeSyntax(NamedDataSchema _dataSchema) {
       this._dataSchema = _dataSchema;
     }
 
     public String typeName() {
-      return TSSyntax.escapeKeyword(this._dataSchema.getName(), EscapeStrategy.MANGLE);
+      return FlowtypeSyntax.escapeKeyword(this._dataSchema.getName(), EscapeStrategy.MANGLE);
     }
 
     public String docString() {
@@ -457,9 +457,9 @@ public class TSSyntax {
   /** TS syntax for Fixed types. */
   public class TSFixedSyntax  implements TSTypeSyntax {
     private final FixedTemplateSpec _template;
-    private final TSNamedTypeSyntax _namedSyntax;
+    private final FlowtypeNamedTypeSyntax _namedSyntax;
 
-    public TSFixedSyntax(FixedTemplateSpec template, TSNamedTypeSyntax namedSyntax) {
+    public TSFixedSyntax(FixedTemplateSpec template, FlowtypeNamedTypeSyntax namedSyntax) {
       this._template = template;
       this._namedSyntax = namedSyntax;
     }
@@ -480,7 +480,7 @@ public class TSSyntax {
 
   /** Create a new TSFixedSyntax */
   public TSFixedSyntax TSFixedSyntaxCreate(FixedTemplateSpec template) {
-    return new TSFixedSyntax(template, new TSNamedTypeSyntax(template.getSchema()));
+    return new TSFixedSyntax(template, new FlowtypeNamedTypeSyntax(template.getSchema()));
   }
 
   /**
@@ -594,7 +594,7 @@ public class TSSyntax {
     public String typeName() {
       if (_template.getTyperefClass() != null) {
         // If this union was typerefed then just use the typeref name
-        TSTyperefSyntax refSyntax = TSTyperefSyntaxCreate(_template.getTyperefClass());
+        FlowtypeTyperefSyntax refSyntax = FlowtypeTyperefSyntaxCreate(_template.getTyperefClass());
         return refSyntax.typeName();
       } else {
         // I actually never figured out why this works, so I'm very sorry if you're dealing
@@ -630,7 +630,7 @@ public class TSSyntax {
 
     public String docString() {
       if (this._template.getTyperefClass() != null) {
-        return new TSNamedTypeSyntax(this._template.getTyperefClass().getSchema()).docString();
+        return new FlowtypeNamedTypeSyntax(this._template.getTyperefClass().getSchema()).docString();
       } else {
         return "";
       }
@@ -776,7 +776,7 @@ public class TSSyntax {
      **/
     public String questionMarkIfOptional() {
       boolean isFieldOptional = _schemaField().getOptional();
-      boolean markFieldAsOptional = isFieldOptional || TSProperties.optionality == Optionality.REQUIRED_FIELDS_MAY_BE_ABSENT;
+      boolean markFieldAsOptional = isFieldOptional || FlowtypeProperties.optionality == Optionality.REQUIRED_FIELDS_MAY_BE_ABSENT;
 
       return markFieldAsOptional? "?": "";
     }
@@ -796,12 +796,12 @@ public class TSSyntax {
   public class TSRecordSyntax implements TSTypeSyntax {
     private final RecordTemplateSpec _template;
     private final RecordDataSchema _schema;
-    private final TSNamedTypeSyntax _namedTypeSyntax;
+    private final FlowtypeNamedTypeSyntax _namedTypeSyntax;
 
     public TSRecordSyntax(RecordTemplateSpec _template) {
       this._template = _template;
       this._schema = _template.getSchema();
-      this._namedTypeSyntax = new TSNamedTypeSyntax(_schema);
+      this._namedTypeSyntax = new FlowtypeNamedTypeSyntax(_schema);
     }
 
     public String docString() {
@@ -864,13 +864,13 @@ public class TSSyntax {
     }
   }
 
-  /** TS syntax for typerefs. */
-  public class TSTyperefSyntax implements TSTypeSyntax {
+  /** Flowtype syntax for typerefs. */
+  public class FlowtypeTyperefSyntax implements TSTypeSyntax {
     private final TyperefTemplateSpec _template;
     private final TyperefDataSchema _dataSchema;
-    private final TSNamedTypeSyntax _namedTypeSyntax;
+    private final FlowtypeNamedTypeSyntax _namedTypeSyntax;
 
-    public TSTyperefSyntax(TyperefTemplateSpec _template, TyperefDataSchema _dataSchema, TSNamedTypeSyntax _namedTypeSyntax) {
+    public FlowtypeTyperefSyntax(TyperefTemplateSpec _template, TyperefDataSchema _dataSchema, FlowtypeNamedTypeSyntax _namedTypeSyntax) {
       this._template = _template;
       this._dataSchema = _dataSchema;
       this._namedTypeSyntax = _namedTypeSyntax;
@@ -912,8 +912,8 @@ public class TSSyntax {
   }
 
   /** Create a new TyperefSyntax */
-  public TSTyperefSyntax TSTyperefSyntaxCreate(TyperefTemplateSpec template) {
-    return new TSTyperefSyntax(template, template.getSchema(), new TSNamedTypeSyntax(template.getSchema()));
+  public FlowtypeTyperefSyntax FlowtypeTyperefSyntaxCreate(TyperefTemplateSpec template) {
+    return new FlowtypeTyperefSyntax(template, template.getSchema(), new FlowtypeNamedTypeSyntax(template.getSchema()));
   }
 
   /** TS syntax for the symbol of an enum */
@@ -964,12 +964,12 @@ public class TSSyntax {
   public class TSEnumSyntax  implements TSTypeSyntax {
     private final EnumTemplateSpec _template;
     private final EnumDataSchema _dataSchema;
-    private final TSNamedTypeSyntax _namedTypeSyntax;
+    private final FlowtypeNamedTypeSyntax _namedTypeSyntax;
 
     public TSEnumSyntax(EnumTemplateSpec _template) {
       this._template = _template;
       this._dataSchema = _template.getSchema();
-      this._namedTypeSyntax = new TSNamedTypeSyntax(_dataSchema);
+      this._namedTypeSyntax = new FlowtypeNamedTypeSyntax(_dataSchema);
     }
 
     public String typeName() {

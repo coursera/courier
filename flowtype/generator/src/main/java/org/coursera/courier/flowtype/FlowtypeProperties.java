@@ -1,4 +1,4 @@
-package org.coursera.courier.tslite;
+package org.coursera.courier.flowtype;
 
 /**
  * Customizable properties that may be added to a Pegasus schema.
@@ -17,7 +17,7 @@ package org.coursera.courier.tslite;
  *   }
  * </code>
  */
-public class TSProperties {
+public class FlowtypeProperties {
 
   /**
    * "optionality" property.
@@ -58,7 +58,7 @@ public class TSProperties {
   public final boolean equatable;
   public final boolean omit;
 
-  public TSProperties(Optionality optionality, boolean equatable, boolean omit) {
+  public FlowtypeProperties(Optionality optionality, boolean equatable, boolean omit) {
     this.optionality = optionality;
     this.equatable = equatable;
     this.omit = omit;

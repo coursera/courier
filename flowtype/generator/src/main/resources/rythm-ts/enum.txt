@@ -1,5 +1,5 @@
-@args org.coursera.courier.tslite.TSSyntax.TSEnumSyntax enumeration
-@import org.coursera.courier.tslite.TSSyntax.TSEnumSymbolSyntax
+@args org.coursera.courier.flowtype.FlowtypeSyntax.TSEnumSyntax enumeration
+@import org.coursera.courier.flowtype.FlowtypeSyntax.TSEnumSymbolSyntax
 
 @enumeration.docString()
 export type @enumeration.typeName() = @enumeration.stringLiteralUnion();

@@ -1,6 +1,6 @@
-@args org.coursera.courier.tslite.TSSyntax.TSUnionSyntax union
-@import org.coursera.courier.tslite.TSSyntax.TSUnionSyntax
-@import org.coursera.courier.tslite.TSSyntax.TSUnionMemberSyntax
+@args org.coursera.courier.flowtype.FlowtypeSyntax.TSUnionSyntax union
+@import org.coursera.courier.flowtype.FlowtypeSyntax.TSUnionSyntax
+@import org.coursera.courier.flowtype.FlowtypeSyntax.TSUnionMemberSyntax
 
 @union.imports()
 

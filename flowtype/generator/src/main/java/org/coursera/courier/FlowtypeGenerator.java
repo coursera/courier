@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Coursera Inc.
+ * Copyright 2017 Coursera Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,9 +27,9 @@ import org.coursera.courier.api.GeneratorRunnerOptions;
 import org.coursera.courier.api.PegasusCodeGenerator;
 import org.coursera.courier.lang.DocCommentStyle;
 import org.coursera.courier.lang.PoorMansCStyleSourceFormatter;
-import org.coursera.courier.tslite.GlobalConfig;
-import org.coursera.courier.tslite.TSProperties;
-import org.coursera.courier.tslite.TSSyntax;
+import org.coursera.courier.flowtype.GlobalConfig;
+import org.coursera.courier.flowtype.FlowtypeProperties;
+import org.coursera.courier.flowtype.FlowtypeSyntax;
 import org.rythmengine.RythmEngine;
 import org.rythmengine.exception.RythmException;
 import org.rythmengine.resource.ClasspathResourceLoader;
@@ -41,11 +41,11 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Courier code generator for Typescript.
+ * Courier code generator for Flowtype.
  */
 public class FlowtypeGenerator implements PegasusCodeGenerator {
-  private static final TSProperties.Optionality defaultOptionality =
-      TSProperties.Optionality.REQUIRED_FIELDS_MAY_BE_ABSENT;
+  private static final FlowtypeProperties.Optionality defaultOptionality =
+      FlowtypeProperties.Optionality.REQUIRED_FIELDS_MAY_BE_ABSENT;
 
   private final GlobalConfig globalConfig;
   private final RythmEngine engine;
@@ -62,9 +62,9 @@ public class FlowtypeGenerator implements PegasusCodeGenerator {
     String sourcePathString = args[2];
     String[] sourcePaths = sourcePathString.split(":");
 
-    TSProperties.Optionality optionality = defaultOptionality;
+    FlowtypeProperties.Optionality optionality = defaultOptionality;
     if (args.length > 3) {
-      optionality = TSProperties.Optionality.valueOf(args[3]);
+      optionality = FlowtypeProperties.Optionality.valueOf(args[3]);
     }
 
     boolean equatable = false;
@@ -113,16 +113,16 @@ public class FlowtypeGenerator implements PegasusCodeGenerator {
     new PoorMansCStyleSourceFormatter(2, DocCommentStyle.ASTRISK_MARGIN);
 
   /**
-   * See {@link org.coursera.courier.tslite.TSProperties} for customization options.
+   * See {@link org.coursera.courier.tslite.FlowtypeProperties} for customization options.
    */
   @Override
   public GeneratedCode generate(ClassTemplateSpec templateSpec) {
 
     String code;
-    TSProperties TSProperties = globalConfig.lookupTSProperties(templateSpec);
-    if (TSProperties.omit) return null;
+    FlowtypeProperties FlowtypeProperties = globalConfig.lookupFlowtypeProperties(templateSpec);
+    if (FlowtypeProperties.omit) return null;
 
-    TSSyntax syntax = new TSSyntax(TSProperties);
+    FlowtypeSyntax syntax = new FlowtypeSyntax(FlowtypeProperties);
     try {
       if (templateSpec instanceof RecordTemplateSpec) {
         code = engine.render("rythm-ts/record.txt", syntax.new TSRecordSyntax((RecordTemplateSpec) templateSpec));
@@ -132,7 +132,7 @@ public class FlowtypeGenerator implements PegasusCodeGenerator {
         code = engine.render("rythm-ts/union.txt", syntax.new TSUnionSyntax((UnionTemplateSpec) templateSpec));
       } else if (templateSpec instanceof TyperefTemplateSpec) {
         TyperefTemplateSpec typerefSpec = (TyperefTemplateSpec) templateSpec;
-        code = engine.render("rythm-ts/typeref.txt", syntax.TSTyperefSyntaxCreate(typerefSpec));
+        code = engine.render("rythm-ts/typeref.txt", syntax.FlowtypeTyperefSyntaxCreate(typerefSpec));
       } else if (templateSpec instanceof FixedTemplateSpec) {
         code = engine.render("rythm-ts/fixed.txt", syntax.TSFixedSyntaxCreate((FixedTemplateSpec) templateSpec));
       } else {

@@ -1,4 +1,4 @@
-@args org.coursera.courier.tslite.TSSyntax.TSTyperefSyntax typeref
+@args org.coursera.courier.flowtype.FlowtypeSyntax.FlowtypeTyperefSyntax typeref
 
 @typeref.imports()
 

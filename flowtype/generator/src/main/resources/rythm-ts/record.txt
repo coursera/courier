@@ -1,6 +1,6 @@
-@args org.coursera.courier.tslite.TSSyntax.TSRecordSyntax record
-@import org.coursera.courier.tslite.TSSyntax.TSUnionSyntax
-@import org.coursera.courier.tslite.TSSyntax.TSRecordFieldSyntax
+@args org.coursera.courier.flowtype.FlowtypeSyntax.TSRecordSyntax record
+@import org.coursera.courier.flowtype.FlowtypeSyntax.TSUnionSyntax
+@import org.coursera.courier.flowtype.FlowtypeSyntax.TSRecordFieldSyntax
 
 @record.imports()
 
