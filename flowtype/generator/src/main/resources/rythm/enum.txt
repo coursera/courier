@@ -1,4 +1,4 @@
-@args org.coursera.courier.flowtype.FlowtypeSyntax.TSEnumSyntax enumeration
+@args org.coursera.courier.flowtype.FlowtypeSyntax.FlowtypeEnumSyntax enumeration
 // @@flow
 @import org.coursera.courier.flowtype.FlowtypeSyntax.TSEnumSymbolSyntax
 @enumeration.docString()

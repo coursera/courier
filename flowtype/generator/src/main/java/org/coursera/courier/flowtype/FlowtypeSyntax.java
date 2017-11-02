@@ -43,11 +43,11 @@ import java.util.Map;
  *
  * Most work delegates to inner classes, so you probably want to look them (linked below)
  *
- * Specifically, {@link TSEnumSyntax}, {@link TSUnionSyntax}, {@link TSRecordSyntax}, and {@link FlowtypeTyperefSyntax} are
+ * Specifically, {@link FlowtypeEnumSyntax}, {@link TSUnionSyntax}, {@link TSRecordSyntax}, and {@link FlowtypeTyperefSyntax} are
  * used directly to populate the templates.
  *
  * @see TSPrimitiveTypeSyntax
- * @see TSEnumSyntax
+ * @see FlowtypeEnumSyntax
  * @see TSArraySyntax
  * @see TSUnionSyntax
  * @see TSMapSyntax
@@ -234,7 +234,7 @@ public class FlowtypeSyntax {
   }
 
   /** Describes any type we are representing in the generated typescript */
-  interface TSTypeSyntax {
+  interface FlowtypeTypeSyntax {
 
     /** Return the simple name of the type, in valid typescript. "number" or "string" for example. */
     public String typeName();
@@ -262,7 +262,7 @@ public class FlowtypeSyntax {
    * @param template the ClassTemplate
    * @return a TS*Syntax class (see {@link FlowtypeSyntax} class-level docs for more info)
    */
-  private TSTypeSyntax createTypeSyntax(ClassTemplateSpec template) {
+  private FlowtypeTypeSyntax createTypeSyntax(ClassTemplateSpec template) {
     if (template instanceof RecordTemplateSpec) {
       return new TSRecordSyntax((RecordTemplateSpec) template);
     } else if (template instanceof TyperefTemplateSpec) {
@@ -270,7 +270,7 @@ public class FlowtypeSyntax {
     } else if (template instanceof FixedTemplateSpec) {
       return TSFixedSyntaxCreate((FixedTemplateSpec) template);
     } else if (template instanceof EnumTemplateSpec) {
-      return new TSEnumSyntax((EnumTemplateSpec) template);
+      return new FlowtypeEnumSyntax((EnumTemplateSpec) template);
     } else if (template instanceof PrimitiveTemplateSpec) {
       return new TSPrimitiveTypeSyntax((PrimitiveTemplateSpec) template);
     } else if (template instanceof MapTemplateSpec) {
@@ -285,7 +285,7 @@ public class FlowtypeSyntax {
   }
 
   /** Convenience wrapper around {@link #createTypeSyntax(ClassTemplateSpec)}. */
-  private TSTypeSyntax createTypeSyntax(DataSchema schema) {
+  private FlowtypeTypeSyntax createTypeSyntax(DataSchema schema) {
     return createTypeSyntax(ClassTemplateSpec.createFromDataSchema(schema));
   }
 
@@ -295,7 +295,7 @@ public class FlowtypeSyntax {
    * For example, a standalone union called MyUnion will just return "MyUnion".
    * If that same union were enclosed within MyRecord, this would return "MyRecord.MyUnion".
    **/
-  String typeNameQualifiedByEnclosingClass(TSTypeSyntax syntax) {
+  String typeNameQualifiedByEnclosingClass(FlowtypeTypeSyntax syntax) {
     if (syntax instanceof TSEnclosedTypeSyntax) {
       return ((TSEnclosedTypeSyntax) syntax).typeNameQualifiedByEnclosedType();
     } else {
@@ -304,7 +304,7 @@ public class FlowtypeSyntax {
   }
 
   /** TS-specific syntax for Maps */
-  private class TSMapSyntax implements TSTypeSyntax {
+  private class TSMapSyntax implements FlowtypeTypeSyntax {
     private final MapTemplateSpec _template;
 
     TSMapSyntax(MapTemplateSpec _template) {
@@ -322,7 +322,7 @@ public class FlowtypeSyntax {
       // we try to just use the first one, we will return "Map<null>". This is also why we special-case unions here.
       // we have to access a specific ClassTemplate
       boolean valueIsUnion = _template.getValueClass() instanceof UnionTemplateSpec;
-      TSTypeSyntax itemTypeSyntax = valueIsUnion? createTypeSyntax(_template.getValueClass()): _valueTypeSyntax();
+      FlowtypeTypeSyntax itemTypeSyntax = valueIsUnion? createTypeSyntax(_template.getValueClass()): _valueTypeSyntax();
       String valueTypeName = typeNameQualifiedByEnclosingClass(itemTypeSyntax);
       return valueTypeName == null? null: "Map<" + valueTypeName + ">";
     }
@@ -338,13 +338,13 @@ public class FlowtypeSyntax {
     //
     // Private TSMapSyntax members
     //
-    private TSTypeSyntax _valueTypeSyntax() {
+    private FlowtypeTypeSyntax _valueTypeSyntax() {
       return createTypeSyntax(_template.getSchema().getValues());
     }
   }
 
   /** TS-specific syntax for Arrays */
-  private class TSArraySyntax implements TSTypeSyntax {
+  private class TSArraySyntax implements FlowtypeTypeSyntax {
     private final ArrayTemplateSpec _template;
 
     TSArraySyntax(ArrayTemplateSpec _template) {
@@ -361,7 +361,7 @@ public class FlowtypeSyntax {
       // we try to just use the first one, we will return "Array<null>". This is also why we special-case unions here.
       // we have to access a specific ClassTemplate
       boolean itemIsUnion = _template.getItemClass() instanceof UnionTemplateSpec;
-      TSTypeSyntax itemTypeSyntax = itemIsUnion? createTypeSyntax(_template.getItemClass()): _itemTypeSyntax();
+      FlowtypeTypeSyntax itemTypeSyntax = itemIsUnion? createTypeSyntax(_template.getItemClass()): _itemTypeSyntax();
       String itemTypeName = typeNameQualifiedByEnclosingClass(itemTypeSyntax);
       return itemTypeName == null? null: "Array<" + itemTypeName + ">";
     }
@@ -374,7 +374,7 @@ public class FlowtypeSyntax {
     //
     // Private TSArraySyntax members
     //
-    private TSTypeSyntax _itemTypeSyntax() {
+    private FlowtypeTypeSyntax _itemTypeSyntax() {
       return createTypeSyntax(_template.getSchema().getItems());
     }
   }
@@ -394,7 +394,7 @@ public class FlowtypeSyntax {
   );
 
   /** TS-specific syntax for all primitive types: Integer, Long, Float, Double, Boolean, String, Byte. */
-  private class TSPrimitiveTypeSyntax implements TSTypeSyntax {
+  private class TSPrimitiveTypeSyntax implements FlowtypeTypeSyntax {
     private final PrimitiveTemplateSpec _template;
     private final PrimitiveDataSchema _schema;
 
@@ -455,7 +455,7 @@ public class FlowtypeSyntax {
   }
 
   /** TS syntax for Fixed types. */
-  public class TSFixedSyntax  implements TSTypeSyntax {
+  public class TSFixedSyntax  implements FlowtypeTypeSyntax {
     private final FixedTemplateSpec _template;
     private final FlowtypeNamedTypeSyntax _namedSyntax;
 
@@ -566,13 +566,13 @@ public class FlowtypeSyntax {
     private DataSchema _memberSchema() {
       return _member.getSchema();
     }
-    private TSTypeSyntax _memberTypeSyntax() {
+    private FlowtypeTypeSyntax _memberTypeSyntax() {
       return createTypeSyntax(_member.getSchema());
     }
   }
 
   /** TS-specific representation of a Union type. */
-  public class TSUnionSyntax implements TSTypeSyntax, TSEnclosedTypeSyntax {
+  public class TSUnionSyntax implements FlowtypeTypeSyntax, TSEnclosedTypeSyntax {
     private final UnionTemplateSpec _template;
     private final UnionDataSchema _schema;
 
@@ -717,7 +717,7 @@ public class FlowtypeSyntax {
   }
 
   /** The TS representation of a single field in a Record */
-  public class TSRecordFieldSyntax  implements TSTypeSyntax {
+  public class TSRecordFieldSyntax  implements FlowtypeTypeSyntax {
     private final RecordTemplateSpec _template;
     private final RecordDataSchema _schema;
     private final RecordTemplateSpec.Field _field;
@@ -750,7 +750,7 @@ public class FlowtypeSyntax {
       // The only problem with schemaField is that it _does_ swallow the type names for enclosed unions. ARGH
       // can we catch a break?? Thankfully in the case of the enclosed union it ends up returning null, so
       // we back off to _field.getType() if schemaField returned null.
-      TSTypeSyntax candidateSyntax = createTypeSyntax(_schemaField().getType());
+      FlowtypeTypeSyntax candidateSyntax = createTypeSyntax(_schemaField().getType());
       if (candidateSyntax.typeName() == null || "".equals(candidateSyntax)) {
         candidateSyntax = createTypeSyntax(_field.getType());
       }
@@ -787,13 +787,13 @@ public class FlowtypeSyntax {
     private RecordDataSchema.Field _schemaField() {
       return _field.getSchemaField();
     }
-    private TSTypeSyntax _fieldTypeSyntax() {
+    private FlowtypeTypeSyntax _fieldTypeSyntax() {
       return createTypeSyntax(_schemaField().getType());
     }
   }
 
   /** TS-specific syntax for Records */
-  public class TSRecordSyntax implements TSTypeSyntax {
+  public class TSRecordSyntax implements FlowtypeTypeSyntax {
     private final RecordTemplateSpec _template;
     private final RecordDataSchema _schema;
     private final FlowtypeNamedTypeSyntax _namedTypeSyntax;
@@ -865,7 +865,7 @@ public class FlowtypeSyntax {
   }
 
   /** Flowtype syntax for typerefs. */
-  public class FlowtypeTyperefSyntax implements TSTypeSyntax {
+  public class FlowtypeTyperefSyntax implements FlowtypeTypeSyntax {
     private final TyperefTemplateSpec _template;
     private final TyperefDataSchema _dataSchema;
     private final FlowtypeNamedTypeSyntax _namedTypeSyntax;
@@ -961,12 +961,12 @@ public class FlowtypeSyntax {
   }
 
   /** TS syntax for enumerations. {@link TSEnumSymbolSyntax}. */
-  public class TSEnumSyntax  implements TSTypeSyntax {
+  public class FlowtypeEnumSyntax  implements FlowtypeTypeSyntax {
     private final EnumTemplateSpec _template;
     private final EnumDataSchema _dataSchema;
     private final FlowtypeNamedTypeSyntax _namedTypeSyntax;
 
-    public TSEnumSyntax(EnumTemplateSpec _template) {
+    public FlowtypeEnumSyntax(EnumTemplateSpec _template) {
       this._template = _template;
       this._dataSchema = _template.getSchema();
       this._namedTypeSyntax = new FlowtypeNamedTypeSyntax(_dataSchema);
