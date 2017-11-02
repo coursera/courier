@@ -1,0 +1,28 @@
+{
+  "name": "courier-typescript-lite-generator-test",
+  "version": "1.0.0",
+  "description": "Test-suite for the typescript-lite courier bindings",
+  "main": "src/index.js",
+  "scripts": {
+    "setup": "npm install && npm run-script typings-install",
+    "compile": "./node_modules/.bin/tsc",
+    "typings-install": "./node_modules/.bin/typings install",
+    "test": "npm run-script compile && ./node_modules/.bin/jasmine",
+    "full-build": "npm run-script setup && npm run-script test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/coursera/courier.git"
+  },
+  "author": "Erem Boto",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/coursera/courier/issues"
+  },
+  "homepage": "https://github.com/coursera/courier#readme",
+  "dependencies": {
+    "jasmine": "2.4.1",
+    "typescript": "1.8.9",
+    "typings": "0.7.10"
+  }
+}

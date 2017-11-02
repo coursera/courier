@@ -1,0 +1,21 @@
+@args org.coursera.courier.tslite.TSSyntax.TSRecordSyntax record
+@import org.coursera.courier.tslite.TSSyntax.TSUnionSyntax
+@import org.coursera.courier.tslite.TSSyntax.TSRecordFieldSyntax
+
+@record.imports()
+
+@record.docString()
+export interface @record.typeName() {
+  @for(TSRecordFieldSyntax field: record.fields()) {
+    @field.docString()
+    @field.accessorName() @field.questionMarkIfOptional(): @field.typeName();
+  }
+}
+
+@if(record.requiresCompanionModule()) {
+  export module @record.typeName() {
+    @for(TSUnionSyntax union: record.enclosedUnions()) {
+      @union(union)
+    }
+  }
+}

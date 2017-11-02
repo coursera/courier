@@ -1,0 +1,45 @@
+{
+  "version": "1.8.7",
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "declaration": false,
+    "jsx": "react",
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "removeComments": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "noEmitOnError": false,
+    "preserveConstEnums": true,
+    "inlineSources": false,
+    "sourceMap": false,
+    "outDir": "./.tmp",
+    "rootDir": "./src/expected-successes",
+    "moduleResolution": "node",
+    "listFiles": false
+  },
+  "formatCodeOptions": {
+    "indentSize": 2,
+    "tabSize": 4,
+    "newLineCharacter": "\n",
+    "convertTabsToSpaces": true,
+    "insertSpaceAfterCommaDelimiter": true,
+    "insertSpaceAfterSemicolonInForStatements": true,
+    "insertSpaceBeforeAndAfterBinaryOperators": true,
+    "insertSpaceAfterKeywordsInControlFlowStatements": true,
+    "insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
+    "insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis": false,
+    "placeOpenBraceOnNewLineForFunctions": false,
+    "placeOpenBraceOnNewLineForControlBlocks": false
+  },
+  "exclude": [
+    "node_modules",
+    "jspm_packages",
+    "typings/browser",
+    "typings/browser.d.ts",
+    "src/compilation-failures",
+    "src/tslite-bindings"
+  ]
+}
