@@ -1,5 +1,6 @@
 @args org.coursera.courier.flowtype.FlowtypeSyntax.FlowtypeEnumSyntax enumeration
-// @@flow
-@import org.coursera.courier.flowtype.FlowtypeSyntax.TSEnumSymbolSyntax
+/* @@flow */
+// This is a generated file, do not change. 
+@import org.coursera.courier.flowtype.FlowtypeSyntax.FlowtypeEnumSymbolSyntax
 @enumeration.docString()
 export type @enumeration.typeName() = @enumeration.stringLiteralUnion();

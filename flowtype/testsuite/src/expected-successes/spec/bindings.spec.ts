@@ -146,7 +146,7 @@ import CompilerOptions = ts.CompilerOptions;
 import TranspileOptions = ts.TranspileOptions;
 import Diagnostic = ts.Diagnostic;
 
-const flowPragmaComment = "// @flow";
+const flowPragmaComment = "/* @flow */";
 
 // Add a jasmine matcher that will attempt to compile a ts file and report
 // any compilation errors

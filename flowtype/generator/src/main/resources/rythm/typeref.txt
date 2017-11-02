@@ -3,5 +3,4 @@
 @typeref.imports()
 
 @typeref.docString()
-// hello
 export type @typeref.typeName() = @typeref.refTypeName();

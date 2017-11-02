@@ -917,12 +917,12 @@ public class FlowtypeSyntax {
   }
 
   /** TS syntax for the symbol of an enum */
-  public class TSEnumSymbolSyntax {
+  public class FlowtypeEnumSymbolSyntax {
     private final EnumTemplateSpec _template;
     private final EnumDataSchema _dataSchema;
     private final String _symbolString;
 
-    public TSEnumSymbolSyntax(EnumTemplateSpec _template, EnumDataSchema _dataSchema, String _symbolString) {
+    public FlowtypeEnumSymbolSyntax(EnumTemplateSpec _template, EnumDataSchema _dataSchema, String _symbolString) {
       this._template = _template;
       this._dataSchema = _dataSchema;
       this._symbolString = _symbolString;
@@ -960,7 +960,7 @@ public class FlowtypeSyntax {
     }
   }
 
-  /** TS syntax for enumerations. {@link TSEnumSymbolSyntax}. */
+  /** TS syntax for enumerations. {@link FlowtypeEnumSymbolSyntax}. */
   public class FlowtypeEnumSyntax  implements FlowtypeTypeSyntax {
     private final EnumTemplateSpec _template;
     private final EnumDataSchema _dataSchema;
@@ -996,7 +996,7 @@ public class FlowtypeSyntax {
      * "APPLE" | "ORANGE"
      **/
     public String stringLiteralUnion() {
-      List<TSEnumSymbolSyntax> symbols = this.symbols();
+      List<FlowtypeEnumSymbolSyntax> symbols = this.symbols();
       if (symbols.size() == 0) {
         return "void"; // Helps us compile if some bozo declared an empty union.
       } else {
@@ -1021,20 +1021,20 @@ public class FlowtypeSyntax {
     }
 
     /** Syntax for all the values in this enum */
-    public List<TSEnumSymbolSyntax> symbols() {
-      List<TSEnumSymbolSyntax> symbols = new ArrayList<>();
+    public List<FlowtypeEnumSymbolSyntax> symbols() {
+      List<FlowtypeEnumSymbolSyntax> symbols = new ArrayList<>();
       for (String symbol : _dataSchema.getSymbols()) {
-        symbols.add(new TSEnumSymbolSyntax(_template, _dataSchema, symbol));
+        symbols.add(new FlowtypeEnumSymbolSyntax(_template, _dataSchema, symbol));
       }
       return symbols;
     }
 
     private String _interleaveSymbolStrings(String delimiter) {
-      List<TSEnumSymbolSyntax> symbols = this.symbols();
+      List<FlowtypeEnumSymbolSyntax> symbols = this.symbols();
 
       StringBuilder sb = new StringBuilder();
       for (int i = 0; i < symbols.size(); i++) {
-        TSEnumSymbolSyntax symbol = symbols.get(i);
+        FlowtypeEnumSymbolSyntax symbol = symbols.get(i);
         boolean isLast = (i + 1 == symbols.size());
         sb.append(symbol.stringLiteralValue());
 

@@ -1,4 +1,5 @@
-// @flow
+/* @flow */
+// This is a generated file, do not change.
 /**
  * Magic eight ball answers.
  */
