@@ -172,6 +172,11 @@ object Courier extends Build with OverridablePublishSettings {
     .dependsOn(generatorApi)
     .disablePlugins(bintray.BintrayPlugin)
 
+  private[this] val flowtypeDir = file("flowtype")
+  lazy val flowtypeGenerator = Project(id = "flowtype-generator", base = flowtypeDir / "generator")
+    .dependsOn(generatorApi)
+    .disablePlugins(bintray.BintrayPlugin)
+
   lazy val cli = Project(id = "courier-cli", base = file("cli"))
     .dependsOn(
       javaGenerator,
@@ -237,6 +242,7 @@ object Courier extends Build with OverridablePublishSettings {
     s";project android-runtime;$publishCommand" +
     s";project swift-generator;$publishCommand" +
     s";project typescript-lite-generator;$publishCommand" +
+    s";project flowtype-generator;$publishCommand" +
     s";++$sbtScalaVersion;project scala-generator;$publishCommand" +
     s";++$currentScalaVersion;project scala-generator;$publishCommand" +
     s";++$sbtScalaVersion;project scala-runtime;$publishCommand" +
@@ -266,6 +272,8 @@ object Courier extends Build with OverridablePublishSettings {
       swiftGenerator,
       typescriptLiteGenerator,
       typescriptLiteGeneratorTest,
+      flowtypeGenerator,
+      flowtypeGeneratorTest,
       cli)
     .settings(runtimeVersionSettings)
     .settings(packagedArtifacts := Map.empty) // disable publish for root aggregate module
