@@ -125,16 +125,16 @@ public class FlowtypeGenerator implements PegasusCodeGenerator {
     FlowtypeSyntax syntax = new FlowtypeSyntax(FlowtypeProperties);
     try {
       if (templateSpec instanceof RecordTemplateSpec) {
-        code = engine.render("rythm-ts/record.txt", syntax.new TSRecordSyntax((RecordTemplateSpec) templateSpec));
+        code = engine.render("rythm/record.txt", syntax.new TSRecordSyntax((RecordTemplateSpec) templateSpec));
       } else if (templateSpec instanceof EnumTemplateSpec) {
-        code = engine.render("rythm-ts/enum.txt", syntax.new TSEnumSyntax((EnumTemplateSpec) templateSpec));
+        code = engine.render("rythm/enum.txt", syntax.new TSEnumSyntax((EnumTemplateSpec) templateSpec));
       } else if (templateSpec instanceof UnionTemplateSpec) {
-        code = engine.render("rythm-ts/union.txt", syntax.new TSUnionSyntax((UnionTemplateSpec) templateSpec));
+        code = engine.render("rythm/union.txt", syntax.new TSUnionSyntax((UnionTemplateSpec) templateSpec));
       } else if (templateSpec instanceof TyperefTemplateSpec) {
         TyperefTemplateSpec typerefSpec = (TyperefTemplateSpec) templateSpec;
-        code = engine.render("rythm-ts/typeref.txt", syntax.FlowtypeTyperefSyntaxCreate(typerefSpec));
+        code = engine.render("rythm/typeref.txt", syntax.FlowtypeTyperefSyntaxCreate(typerefSpec));
       } else if (templateSpec instanceof FixedTemplateSpec) {
-        code = engine.render("rythm-ts/fixed.txt", syntax.TSFixedSyntaxCreate((FixedTemplateSpec) templateSpec));
+        code = engine.render("rythm/fixed.txt", syntax.TSFixedSyntaxCreate((FixedTemplateSpec) templateSpec));
       } else {
         return null; // Indicates that we are declining to generate code for the type (e.g. map or array)
       }
