@@ -1,7 +1,7 @@
 {
-  "name": "courier-typescript-lite-generator-test",
+  "name": "courier-flowtype-generator-test",
   "version": "1.0.0",
-  "description": "Test-suite for the typescript-lite courier bindings",
+  "description": "Test-suite for the flowtype courier bindings",
   "main": "src/index.js",
   "scripts": {
     "setup": "npm install && npm run-script typings-install",
@@ -14,7 +14,7 @@
     "type": "git",
     "url": "git+ssh://git@github.com/coursera/courier.git"
   },
-  "author": "Erem Boto",
+  "author": "Kyle Verhoog & Moaaz Sidat",
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/coursera/courier/issues"

@@ -1,15 +1,5 @@
 @args org.coursera.courier.flowtype.FlowtypeSyntax.TSEnumSyntax enumeration
+// @@flow
 @import org.coursera.courier.flowtype.FlowtypeSyntax.TSEnumSymbolSyntax
-
 @enumeration.docString()
 export type @enumeration.typeName() = @enumeration.stringLiteralUnion();
-@if(enumeration.requiresCompanionModule()) {
-  export module @enumeration.typeName() {
-    @for(TSEnumSymbolSyntax symbol : enumeration.symbols()) {
-      @symbol.docString()
-      export const @symbol.moduleConstValue(): @enumeration.typeName() = @symbol.stringLiteralValue();
-    }
-
-    export const all: Array<@enumeration.typeName()> = @enumeration.arrayLiteral();
-  }
-}
