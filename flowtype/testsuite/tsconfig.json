@@ -40,6 +40,6 @@
     "typings/browser",
     "typings/browser.d.ts",
     "src/compilation-failures",
-    "src/tslite-bindings"
+    "src/flowtype-bindings"
   ]
 }
