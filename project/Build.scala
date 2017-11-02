@@ -183,12 +183,13 @@ object Courier extends Build with OverridablePublishSettings {
       androidGenerator,
       scalaGenerator,
       typescriptLiteGenerator,
+      flowtypeGenerator,
       swiftGenerator
     ).aggregate(
       javaGenerator,
       androidGenerator,
       scalaGenerator,
-      typescriptLiteGenerator,
+      flowtypeGenerator,
       swiftGenerator
     ).settings(
       executableFile := {
@@ -208,6 +209,11 @@ object Courier extends Build with OverridablePublishSettings {
   lazy val typescriptLiteGeneratorTest = Project(
     id = "typescript-lite-generator-test", base = typescriptLiteDir / "generator-test")
     .dependsOn(typescriptLiteGenerator)
+    .disablePlugins(bintray.BintrayPlugin)
+
+  lazy val flowtypeGeneratorTest = Project(
+    id = "flowtype-generator-test", base = flowtypeDir / "generator-test")
+    .dependsOn(flowtypeGenerator)
     .disablePlugins(bintray.BintrayPlugin)
 
   lazy val courierSbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
