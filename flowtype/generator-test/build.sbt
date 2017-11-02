@@ -14,7 +14,7 @@ crossPaths := false
 // Test Generator
 forkedVmCourierGeneratorSettings
 
-forkedVmCourierMainClass := "org.coursera.courier.flowtypeGenerator"
+forkedVmCourierMainClass := "org.coursera.courier.FlowtypeGenerator"
 
 forkedVmCourierClasspath := (dependencyClasspath in Runtime in flowtypeGenerator).value.files
 

@@ -43,7 +43,7 @@ import java.util.Collections;
 /**
  * Courier code generator for Typescript.
  */
-public class TypeScriptLiteGenerator implements PegasusCodeGenerator {
+public class FlowtypeGenerator implements PegasusCodeGenerator {
   private static final TSProperties.Optionality defaultOptionality =
       TSProperties.Optionality.REQUIRED_FIELDS_MAY_BE_ABSENT;
 
@@ -80,24 +80,24 @@ public class TypeScriptLiteGenerator implements PegasusCodeGenerator {
 
     GlobalConfig globalConfig = new GlobalConfig(optionality, equatable, false);
     GeneratorResult result =
-      new DefaultGeneratorRunner().run(new TypeScriptLiteGenerator(globalConfig), options);
+      new DefaultGeneratorRunner().run(new FlowtypeGenerator(globalConfig), options);
 
     for (File file: result.getTargetFiles()) {
       System.out.println(file.getAbsolutePath());
     }
 
-    InputStream runtime = TypeScriptLiteGenerator.class.getClassLoader().getResourceAsStream("runtime/CourierRuntime.ts");
+    InputStream runtime = FlowtypeGenerator.class.getClassLoader().getResourceAsStream("runtime/CourierRuntime.ts");
     IOUtils.copy(runtime, new FileOutputStream(new File(targetPath, "CourierRuntime.ts")));
   }
 
-  public TypeScriptLiteGenerator() {
+  public FlowtypeGenerator() {
     this(new GlobalConfig(
         defaultOptionality,
         false,
         false));
   }
 
-  public TypeScriptLiteGenerator(GlobalConfig globalConfig) {
+  public FlowtypeGenerator(GlobalConfig globalConfig) {
     this.globalConfig = globalConfig;
     this.engine = new RythmEngine();
     this.engine.registerResourceLoader(new ClasspathResourceLoader(engine, "/"));
