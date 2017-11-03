@@ -125,7 +125,7 @@ public class FlowtypeGenerator implements PegasusCodeGenerator {
     FlowtypeSyntax syntax = new FlowtypeSyntax(FlowtypeProperties);
     try {
       if (templateSpec instanceof RecordTemplateSpec) {
-        code = engine.render("rythm/record.txt", syntax.new TSRecordSyntax((RecordTemplateSpec) templateSpec));
+        code = engine.render("rythm/record.txt", syntax.new FlowtypeRecordSyntax((RecordTemplateSpec) templateSpec));
       } else if (templateSpec instanceof EnumTemplateSpec) {
         code = engine.render("rythm/enum.txt", syntax.new FlowtypeEnumSyntax((EnumTemplateSpec) templateSpec));
       } else if (templateSpec instanceof UnionTemplateSpec) {

@@ -44,9 +44,9 @@ import java.util.Map;
  * Most work delegates to inner classes, so you probably want to look them (linked below)
  *
 <<<<<<< HEAD
- * Specifically, {@link FlowtypeEnumSyntax}, {@link TSUnionSyntax}, {@link TSRecordSyntax}, and {@link FlowtypeTyperefSyntax} are
+ * Specifically, {@link FlowtypeEnumSyntax}, {@link TSUnionSyntax}, {@link FlowtypeRecordSyntax}, and {@link FlowtypeTyperefSyntax} are
 =======
- * Specifically, {@link TSEnumSyntax}, {@link FlowtypeUnionSyntax}, {@link TSRecordSyntax}, and {@link FlowtypeTyperefSyntax} are
+ * Specifically, {@link TSEnumSyntax}, {@link FlowtypeUnionSyntax}, {@link FlowtypeRecordSyntax}, and {@link FlowtypeTyperefSyntax} are
 >>>>>>> Add rough union
  * used directly to populate the templates.
  *
@@ -55,9 +55,9 @@ import java.util.Map;
  * @see TSArraySyntax
  * @see TSMapSyntax
  * @see FlowtypeTyperefSyntax
- * @see TSRecordSyntax
+ * @see FlowtypeRecordSyntax
  * @see TSFixedSyntax
- * @see TSRecordSyntax
+ * @see FlowtypeRecordSyntax
  * @see FlowtypeUnionSyntax
  */
 public class FlowtypeSyntax {
@@ -267,7 +267,7 @@ public class FlowtypeSyntax {
    */
   private FlowtypeTypeSyntax createTypeSyntax(ClassTemplateSpec template) {
     if (template instanceof RecordTemplateSpec) {
-      return new TSRecordSyntax((RecordTemplateSpec) template);
+      return new FlowtypeRecordSyntax((RecordTemplateSpec) template);
     } else if (template instanceof TyperefTemplateSpec) {
       return FlowtypeTyperefSyntaxCreate((TyperefTemplateSpec) template);
     } else if (template instanceof FixedTemplateSpec) {
@@ -317,7 +317,7 @@ public class FlowtypeSyntax {
     @Override
     public String typeName() {
       // (This comment is duplicated from TSArraySyntax.typeName for your benefit)
-      // Sadly the behavior of this function is indirectly controlled by the one calling it: TSRecordFieldSyntax.
+      // Sadly the behavior of this function is indirectly controlled by the one calling it: FlowRecordFieldSyntax.
       // That class has the unfortunate behavior that it can produce 2 different ClassTemplateSpecs, one of which works for
       // some cases, and one of which works for the others. See its own "typeName" definition for details but essentially
       // it will give us one of the ClassTemplateSpecs and call typeName. If we then return null
@@ -354,7 +354,7 @@ public class FlowtypeSyntax {
 
     @Override
     public String typeName() {
-      // Sadly the behavior of this function is indirectly controlled by the one calling it: TSRecordFieldSyntax.
+      // Sadly the behavior of this function is indirectly controlled by the one calling it: FlowRecordFieldSyntax.
       // That class has the unfortunate behavior that it can produce 2 different ClassTemplateSpecs, one of which works for
       // some cases, and one of which works for the others. See its own "typeName" definition for details but essentially
       // it will give us one of the ClassTemplateSpecs and call typeName. If we then return null
@@ -718,12 +718,12 @@ public class FlowtypeSyntax {
   }
 
   /** The TS representation of a single field in a Record */
-  public class TSRecordFieldSyntax  implements FlowtypeTypeSyntax {
+  public class FlowRecordFieldSyntax  implements FlowtypeTypeSyntax {
     private final RecordTemplateSpec _template;
     private final RecordDataSchema _schema;
     private final RecordTemplateSpec.Field _field;
 
-    public TSRecordFieldSyntax(RecordTemplateSpec _template, RecordTemplateSpec.Field _field) {
+    public FlowRecordFieldSyntax(RecordTemplateSpec _template, RecordTemplateSpec.Field _field) {
       this._template = _template;
       this._schema = _template.getSchema();
       this._field = _field;
@@ -794,12 +794,12 @@ public class FlowtypeSyntax {
   }
 
   /** TS-specific syntax for Records */
-  public class TSRecordSyntax implements FlowtypeTypeSyntax {
+  public class FlowtypeRecordSyntax implements FlowtypeTypeSyntax {
     private final RecordTemplateSpec _template;
     private final RecordDataSchema _schema;
     private final FlowtypeNamedTypeSyntax _namedTypeSyntax;
 
-    public TSRecordSyntax(RecordTemplateSpec _template) {
+    public FlowtypeRecordSyntax(RecordTemplateSpec _template) {
       this._template = _template;
       this._schema = _template.getSchema();
       this._namedTypeSyntax = new FlowtypeNamedTypeSyntax(_schema);
@@ -809,11 +809,11 @@ public class FlowtypeSyntax {
       return _namedTypeSyntax.docString();
     }
 
-    public List<TSRecordFieldSyntax> fields() {
-      List<TSRecordFieldSyntax> fields = new ArrayList<>();
+    public List<FlowRecordFieldSyntax> fields() {
+      List<FlowRecordFieldSyntax> fields = new ArrayList<>();
 
       for (RecordTemplateSpec.Field fieldSpec: _template.getFields()) {
-        fields.add(new TSRecordFieldSyntax(_template, fieldSpec));
+        fields.add(new FlowRecordFieldSyntax(_template, fieldSpec));
       }
 
       return fields;
@@ -851,7 +851,7 @@ public class FlowtypeSyntax {
     public String imports() {
       Set<String> imports = new HashSet<>();
 
-      for (TSRecordFieldSyntax fieldSyntax: this.fields()) {
+      for (FlowRecordFieldSyntax fieldSyntax: this.fields()) {
         imports.addAll(fieldSyntax.typeModules());
       }
 
