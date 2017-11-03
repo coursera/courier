@@ -48,7 +48,7 @@ public class FlowtypeGenerator implements PegasusCodeGenerator {
           FlowtypeProperties.Optionality.REQUIRED_FIELDS_MAY_BE_ABSENT;
 
   private static final String flowCodeHeader =
-          "// @flow\n// WARNING: This is a generated file, do NOT modify.";
+          "// @flow\n// WARNING: This is a generated file, do NOT modify.\n";
 
   private final GlobalConfig globalConfig;
   private final RythmEngine engine;
@@ -104,8 +104,8 @@ public class FlowtypeGenerator implements PegasusCodeGenerator {
     this.engine.registerResourceLoader(new ClasspathResourceLoader(engine, "/"));
   }
 
-  public static class TSCompilationUnit extends GeneratedCodeTargetFile {
-    public TSCompilationUnit(String name, String namespace){
+  public static class FlowCompilationUnit extends GeneratedCodeTargetFile {
+    public FlowCompilationUnit(String name, String namespace){
       super(name, namespace, "flow.js");
     }
   }
@@ -142,8 +142,8 @@ public class FlowtypeGenerator implements PegasusCodeGenerator {
       throw new RuntimeException(
               "Internal error in generator while processing " + templateSpec.getFullName(), e);
     }
-    TSCompilationUnit compilationUnit =
-            new TSCompilationUnit(
+    FlowCompilationUnit compilationUnit =
+            new FlowCompilationUnit(
                     templateSpec.getFullName(), "");
     code = formatter.format(code);
     return new GeneratedCode(compilationUnit, code);
