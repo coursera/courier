@@ -43,11 +43,7 @@ import java.util.Map;
  *
  * Most work delegates to inner classes, so you probably want to look them (linked below)
  *
-<<<<<<< HEAD
- * Specifically, {@link FlowtypeEnumSyntax}, {@link TSUnionSyntax}, {@link FlowtypeRecordSyntax}, and {@link FlowtypeTyperefSyntax} are
-=======
  * Specifically, {@link TSEnumSyntax}, {@link FlowtypeUnionSyntax}, {@link FlowtypeRecordSyntax}, and {@link FlowtypeTyperefSyntax} are
->>>>>>> Add rough union
  * used directly to populate the templates.
  *
  * @see TSPrimitiveTypeSyntax
@@ -299,11 +295,12 @@ public class FlowtypeSyntax {
    * If that same union were enclosed within MyRecord, this would return "MyRecord.MyUnion".
    **/
   String typeNameQualifiedByEnclosingClass(FlowtypeTypeSyntax syntax) {
-    if (syntax instanceof TSEnclosedTypeSyntax) {
-      return ((TSEnclosedTypeSyntax) syntax).typeNameQualifiedByEnclosedType();
-    } else {
-      return syntax.typeName();
-    }
+    // if (syntax instanceof TSEnclosedTypeSyntax) {
+    //   return ((TSEnclosedTypeSyntax) syntax).typeNameQualifiedByEnclosedType();
+    // } else {
+    //   return syntax.typeName();
+    // }
+    return syntax.typeName();
   }
 
   /** TS-specific syntax for Maps */
@@ -485,7 +482,7 @@ public class FlowtypeSyntax {
   }
 
   /**
-   * TS representation of a Union type's member (e.g. the "int" in "union[int]").
+   * Flow representation of a Union type's member (e.g. the "int" in "union[int]").
    */
   public class FlowtypeUnionMemberSyntax {
     private final FlowtypeUnionSyntax _parentSyntax;
@@ -717,7 +714,7 @@ public class FlowtypeSyntax {
     }
   }
 
-  /** The TS representation of a single field in a Record */
+  /** The Flow representation of a single field in a Record */
   public class FlowRecordFieldSyntax  implements FlowtypeTypeSyntax {
     private final RecordTemplateSpec _template;
     private final RecordDataSchema _schema;
@@ -793,7 +790,7 @@ public class FlowtypeSyntax {
     }
   }
 
-  /** TS-specific syntax for Records */
+  /** Flow-specific syntax for Records */
   public class FlowtypeRecordSyntax implements FlowtypeTypeSyntax {
     private final RecordTemplateSpec _template;
     private final RecordDataSchema _schema;

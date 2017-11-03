@@ -5,6 +5,13 @@
 @record.imports()
 
 @record.docString()
+
+@if(record.requiresCompanionModule()) {
+  @for(FlowtypeUnionSyntax union: record.enclosedUnions()) {
+    @union(union)
+  }
+}
+
 export type @record.typeName() = {
   @for(FlowRecordFieldSyntax field: record.fields()) {
     @field.docString()
