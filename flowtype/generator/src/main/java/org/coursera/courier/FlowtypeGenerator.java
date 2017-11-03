@@ -45,17 +45,18 @@ import java.util.Collections;
  */
 public class FlowtypeGenerator implements PegasusCodeGenerator {
   private static final FlowtypeProperties.Optionality defaultOptionality =
-      FlowtypeProperties.Optionality.REQUIRED_FIELDS_MAY_BE_ABSENT;
+          FlowtypeProperties.Optionality.REQUIRED_FIELDS_MAY_BE_ABSENT;
+
+  private static final String flowCodeHeader =
+          "// @flow\n// WARNING: This is a generated file, do NOT modify.";
 
   private final GlobalConfig globalConfig;
   private final RythmEngine engine;
 
   public static void main(String[] args) throws Throwable {
-    // TODO(jbetz): use a CLI parser library
-
     if (args.length < 3 || args.length > 5) {
       throw new IllegalArgumentException(
-          "Usage: targetPath resolverPath1[:resolverPath2]+ sourcePath1[:sourcePath2]+ [REQUIRED_FIELDS_MAY_BE_ABSENT|STRICT] [EQUATABLE]");
+              "Usage: targetPath resolverPath1[:resolverPath2]+ sourcePath1[:sourcePath2]+ [REQUIRED_FIELDS_MAY_BE_ABSENT|STRICT] [EQUATABLE]");
     }
     String targetPath = args[0];
     String resolverPath = args[1];
@@ -76,11 +77,11 @@ public class FlowtypeGenerator implements PegasusCodeGenerator {
     }
 
     GeneratorRunnerOptions options =
-        new GeneratorRunnerOptions(targetPath, sourcePaths, resolverPath);
+            new GeneratorRunnerOptions(targetPath, sourcePaths, resolverPath);
 
     GlobalConfig globalConfig = new GlobalConfig(optionality, equatable, false);
     GeneratorResult result =
-      new DefaultGeneratorRunner().run(new FlowtypeGenerator(globalConfig), options);
+            new DefaultGeneratorRunner().run(new FlowtypeGenerator(globalConfig), options);
 
     for (File file: result.getTargetFiles()) {
       System.out.println(file.getAbsolutePath());
@@ -92,9 +93,9 @@ public class FlowtypeGenerator implements PegasusCodeGenerator {
 
   public FlowtypeGenerator() {
     this(new GlobalConfig(
-        defaultOptionality,
-        false,
-        false));
+            defaultOptionality,
+            false,
+            false));
   }
 
   public FlowtypeGenerator(GlobalConfig globalConfig) {
@@ -104,21 +105,20 @@ public class FlowtypeGenerator implements PegasusCodeGenerator {
   }
 
   public static class TSCompilationUnit extends GeneratedCodeTargetFile {
-    public TSCompilationUnit(String name, String namespace) {
-      super(name, namespace, "ts");
+    public TSCompilationUnit(String name, String namespace){
+      super(name, namespace, "flow.js");
     }
   }
 
   private static final PoorMansCStyleSourceFormatter formatter =
-    new PoorMansCStyleSourceFormatter(2, DocCommentStyle.ASTRISK_MARGIN);
+          new PoorMansCStyleSourceFormatter(2, DocCommentStyle.ASTRISK_MARGIN);
 
   /**
    * See {@link org.coursera.courier.tslite.FlowtypeProperties} for customization options.
    */
   @Override
   public GeneratedCode generate(ClassTemplateSpec templateSpec) {
-
-    String code;
+    String code = this.flowCodeHeader;
     FlowtypeProperties FlowtypeProperties = globalConfig.lookupFlowtypeProperties(templateSpec);
     if (FlowtypeProperties.omit) return null;
 
@@ -127,24 +127,24 @@ public class FlowtypeGenerator implements PegasusCodeGenerator {
       if (templateSpec instanceof RecordTemplateSpec) {
         code = engine.render("rythm/record.txt", syntax.new FlowtypeRecordSyntax((RecordTemplateSpec) templateSpec));
       } else if (templateSpec instanceof EnumTemplateSpec) {
-        code = engine.render("rythm/enum.txt", syntax.new FlowtypeEnumSyntax((EnumTemplateSpec) templateSpec));
+        code += engine.render("rythm/enum.txt", syntax.new FlowtypeEnumSyntax((EnumTemplateSpec) templateSpec));
       } else if (templateSpec instanceof UnionTemplateSpec) {
-        code = engine.render("rythm/union.txt", syntax.new FlowtypeUnionSyntax((UnionTemplateSpec) templateSpec));
+        code += engine.render("rythm/union.txt", syntax.new FlowtypeUnionSyntax((UnionTemplateSpec) templateSpec));
       } else if (templateSpec instanceof TyperefTemplateSpec) {
         TyperefTemplateSpec typerefSpec = (TyperefTemplateSpec) templateSpec;
-        code = engine.render("rythm/typeref.txt", syntax.FlowtypeTyperefSyntaxCreate(typerefSpec));
+        code += engine.render("rythm/typeref.txt", syntax.FlowtypeTyperefSyntaxCreate(typerefSpec));
       } else if (templateSpec instanceof FixedTemplateSpec) {
-        code = engine.render("rythm/fixed.txt", syntax.TSFixedSyntaxCreate((FixedTemplateSpec) templateSpec));
+        code += engine.render("rythm/fixed.txt", syntax.TSFixedSyntaxCreate((FixedTemplateSpec) templateSpec));
       } else {
         return null; // Indicates that we are declining to generate code for the type (e.g. map or array)
       }
     } catch (RythmException e) {
       throw new RuntimeException(
-        "Internal error in generator while processing " + templateSpec.getFullName(), e);
+              "Internal error in generator while processing " + templateSpec.getFullName(), e);
     }
     TSCompilationUnit compilationUnit =
-        new TSCompilationUnit(
-            templateSpec.getFullName(), "");
+            new TSCompilationUnit(
+                    templateSpec.getFullName(), "");
     code = formatter.format(code);
     return new GeneratedCode(compilationUnit, code);
   }
