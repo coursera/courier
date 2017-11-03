@@ -43,19 +43,22 @@ import java.util.Map;
  *
  * Most work delegates to inner classes, so you probably want to look them (linked below)
  *
+<<<<<<< HEAD
  * Specifically, {@link FlowtypeEnumSyntax}, {@link TSUnionSyntax}, {@link TSRecordSyntax}, and {@link FlowtypeTyperefSyntax} are
+=======
+ * Specifically, {@link TSEnumSyntax}, {@link FlowtypeUnionSyntax}, {@link TSRecordSyntax}, and {@link FlowtypeTyperefSyntax} are
+>>>>>>> Add rough union
  * used directly to populate the templates.
  *
  * @see TSPrimitiveTypeSyntax
  * @see FlowtypeEnumSyntax
  * @see TSArraySyntax
- * @see TSUnionSyntax
  * @see TSMapSyntax
  * @see FlowtypeTyperefSyntax
  * @see TSRecordSyntax
  * @see TSFixedSyntax
  * @see TSRecordSyntax
- * @see TSUnionSyntax
+ * @see FlowtypeUnionSyntax
  */
 public class FlowtypeSyntax {
 
@@ -181,7 +184,7 @@ public class FlowtypeSyntax {
    **/
   private static String importString(String typeName, String moduleName) {
     return new StringBuilder()
-        .append("import { ")
+        .append("import type { ")
         .append(typeName)
         .append(" } from \"./")
         .append(moduleName)
@@ -278,7 +281,7 @@ public class FlowtypeSyntax {
     } else if (template instanceof ArrayTemplateSpec) {
       return new TSArraySyntax((ArrayTemplateSpec) template);
     } else if (template instanceof UnionTemplateSpec) {
-      return new TSUnionSyntax((UnionTemplateSpec) template);
+      return new FlowtypeUnionSyntax((UnionTemplateSpec) template);
     } else {
       throw new RuntimeException("Unrecognized template spec: " + template + " with schema " + template.getSchema());
     }
@@ -330,8 +333,6 @@ public class FlowtypeSyntax {
     @Override
     public Set<String> modulesRequiredToUse() {
       Set<String> modules = new HashSet<>();
-      modules.add("import { Map } from \"./CourierRuntime\";"); // Our runtime contains a typedef for Map<ValueT>
-      modules.addAll(_valueTypeSyntax().modulesRequiredToUse()); // Need the map's value type to compile code that uses this type.
       return modules;
     }
 
@@ -486,12 +487,12 @@ public class FlowtypeSyntax {
   /**
    * TS representation of a Union type's member (e.g. the "int" in "union[int]").
    */
-  public class TSUnionMemberSyntax {
-    private final TSUnionSyntax _parentSyntax;
+  public class FlowtypeUnionMemberSyntax {
+    private final FlowtypeUnionSyntax _parentSyntax;
     private final UnionDataSchema _schema;
     private final UnionTemplateSpec.Member _member;
 
-    public TSUnionMemberSyntax(TSUnionSyntax _parentSyntax, UnionDataSchema _schema, UnionTemplateSpec.Member _member) {
+    public FlowtypeUnionMemberSyntax(FlowtypeUnionSyntax _parentSyntax, UnionDataSchema _schema, UnionTemplateSpec.Member _member) {
       this._parentSyntax = _parentSyntax;
       this._schema = _schema;
       this._member = _member;
@@ -572,11 +573,11 @@ public class FlowtypeSyntax {
   }
 
   /** TS-specific representation of a Union type. */
-  public class TSUnionSyntax implements FlowtypeTypeSyntax, TSEnclosedTypeSyntax {
+  public class FlowtypeUnionSyntax implements FlowtypeTypeSyntax, TSEnclosedTypeSyntax {
     private final UnionTemplateSpec _template;
     private final UnionDataSchema _schema;
 
-    public TSUnionSyntax(UnionTemplateSpec _template) {
+    public FlowtypeUnionSyntax(UnionTemplateSpec _template) {
       this._template = _template;
       this._schema = _template.getSchema();
     }
@@ -610,7 +611,7 @@ public class FlowtypeSyntax {
       // Only print out the imports for non-enclosed union types. Enclosed ones will be handled
       // by the enclosing record.
       if (!_isEnclosedType()) {
-        for (TSUnionMemberSyntax member: this.members()) {
+        for (FlowtypeUnionMemberSyntax member: this.members()) {
           allImports.addAll(member.typeModules());
         }
       }
@@ -652,10 +653,10 @@ public class FlowtypeSyntax {
     public String unionTypeExpression() {
       StringBuilder sb = new StringBuilder();
 
-      List<TSUnionMemberSyntax> members = this.members();
+      List<FlowtypeUnionMemberSyntax> members = this.members();
       for (int i = 0; i < members.size(); i++) {
         boolean isLast = (i == members.size() - 1);
-        TSUnionMemberSyntax member = members.get(i);
+        FlowtypeUnionMemberSyntax member = members.get(i);
         sb.append(member.typeName());
 
         if (!isLast) {
@@ -673,18 +674,18 @@ public class FlowtypeSyntax {
      *
      */
     public String memberUnionTypeExpression() {
-      List<TSUnionMemberSyntax> members = this.members();
+      List<FlowtypeUnionMemberSyntax> members = this.members();
 
       if (members.isEmpty()) {
         return "void";
       } else {
         StringBuilder sb = new StringBuilder();
 
-
         for (int i = 0; i < members.size(); i++) {
           boolean isLast = (i == members.size() - 1);
-          TSUnionMemberSyntax member = members.get(i);
-          sb.append(member.fullUnionMemberTypeName());
+          FlowtypeUnionMemberSyntax member = members.get(i);
+          // sb.append(member.fullUnionMemberTypeName());
+          sb.append(member.typeName());
 
           if (!isLast) {
             sb.append(" | ");
@@ -696,11 +697,11 @@ public class FlowtypeSyntax {
     }
 
     /** Return the syntax for each member */
-    public List<TSUnionMemberSyntax> members() {
-      List<TSUnionMemberSyntax> memberSyntax = new ArrayList<>();
+    public List<FlowtypeUnionMemberSyntax> members() {
+      List<FlowtypeUnionMemberSyntax> memberSyntax = new ArrayList<>();
 
       for (UnionTemplateSpec.Member member : this._template.getMembers()) {
-        memberSyntax.add(new TSUnionMemberSyntax(this, _schema, member));
+        memberSyntax.add(new FlowtypeUnionMemberSyntax(this, _schema, member));
       }
 
       return memberSyntax;
@@ -818,11 +819,11 @@ public class FlowtypeSyntax {
       return fields;
     }
 
-    public Set<TSUnionSyntax> enclosedUnions() {
-      Set<TSUnionSyntax> unions = new HashSet<>();
+    public Set<FlowtypeUnionSyntax> enclosedUnions() {
+      Set<FlowtypeUnionSyntax> unions = new HashSet<>();
       for (ClassTemplateSpec spec: ClassTemplateSpecs.allContainedTypes(_template)) {
         if (spec instanceof UnionTemplateSpec) {
-          unions.add(new TSUnionSyntax((UnionTemplateSpec) spec));
+          unions.add(new FlowtypeUnionSyntax((UnionTemplateSpec) spec));
         }
       }
 
@@ -854,8 +855,8 @@ public class FlowtypeSyntax {
         imports.addAll(fieldSyntax.typeModules());
       }
 
-      for (TSUnionSyntax union: this.enclosedUnions()) {
-        for (TSUnionMemberSyntax unionMember: union.members()) {
+      for (FlowtypeUnionSyntax union: this.enclosedUnions()) {
+        for (FlowtypeUnionMemberSyntax unionMember: union.members()) {
           imports.addAll(unionMember.typeModules());
         }
       }

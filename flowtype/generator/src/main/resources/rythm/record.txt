@@ -1,5 +1,5 @@
 @args org.coursera.courier.flowtype.FlowtypeSyntax.TSRecordSyntax record
-@import org.coursera.courier.flowtype.FlowtypeSyntax.TSUnionSyntax
+@import org.coursera.courier.flowtype.FlowtypeSyntax.FlowtypeUnionSyntax
 @import org.coursera.courier.flowtype.FlowtypeSyntax.TSRecordFieldSyntax
 
 @record.imports()
@@ -14,7 +14,7 @@ export interface @record.typeName() {
 
 @if(record.requiresCompanionModule()) {
   export module @record.typeName() {
-    @for(TSUnionSyntax union: record.enclosedUnions()) {
+    @for(FlowtypeUnionSyntax union: record.enclosedUnions()) {
       @union(union)
     }
   }

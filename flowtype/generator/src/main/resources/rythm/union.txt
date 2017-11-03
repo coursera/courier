@@ -1,28 +1,7 @@
-@args org.coursera.courier.flowtype.FlowtypeSyntax.TSUnionSyntax union
-@import org.coursera.courier.flowtype.FlowtypeSyntax.TSUnionSyntax
-@import org.coursera.courier.flowtype.FlowtypeSyntax.TSUnionMemberSyntax
-
+@args org.coursera.courier.flowtype.FlowtypeSyntax.FlowtypeUnionSyntax union
+@import org.coursera.courier.flowtype.FlowtypeSyntax.FlowtypeUnionSyntax
+@import org.coursera.courier.flowtype.FlowtypeSyntax.FlowtypeUnionMemberSyntax
 @union.imports()
 
 @union.docString()
 export type @union.typeName() = @union.memberUnionTypeExpression();
-@if(union.requiresCompanionModule()) {
-  export module @union.typeName() {
-    export interface @union.memberBaseTypeName() {
-      [key: string]: @union.unionTypeExpression();
-    }
-
-    @for(TSUnionMemberSyntax member: union.members()) {
-      export interface @member.unionMemberTypeName() extends @union.memberBaseTypeName() {
-        "@member.unionMemberKey()": @member.typeName();
-      }
-    }
-    export function unpack(union: @union.typeName()) {
-      return {
-        @for(TSUnionMemberSyntax member: union.members()) {
-          @member.unpackString(): union["@member.unionMemberKey()"] as @(member.typeName())@if(!member_isLast){,}
-        }
-      };
-    }
-  }
-}
