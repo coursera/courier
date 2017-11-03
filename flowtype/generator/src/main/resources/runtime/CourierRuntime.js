@@ -1,3 +1,4 @@
+// @flow
 //
 // Copyright 2016 Coursera Inc.
 //

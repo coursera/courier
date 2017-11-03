@@ -87,8 +87,8 @@ public class FlowtypeGenerator implements PegasusCodeGenerator {
       System.out.println(file.getAbsolutePath());
     }
 
-    InputStream runtime = FlowtypeGenerator.class.getClassLoader().getResourceAsStream("runtime/CourierRuntime.ts");
-    IOUtils.copy(runtime, new FileOutputStream(new File(targetPath, "CourierRuntime.ts")));
+    InputStream runtime = FlowtypeGenerator.class.getClassLoader().getResourceAsStream("runtime/CourierRuntime.js");
+    IOUtils.copy(runtime, new FileOutputStream(new File(targetPath, "CourierRuntime.js")));
   }
 
   public FlowtypeGenerator() {
