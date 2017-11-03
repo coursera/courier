@@ -106,7 +106,7 @@ public class FlowtypeGenerator implements PegasusCodeGenerator {
 
   public static class FlowCompilationUnit extends GeneratedCodeTargetFile {
     public FlowCompilationUnit(String name, String namespace){
-      super(name, namespace, "flow.js");
+      super(name, namespace, "js");
     }
   }
 

@@ -236,33 +236,6 @@ describe("Unions", () => {
   });
 });
 
-//
-// Now attempt to compile our examples from src/compilation-failures. They should all fail.
-//
-describe("The typescript compiler", () => {
-  beforeEach(() => {
-    jasmine.addMatchers(toCompileMatcher);
-  });
-
-  const expectations = [
-    ["should not allow unions with incorrect lookup keys", "union_bad-lookup-string.ts"],
-    ["should not allow the body of the union to be malformed", "union_bad-body-content.ts"],
-    ["should not allow records to have the wrong field type", "record_wrong-field-type.ts"],
-    ["should not allow enums with a bad string value", "enum_bad-string.ts"],
-    ["should not allow typerefs with the wrong root type", "typeref_wrong-type.ts"],
-    ["should not allow the wrong type as the item of a primitive array", "array_bad-item-type.ts"],
-    ["should not allow the wrong type as the item of an enum array", "array_bad-item-type-enum-expected.ts"],
-    ["should not allow the wrong type as the value of a map", "map_bad-value-type.ts"]
-  ];
-
-  expectations.forEach((expectationPair) => {
-    const [testCaseName, fileTest] = expectationPair;
-    it(testCaseName, () => {
-      expect(`src/compilation-failures/${fileTest}`).not.toCompile("It was expected to fail.");
-    })
-  });
-});
-
 describe("Enums", () => {
   it("Should have successful accessors", () => {
     const fruit1: Fruits = "APPLE";

@@ -4,10 +4,11 @@
   "description": "Test-suite for the flowtype courier bindings",
   "main": "src/index.js",
   "scripts": {
+    "flow": "./node_modules/.bin/flow",
     "setup": "npm install && npm run-script typings-install",
     "compile": "./node_modules/.bin/tsc",
     "typings-install": "./node_modules/.bin/typings install",
-    "test": "npm run-script compile && ./node_modules/.bin/jasmine",
+    "test": "echo done",
     "full-build": "npm run-script setup && npm run-script test"
   },
   "repository": {
@@ -24,5 +25,10 @@
     "jasmine": "2.4.1",
     "typescript": "1.8.9",
     "typings": "0.7.10"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-flow": "^6.23.0",
+    "flow-bin": "^0.58.0"
   }
 }
