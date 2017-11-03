@@ -49,7 +49,7 @@ import java.util.Map;
  * @see TSPrimitiveTypeSyntax
  * @see FlowtypeEnumSyntax
  * @see TSArraySyntax
- * @see TSMapSyntax
+ * @see FlowtypeMapSyntax
  * @see FlowtypeTyperefSyntax
  * @see FlowtypeRecordSyntax
  * @see TSFixedSyntax
@@ -273,7 +273,7 @@ public class FlowtypeSyntax {
     } else if (template instanceof PrimitiveTemplateSpec) {
       return new TSPrimitiveTypeSyntax((PrimitiveTemplateSpec) template);
     } else if (template instanceof MapTemplateSpec) {
-      return new TSMapSyntax((MapTemplateSpec) template);
+      return new FlowtypeMapSyntax((MapTemplateSpec) template);
     } else if (template instanceof ArrayTemplateSpec) {
       return new TSArraySyntax((ArrayTemplateSpec) template);
     } else if (template instanceof UnionTemplateSpec) {
@@ -304,10 +304,10 @@ public class FlowtypeSyntax {
   }
 
   /** TS-specific syntax for Maps */
-  private class TSMapSyntax implements FlowtypeTypeSyntax {
+  private class FlowtypeMapSyntax implements FlowtypeTypeSyntax {
     private final MapTemplateSpec _template;
 
-    TSMapSyntax(MapTemplateSpec _template) {
+    FlowtypeMapSyntax(MapTemplateSpec _template) {
       this._template = _template;
     }
 
@@ -330,11 +330,13 @@ public class FlowtypeSyntax {
     @Override
     public Set<String> modulesRequiredToUse() {
       Set<String> modules = new HashSet<>();
+      modules.add("import type { Map } from \"./CourierRuntime\";"); // Our runtime contains a typedef for Map<ValueT>
+      modules.addAll(_valueTypeSyntax().modulesRequiredToUse()); // Need the map's value type to compile code that uses this type.
       return modules;
     }
 
     //
-    // Private TSMapSyntax members
+    // Private FlowtypeMapSyntax members
     //
     private FlowtypeTypeSyntax _valueTypeSyntax() {
       return createTypeSyntax(_template.getSchema().getValues());
