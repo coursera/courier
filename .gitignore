@@ -33,3 +33,6 @@ project/plugins/project/
 #
 .arcconfig
 .arclint
+
+# npm
+npm-debug.log

@@ -43,7 +43,7 @@ import java.util.Map;
  *
  * Most work delegates to inner classes, so you probably want to look them (linked below)
  *
- * Specifically, {@link TSEnumSyntax}, {@link FlowtypeUnionSyntax}, {@link FlowtypeRecordSyntax}, and {@link FlowtypeTyperefSyntax} are
+ * Specifically, {@link FlowtypeEnumSyntax}, {@link FlowtypeUnionSyntax}, {@link FlowtypeRecordSyntax}, and {@link FlowtypeTyperefSyntax} are
  * used directly to populate the templates.
  *
  * @see TSPrimitiveTypeSyntax
@@ -846,12 +846,14 @@ public class FlowtypeSyntax {
       return !ClassTemplateSpecs.allContainedTypes(_template).isEmpty();
     }
 
-    /** The complete typescript import block for this record */
+    /** The complete flowtype import block for this record */
     public String imports() {
       Set<String> imports = new HashSet<>();
 
       for (FlowRecordFieldSyntax fieldSyntax: this.fields()) {
-        imports.addAll(fieldSyntax.typeModules());
+        if (fieldSyntax.typeName() != this.typeName()) {
+          imports.addAll(fieldSyntax.typeModules());
+        }
       }
 
       for (FlowtypeUnionSyntax union: this.enclosedUnions()) {
