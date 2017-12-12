@@ -142,7 +142,12 @@
 
   override def hashCode: Int = ScalaRunTime._hashCode(this)
 
-  override def equals(that: Any): Boolean = canEqual(that) && ScalaRunTime._equals(this, that)
+  override def equals(that: Any): Boolean = canEqual(that) && (that match {
+    case that: Product if this.productArity == that.productArity =>
+      this.productIterator sameElements that.productIterator
+    case _ =>
+      false
+  })
 
   override def toString: String = ScalaRunTime._toString(this)
 

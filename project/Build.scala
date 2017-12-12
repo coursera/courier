@@ -46,7 +46,7 @@ object Courier extends Build with OverridablePublishSettings {
   // In order to keep it under control we primarily concern ourselves with these two below Scala
   // version numbers:
 
-  lazy val sbtScalaVersion = "2.10.5" // the version of Scala used by the current sbt version.
+  lazy val sbtScalaVersion = "2.10.6" // the version of Scala used by the current sbt version.
   lazy val currentScalaVersion = "2.11.11" // The current scala version.
 
   // Our plugin runs as part of SBT so must use the same Scala version that SBT currently uses.
@@ -57,7 +57,7 @@ object Courier extends Build with OverridablePublishSettings {
   // We cross build our runtime to both versions.
   lazy val runtimeVersionSettings = Seq(
     scalaVersion in ThisBuild := currentScalaVersion,
-    crossScalaVersions in ThisBuild := Seq(sbtScalaVersion, currentScalaVersion))
+    crossScalaVersions in ThisBuild := Seq(sbtScalaVersion, currentScalaVersion, "2.12.4"))
 
   // Strictly speaking, our generator only needs to be built for the SBT plugin Scala version.
   // But we also cross built it to the current Scala version so that our generator-test
@@ -318,7 +318,7 @@ object Courier extends Build with OverridablePublishSettings {
     }
 
     object Scalatest {
-      val version = "2.2.3"
+      val version = "3.0.4"
       val scalatest = "org.scalatest" %% "scalatest" % version % "test"
     }
 
@@ -331,7 +331,7 @@ object Courier extends Build with OverridablePublishSettings {
     }
 
     object Scalariform {
-      val version = "0.1.6"
+      val version = "0.2.6"
       val scalariform = "org.scalariform" %% "scalariform" % version
     }
 
