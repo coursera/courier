@@ -16,6 +16,8 @@
 
 package org.coursera.courier.templates
 
+import java.lang.reflect.Method
+
 import com.linkedin.data.DataComplex
 import com.linkedin.data.DataList
 import com.linkedin.data.DataMap
@@ -211,32 +213,52 @@ object DataTemplates {
   private[this] def newDataMapTemplate[T <: DataTemplate[DataMap]](
       data: DataMap, clazz: Class[T]): T = {
     val companionInstance = companion(clazz)
-    val applyMethod =
-      companionInstance.getClass.getDeclaredMethod(
-        "apply",
-        classOf[DataMap],
-        classOf[DataConversion])
+    val applyMethod = getTemplateDataConstructor(companionInstance, classOf[DataMap])
+
     applyMethod.invoke(companionInstance, data, DataConversion.SetReadOnly).asInstanceOf[T]
   }
 
   private[this] def newDataListTemplate[T <: DataTemplate[DataList]](
       data: DataList, clazz: Class[T]): T = {
     val companionInstance = companion(clazz)
-    val applyMethod =
-      companionInstance.getClass.getDeclaredMethod(
-        "apply",
-        classOf[DataList],
-        classOf[DataConversion])
+    val applyMethod = getTemplateDataConstructor(companionInstance, classOf[DataList])
     applyMethod.invoke(companionInstance, data, DataConversion.SetReadOnly).asInstanceOf[T]
   }
 
   private[this] def newUnionTemplate[T <: UnionTemplate](data: DataMap, clazz: Class[T]): T = {
     val companionInstance = companion(clazz)
-    val applyMethod =
-      companionInstance.getClass.getDeclaredMethod(
-        "apply",
-        classOf[DataMap],
-        classOf[DataConversion])
+    val applyMethod = getTemplateDataConstructor(companionInstance, classOf[DataMap])
+
     applyMethod.invoke(companionInstance, data, DataConversion.SetReadOnly).asInstanceOf[T]
+  }
+
+  /**
+    * Reflect for the correct method to instantiate the template from a DataMap
+    * and DataConversion. The correct method is usually "build", since
+    * pre-2.0.3. Before then it was "apply". In case this method is reading
+    * templates generated in an old version, we start with "build" and fall back
+    * on "apply".
+    *
+    * @param tmplCompanionInstance the result of calling the private method companion(clazz)
+    * @param dataClass either classOf[DataMap] or classOf[DataList], depending on whether
+    *                  operating on a record/union or an array.
+    * @return a method that can be construct a Union or Record template when
+    *         invoked a DataMap and DataConversion as args
+    */
+  private[this] def getTemplateDataConstructor(tmplCompanionInstance: AnyRef, dataClass: Class[_]): Method = {
+    val companionClass = tmplCompanionInstance.getClass
+    def getWithName(methodName: String): Method = {
+      companionClass.getDeclaredMethod(
+        methodName,
+        dataClass,
+        classOf[DataConversion]
+      )
+    }
+
+    try {
+      getWithName("build")
+    } catch {
+      case e: NoSuchMethodException => getWithName("apply")
+    }
   }
 }
