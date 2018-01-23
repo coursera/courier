@@ -213,23 +213,23 @@ object DataTemplates {
   private[this] def newDataMapTemplate[T <: DataTemplate[DataMap]](
       data: DataMap, clazz: Class[T]): T = {
     val companionInstance = companion(clazz)
-    val applyMethod = getTemplateDataConstructor(companionInstance, classOf[DataMap])
+    val buildMethod = getTemplateDataConstructor(companionInstance, classOf[DataMap])
 
-    applyMethod.invoke(companionInstance, data, DataConversion.SetReadOnly).asInstanceOf[T]
+    buildMethod.invoke(companionInstance, data, DataConversion.SetReadOnly).asInstanceOf[T]
   }
 
   private[this] def newDataListTemplate[T <: DataTemplate[DataList]](
       data: DataList, clazz: Class[T]): T = {
     val companionInstance = companion(clazz)
-    val applyMethod = getTemplateDataConstructor(companionInstance, classOf[DataList])
-    applyMethod.invoke(companionInstance, data, DataConversion.SetReadOnly).asInstanceOf[T]
+    val buildMethod = getTemplateDataConstructor(companionInstance, classOf[DataList])
+    buildMethod.invoke(companionInstance, data, DataConversion.SetReadOnly).asInstanceOf[T]
   }
 
   private[this] def newUnionTemplate[T <: UnionTemplate](data: DataMap, clazz: Class[T]): T = {
     val companionInstance = companion(clazz)
-    val applyMethod = getTemplateDataConstructor(companionInstance, classOf[DataMap])
+    val buildMethod = getTemplateDataConstructor(companionInstance, classOf[DataMap])
 
-    applyMethod.invoke(companionInstance, data, DataConversion.SetReadOnly).asInstanceOf[T]
+    buildMethod.invoke(companionInstance, data, DataConversion.SetReadOnly).asInstanceOf[T]
   }
 
   /**
