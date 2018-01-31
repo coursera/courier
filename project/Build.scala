@@ -47,7 +47,7 @@ object Courier extends Build with OverridablePublishSettings {
   // version numbers:
 
   lazy val sbtScalaVersion = "2.10.6" // the version of Scala used by the current sbt version.
-  lazy val currentScalaVersion = "2.11.11" // The current scala version.
+  lazy val currentScalaVersion = "2.12.4" // The current scala version.
 
   // Our plugin runs as part of SBT so must use the same Scala version that SBT currently uses.
   lazy val pluginVersionSettings = Seq(
@@ -57,7 +57,7 @@ object Courier extends Build with OverridablePublishSettings {
   // We cross build our runtime to both versions.
   lazy val runtimeVersionSettings = Seq(
     scalaVersion in ThisBuild := currentScalaVersion,
-    crossScalaVersions in ThisBuild := Seq(sbtScalaVersion, currentScalaVersion, "2.12.4"))
+    crossScalaVersions in ThisBuild := Seq(sbtScalaVersion, "2.11.11", currentScalaVersion))
 
   // Strictly speaking, our generator only needs to be built for the SBT plugin Scala version.
   // But we also cross built it to the current Scala version so that our generator-test
@@ -346,7 +346,7 @@ object Courier extends Build with OverridablePublishSettings {
     }
 
     object JodaTime {
-      val version = "2.6"
+      val version = "2.9.9"
       val jodaTime = "joda-time" % "joda-time" % version
     }
 
@@ -356,7 +356,7 @@ object Courier extends Build with OverridablePublishSettings {
     }
 
     object Coursera {
-      val courscala = "org.coursera" %% "courscala" % "0.0.4"
+      val courscala = "org.coursera" %% "courscala" % "0.1.3"
     }
   }
 
