@@ -470,4 +470,15 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures {
     // Fortunately, nothing should depend solely on hashCode() for determining whether two
     // records match.
   }
+
+  @Test
+  def testDataTemplateHelperCompatibility(): Unit = {
+    // DataTemplates provides a bunch of convenient helper methods for
+    // serializing and deserializing records. Let's make sure the generated
+    // records are compatible with those methods.
+    val origRecord = Simple(Some("Hi"))
+    val jsString = DataTemplates.writeRecord(origRecord)
+    val roundTrippedRecord = DataTemplates.readRecord[Simple](jsString)
+    assert(origRecord === roundTrippedRecord)
+  }
 }

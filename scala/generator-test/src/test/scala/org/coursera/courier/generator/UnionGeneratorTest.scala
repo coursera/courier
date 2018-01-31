@@ -155,4 +155,16 @@ class UnionGeneratorTest extends GeneratorTest with SchemaFixtures {
   def testUnionTyperefSchema(): Unit = {
     assert(TypedDefinition.TYPEREF_SCHEMA.getDereferencedDataSchema === TypedDefinition.SCHEMA)
   }
+
+  @Test
+  def testDataTemplateHelperSupport(): Unit = {
+    // DataTemplates provides a bunch of convenient helper methods for
+    // serializing and deserializing unions. Let's make sure the generated
+    // unions are compatible with those methods.
+    val origMember = WithPrimitiveCustomTypesUnion.Union.CustomIntMember(CustomInt(1))
+    val original = WithPrimitiveCustomTypesUnion(origMember)
+    val json = DataTemplates.writeUnion(origMember)
+    val roundTripped = DataTemplates.readUnion[WithPrimitiveCustomTypesUnion.Union](json)
+    assert(origMember === roundTripped)
+  }
 }

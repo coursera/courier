@@ -33,9 +33,9 @@ import com.linkedin.data.template.DataTemplateUtil
 import org.coursera.courier.templates.DataTemplates
 import org.coursera.courier.templates.DataValidationException
 import org.junit.Test
-import org.scalatest.junit.AssertionsForJUnit
+import org.scalatest.junit.{AssertionsForJUnit, JUnitSuite}
 
-class InlineStringCodecTest extends AssertionsForJUnit {
+class InlineStringCodecTest extends JUnitSuite with AssertionsForJUnit {
 
   @Test
   def testPrimitives(): Unit = {
