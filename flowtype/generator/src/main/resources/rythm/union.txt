@@ -1,0 +1,7 @@
+@args org.coursera.courier.flowtype.FlowtypeSyntax.FlowtypeUnionSyntax union
+@import org.coursera.courier.flowtype.FlowtypeSyntax.FlowtypeUnionSyntax
+@import org.coursera.courier.flowtype.FlowtypeSyntax.FlowtypeUnionMemberSyntax
+@union.imports()
+
+@union.docString()
+export type @union.typeName() = @union.memberUnionTypeExpression();

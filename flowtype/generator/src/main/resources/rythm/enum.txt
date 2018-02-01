@@ -1,0 +1,5 @@
+@args org.coursera.courier.flowtype.FlowtypeSyntax.FlowtypeEnumSyntax enumeration
+
+@import org.coursera.courier.flowtype.FlowtypeSyntax.FlowtypeEnumSymbolSyntax
+@enumeration.docString()
+export type @enumeration.typeName() = @enumeration.stringLiteralUnion();

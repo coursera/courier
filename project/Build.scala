@@ -172,18 +172,24 @@ object Courier extends Build with OverridablePublishSettings {
     .dependsOn(generatorApi)
     .disablePlugins(bintray.BintrayPlugin)
 
+  private[this] val flowtypeDir = file("flowtype")
+  lazy val flowtypeGenerator = Project(id = "flowtype-generator", base = flowtypeDir / "generator")
+    .dependsOn(generatorApi)
+    .disablePlugins(bintray.BintrayPlugin)
+
   lazy val cli = Project(id = "courier-cli", base = file("cli"))
     .dependsOn(
       javaGenerator,
       androidGenerator,
       scalaGenerator,
       typescriptLiteGenerator,
+      flowtypeGenerator,
       swiftGenerator
     ).aggregate(
       javaGenerator,
       androidGenerator,
       scalaGenerator,
-      typescriptLiteGenerator,
+      flowtypeGenerator,
       swiftGenerator
     ).settings(
       executableFile := {
@@ -203,6 +209,11 @@ object Courier extends Build with OverridablePublishSettings {
   lazy val typescriptLiteGeneratorTest = Project(
     id = "typescript-lite-generator-test", base = typescriptLiteDir / "generator-test")
     .dependsOn(typescriptLiteGenerator)
+    .disablePlugins(bintray.BintrayPlugin)
+
+  lazy val flowtypeGeneratorTest = Project(
+    id = "flowtype-generator-test", base = flowtypeDir / "generator-test")
+    .dependsOn(flowtypeGenerator)
     .disablePlugins(bintray.BintrayPlugin)
 
   lazy val courierSbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
@@ -237,6 +248,7 @@ object Courier extends Build with OverridablePublishSettings {
     s";project android-runtime;$publishCommand" +
     s";project swift-generator;$publishCommand" +
     s";project typescript-lite-generator;$publishCommand" +
+    s";project flowtype-generator;$publishCommand" +
     s";++$sbtScalaVersion;project scala-generator;$publishCommand" +
     s";++$currentScalaVersion;project scala-generator;$publishCommand" +
     s";++$sbtScalaVersion;project scala-runtime;$publishCommand" +
@@ -266,6 +278,8 @@ object Courier extends Build with OverridablePublishSettings {
       swiftGenerator,
       typescriptLiteGenerator,
       typescriptLiteGeneratorTest,
+      flowtypeGenerator,
+      flowtypeGeneratorTest,
       cli)
     .settings(runtimeVersionSettings)
     .settings(packagedArtifacts := Map.empty) // disable publish for root aggregate module
