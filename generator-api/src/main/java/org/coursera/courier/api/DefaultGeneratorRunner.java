@@ -131,7 +131,8 @@ public class DefaultGeneratorRunner implements GeneratorRunner {
         (Collection<File>)FileUtils.listFiles(targetDirectory, null, true);
 
     for (File existingFile : existingFiles) {
-      if (!targetFiles.contains(existingFile)) {
+      // TODO(py3): Get rid of this terrible __init__.py hack before un-WIPping this PR
+      if (!targetFiles.contains(existingFile) && !existingFile.getAbsoluteFile().getName().contains("__init__.py")) {
         FileUtils.forceDelete(existingFile);
       }
     }
@@ -174,6 +175,15 @@ public class DefaultGeneratorRunner implements GeneratorRunner {
       throw new IllegalArgumentException(
           "unable to create directory, or directory path exists but is not a directory: " +
               directory.getAbsolutePath());
+    }
+
+    // TODO(py3): Get rid of this before PRing for god sake. Find a better way to do this in courier
+    File py3Init = new File(directory, "__init__.py");
+    System.err.println(py3Init.getAbsolutePath());
+    if (!py3Init.exists()) {
+      if (!py3Init.createNewFile()) {
+        throw new IllegalArgumentException("Unable to create file " + py3Init.getAbsolutePath());
+      }
     }
 
     if (!file.exists()) {

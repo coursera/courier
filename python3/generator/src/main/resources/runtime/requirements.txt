@@ -1,0 +1,4 @@
+### Requirements for using courier python3 bindings at runtime.
+
+# Used for validation
+avro-python3

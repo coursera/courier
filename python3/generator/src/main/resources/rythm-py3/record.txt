@@ -1,0 +1,63 @@
+@args org.coursera.courier.py3.Py3Syntax.Py3RecordSyntax record
+@import org.coursera.courier.py3.Py3Syntax.Py3UnionSyntax
+@import org.coursera.courier.py3.Py3Syntax.Py3RecordFieldSyntax
+@record.imports()
+import json
+
+class @(record.typeName())(courier.Record):
+    AVRO_SCHEMA = courier.parse_avro_schema(@record.avroSchemaJson())
+    SCHEMA = courier.parse_schema("""@record.courierSchemaJson()""")
+
+    def __init__(self, @for(Py3RecordFieldSyntax field: record.fields()) {@field.accessorName()=@field.constructorDefault(), }data=None):
+        super(self.__class__, self).__init__(data)
+        @if(!record.fields().isEmpty()){        if data is None:}
+            @for(Py3RecordFieldSyntax field: record.fields()) {
+            @if(field.hasDefaultValue()) {
+
+            @// TODO(py3): Clean up this godawful way of doing default args
+            if @field.accessorName() in [courier.REQUIRED, courier.OPTIONAL]:
+                @(field.accessorName()) = courier.parse(@field.constructor(), """ @field.defaultValue() """)
+            }
+            if @field.accessorName() is courier.REQUIRED:
+                raise TypeError('__init__() missing required argument: \'@field.accessorName()\'')
+            else:
+                self._set_data_field('@field.jsonKey()', @field.accessorName(), @field.constructor(), validate_new_value=False)
+            }
+            @// validate only if the object was created from fields -- if its being created from data then validate can
+            @// be directly called by courier.parse.
+            @if(!record.fields().isEmpty()){            courier.validate(self)}
+
+    @@classmethod
+    def from_data(cls, data):
+      return cls(data=data)
+
+    def __str__(self):
+      return '@(record.typeName())(' + \
+        @for(Py3RecordFieldSyntax field: record.fields()) {
+          '@(field.accessorName())=' + str(self.@(field.accessorName())) + \
+        }
+      ')'
+
+    def __repr__(self):
+      return '@(record.typeName())(' + repr(self.data) + ')';
+
+    def __eq__(self, other):
+      return isinstance(other, @(record.typeName())) and self.data == other.data
+
+@for(Py3RecordFieldSyntax field: record.fields()) {
+
+    #
+    # '@field.accessorName()' property
+    #
+    @{ String setter = field.accessorName() + ".setter" }
+    @@property
+    def @field.accessorName() (self):
+        return self._get_data_field('@field.jsonKey()', @field.constructor())
+
+    @@@setter
+    def @field.accessorName() (self, new_value):
+        return self._set_data_field('@field.jsonKey()', new_value, @field.constructor())
+}@if(record.requiresCompanionModule()) { @for(Py3UnionSyntax union: record.enclosedUnions()) {
+     @union(union, 1)
+  }
+}

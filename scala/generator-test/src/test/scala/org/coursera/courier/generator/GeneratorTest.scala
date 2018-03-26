@@ -71,7 +71,7 @@ abstract class GeneratorTest extends JUnitSuite with AssertionsForJUnit {
 
   private def listToJson(dataList: DataList): String = prettyPrinter.listToString(dataList)
 
-  private def readJsonToMap(string: String): DataMap = dataCodec.stringToMap(string)
+  def readJsonToMap(string: String): DataMap = dataCodec.stringToMap(string)
 
   private def readJsonToList(string: String): DataList = dataCodec.stringToList(string)
 }

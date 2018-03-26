@@ -1,0 +1,57 @@
+@args org.coursera.courier.py3.Py3Syntax.Py3UnionSyntax union, int indentation
+@import org.coursera.courier.py3.Py3Syntax.Py3UnionSyntax
+@import org.coursera.courier.py3.Py3Syntax.Py3UnionMemberSyntax
+
+@{ String singleIndent = "    " }
+
+@macro("indent") {@for(int i = 0; i < indentation; i++) {@singleIndent}}
+
+@union.imports()
+
+@indent()class @(union.typeName())(courier.Union):
+@indent()    AVRO_SCHEMA = courier.parse_avro_schema(@union.avroSchemaJson())
+@indent()    SCHEMA = courier.parse_schema("""@union.courierSchemaJson()""")
+@indent()
+@indent()    _TYPES_BY_KEY = {
+             @for(Py3UnionMemberSyntax member: union.members()) {
+@indent()        '@member.unionMemberKey()': {'type': @member.typeName(), 'constructor': @member.constructor() },
+@indent()    }
+
+@indent()    }
+@indent()    #TODO(py3): Put all possible members and constructors here, rather than doing your giant if statements in the __init__
+@indent()    def __init__(self, value=courier.REQUIRED, data=None, _courier_validate_on_init=False):
+@indent()        """ Create a @union.typeName() from a dict (probably loaded from json).
+@indent()
+@indent()        You probably want to use the `create` method instead.
+@indent()
+@indent()        The dict must have one of these keys: @for(Py3UnionMemberSyntax member: union.members()) {
+@indent()            - '@member.unionMemberKey()'
+@indent()        }
+@indent()        """
+@indent()        super(self.__class__, self).__init__(data)
+@indent()        if data is None:
+@indent()            self._set_from_value(value)
+@indent()            courier.validate(self)
+@indent()
+@indent()    @@classmethod
+@indent()    def from_data(cls, data):
+@indent()        return cls(data=data)
+@indent()
+@indent()    @@property
+@indent()    def as_value_type(self):
+@indent()        return self.value
+@indent()
+@indent()    @@property
+@indent()    def value(self):
+@indent()       for (key, value) in self.data.items():
+@indent()           constructor_type = self.__class__._TYPES_BY_KEY[key]['constructor']
+@indent()           construct = constructor_type.from_data if (hasattr(constructor_type, 'from_data')) else constructor_type
+@indent()           return construct(value)
+@indent()
+@indent()    def __repr__(self):
+@indent()        return '@(union.typeName())(' + repr(self.data) + ')';
+@indent()
+@indent()    def __eq__(self, other):
+@indent()        return isinstance(other, self.__class__) and self.data == other.data
+@indent()
+@indent()

@@ -20,8 +20,11 @@ import org.coursera.courier.data.IntArray
 import org.coursera.courier.data.IntMap
 import org.coursera.courier.templates.DataTemplates
 import DataTemplates.DataConversion
+import com.linkedin.data.schema.validation.{CoercionMode, RequiredMode, ValidateDataAgainstSchema, ValidationOptions}
+import com.linkedin.data.schema.validator.DataSchemaAnnotationValidator
 import org.coursera.courier.generator.customtypes.CustomInt
 import org.coursera.enums.Fruits
+import org.coursera.records.RecordWithInlineUnion
 import org.coursera.records.test.Empty
 import org.coursera.records.test.Empty2
 import org.coursera.records.test.InlineOptionalRecord
@@ -71,6 +74,32 @@ class RecordGeneratorTest extends GeneratorTest with SchemaFixtures {
 
       assertJson(primitives, primitiveRecordFieldsJson)
     }
+  }
+
+  @Test
+  def testWithUnionThing(): Unit = {
+    val item = RecordWithInlineUnion(
+      RecordWithInlineUnion.InlineUnion.NoteMember(
+        org.coursera.records.Note("Hello")
+      )
+    )
+    val str = DataTemplates.writeRecord(item)
+    // val newItem = DataTemplates.readRecord[org.coursera.records.Note]("""{"inlineUnion":{"org.coursera.records.Note":{"text":"Hello"}}}""")
+
+    val newItem = roundTrip(item.data())
+    val itemData = this.readJsonToMap("""{"inlineUnion":{"org.coursera.records.Note":{"text":"Hello"}}}""")
+
+    val unionField = RecordWithInlineUnion.SCHEMA.getField("inlineUnion")
+    println(RecordWithInlineUnion.SCHEMA)
+    println(unionField.getType)
+    println(unionField.getType.getDereferencedDataSchema)
+    val validationResult = ValidateDataAgainstSchema.validate(
+      itemData,
+      RecordWithInlineUnion.SCHEMA,
+      new ValidationOptions(RequiredMode.CAN_BE_ABSENT_IF_HAS_DEFAULT, CoercionMode.NORMAL),
+      new DataSchemaAnnotationValidator(RecordWithInlineUnion.SCHEMA)
+    )
+    throw new Exception(validationResult.toString)
   }
 
   @Test
