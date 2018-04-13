@@ -1,4 +1,4 @@
-@(record: org.coursera.courier.generator.specs.RecordDefinition)
+@(record: org.coursera.courier.generator.specs.RecordDefinition, mixin: org.coursera.courier.generator.GeneratorMixin)
 
 @import com.linkedin.data.schema.SchemaToJsonEncoder
 @import com.linkedin.data.schema.JsonBuilder
@@ -168,6 +168,10 @@
   }
 
   override def clone(): @(record.scalaType) = this
+
+  @mixin.extraClassExpressions(record).map { expression =>
+    @expression
+  }
 }
 
 object @(record.scalaType) extends RecordCompanion[@(record.scalaType)] {
@@ -183,7 +187,7 @@ object @(record.scalaType) extends RecordCompanion[@(record.scalaType)] {
   }
 
   @* Generate any contained types as inner classes. *@
-  @ContainedTypes(record)
+  @ContainedTypes(record, mixin)
 
   private object Fields {
     @record.fields.map { field =>
@@ -224,5 +228,9 @@ object @(record.scalaType) extends RecordCompanion[@(record.scalaType)] {
     case _ => {
       /* unapply() not available for records with more than 22 fields due to Scala's Tuple limit. */
     }
+  }
+
+  @mixin.extraCompanionExpressions(record).map { expression =>
+    @expression
   }
 }

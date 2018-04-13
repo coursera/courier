@@ -19,7 +19,6 @@ package org.coursera.courier.generator
 import org.coursera.courier.templates.DataTemplates
 import DataTemplates.DataConversion
 import org.coursera.courier.generator.customtypes.CustomInt
-import org.coursera.courier.generator.customtypes.CustomIntCoercer
 import org.coursera.enums.Fruits
 import org.coursera.records.test.Empty
 import org.coursera.records.test.Simple
@@ -27,9 +26,9 @@ import org.coursera.records.test.SimpleArray
 import org.coursera.records.test.SimpleMap
 import org.coursera.typerefs.TypedDefinition
 import org.coursera.unions.WithComplexTypesUnion
+import org.coursera.unions.WithComplexTypesUnion.Union
 import org.coursera.unions.WithPrimitiveCustomTypesUnion
 import org.coursera.unions.WithPrimitivesUnion
-import org.junit.BeforeClass
 import org.junit.Test
 
 class UnionGeneratorTest extends GeneratorTest with SchemaFixtures {
@@ -154,5 +153,11 @@ class UnionGeneratorTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testUnionTyperefSchema(): Unit = {
     assert(TypedDefinition.TYPEREF_SCHEMA.getDereferencedDataSchema === TypedDefinition.SCHEMA)
+  }
+
+  @Test
+  def testMixins(): Unit = {
+    val classMixin: Option[Union] = Union.EmptyMember(Empty()).classMixinDef
+    val companionMixin: Option[Union] = Union.companionMixinDef
   }
 }

@@ -18,6 +18,7 @@ package org.coursera.courier.generator
 
 import org.coursera.enums.EnumProperties
 import org.coursera.enums.Fruits
+import org.coursera.records.test.SimpleMapMap
 import org.junit.Test
 
 class EnumGeneratorTest extends GeneratorTest with SchemaFixtures {
@@ -50,4 +51,11 @@ class EnumGeneratorTest extends GeneratorTest with SchemaFixtures {
 
     assert(toColor(EnumProperties.BANANA) === "yellow")
   }
+
+  @Test
+  def testMixins(): Unit = {
+    val classMixin: Option[EnumProperties] = EnumProperties.BANANA.classMixinDef
+    val companionMixin: Option[EnumProperties] = EnumProperties.companionMixinDef
+  }
+
 }

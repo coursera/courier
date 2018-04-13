@@ -1,4 +1,4 @@
-@(map: org.coursera.courier.generator.specs.MapDefinition)
+@(map: org.coursera.courier.generator.specs.MapDefinition, mixin: org.coursera.courier.generator.GeneratorMixin)
 
 @import com.linkedin.data.schema.SchemaToJsonEncoder
 @import com.linkedin.data.schema.JsonBuilder
@@ -132,6 +132,10 @@
   override def copy(): DataTemplate[DataMap] = this
 
   override def clone(): DataTemplate[DataMap] = this
+
+  @mixin.extraClassExpressions(map).map { expression =>
+    @expression
+  }
 }
 
 object @(map.scalaType) extends MapCompanion[@(map.scalaType)]{
@@ -147,7 +151,7 @@ object @(map.scalaType) extends MapCompanion[@(map.scalaType)]{
   }
 
   @* Generate any contained types as inner classes. *@
-  @ContainedTypes(map)
+  @ContainedTypes(map, mixin)
 
   val empty = @(map.scalaType)()
 
@@ -210,5 +214,9 @@ object @(map.scalaType) extends MapCompanion[@(map.scalaType)]{
         @(map.scalaType)(map)
       }
     }
+  }
+
+  @mixin.extraCompanionExpressions(map).map { expression =>
+    @expression
   }
 }

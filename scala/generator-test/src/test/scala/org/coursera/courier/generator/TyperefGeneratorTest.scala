@@ -24,13 +24,13 @@ import org.coursera.courier.generator.customtypes.CustomIntWrapper
 import org.coursera.courier.generator.customtypes.CustomMapTestKeyId
 import org.coursera.courier.generator.customtypes.CustomMapTestValueId
 import org.coursera.courier.generator.customtypes.CustomRecord
-import org.coursera.courier.generator.customtypes.CustomRecordCoercer
 import org.coursera.courier.generator.customtypes.CustomRecordTestId
 import org.coursera.courier.generator.customtypes.CustomUnionTestId
 import org.coursera.courier.templates.DataTemplates
 import org.coursera.courier.templates.DataTemplates.DataConversion
 import org.coursera.customtypes.CustomRecordArray
 import org.coursera.customtypes.CustomRecordToCustomRecordMap
+import org.coursera.enums.EnumProperties
 import org.coursera.enums.Fruits
 import org.coursera.maps.WithCustomMapTestIds
 import org.coursera.records.test.Empty
@@ -150,5 +150,11 @@ class TyperefGeneratorTest extends GeneratorTest with SchemaFixtures {
     val dataMap = DataTemplates.readDataMap(json)
     val wrapped = DataTemplateUtil.wrap(dataMap, classOf[WithCustomUnionTestId])
     assert(wrapped.union === CustomUnionTestIdMember(CustomUnionTestId(1)))
+  }
+
+  @Test
+  def testMixins(): Unit = {
+    val classMixin: Option[UnionTyperef] = UnionTyperef.IntMember(1).classMixinDef
+    val companionMixin: Option[UnionTyperef] = UnionTyperef.companionMixinDef
   }
 }

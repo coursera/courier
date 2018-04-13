@@ -17,6 +17,8 @@
 package org.coursera.courier
 
 import org.coursera.courier.generator.CourierPredef
+import org.coursera.courier.generator.GeneratorMixin
+import org.coursera.courier.generator.NilGeneratorMixin
 import org.coursera.courier.generator.ScalaCompilationUnit
 import org.coursera.courier.generator.ScalaGeneratedCode
 import org.coursera.courier.generator.TemplateGenerator
@@ -48,7 +50,7 @@ import scalariform.parser.ScalaParserException
 /**
  * Generates Scala files using the Twirl string template engine.
  */
-class ScalaGenerator()
+class ScalaGenerator(mixin: GeneratorMixin)
   extends TemplateGenerator {
 
   // TODO(jbetz): Make configurable
@@ -60,18 +62,18 @@ class ScalaGenerator()
       case predef: Definition if CourierPredef.definitions.contains(predef) =>
         None // Predefined types should already exist, so we don't generate them
       case record: RecordDefinition =>
-        Some(RecordClass(record).body)
+        Some(RecordClass(record, mixin).body)
       case union: UnionDefinition =>
-        Some(UnionClass(union).body)
+        Some(UnionClass(union, mixin).body)
       case enum: EnumDefinition =>
-        Some(EnumClass(enum).body)
+        Some(EnumClass(enum, mixin).body)
       case array: ArrayDefinition =>
-        Some(ArrayClass(array).body)
+        Some(ArrayClass(array, mixin).body)
       case map: MapDefinition =>
-        Some(MapClass(map).body)
+        Some(MapClass(map, mixin).body)
       case typeref: TyperefDefinition =>
         if (generateTyperefs) {
-          Some(TyperefClass(typeref).body)
+          Some(TyperefClass(typeref, mixin).body)
         } else {
           None
         }
@@ -111,9 +113,9 @@ class ScalaGenerator()
     CourierPredef.bySchema.flatMap { case (schema, definition) =>
       val code = definition match {
         case array: ArrayDefinition =>
-          ArrayClass(array).body
+          ArrayClass(array, mixin).body
         case map: MapDefinition =>
-          MapClass(map).body
+          MapClass(map, mixin).body
         case _: Any =>
           throw new IllegalArgumentException(s"Unsupported schema type: ${schema.getClass}")
       }

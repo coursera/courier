@@ -1,4 +1,4 @@
-@(definition: org.coursera.courier.generator.specs.Definition)
+@(definition: org.coursera.courier.generator.specs.Definition, mixin: org.coursera.courier.generator.GeneratorMixin)
 
 @import org.coursera.courier.generator.specs._
 
@@ -6,12 +6,12 @@
   @referenced.enclosingDefinition match {
     case Some(container) if container == definition => {
       @referenced match {
-        case enclosedUnion: UnionDefinition => { @UnionClass(enclosedUnion) }
-        case enclosedRecord: RecordDefinition => { @RecordClass(enclosedRecord) }
-        case enclosedMap: MapDefinition => { @MapClass(enclosedMap) }
-        case enclosedArray: ArrayDefinition => { @ArrayClass(enclosedArray) }
-        case enclosedEnum: EnumDefinition => { @EnumClass(enclosedEnum) }
-        case enclosedTyperef: TyperefDefinition => { @TyperefClass(enclosedTyperef) }
+        case enclosedUnion: UnionDefinition => { @UnionClass(enclosedUnion, mixin) }
+        case enclosedRecord: RecordDefinition => { @RecordClass(enclosedRecord, mixin) }
+        case enclosedMap: MapDefinition => { @MapClass(enclosedMap, mixin) }
+        case enclosedArray: ArrayDefinition => { @ArrayClass(enclosedArray, mixin) }
+        case enclosedEnum: EnumDefinition => { @EnumClass(enclosedEnum, mixin) }
+        case enclosedTyperef: TyperefDefinition => { @TyperefClass(enclosedTyperef, mixin) }
       }
     }
     case _ => { }

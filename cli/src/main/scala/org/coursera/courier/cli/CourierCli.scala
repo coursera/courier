@@ -1,7 +1,7 @@
 package org.coursera.courier.cli
 
 import org.coursera.courier.generator.ScalaDataTemplateGenerator
-import org.coursera.courier.{AndroidGenerator, JavaGenerator, ScalaGenerator, SwiftGenerator, TypeScriptLiteGenerator}
+import org.coursera.courier.{AndroidGenerator, JavaGenerator, SwiftGenerator, TypeScriptLiteGenerator}
 
 object CourierCli extends App {
   val maybeSubcommandResult = for {
