@@ -18,7 +18,6 @@ package org.coursera.courier
 
 import org.coursera.courier.generator.CourierPredef
 import org.coursera.courier.generator.GeneratorMixin
-import org.coursera.courier.generator.NilGeneratorMixin
 import org.coursera.courier.generator.ScalaCompilationUnit
 import org.coursera.courier.generator.ScalaGeneratedCode
 import org.coursera.courier.generator.TemplateGenerator
@@ -50,7 +49,7 @@ import scalariform.parser.ScalaParserException
 /**
  * Generates Scala files using the Twirl string template engine.
  */
-class ScalaGenerator(mixin: GeneratorMixin)
+class ConfigurableScalaGenerator(mixin: GeneratorMixin)
   extends TemplateGenerator {
 
   // TODO(jbetz): Make configurable

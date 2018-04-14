@@ -19,7 +19,7 @@ package org.coursera.courier.sbt
 import java.io.File.pathSeparator
 
 import org.apache.commons.lang3.exception.ExceptionUtils
-import org.coursera.courier.ScalaGenerator
+import org.coursera.courier.DefaultScalaGenerator
 import org.coursera.courier.api.DefaultGeneratorRunner
 import org.coursera.courier.api.GeneratorRunnerOptions
 import org.coursera.courier.api.ParserForFileFormat
@@ -99,7 +99,7 @@ object CourierPlugin extends Plugin {
 
   private def courierSettings(conf: Configuration): Seq[Def.Setting[_]] = Seq(
 
-    courierGeneratorClass in conf := classOf[ScalaGenerator],
+    courierGeneratorClass in conf := classOf[DefaultScalaGenerator],
 
     courierSourceDirectory in conf := (sourceDirectory in conf).value / "pegasus",
 

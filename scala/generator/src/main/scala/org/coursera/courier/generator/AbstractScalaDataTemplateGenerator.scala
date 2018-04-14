@@ -2,7 +2,7 @@ package org.coursera.courier.generator
 
 import com.linkedin.pegasus.generator.JavaCodeGeneratorBase
 import com.linkedin.pegasus.generator.PegasusDataTemplateGenerator
-import org.coursera.courier.ScalaGenerator
+import org.coursera.courier.ConfigurableScalaGenerator
 import org.coursera.courier.api.DefaultGeneratorRunner
 import org.coursera.courier.api.GeneratorRunnerOptions
 
@@ -32,7 +32,7 @@ abstract class AbstractScalaDataTemplateGenerator(mixins: GeneratorMixin) {
     val generatePredef = false // set to true temporarily to manually generateRecord predef
 
     val result = new DefaultGeneratorRunner().run(
-      new ScalaGenerator(mixins),
+      new ConfigurableScalaGenerator(mixins),
       new GeneratorRunnerOptions(
         targetDirectoryPath,
         sources,
