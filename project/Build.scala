@@ -125,7 +125,8 @@ object Courier extends Build with OverridablePublishSettings {
       .disablePlugins(bintray.BintrayPlugin)
 
   lazy val scalaGeneratorTestGenerator =
-    Project(id = "scala-generator-test-generator", base = scalaDir / "generator-test-generator")
+    Project(id = "scala-generator-test-generator",
+            base = scalaDir / "generator-test-generator")
       .dependsOn(scalaGenerator)
 
   lazy val scalaGeneratorTest =
@@ -263,7 +264,6 @@ object Courier extends Build with OverridablePublishSettings {
       s";project android-generator;$publishCommand" +
       s";project android-runtime;$publishCommand" +
       s";project swift-generator;$publishCommand" +
-      s";project typescript-lite-generator;$publishCommand" +
       s";++$sbtScalaVersion;project scala-generator;$publishCommand" +
       s";++$currentScalaVersion;project scala-generator;$publishCommand" +
       s";++$sbtScalaVersion;project scala-runtime;$publishCommand" +
@@ -431,7 +431,8 @@ object Courier extends Build with OverridablePublishSettings {
       val dst = forkedVmCourierDest.value
       val classpath = forkedVmCourierClasspath.value
       val additionalArgs = forkedVmAdditionalArgs.value
-      streams.value.log.info(s"Generating courier bindings for files in $src...")
+      streams.value.log
+        .info(s"Generating courier bindings for files in $src...")
       val files =
         runForkedGenerator(mainClass,
                            src,
