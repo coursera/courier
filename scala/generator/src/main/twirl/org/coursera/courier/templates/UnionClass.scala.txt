@@ -1,4 +1,4 @@
-@(union: org.coursera.courier.generator.specs.UnionDefinition)
+@(union: org.coursera.courier.generator.specs.UnionDefinition, mixin: org.coursera.courier.generator.GeneratorMixin)
 
 @import com.linkedin.data.schema.SchemaToJsonEncoder
 @import com.linkedin.data.schema.JsonBuilder
@@ -47,6 +47,10 @@
   override def toString: String = ScalaRunTime._toString(this)
 
   override def hashCode: Int = ScalaRunTime._hashCode(this)
+
+  @mixin.extraClassExpressions(union).map { expression =>
+    @expression
+  }
 }
 
 object @(union.scalaType) extends UnionCompanion[@(union.scalaType)] @(if(union.containingTyperef.isDefined){"with UnionWithTyperefCompanion[" + union.scalaType + "] "}){
@@ -178,5 +182,9 @@ object @(union.scalaType) extends UnionCompanion[@(union.scalaType)] @(if(union.
         None
       }
     }
+  }
+
+  @mixin.extraCompanionExpressions(union).map { expression =>
+    @expression
   }
 }

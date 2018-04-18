@@ -1,4 +1,4 @@
-@(array: org.coursera.courier.generator.specs.ArrayDefinition)
+@(array: org.coursera.courier.generator.specs.ArrayDefinition, mixin: org.coursera.courier.generator.GeneratorMixin)
 
 @import com.linkedin.data.schema.SchemaToJsonEncoder
 @import com.linkedin.data.schema.JsonBuilder
@@ -82,6 +82,10 @@
   }
 
   override def clone(): DataTemplate[DataList] = this
+
+  @mixin.extraClassExpressions(array).map { expression =>
+    @expression
+  }
 }
 
 object @(array.scalaType) extends ArrayCompanion[@(array.scalaType)] {
@@ -167,5 +171,9 @@ object @(array.scalaType) extends ArrayCompanion[@(array.scalaType)] {
         @(array.scalaType)(traversable)
       }
     }
+  }
+
+  @mixin.extraCompanionExpressions(array).map { expression =>
+    @expression
   }
 }

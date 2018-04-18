@@ -30,13 +30,12 @@ import sbtassembly.AssemblyKeys._
 import sbtassembly.AssemblyPlugin.defaultShellScript
 
 /**
- * SBT project for Courier.
- */
+  * SBT project for Courier.
+  */
 object Courier extends Build with OverridablePublishSettings {
 
   override lazy val settings = super.settings ++ overridePublishSettings ++
-      Seq(
-        organization := "org.coursera.courier")
+    Seq(organization := "org.coursera.courier")
 
   //
   // Cross building
@@ -57,7 +56,9 @@ object Courier extends Build with OverridablePublishSettings {
   // We cross build our runtime to both versions.
   lazy val runtimeVersionSettings = Seq(
     scalaVersion in ThisBuild := currentScalaVersion,
-    crossScalaVersions in ThisBuild := Seq(sbtScalaVersion, "2.11.11", currentScalaVersion))
+    crossScalaVersions in ThisBuild := Seq(sbtScalaVersion,
+                                           "2.11.11",
+                                           currentScalaVersion))
 
   // Strictly speaking, our generator only needs to be built for the SBT plugin Scala version.
   // But we also cross built it to the current Scala version so that our generator-test
@@ -66,7 +67,8 @@ object Courier extends Build with OverridablePublishSettings {
   // Scala version.
   lazy val generatorVersionSettings = Seq(
     scalaVersion in ThisBuild := sbtScalaVersion,
-    crossScalaVersions in ThisBuild := Seq(sbtScalaVersion, currentScalaVersion))
+    crossScalaVersions in ThisBuild := Seq(sbtScalaVersion,
+                                           currentScalaVersion))
 
   // Java project settings
   lazy val plainJavaProjectSettings = Seq(
@@ -86,91 +88,109 @@ object Courier extends Build with OverridablePublishSettings {
       System.setProperty(
         "referencesuite.srcdir",
         (sourceDirectory in referenceSuite).value.getAbsolutePath)
-    })
+    }
+  )
 
   //
   // Projects
   //
-  lazy val schemaLanguage = Project(id = "schema-language", base = file("schema-language"))
-    .disablePlugins(bintray.BintrayPlugin)
+  lazy val schemaLanguage =
+    Project(id = "schema-language", base = file("schema-language"))
+      .disablePlugins(bintray.BintrayPlugin)
 
-  lazy val generatorApi = Project(id = "generator-api", base = file("generator-api"))
-    .dependsOn(schemaLanguage)
-    .disablePlugins(bintray.BintrayPlugin)
+  lazy val generatorApi =
+    Project(id = "generator-api", base = file("generator-api"))
+      .dependsOn(schemaLanguage)
+      .disablePlugins(bintray.BintrayPlugin)
 
-  lazy val referenceSuite = Project(id = "reference-suite", base = file("reference-suite"))
-    .disablePlugins(bintray.BintrayPlugin)
+  lazy val referenceSuite =
+    Project(id = "reference-suite", base = file("reference-suite"))
+      .disablePlugins(bintray.BintrayPlugin)
 
   private[this] val scalaDir = file("scala")
 
-  lazy val scalaGenerator = Project(id = "scala-generator", base = scalaDir / "generator")
-    .dependsOn(scalaRuntime, generatorApi, schemaLanguage)
-    .enablePlugins(SbtTwirl)
-    .disablePlugins(bintray.BintrayPlugin)
+  lazy val scalaGenerator =
+    Project(id = "scala-generator", base = scalaDir / "generator")
+      .dependsOn(scalaRuntime, generatorApi, schemaLanguage)
+      .enablePlugins(SbtTwirl)
+      .disablePlugins(bintray.BintrayPlugin)
 
-  lazy val scalaRuntime = Project(id = "scala-runtime", base = scalaDir / "runtime")
-    .disablePlugins(bintray.BintrayPlugin)
+  lazy val scalaRuntime =
+    Project(id = "scala-runtime", base = scalaDir / "runtime")
+      .disablePlugins(bintray.BintrayPlugin)
 
-  lazy val testLib = Project(
-    id = "scala-test-lib", base = scalaDir / "test-lib")
-    .dependsOn(scalaGenerator)
-    .disablePlugins(bintray.BintrayPlugin)
+  lazy val testLib =
+    Project(id = "scala-test-lib", base = scalaDir / "test-lib")
+      .dependsOn(scalaGenerator)
+      .disablePlugins(bintray.BintrayPlugin)
 
-  lazy val scalaGeneratorTest = Project(
-    id = "scala-generator-test", base = scalaDir / "generator-test")
-    .dependsOn(scalaGenerator)
-    .dependsOn(testLib)
-    .disablePlugins(bintray.BintrayPlugin)
+  lazy val scalaGeneratorTestGenerator =
+    Project(id = "scala-generator-test-generator", base = scalaDir / "generator-test-generator")
+      .dependsOn(scalaGenerator)
 
-  lazy val scalaFixture = Project(
-    id = "scala-fixture", base = scalaDir / "fixture")
-    .dependsOn(scalaGenerator)
-    .disablePlugins(bintray.BintrayPlugin)
+  lazy val scalaGeneratorTest =
+    Project(id = "scala-generator-test", base = scalaDir / "generator-test")
+      .dependsOn(scalaGenerator)
+      .dependsOn(testLib)
+      .dependsOn(scalaGeneratorTestGenerator)
+      .disablePlugins(bintray.BintrayPlugin)
 
-  lazy val scalaFixtureTest = Project(
-    id = "scala-fixture-test", base = scalaDir / "fixture-test")
-    .dependsOn(scalaGenerator)
-    .dependsOn(scalaFixture)
-    .dependsOn(testLib)
-    .disablePlugins(bintray.BintrayPlugin)
+  lazy val scalaFixture =
+    Project(id = "scala-fixture", base = scalaDir / "fixture")
+      .dependsOn(scalaGenerator)
+      .disablePlugins(bintray.BintrayPlugin)
+
+  lazy val scalaFixtureTest =
+    Project(id = "scala-fixture-test", base = scalaDir / "fixture-test")
+      .dependsOn(scalaGenerator)
+      .dependsOn(scalaFixture)
+      .dependsOn(testLib)
+      .disablePlugins(bintray.BintrayPlugin)
 
   private[this] val javaDir = file("java")
 
-  lazy val javaGenerator = Project(id = "java-generator", base = javaDir / "generator")
-    .dependsOn(generatorApi)
-    .disablePlugins(bintray.BintrayPlugin)
+  lazy val javaGenerator =
+    Project(id = "java-generator", base = javaDir / "generator")
+      .dependsOn(generatorApi)
+      .disablePlugins(bintray.BintrayPlugin)
 
-  lazy val javaGeneratorTest = Project(
-    id = "java-generator-test", base = javaDir / "generator-test")
-    .dependsOn(javaGenerator)
-    .disablePlugins(bintray.BintrayPlugin)
+  lazy val javaGeneratorTest =
+    Project(id = "java-generator-test", base = javaDir / "generator-test")
+      .dependsOn(javaGenerator)
+      .disablePlugins(bintray.BintrayPlugin)
 
-  lazy val javaRuntime = Project(id = "java-runtime", base = javaDir / "runtime")
-    .disablePlugins(bintray.BintrayPlugin)
+  lazy val javaRuntime =
+    Project(id = "java-runtime", base = javaDir / "runtime")
+      .disablePlugins(bintray.BintrayPlugin)
 
   private[this] val androidDir = file("android")
 
-  lazy val androidGenerator = Project(id = "android-generator", base = androidDir / "generator")
-    .dependsOn(generatorApi)
-    .disablePlugins(bintray.BintrayPlugin)
+  lazy val androidGenerator =
+    Project(id = "android-generator", base = androidDir / "generator")
+      .dependsOn(generatorApi)
+      .disablePlugins(bintray.BintrayPlugin)
 
-  lazy val androidGeneratorTest = Project(
-    id = "android-generator-test", base = androidDir / "generator-test")
-    .dependsOn(androidGenerator, androidRuntime)
-    .disablePlugins(bintray.BintrayPlugin)
+  lazy val androidGeneratorTest =
+    Project(id = "android-generator-test", base = androidDir / "generator-test")
+      .dependsOn(androidGenerator, androidRuntime)
+      .disablePlugins(bintray.BintrayPlugin)
 
-  lazy val androidRuntime = Project(id = "android-runtime", base = androidDir / "runtime")
-    .disablePlugins(bintray.BintrayPlugin)
+  lazy val androidRuntime =
+    Project(id = "android-runtime", base = androidDir / "runtime")
+      .disablePlugins(bintray.BintrayPlugin)
 
   private[this] val swiftDir = file("swift")
-  lazy val swiftGenerator = Project(id = "swift-generator", base = swiftDir / "generator")
-    .dependsOn(generatorApi)
-    .disablePlugins(bintray.BintrayPlugin)
+  lazy val swiftGenerator =
+    Project(id = "swift-generator", base = swiftDir / "generator")
+      .dependsOn(generatorApi)
+      .disablePlugins(bintray.BintrayPlugin)
 
   private[this] val typescriptLiteDir = file("typescript-lite")
-  lazy val typescriptLiteGenerator = Project(id = "typescript-lite-generator", base = typescriptLiteDir / "generator")
-    .dependsOn(generatorApi)
-    .disablePlugins(bintray.BintrayPlugin)
+  lazy val typescriptLiteGenerator =
+    Project(id = "typescript-lite-generator",
+            base = typescriptLiteDir / "generator")
+      .dependsOn(generatorApi)
+      .disablePlugins(bintray.BintrayPlugin)
 
   lazy val cli = Project(id = "courier-cli", base = file("cli"))
     .dependsOn(
@@ -179,17 +199,20 @@ object Courier extends Build with OverridablePublishSettings {
       scalaGenerator,
       typescriptLiteGenerator,
       swiftGenerator
-    ).aggregate(
+    )
+    .aggregate(
       javaGenerator,
       androidGenerator,
       scalaGenerator,
       typescriptLiteGenerator,
       swiftGenerator
-    ).settings(
+    )
+    .settings(
       executableFile := {
         val exeFile = target.value / "courier"
         print(s"Writing executable file '$exeFile'...")
-        IO.write(exeFile, """#!/bin/bash
+        IO.write(exeFile,
+                 """#!/bin/bash
                             |exec java -jar $0 "$@"
                             |
                             |""".stripMargin)
@@ -198,16 +221,19 @@ object Courier extends Build with OverridablePublishSettings {
         println("written.")
         exeFile
       }
-  ).disablePlugins(bintray.BintrayPlugin)
-
-  lazy val typescriptLiteGeneratorTest = Project(
-    id = "typescript-lite-generator-test", base = typescriptLiteDir / "generator-test")
-    .dependsOn(typescriptLiteGenerator)
+    )
     .disablePlugins(bintray.BintrayPlugin)
 
-  lazy val courierSbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
-    .dependsOn(scalaGenerator)
-    .disablePlugins(xerial.sbt.Sonatype)
+  lazy val typescriptLiteGeneratorTest =
+    Project(id = "typescript-lite-generator-test",
+            base = typescriptLiteDir / "generator-test")
+      .dependsOn(typescriptLiteGenerator)
+      .disablePlugins(bintray.BintrayPlugin)
+
+  lazy val courierSbtPlugin =
+    Project(id = "sbt-plugin", base = file("sbt-plugin"))
+      .dependsOn(scalaGenerator)
+      .disablePlugins(xerial.sbt.Sonatype)
 
   //
   // Publishing
@@ -227,27 +253,30 @@ object Courier extends Build with OverridablePublishSettings {
   // Until then we have to be very explicit about publishing exactly what we want, mainly
   // to avoid build failures that would happen if we tried to publish the sbt plugin with scala
   // 2.11.
-  def publishCommands(publishCommand: String, sbtPluginCommand: Option[String] = None) = {
+  def publishCommands(publishCommand: String,
+                      sbtPluginCommand: Option[String] = None) = {
     // We do not cross build java projects:
     val baseCommand = s";project schema-language;$publishCommand" +
-    s";project generator-api;$publishCommand" +
-    s";project java-generator;$publishCommand" +
-    s";project java-runtime;$publishCommand" +
-    s";project android-generator;$publishCommand" +
-    s";project android-runtime;$publishCommand" +
-    s";project swift-generator;$publishCommand" +
-    s";project typescript-lite-generator;$publishCommand" +
-    s";++$sbtScalaVersion;project scala-generator;$publishCommand" +
-    s";++$currentScalaVersion;project scala-generator;$publishCommand" +
-    s";++$sbtScalaVersion;project scala-runtime;$publishCommand" +
-    s";++$currentScalaVersion;project scala-runtime;$publishCommand" +
-    s";++$sbtScalaVersion;project scala-fixture;$publishCommand" +
-    s";++$currentScalaVersion;project scala-fixture;$publishCommand"
-    sbtPluginCommand.map { sbtPluginCommand =>
-      baseCommand + s";++$sbtScalaVersion;project sbt-plugin;$sbtPluginCommand"
-    }.getOrElse {
-      baseCommand
-    }
+      s";project generator-api;$publishCommand" +
+      s";project java-generator;$publishCommand" +
+      s";project java-runtime;$publishCommand" +
+      s";project android-generator;$publishCommand" +
+      s";project android-runtime;$publishCommand" +
+      s";project swift-generator;$publishCommand" +
+      s";project typescript-lite-generator;$publishCommand" +
+      s";++$sbtScalaVersion;project scala-generator;$publishCommand" +
+      s";++$currentScalaVersion;project scala-generator;$publishCommand" +
+      s";++$sbtScalaVersion;project scala-runtime;$publishCommand" +
+      s";++$currentScalaVersion;project scala-runtime;$publishCommand" +
+      s";++$sbtScalaVersion;project scala-fixture;$publishCommand" +
+      s";++$currentScalaVersion;project scala-fixture;$publishCommand"
+    sbtPluginCommand
+      .map { sbtPluginCommand =>
+        baseCommand + s";++$sbtScalaVersion;project sbt-plugin;$sbtPluginCommand"
+      }
+      .getOrElse {
+        baseCommand
+      }
   }
 
   lazy val root = Project(id = "courier", base = file("."))
@@ -266,18 +295,23 @@ object Courier extends Build with OverridablePublishSettings {
       swiftGenerator,
       typescriptLiteGenerator,
       typescriptLiteGeneratorTest,
-      cli)
+      cli
+    )
     .settings(runtimeVersionSettings)
     .settings(packagedArtifacts := Map.empty) // disable publish for root aggregate module
     .settings(
       // scripted attempts to publish what it needs, but because of the above mentioned cross
       // build issues, we have to manually publish what we need before we test here
-      addCommandAlias(s"fulltest", s";compile;test;fullpublish-ivylocal;" +
-                      s"project courier;++$sbtScalaVersion;scripted"),
+      addCommandAlias(s"fulltest",
+                      s";compile;test;fullpublish-ivylocal;" +
+                        s"project courier;++$sbtScalaVersion;scripted"),
       addCommandAlias("fullpublish", publishCommands("publish")),
-      addCommandAlias("fullpublish-signed", publishCommands("publish-signed", Some("publish"))),
-      addCommandAlias("fullpublish-ivylocal", publishCommands("publish-local", Some("publish-local"))),
-      addCommandAlias("fullpublish-mavenlocal", publishCommands("publishM2")))
+      addCommandAlias("fullpublish-signed",
+                      publishCommands("publish-signed", Some("publish"))),
+      addCommandAlias("fullpublish-ivylocal",
+                      publishCommands("publish-local", Some("publish-local"))),
+      addCommandAlias("fullpublish-mavenlocal", publishCommands("publishM2"))
+    )
 
   //
   // Dependencies
@@ -290,21 +324,23 @@ object Courier extends Build with OverridablePublishSettings {
       val data = "com.linkedin.pegasus" % "data" % version
       val dataAvro = "com.linkedin.pegasus" % s"data-avro-$avroVersion" % version
       val generator = ("com.linkedin.pegasus" % "generator" % version)
-        // Only used by the java code generator, which we do not use.
+      // Only used by the java code generator, which we do not use.
         .exclude("com.linkedin.pegasus", "r2-core")
-        //.exclude("com.sun.codemodel", "codemodel")
+      //.exclude("com.sun.codemodel", "codemodel")
     }
 
     object ScalaParserCombinators {
       val version = "1.0.4"
 
       // this is part of scala-library in 2.10 and earlier
-      def dependencies(scalaVersion: String) = CrossVersion.partialVersion(scalaVersion) match {
-        case Some((2, scalaMajor)) if scalaMajor > 10 =>
-          Seq("org.scala-lang.modules" %% "scala-parser-combinators" % version)
-        case _ =>
-          Seq.empty[ModuleID]
-      }
+      def dependencies(scalaVersion: String) =
+        CrossVersion.partialVersion(scalaVersion) match {
+          case Some((2, scalaMajor)) if scalaMajor > 10 =>
+            Seq(
+              "org.scala-lang.modules" %% "scala-parser-combinators" % version)
+          case _ =>
+            Seq.empty[ModuleID]
+        }
     }
 
     object JUnit {
@@ -371,14 +407,15 @@ object Courier extends Build with OverridablePublishSettings {
 
   // In order to be able to quickly test our generator, we use
   // this approach, which has has been taken directly from Sleipnir by Dmitriy Yefremov.
-  lazy val forkedVmCourierGenerator = taskKey[Seq[File]](
-    "Courier generator executed in a forked VM")
+  lazy val forkedVmCourierGenerator =
+    taskKey[Seq[File]]("Courier generator executed in a forked VM")
   lazy val forkedVmCourierDest = settingKey[File]("Generator target directory")
 
-  lazy val forkedVmCourierMainClass = settingKey[String]("Main Generator class to execute.")
+  lazy val forkedVmCourierMainClass =
+    settingKey[String]("Main Generator class to execute.")
 
-  lazy val forkedVmCourierClasspath = taskKey[Seq[File]](
-    "Classpath to use when running the generator.")
+  lazy val forkedVmCourierClasspath =
+    taskKey[Seq[File]]("Classpath to use when running the generator.")
 
   lazy val forkedVmSourceDirectory =
     settingKey[File]("directory containing .courier and .pdsc files")
@@ -387,7 +424,6 @@ object Courier extends Build with OverridablePublishSettings {
     settingKey[Seq[String]]("Additional args to pass to the generator")
 
   val forkedVmCourierGeneratorSettings = Seq(
-
     // TODO: for android and swift, don't generate into a scala-x.xx dir
     forkedVmCourierGenerator in Compile := {
       val mainClass = forkedVmCourierMainClass.value
@@ -395,10 +431,16 @@ object Courier extends Build with OverridablePublishSettings {
       val dst = forkedVmCourierDest.value
       val classpath = forkedVmCourierClasspath.value
       val additionalArgs = forkedVmAdditionalArgs.value
-      streams.value.log.info("Generating courier bindings...")
+      streams.value.log.info(s"Generating courier bindings for files in $src...")
       val files =
-        runForkedGenerator(mainClass, src, dst, classpath, additionalArgs, streams.value.log)
-      streams.value.log.info(s"${files.size} classes generated from $src for $mainClass")
+        runForkedGenerator(mainClass,
+                           src,
+                           dst,
+                           classpath,
+                           additionalArgs,
+                           streams.value.log)
+      streams.value.log
+        .info(s"${files.size} classes generated from $src for $mainClass")
       files
     },
     forkedVmAdditionalArgs := Seq(),
@@ -410,25 +452,25 @@ object Courier extends Build with OverridablePublishSettings {
     cleanFiles += target.value / s"scala-${scalaBinaryVersion.value}" / "courier"
   )
 
-  def runForkedGenerator(
-      mainClass: String,
-      src: File,
-      dst: File,
-      classpath: Seq[File],
-      additionalArgs: Seq[String],
-      log: Logger): Seq[File] = {
+  def runForkedGenerator(mainClass: String,
+                         src: File,
+                         dst: File,
+                         classpath: Seq[File],
+                         additionalArgs: Seq[String],
+                         log: Logger): Seq[File] = {
     IO.withTemporaryFile("courier", "output") { tmpFile =>
       val outStream = new java.io.FileOutputStream(tmpFile)
       try {
         val args = Seq(dst.toString, src.toString, src.toString) ++ additionalArgs
         val exitValue =
-          Fork.java(
-            None,
-            "-cp" +: classpath.map(_.getAbsolutePath).mkString(java.io.File.pathSeparator) +:
-              mainClass +:
-              args,
-            None,
-            CustomOutput(outStream))
+          Fork.java(None,
+                    "-cp" +: classpath
+                      .map(_.getAbsolutePath)
+                      .mkString(java.io.File.pathSeparator) +:
+                      mainClass +:
+                      args,
+                    None,
+                    CustomOutput(outStream))
         val outputLines = scala.io.Source.fromFile(tmpFile).getLines().toSeq
         if (exitValue != 0) {
           outputLines.foreach(println)
@@ -445,5 +487,6 @@ object Courier extends Build with OverridablePublishSettings {
   //
   // Other Commands
   //
-  lazy val executableFile = taskKey[File]("Distributes the current version as an executable at cli/target/courier")
+  lazy val executableFile = taskKey[File](
+    "Distributes the current version as an executable at cli/target/courier")
 }

@@ -177,4 +177,10 @@ class MapGeneratorTest extends GeneratorTest with SchemaFixtures {
     val roundTripped = SimpleMapMap.build(roundTrip(original.data()), DataConversion.SetReadOnly)
     assert(original === roundTripped)
   }
+
+  @Test
+  def testMixins(): Unit = {
+    val classMixin: Option[SimpleMapMap] = SimpleMapMap().classMixinDef
+    val companionMixin: Option[SimpleMapMap] = SimpleMapMap.companionMixinDef
+  }
 }

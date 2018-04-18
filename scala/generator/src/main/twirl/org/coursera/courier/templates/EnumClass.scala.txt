@@ -1,4 +1,4 @@
-@(enum: org.coursera.courier.generator.specs.EnumDefinition)
+@(enum: org.coursera.courier.generator.specs.EnumDefinition, mixin: org.coursera.courier.generator.GeneratorMixin)
 
 @import com.linkedin.data.schema.SchemaToJsonEncoder
 @import com.linkedin.data.schema.JsonBuilder
@@ -17,7 +17,12 @@
 }
 
 sealed abstract class @(enum.enumName)(name: String, properties: Option[DataMap])
-  extends ScalaEnumTemplateSymbol(name, properties)
+  extends ScalaEnumTemplateSymbol(name, properties) {
+
+  @mixin.extraClassExpressions(enum).map { expression =>
+    @expression
+  }
+}
 
 @ClassAnnotations(enum) object @enum.enumName extends ScalaEnumTemplate[@(enum.enumName)] {
 
@@ -43,4 +48,8 @@ sealed abstract class @(enum.enumName)(name: String, properties: Option[DataMap]
   }
 
   val SCHEMA = DataTemplateUtil.parseSchema(@("\"\"\"" + SchemaToJsonEncoder.schemaToJson(enum.enumSchema, JsonBuilder.Pretty.COMPACT) + "\"\"\"")).asInstanceOf[EnumDataSchema]
+
+  @mixin.extraCompanionExpressions(enum).map { expression =>
+    @expression
+  }
 }

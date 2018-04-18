@@ -1,4 +1,4 @@
-@(typeref: org.coursera.courier.generator.specs.TyperefDefinition)
+@(typeref: org.coursera.courier.generator.specs.TyperefDefinition, mixin: org.coursera.courier.generator.GeneratorMixin)
 
 @import com.linkedin.data.schema.SchemaToJsonEncoder
 @import com.linkedin.data.schema.JsonBuilder
@@ -18,8 +18,14 @@
 
 @ClassAnnotations(typeref) final class @(typeref.scalaType)() extends TyperefInfo(@(typeref.scalaType).SCHEMA) {
   @(typeref.scalaType) // force static initialization
+  @mixin.extraClassExpressions(typeref).map { expression =>
+    @expression
+  }
 }
 
 object @(typeref.scalaType) {
   val SCHEMA = DataTemplateUtil.parseSchema(@("\"\"\"" + SchemaToJsonEncoder.schemaToJson(typeref.typerefSchema, JsonBuilder.Pretty.COMPACT) + "\"\"\"")).asInstanceOf[TyperefDataSchema]
+  @mixin.extraCompanionExpressions(typeref).map { expression =>
+    @expression
+  }
 }

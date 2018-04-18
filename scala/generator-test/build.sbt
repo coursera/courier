@@ -17,9 +17,9 @@ javaOptions in Test +=
 // Test generator
 forkedVmCourierGeneratorSettings
 
-forkedVmCourierMainClass := "org.coursera.courier.generator.ScalaDataTemplateGenerator"
+forkedVmCourierMainClass := "org.coursera.courier.generator.TestScalaDataTemplateGenerator"
 
-forkedVmCourierClasspath := (dependencyClasspath in Runtime in scalaGenerator).value.files
+forkedVmCourierClasspath := (dependencyClasspath in Runtime in scalaGeneratorTestGenerator).value.files
 
 forkedVmSourceDirectory := (sourceDirectory in referenceSuite).value / "main" / "courier"
 forkedVmSourceDirectory := (sourceDirectory in testLib).value / "main" / "scala"
