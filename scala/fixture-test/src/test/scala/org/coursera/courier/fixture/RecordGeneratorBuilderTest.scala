@@ -1,6 +1,7 @@
 package org.coursera.courier.fixture
 
-import org.coursera.courier.fixture.generator.DefaultGeneratorFactories
+import java.util.UUID
+
 import org.coursera.records.test.WithComplexTypeDefaults
 import org.example.Fortune
 import org.example.FortuneCookie
@@ -10,8 +11,10 @@ import org.example.MagicEightBallAnswer
 import org.junit.Test
 import org.scalatest.junit.AssertionsForJUnit
 import org.scalatest.junit.JUnitSuite
-
 import FixtureSugar._
+import org.coursera.courier.generator.customtypes.CustomUUID
+import org.coursera.courier.generator.customtypes.WrappedCustomUUID
+import org.coursera.records.WithUUIDs
 
 class RecordGeneratorBuilderTest extends JUnitSuite with AssertionsForJUnit {
 
@@ -125,5 +128,16 @@ class RecordGeneratorBuilderTest extends JUnitSuite with AssertionsForJUnit {
 
     assertResult(5)(cookie.luckyNumbers.length)
   }
+
+  @Test
+  def withCustomGenerator(): Unit = {
+    val withUUIDs = fixtureGenerator[WithUUIDs]
+      .next()
+
+    assert(withUUIDs.uuid.isInstanceOf[UUID])
+    assert(withUUIDs.customUUID.isInstanceOf[CustomUUID])
+    assert(withUUIDs.wrappedCustomUUID.isInstanceOf[WrappedCustomUUID])
+  }
+
 
 }

@@ -90,12 +90,21 @@ private[fixture] class RecordSchemaDataGeneratorFactory(
     Option[Generator] = {
 
     getGeneratorClassName(dataSchema).map { generatorClassName =>
-
       Class.forName(generatorClassName).newInstance() match {
         case generator: ValueGenerator[_] => generator
         case other: Any => throw new GeneratorBuilderError(
           s"Expected custom generator with class $generatorClassName to be of type " +
           s"ValueGenerator[AnyRef].")
+      }
+    }.orElse {
+      dataSchema match {
+        case typeref: TyperefDataSchema =>
+          // If this is a typeref schema, and does not define a custom gnerator of its own, check
+          // to see if the type it references has a custom generator. This allows us to (for
+          // example), declare a single UUID typeref with a custom generator, and let wrapped
+          // UUIDs inherit that generator definition.
+          makeSchemaReferencedGenerator(name, typeref.getRef)
+        case _ => None
       }
     }
   }

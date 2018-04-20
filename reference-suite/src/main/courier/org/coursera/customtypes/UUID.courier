@@ -1,0 +1,6 @@
+namespace org.coursera.customtypes
+
+@scala.class = "java.util.UUID"
+@scala.coercerClass = "org.coursera.courier.generator.customtypes.UUIDCoercer"
+@scala.fixtureGeneratorClass = "org.coursera.courier.generator.customtypes.CoercedUUIDGenerator"
+typeref UUID = string

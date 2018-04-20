@@ -1,0 +1,11 @@
+namespace org.coursera.records
+
+import org.coursera.customtypes.CustomUUID
+import org.coursera.customtypes.UUID
+import org.coursera.customtypes.WrappedCustomUUID
+
+record WithUUIDs {
+  uuid: UUID
+  customUUID: CustomUUID
+  wrappedCustomUUID: WrappedCustomUUID
+}

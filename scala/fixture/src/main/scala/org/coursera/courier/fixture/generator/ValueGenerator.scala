@@ -13,7 +13,6 @@ import org.coursera.courier.templates.ScalaRecordTemplate
 
 import scala.collection.immutable
 
-// TODO amory: scaladoc
 sealed trait PegasusCompatibleValueGenerator
 sealed trait ValueGenerator[+K <: AnyRef] {
 
