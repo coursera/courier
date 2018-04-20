@@ -13,7 +13,7 @@ import org.scalatest.junit.AssertionsForJUnit
 import org.scalatest.junit.JUnitSuite
 import FixtureSugar._
 import org.coursera.courier.generator.customtypes.CustomUUID
-import org.coursera.courier.generator.customtypes.WrappedCustomUUID
+import org.coursera.courier.generator.customtypes.subtype.WrappedCustomUUID
 import org.coursera.records.WithUUIDs
 
 class RecordGeneratorBuilderTest extends JUnitSuite with AssertionsForJUnit {
@@ -137,6 +137,8 @@ class RecordGeneratorBuilderTest extends JUnitSuite with AssertionsForJUnit {
     assert(withUUIDs.uuid.isInstanceOf[UUID])
     assert(withUUIDs.customUUID.isInstanceOf[CustomUUID])
     assert(withUUIDs.wrappedCustomUUID.isInstanceOf[WrappedCustomUUID])
+    assert(withUUIDs.wrappedToUUIDMap.head.isInstanceOf[(WrappedCustomUUID, CustomUUID)])
+    assert(withUUIDs.customToUUIDMap.head.isInstanceOf[(CustomUUID, WrappedCustomUUID)])
   }
 
 

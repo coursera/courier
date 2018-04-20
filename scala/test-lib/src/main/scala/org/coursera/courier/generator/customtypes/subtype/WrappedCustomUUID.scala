@@ -14,12 +14,13 @@
  limitations under the License.
  */
 
-package org.coursera.courier.generator.customtypes
+package org.coursera.courier.generator.customtypes.subtype
 
 import java.util.UUID
 
 import com.linkedin.data.template.Custom
 import com.linkedin.data.template.DirectCoercer
+import org.coursera.courier.generator.customtypes.CustomUUID
 
 case class WrappedCustomUUID(wrapped: CustomUUID)
 

@@ -17,6 +17,7 @@
 package org.coursera.courier.companions
 
 import com.linkedin.data.DataMap
+import com.linkedin.data.schema.DataSchema
 import com.linkedin.data.schema.MapDataSchema
 import com.linkedin.data.template.DataTemplate
 import org.coursera.courier.templates.DataTemplates.DataConversion
@@ -26,5 +27,6 @@ import org.coursera.courier.templates.DataTemplates.DataConversion
  */
 trait MapCompanion[K <: DataTemplate[DataMap]] extends SchemaAware {
   override def SCHEMA: MapDataSchema
+  def KEY_SCHEMA: DataSchema
   def build(dataMap: DataMap, conversion: DataConversion): K
 }

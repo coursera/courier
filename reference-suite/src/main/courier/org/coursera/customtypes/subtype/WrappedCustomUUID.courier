@@ -1,0 +1,8 @@
+namespace org.coursera.customtypes.subtype
+
+import org.coursera.customtypes.CustomUUID
+
+@scala.class = "org.coursera.courier.generator.customtypes.subtype.WrappedCustomUUID"
+@scala.coercerClass = "org.coursera.courier.generator.customtypes.subtype.WrappedCustomUUID.Coercer"
+// Inherits fixtureGeneratorClass behavior from referenced UUID schema via CustomUUID schema
+typeref WrappedCustomUUID = CustomUUID

@@ -51,13 +51,27 @@ class MapFieldsTest extends JUnitSuite with AssertionsForJUnit {
   }
 
   @Test
-  def typedKeys_WithoutOverrides_Fails(): Unit = {
-    intercept[RecordSchemaDataGeneratorFactory.GeneratorBuilderError] {
-      fixtureGenerator[WithTypedKeyMap].next()
-    }
+  def typedKeys_WithoutFixedOverrideOnly_Succeeds(): Unit = {
+    // For some reason, the factory-constructed key generator for `fixed`
+    // generates byte strings of the wrong length. This does not happen for generated values
+    // in other contexts. Leaving as-is for now since fixed-type data is not widely used
+    // by Coursera, least of all as map keys. 
+    def fixedKeyMapGenerator = new MapValueGenerator(
+      new IntegerRangeFixedBytesGenerator(8).map(Fixed8(_)),
+      new PrefixedStringGenerator("value"), COLLECTION_LENGTH)
+
+    val element = fixtureGenerator[WithTypedKeyMap]
+      .withField("fixed", fixedKeyMapGenerator)
+      .withCollectionLength(COLLECTION_LENGTH).next()
+
+    assertResult(COLLECTION_LENGTH)(element.record.size)
+    assertResult(COLLECTION_LENGTH)(element.enum.size)
+    assertResult(COLLECTION_LENGTH)(element.custom.size)
+    assertResult(COLLECTION_LENGTH)(element.fixed.size)
+    assertResult(COLLECTION_LENGTH)(element.samePackageEnum.get.size)
   }
 
-    @Test
+  @Test
   def typedKeys_withMapFields(): Unit = {
     def mapGenerator(keyGenerator: ValueGenerator[_ <: AnyRef]) =
       new MapValueGenerator(keyGenerator, new PrefixedStringGenerator("value"), COLLECTION_LENGTH)
@@ -84,7 +98,7 @@ class MapFieldsTest extends JUnitSuite with AssertionsForJUnit {
       defaultGeneratorFactories = DefaultGeneratorFactories())
 
     // With default `DefaultGeneratorFactories` defined implicitly for each custom key type, the
-    // data generator factory can infer key genertors for custom map types.
+    // data generator factory can infer key generators for custom map types.
     implicit val defaultGenerator: DefaultGeneratorFactories =
       DefaultGeneratorFactories()
         .setUnchecked[Simple](simpleGenerator)

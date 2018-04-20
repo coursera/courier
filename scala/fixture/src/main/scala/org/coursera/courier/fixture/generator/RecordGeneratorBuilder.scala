@@ -96,7 +96,6 @@ class RecordGeneratorBuilder[K <: ScalaRecordTemplate](
   def withCollectionLength(collectionLength: Int): RecordGeneratorBuilder[K] =
     copyWithConfig(config.copy(defaultCollectionLength = collectionLength))
 
-
   private[this] def copyWithConfig(config: RecordSchemaDataGeneratorFactory.Config):
     RecordGeneratorBuilder[K] = new RecordGeneratorBuilder(
       companion, customFieldGenerators, config, defaultGeneratorFactories)
