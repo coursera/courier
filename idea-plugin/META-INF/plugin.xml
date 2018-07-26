@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>org.coursera.courier.plugin</id>
   <name>Courier schema language</name>
-  <version>1.5.0</version>
+  <version>1.6.0</version>
   <vendor url="https://groups.google.com/forum/#!forum/courier">Courier OSS Project</vendor>
 
   <description><![CDATA[
@@ -64,6 +64,13 @@
             text="Courier Data Schema" description="Create a new data schema">
       <add-to-group group-id="NewGroup" anchor="after" relative-to-action="NewFile"/>
     </action>
+      <action id="Courier.ScalaToCourier" class="org.coursera.courier.CourierScalaToCourierAction"
+              text="Go to Courier Definition"
+              description="Attempts to go to the Courier definition for the type under the cursor.">
+          <keyboard-shortcut keymap="$default" first-keystroke="shift meta C"/>
+          <add-to-group group-id="GoToCodeGroup" />
+          <add-to-group group-id="EditorPopupMenu.GoTo" />
+      </action>
   </actions>
 
 </idea-plugin>
