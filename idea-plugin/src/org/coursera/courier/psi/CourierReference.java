@@ -62,6 +62,11 @@ public class CourierReference extends PsiReferenceBase<PsiElement> {
     }
   }
 
+  @Override
+  public String toString() {
+    return target.getContainingFile().getName();
+  }
+
   @NotNull
   @Override
   public Object[] getVariants() {
