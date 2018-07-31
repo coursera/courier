@@ -10,8 +10,6 @@
 
 out
 gen
-JFlex.jar
-courier-idea-plugin.jar
+*.jar
 idea-flex.skeleton
-idea-flex_2.skeleton
 src/org/coursera/courier/CourierLexer.java
