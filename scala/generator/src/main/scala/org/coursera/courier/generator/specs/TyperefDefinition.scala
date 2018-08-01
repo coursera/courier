@@ -39,7 +39,7 @@ case class TyperefDefinition(override val spec: TyperefTemplateSpec) extends Def
     Option(typerefSchema.getDoc).flatMap(ScaladocEscaping.stringToScaladoc)
   }
 
-  def directReferencedTypes: Set[Definition] = Set.empty
+  def directReferencedTypes: Set[Definition] = Set(dereferencedType)
 }
 
 object TyperefDefinition {
