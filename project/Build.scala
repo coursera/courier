@@ -235,8 +235,6 @@ object Courier extends Build with OverridablePublishSettings {
       .dependsOn(scalaGenerator)
       .disablePlugins(xerial.sbt.Sonatype)
       .settings(
-        scalaVersion := "2.12.7",
-        sbtVersion in Global := "1.2.8",
         crossSbtVersions := Vector("0.13.17", "1.2.8"),
         scalaCompilerBridgeSource := {
           val sv = appConfiguration.value.provider.id.version
