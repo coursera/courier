@@ -77,7 +77,6 @@ public class PdscGenerator implements PegasusCodeGenerator {
 
   @Override
   public GeneratedCode generate(ClassTemplateSpec templateSpec) {
-    System.out.println(templateSpec.getLocation() + "   " + templateSpec.getFullName());
     if (!this.sourcePaths.contains(templateSpec.getLocation())) {
       return null; // Only generate if declared in one of the target source files.
     }

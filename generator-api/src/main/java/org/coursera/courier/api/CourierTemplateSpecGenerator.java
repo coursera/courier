@@ -87,9 +87,9 @@ public class CourierTemplateSpecGenerator {
 
   private final Collection<ClassTemplateSpec> _classTemplateSpecs = new HashSet<ClassTemplateSpec>();
   /**
-   * Map of {@link com.linkedin.pegasus.generator.spec.ClassTemplateSpec} to {@link com.linkedin.data.schema.DataSchemaLocation}.
+   * Map of {@link com.linkedin.data.schema.DataSchema} to {@link com.linkedin.data.schema.DataSchemaLocation}.
    */
-  private final Map<ClassTemplateSpec, DataSchemaLocation> _classToDataSchemaLocationMap = new HashMap<ClassTemplateSpec, DataSchemaLocation>();
+  private final Map<DataSchema, DataSchemaLocation> _schemaToLocationMap = new HashMap<DataSchema, DataSchemaLocation>();
   /**
    * Map of Java class name to a {@link com.linkedin.data.schema.DataSchema}.
    */
@@ -154,14 +154,6 @@ public class CourierTemplateSpecGenerator {
     _schemaParser = new SchemaParser(schemaResolver);
     _dataNamespace = dataNamespace;
     _customTypeLanguage = customTypeLanguage;
-  }
-
-  /**
-   * @return location of the {@link com.linkedin.pegasus.generator.spec.ClassTemplateSpec} is originated, most likely the pdsc file that defines it
-   */
-  public DataSchemaLocation getClassLocation(ClassTemplateSpec classSpec)
-  {
-    return _classToDataSchemaLocationMap.get(classSpec);
   }
 
   /**
@@ -355,10 +347,10 @@ public class CourierTemplateSpecGenerator {
    */
   private void registerClassTemplateSpec(DataSchema schema, ClassTemplateSpec classTemplateSpec)
   {
-    classTemplateSpec.setLocation(currentLocation().toString());
+    DataSchemaLocation location = _schemaToLocationMap.getOrDefault(schema, currentLocation());
+    classTemplateSpec.setLocation(location.toString());
     _schemaToClassMap.put(schema, classTemplateSpec);
     _classNameToSchemaMap.put(classTemplateSpec.getFullName(), schema);
-    _classToDataSchemaLocationMap.put(classTemplateSpec, currentLocation());
 
     if (schema instanceof NamedDataSchema)
     {
@@ -366,6 +358,10 @@ public class CourierTemplateSpecGenerator {
     }
 
     _classTemplateSpecs.add(classTemplateSpec);
+  }
+
+  public void registerSchemaLocation(DataSchema schema, DataSchemaLocation location) {
+    _schemaToLocationMap.put(schema, location);
   }
 
   private ClassTemplateSpec processSchema(DataSchema schema, ClassTemplateSpec enclosingClass, String memberName)

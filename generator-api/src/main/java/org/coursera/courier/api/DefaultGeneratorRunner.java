@@ -70,6 +70,12 @@ public class DefaultGeneratorRunner implements GeneratorRunner {
 
     DataSchemaParser.ParseResult parseResult = schemaParser.parseSources(options.getSources());
 
+    // Register the location of each schema before running any generators so that schema
+    // location values are available for all directly-defined schemas.
+    for (Map.Entry<DataSchema, DataSchemaLocation> entry: parseResult.getSchemaAndLocations().entrySet()) {
+      specGenerator.registerSchemaLocation(entry.getKey(), entry.getValue());
+    }
+
     for (Map.Entry<DataSchema, DataSchemaLocation> entry: parseResult.getSchemaAndLocations().entrySet()) {
       specGenerator.generate(entry.getKey(), entry.getValue());
     }
