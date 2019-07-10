@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Coursera Inc.
+ * Copyright 2019 Coursera Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,7 @@
 
 package org.coursera.courier;
 
-import com.linkedin.data.DataMap;
 import com.linkedin.data.schema.DataSchema;
-import com.linkedin.data.schema.RecordDataSchema;
 import com.linkedin.pegasus.generator.GeneratorResult;
 import com.linkedin.pegasus.generator.spec.*;
 import org.coursera.courier.api.*;
@@ -32,9 +30,6 @@ import java.util.Collections;
 
 /**
  * .courier to .pdsc transformer
- */
-/**
- * Courier code generator for Typescript.
  */
 public class PdscConverter implements PegasusCodeGenerator {
 
@@ -58,8 +53,6 @@ public class PdscConverter implements PegasusCodeGenerator {
     for (File file: result.getTargetFiles()) {
       System.out.println(file.getAbsolutePath());
     }
-
-//    IOUtils.copy(runtime, new FileOutputStream(new File(targetPath, "CourierRuntime.ts")));
   }
 
   public PdscConverter() {
@@ -86,7 +79,6 @@ public class PdscConverter implements PegasusCodeGenerator {
     } else if (templateSpec instanceof UnionTemplateSpec) {
       code = SchemaToPdscEncoder.schemaToPdsc(templateSpec.getOriginalTyperefSchema());
     } else if (templateSpec instanceof TyperefTemplateSpec) {
-      TyperefTemplateSpec typerefSpec = (TyperefTemplateSpec) templateSpec;
       code = SchemaToPdscEncoder.schemaToPdsc(templateSpec.getSchema());
     } else if (templateSpec instanceof FixedTemplateSpec) {
       code = SchemaToPdscEncoder.schemaToPdsc(templateSpec.getSchema());
