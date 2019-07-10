@@ -2,7 +2,7 @@ package org.coursera.courier.cli
 
 import org.coursera.courier.generator.ScalaDataTemplateGenerator
 import org.coursera.courier.{AndroidGenerator, JavaGenerator, SwiftGenerator,
-  TypeScriptLiteGenerator, PdscConverter}
+  TypeScriptLiteGenerator, PdscGenerator}
 
 object CourierCli extends App {
   val maybeSubcommandResult = for {
@@ -26,7 +26,7 @@ object Subcommand {
     Subcommand("android", AndroidGenerator.main),
     Subcommand("java", JavaGenerator.main),
     Subcommand("scala", ScalaDataTemplateGenerator.main),
-    Subcommand("pdsc", PdscConverter.main)
+    Subcommand("pdsc", PdscGenerator.main)
   )
   val allByName = all.map(cmd => (cmd.name, cmd)).toMap
 }

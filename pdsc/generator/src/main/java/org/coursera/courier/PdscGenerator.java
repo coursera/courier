@@ -24,14 +24,15 @@ import org.coursera.courier.lang.DocCommentStyle;
 import org.coursera.courier.lang.PoorMansCStyleSourceFormatter;
 
 import java.io.*;
-import java.util.Collection;
-import java.util.Collections;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
  * .courier to .pdsc transformer
  */
-public class PdscConverter implements PegasusCodeGenerator {
+public class PdscGenerator implements PegasusCodeGenerator {
 
   public static void main(String[] args) throws Throwable {
 
@@ -44,24 +45,30 @@ public class PdscConverter implements PegasusCodeGenerator {
     String sourcePathString = args[2];
     String[] sourcePaths = sourcePathString.split(":");
 
-
     GeneratorRunnerOptions options =
             new GeneratorRunnerOptions(targetPath, sourcePaths, resolverPath);
 
-    GeneratorResult result = new DefaultGeneratorRunner().run(new PdscConverter(), options);
+    PegasusCodeGenerator generator = new PdscGenerator(sourcePaths);
+    GeneratorResult result = new DefaultGeneratorRunner().run(generator, options);
 
     for (File file: result.getTargetFiles()) {
       System.out.println(file.getAbsolutePath());
     }
   }
 
-  public PdscConverter() {
+  Set<String> sourcePaths;
+
+  public PdscGenerator(String[] sourcePaths) {
+    this.sourcePaths = Arrays.asList(sourcePaths)
+            .stream().map(Paths::get)
+            .map(path -> path.toAbsolutePath().toString())
+            .collect(Collectors.toSet());
   }
 
 
   public static class PdscCompilationUnit extends GeneratedCodeTargetFile {
-    public PdscCompilationUnit(String name, String namespace) {
-      super(name, namespace, "pdsc");
+    public PdscCompilationUnit(String fullName) {
+      super( fullName.replaceAll("\\.", "/") + ".pdsc");
     }
   }
 
@@ -70,6 +77,10 @@ public class PdscConverter implements PegasusCodeGenerator {
 
   @Override
   public GeneratedCode generate(ClassTemplateSpec templateSpec) {
+    System.out.println(templateSpec.getLocation() + "   " + templateSpec.getFullName());
+    if (!this.sourcePaths.contains(templateSpec.getLocation())) {
+      return null; // Only generate if declared in one of the target source files.
+    }
 
     String code;
     if (templateSpec instanceof RecordTemplateSpec) {
@@ -85,9 +96,7 @@ public class PdscConverter implements PegasusCodeGenerator {
     } else {
       return null; // Indicates that we are declining to generate code for the type (e.g. map or array)
     }
-    PdscCompilationUnit compilationUnit =
-            new PdscCompilationUnit(
-                    templateSpec.getFullName(), "");
+    PdscCompilationUnit compilationUnit = new PdscCompilationUnit(templateSpec.getFullName());
     return new GeneratedCode(compilationUnit, code);
   }
 
@@ -103,12 +112,12 @@ public class PdscConverter implements PegasusCodeGenerator {
 
   @Override
   public String buildLanguage() {
-    return "pdsc";
+    return "pegasus";
   }
 
   @Override
   public String customTypeLanguage() {
-    return "pdsc";
+    return "pegasus";
   }
 }
 
