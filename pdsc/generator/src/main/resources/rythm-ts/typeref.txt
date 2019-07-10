@@ -1,0 +1,6 @@
+@args org.coursera.courier.tslite.TSSyntax.TSTyperefSyntax typeref
+
+@typeref.imports()
+
+@typeref.docString()
+export type @typeref.typeName() = @typeref.refTypeName();

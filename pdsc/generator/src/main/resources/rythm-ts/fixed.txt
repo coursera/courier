@@ -1,0 +1,4 @@
+@args org.coursera.courier.tslite.TSSyntax.TSFixedSyntax fixed
+
+@fixed.docString()
+export type @fixed.typeName() = string;

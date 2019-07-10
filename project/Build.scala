@@ -192,20 +192,29 @@ object Courier extends Build with OverridablePublishSettings {
       .dependsOn(generatorApi)
       .disablePlugins(bintray.BintrayPlugin)
 
+  private[this] val pdscDir = file("pdsc")
+  lazy val pdscGenerator =
+    Project(id = "pdsc-generator", base = pdscDir / "generator")
+      .dependsOn(generatorApi)
+      .disablePlugins(bintray.BintrayPlugin)
+
+
   lazy val cli = Project(id = "courier-cli", base = file("cli"))
     .dependsOn(
       javaGenerator,
       androidGenerator,
       scalaGenerator,
       typescriptLiteGenerator,
-      swiftGenerator
+      swiftGenerator,
+      pdscGenerator
     )
     .aggregate(
       javaGenerator,
       androidGenerator,
       scalaGenerator,
       typescriptLiteGenerator,
-      swiftGenerator
+      swiftGenerator,
+      pdscGenerator
     )
     .settings(
       executableFile := {
