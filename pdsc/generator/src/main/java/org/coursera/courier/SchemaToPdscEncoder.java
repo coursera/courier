@@ -1,11 +1,10 @@
 package org.coursera.courier;
 
-import com.linkedin.data.schema.DataSchema;
-import com.linkedin.data.schema.JsonBuilder;
-import com.linkedin.data.schema.RecordDataSchema;
-import com.linkedin.data.schema.SchemaToJsonEncoder;
+import com.linkedin.data.schema.*;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.linkedin.data.schema.DataSchemaConstants.*;
 import static com.linkedin.data.schema.DataSchemaConstants.ALIASES_KEY;
@@ -56,9 +55,34 @@ public class SchemaToPdscEncoder extends SchemaToJsonEncoder {
     {
         _builder.writeFieldName(TYPE_KEY);
         DataSchema fieldSchema = field.getType();
-        System.out.println(fieldSchema);
-        _builder.writeString(fieldSchema.getUnionMemberKey());
+        if (fieldSchema instanceof TyperefDataSchema) {
+            _builder.writeString(((TyperefDataSchema) fieldSchema).getFullName());
+        } else {
+            _builder.writeString(fieldSchema.getUnionMemberKey());
+        }
     }
 
+    /**
+     * Encode a {@link NamedDataSchema}.
+     *
+     * A {@link NamedDataSchema}'s are the {@link DataSchema}'s for the
+     * typeref, enum, fixed, and record types.
+     *
+     * @param schema to encode.
+     * @throws IOException if there is an error while encoding.
+     */
+    protected void encodeUnnamed(DataSchema schema) throws IOException
+    {
+        if (schema instanceof UnionDataSchema) {
+            List<String> memberNames = ((UnionDataSchema) schema)
+                    .getTypes()
+                    .stream()
+                    .map(ref -> ref.getUnionMemberKey())
+                    .collect(Collectors.toList());
+            _builder.writeStringArray(memberNames);
+        } else {
+            super.encodeUnnamed(schema);
+        }
 
+    }
 }

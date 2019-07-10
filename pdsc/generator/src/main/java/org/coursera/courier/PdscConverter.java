@@ -84,7 +84,7 @@ public class PdscConverter implements PegasusCodeGenerator {
     } else if (templateSpec instanceof EnumTemplateSpec) {
       code = SchemaToPdscEncoder.schemaToPdsc(templateSpec.getSchema());
     } else if (templateSpec instanceof UnionTemplateSpec) {
-      code = SchemaToPdscEncoder.schemaToPdsc(templateSpec.getSchema());
+      code = SchemaToPdscEncoder.schemaToPdsc(templateSpec.getOriginalTyperefSchema());
     } else if (templateSpec instanceof TyperefTemplateSpec) {
       TyperefTemplateSpec typerefSpec = (TyperefTemplateSpec) templateSpec;
       code = SchemaToPdscEncoder.schemaToPdsc(templateSpec.getSchema());
