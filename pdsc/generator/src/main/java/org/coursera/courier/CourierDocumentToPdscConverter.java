@@ -107,8 +107,6 @@ class CourierDocumentToPdscConverter {
         return importsByName.getOrDefault(name, this.namespace + "." + name);
     }
 
-
-
     /**
      * An exceptional parse error.  Should only be thrown for parse errors that are unrecoverable,
      * i.e. errors forcing the parser to must halt immediately and not continue to parse the
