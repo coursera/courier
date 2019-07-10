@@ -16,64 +16,107 @@
 
 package org.coursera.courier;
 
-
 import com.linkedin.data.DataMap;
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.coursera.courier.grammar.CourierLexer;
-import org.coursera.courier.grammar.CourierParser;
+import com.linkedin.data.schema.DataSchema;
+import com.linkedin.data.schema.RecordDataSchema;
+import com.linkedin.pegasus.generator.GeneratorResult;
+import com.linkedin.pegasus.generator.spec.*;
+import org.coursera.courier.api.*;
+import org.coursera.courier.lang.DocCommentStyle;
+import org.coursera.courier.lang.PoorMansCStyleSourceFormatter;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 
 /**
  * .courier to .pdsc transformer
  */
-public class PdscConverter {
+/**
+ * Courier code generator for Typescript.
+ */
+public class PdscConverter implements PegasusCodeGenerator {
 
   public static void main(String[] args) throws Throwable {
 
-    if (args.length != 2) {
+    if (args.length != 3) {
       throw new IllegalArgumentException(
-          "Usage: targetPath sourcePath1[:sourcePath2]+");
+              "Usage: targetPath resolverPath1[:resolverPath2]+ sourcePath1[:sourcePath2]");
     }
     String targetPath = args[0];
-    String sourcePathString = args[1];
+    String resolverPath = args[1];
+    String sourcePathString = args[2];
     String[] sourcePaths = sourcePathString.split(":");
-    for (String path : sourcePaths) {
-      convert(path).forEach(thing -> System.out.println(thing.pdsc));
+
+
+    GeneratorRunnerOptions options =
+            new GeneratorRunnerOptions(targetPath, sourcePaths, resolverPath);
+
+    GeneratorResult result = new DefaultGeneratorRunner().run(new PdscConverter(), options);
+
+    for (File file: result.getTargetFiles()) {
+      System.out.println(file.getAbsolutePath());
+    }
+
+//    IOUtils.copy(runtime, new FileOutputStream(new File(targetPath, "CourierRuntime.ts")));
+  }
+
+  public PdscConverter() {
+  }
+
+
+  public static class PdscCompilationUnit extends GeneratedCodeTargetFile {
+    public PdscCompilationUnit(String name, String namespace) {
+      super(name, namespace, "pdsc");
     }
   }
 
-  private static class PdscUnit {
-    String name;
-    String namespace;
-    DataMap pdsc;
-    PdscUnit(DataMap pdsc) {
-      this.name = pdsc.get("name").toString();
-      this.namespace = pdsc.get("namespace").toString();
-      this.pdsc = pdsc;
+  private static final PoorMansCStyleSourceFormatter formatter =
+          new PoorMansCStyleSourceFormatter(2, DocCommentStyle.ASTRISK_MARGIN);
+
+  @Override
+  public GeneratedCode generate(ClassTemplateSpec templateSpec) {
+
+    String code;
+    if (templateSpec instanceof RecordTemplateSpec) {
+      code = SchemaToPdscEncoder.schemaToPdsc(templateSpec.getSchema());
+    } else if (templateSpec instanceof EnumTemplateSpec) {
+      code = "test";
+    } else if (templateSpec instanceof UnionTemplateSpec) {
+      code = "test";
+    } else if (templateSpec instanceof TyperefTemplateSpec) {
+      TyperefTemplateSpec typerefSpec = (TyperefTemplateSpec) templateSpec;
+      code = "test";
+    } else if (templateSpec instanceof FixedTemplateSpec) {
+      code = "test";
+    } else {
+      return null; // Indicates that we are declining to generate code for the type (e.g. map or array)
     }
+    PdscCompilationUnit compilationUnit =
+            new PdscCompilationUnit(
+                    templateSpec.getFullName(), "");
+    return new GeneratedCode(compilationUnit, code);
   }
 
-  private static List<PdscUnit> convert(String sourcePath) throws IOException {
-    Reader reader = new FileReader(sourcePath);
-    List<PdscUnit> result = convert(reader);
-    reader.close();
-    return result;
+  @Override
+  public Collection<GeneratedCode> generatePredef() {
+    return Collections.emptySet();
   }
 
-
-  private static List<PdscUnit> convert(Reader reader) throws IOException {
-    return CourierDocumentToPdscConverter.convert(reader)
-            .stream()
-            .map(pdsc -> new PdscUnit(pdsc))
-            .collect(Collectors.toList());
+  @Override
+  public Collection<DataSchema> definedSchemas() {
+    return Collections.emptySet();
   }
 
+  @Override
+  public String buildLanguage() {
+    return "pdsc";
+  }
+
+  @Override
+  public String customTypeLanguage() {
+    return "pdsc";
+  }
 }
+
