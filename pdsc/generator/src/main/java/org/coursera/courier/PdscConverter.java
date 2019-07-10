@@ -82,14 +82,14 @@ public class PdscConverter implements PegasusCodeGenerator {
     if (templateSpec instanceof RecordTemplateSpec) {
       code = SchemaToPdscEncoder.schemaToPdsc(templateSpec.getSchema());
     } else if (templateSpec instanceof EnumTemplateSpec) {
-      code = "test";
+      code = SchemaToPdscEncoder.schemaToPdsc(templateSpec.getSchema());
     } else if (templateSpec instanceof UnionTemplateSpec) {
-      code = "test";
+      code = SchemaToPdscEncoder.schemaToPdsc(templateSpec.getSchema());
     } else if (templateSpec instanceof TyperefTemplateSpec) {
       TyperefTemplateSpec typerefSpec = (TyperefTemplateSpec) templateSpec;
-      code = "test";
+      code = SchemaToPdscEncoder.schemaToPdsc(templateSpec.getSchema());
     } else if (templateSpec instanceof FixedTemplateSpec) {
-      code = "test";
+      code = SchemaToPdscEncoder.schemaToPdsc(templateSpec.getSchema());
     } else {
       return null; // Indicates that we are declining to generate code for the type (e.g. map or array)
     }

@@ -19,11 +19,6 @@ public class SchemaToPdscEncoder extends SchemaToJsonEncoder {
 
     public static String schemaToPdsc(DataSchema schema, JsonBuilder.Pretty pretty)
     {
-        return schemaToJson(schema, pretty);
-    }
-
-    public static String schemaToJson(DataSchema schema, JsonBuilder.Pretty pretty)
-    {
         JsonBuilder builder = null;
         try
         {
@@ -45,6 +40,7 @@ public class SchemaToPdscEncoder extends SchemaToJsonEncoder {
         }
     }
 
+
     public SchemaToPdscEncoder(JsonBuilder builder)
     {
         super(builder);
@@ -60,6 +56,7 @@ public class SchemaToPdscEncoder extends SchemaToJsonEncoder {
     {
         _builder.writeFieldName(TYPE_KEY);
         DataSchema fieldSchema = field.getType();
+        System.out.println(fieldSchema);
         _builder.writeString(fieldSchema.getUnionMemberKey());
     }
 
