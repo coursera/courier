@@ -17,6 +17,7 @@
 package org.coursera.courier;
 
 import com.linkedin.data.schema.DataSchema;
+import com.linkedin.data.schema.NamedDataSchema;
 import com.linkedin.pegasus.generator.GeneratorResult;
 import com.linkedin.pegasus.generator.spec.*;
 import org.coursera.courier.api.*;
@@ -83,15 +84,15 @@ public class PdscGenerator implements PegasusCodeGenerator {
 
     String code;
     if (templateSpec instanceof RecordTemplateSpec) {
-      code = SchemaToPdscEncoder.schemaToPdsc(templateSpec.getSchema());
+      code = SchemaToPdscEncoder.schemaToPdsc((NamedDataSchema)templateSpec.getSchema());
     } else if (templateSpec instanceof EnumTemplateSpec) {
-      code = SchemaToPdscEncoder.schemaToPdsc(templateSpec.getSchema());
+      code = SchemaToPdscEncoder.schemaToPdsc((NamedDataSchema)templateSpec.getSchema());
     } else if (templateSpec instanceof UnionTemplateSpec) {
       code = SchemaToPdscEncoder.schemaToPdsc(templateSpec.getOriginalTyperefSchema());
     } else if (templateSpec instanceof TyperefTemplateSpec) {
-      code = SchemaToPdscEncoder.schemaToPdsc(templateSpec.getSchema());
+      code = SchemaToPdscEncoder.schemaToPdsc((NamedDataSchema)templateSpec.getSchema());
     } else if (templateSpec instanceof FixedTemplateSpec) {
-      code = SchemaToPdscEncoder.schemaToPdsc(templateSpec.getSchema());
+      code = SchemaToPdscEncoder.schemaToPdsc((NamedDataSchema)templateSpec.getSchema());
     } else {
       return null; // Indicates that we are declining to generate code for the type (e.g. map or array)
     }

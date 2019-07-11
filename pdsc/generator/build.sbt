@@ -3,7 +3,7 @@ import sbtassembly.AssemblyPlugin.defaultShellScript
 name := "courier-pdsc-generator"
 
 plainJavaProjectSettings
-
+junitTestSettings
 
 // Fat Jar
 mainClass in assembly := Some("org.coursera.courier.PdscGenerator")

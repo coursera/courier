@@ -20,14 +20,10 @@ package org.coursera.courier;
 import com.linkedin.data.schema.*;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
 
-import static com.linkedin.data.schema.DataSchemaConstants.*;
+public class SchemaToPdscEncoder {
 
-public class SchemaToPdscEncoder extends SchemaToJsonEncoder {
-
-    public static String schemaToPdsc(DataSchema schema) {
+    public static String schemaToPdsc(NamedDataSchema schema) {
         return schemaToPdsc(schema, JsonBuilder.Pretty.INDENTED);
     }
 
@@ -39,14 +35,14 @@ public class SchemaToPdscEncoder extends SchemaToJsonEncoder {
      * @param pretty is the pretty printing mode.
      * @return the JSON encoded string representing the {@link DataSchema} in pdsc format.
      */
-    public static String schemaToPdsc(DataSchema schema, JsonBuilder.Pretty pretty)
+    public static String schemaToPdsc(NamedDataSchema schema, JsonBuilder.Pretty pretty)
     {
         JsonBuilder builder = null;
         try
         {
             builder = new JsonBuilder(pretty);
-            final SchemaToJsonEncoder encoder = new SchemaToPdscEncoder(builder);
-            encoder.encode(schema);
+            final SchemaToPdscJsonEncoder encoder = new SchemaToPdscJsonEncoder(builder, schema);
+            encoder.encodeRoot(schema);
             return  builder.result();
         }
         catch (IOException exc)
@@ -62,54 +58,45 @@ public class SchemaToPdscEncoder extends SchemaToJsonEncoder {
         }
     }
 
+    private static class SchemaToPdscJsonEncoder extends SchemaToJsonEncoder {
 
-    private SchemaToPdscEncoder(JsonBuilder builder)
-    {
-        super(builder);
-    }
+        NamedDataSchema rootSchema;
 
-    /**
-     * Encode a field's type as a string containing the canonical type name.
-     *
-     * Overrides the superclass behavior, which includes the full type schema, rather than its name.
-     *
-     * @param field providing the type to encode.
-     * @throws IOException if there is an error while encoding.
-     */
-    final protected void encodeFieldType(RecordDataSchema.Field field) throws IOException
-    {
-        _builder.writeFieldName(TYPE_KEY);
-        DataSchema fieldSchema = field.getType();
-        if (fieldSchema instanceof TyperefDataSchema) {
-            _builder.writeString(((TyperefDataSchema) fieldSchema).getFullName());
-        } else {
-            _builder.writeString(fieldSchema.getUnionMemberKey());
+        public SchemaToPdscJsonEncoder(JsonBuilder builder, NamedDataSchema rootSchema)
+        {
+            super(builder);
+            this.rootSchema = rootSchema;
+        }
+
+        final protected void encodeRoot(DataSchema schema) throws IOException {
+            super.encode(schema);
+        }
+
+        /**
+         * Override the base encode method to insert references rather than full schemas.
+         */
+        public void encode(DataSchema schema) throws IOException {
+            if (schema instanceof ArrayDataSchema) {
+                super.encode(schema);
+            } else if (schema instanceof MapDataSchema) {
+                super.encode(schema);
+            } else {
+                _builder.writeString(getSchemaRef(schema));
+            }
+        }
+
+        private String getSchemaRef(DataSchema schema) {
+            if (schema instanceof NamedDataSchema) {
+                NamedDataSchema namedSchema = (NamedDataSchema) schema;
+                if (namedSchema.getNamespace().equals(rootSchema.getNamespace())) {
+                    return namedSchema.getName();
+                } else {
+                    return namedSchema.getFullName();
+                }
+            } else {
+                return schema.getUnionMemberKey();
+            }
         }
     }
 
-    /**
-     * Encode the specified un-named {@link DataSchema}.
-     *
-     * Un-named {@link DataSchema}'s are the {@link DataSchema}'s for the
-     * map, array, and union types.
-     *
-     * Overrides superclass behavior which encodes full union member schemas rather than named
-     * references.
-     *
-     * @param schema to encode.
-     * @throws IOException if there is an error while encoding.
-     */
-    final protected void encodeUnnamed(DataSchema schema) throws IOException
-    {
-        if (schema instanceof UnionDataSchema) {
-            List<String> memberNames = ((UnionDataSchema) schema)
-                    .getTypes()
-                    .stream()
-                    .map(ref -> ref.getUnionMemberKey())
-                    .collect(Collectors.toList());
-            _builder.writeStringArray(memberNames);
-        } else {
-            super.encodeUnnamed(schema);
-        }
-    }
 }
