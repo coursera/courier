@@ -1,6 +1,6 @@
 language: scala
 scala: 2.10.5
-jdk: oraclejdk8
+jdk: openjdk8
 node_js:
   - "4"
 
