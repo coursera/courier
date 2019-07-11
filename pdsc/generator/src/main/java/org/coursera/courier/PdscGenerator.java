@@ -35,89 +35,89 @@ import java.util.stream.Collectors;
  */
 public class PdscGenerator implements PegasusCodeGenerator {
 
-  public static void main(String[] args) throws Throwable {
+    public static void main(String[] args) throws Throwable {
 
-    if (args.length != 3) {
-      throw new IllegalArgumentException(
-              "Usage: targetPath resolverPath1[:resolverPath2]+ sourcePath1[:sourcePath2]");
-    }
-    String targetPath = args[0];
-    String resolverPath = args[1];
-    String sourcePathString = args[2];
-    String[] sourcePaths = sourcePathString.split(":");
+        if (args.length != 3) {
+            throw new IllegalArgumentException(
+                    "Usage: targetPath resolverPath1[:resolverPath2]+ sourcePath1[:sourcePath2]");
+        }
+        String targetPath = args[0];
+        String resolverPath = args[1];
+        String sourcePathString = args[2];
+        String[] sourcePaths = sourcePathString.split(":");
 
-    GeneratorRunnerOptions options =
-            new GeneratorRunnerOptions(targetPath, sourcePaths, resolverPath);
+        GeneratorRunnerOptions options =
+                new GeneratorRunnerOptions(targetPath, sourcePaths, resolverPath);
 
-    PegasusCodeGenerator generator = new PdscGenerator(sourcePaths);
-    GeneratorResult result = new DefaultGeneratorRunner().run(generator, options);
+        PegasusCodeGenerator generator = new PdscGenerator(sourcePaths);
+        GeneratorResult result = new DefaultGeneratorRunner().run(generator, options);
 
-    for (File file: result.getTargetFiles()) {
-      System.out.println(file.getAbsolutePath());
-    }
-  }
-
-  Set<String> sourcePaths;
-
-  public PdscGenerator(String[] sourcePaths) {
-    this.sourcePaths = Arrays.asList(sourcePaths)
-            .stream().map(Paths::get)
-            .map(path -> path.toAbsolutePath().toString())
-            .collect(Collectors.toSet());
-  }
-
-
-  public static class PdscCompilationUnit extends GeneratedCodeTargetFile {
-    public PdscCompilationUnit(String fullName) {
-      super( fullName.replaceAll("\\.", "/") + ".pdsc");
-    }
-  }
-
-  private static final PoorMansCStyleSourceFormatter formatter =
-          new PoorMansCStyleSourceFormatter(2, DocCommentStyle.ASTRISK_MARGIN);
-
-  @Override
-  public GeneratedCode generate(ClassTemplateSpec templateSpec) {
-    if (!this.sourcePaths.contains(templateSpec.getLocation())) {
-      return null; // Only generate if declared in one of the target source files.
+        for (File file : result.getTargetFiles()) {
+            System.out.println(file.getAbsolutePath());
+        }
     }
 
-    String code;
-    if (templateSpec instanceof RecordTemplateSpec) {
-      code = SchemaToPdscEncoder.schemaToPdsc((NamedDataSchema)templateSpec.getSchema());
-    } else if (templateSpec instanceof EnumTemplateSpec) {
-      code = SchemaToPdscEncoder.schemaToPdsc((NamedDataSchema)templateSpec.getSchema());
-    } else if (templateSpec instanceof UnionTemplateSpec) {
-      code = SchemaToPdscEncoder.schemaToPdsc(templateSpec.getOriginalTyperefSchema());
-    } else if (templateSpec instanceof TyperefTemplateSpec) {
-      code = SchemaToPdscEncoder.schemaToPdsc((NamedDataSchema)templateSpec.getSchema());
-    } else if (templateSpec instanceof FixedTemplateSpec) {
-      code = SchemaToPdscEncoder.schemaToPdsc((NamedDataSchema)templateSpec.getSchema());
-    } else {
-      return null; // Indicates that we are declining to generate code for the type (e.g. map or array)
+    Set<String> sourcePaths;
+
+    public PdscGenerator(String[] sourcePaths) {
+        this.sourcePaths = Arrays.asList(sourcePaths)
+                .stream().map(Paths::get)
+                .map(path -> path.toAbsolutePath().toString())
+                .collect(Collectors.toSet());
     }
-    PdscCompilationUnit compilationUnit = new PdscCompilationUnit(templateSpec.getFullName());
-    return new GeneratedCode(compilationUnit, code);
-  }
 
-  @Override
-  public Collection<GeneratedCode> generatePredef() {
-    return Collections.emptySet();
-  }
 
-  @Override
-  public Collection<DataSchema> definedSchemas() {
-    return Collections.emptySet();
-  }
+    public static class PdscCompilationUnit extends GeneratedCodeTargetFile {
+        public PdscCompilationUnit(String fullName) {
+            super(fullName.replaceAll("\\.", "/") + ".pdsc");
+        }
+    }
 
-  @Override
-  public String buildLanguage() {
-    return "pegasus";
-  }
+    private static final PoorMansCStyleSourceFormatter formatter =
+            new PoorMansCStyleSourceFormatter(2, DocCommentStyle.ASTRISK_MARGIN);
 
-  @Override
-  public String customTypeLanguage() {
-    return "pegasus";
-  }
+    @Override
+    public GeneratedCode generate(ClassTemplateSpec templateSpec) {
+        if (!this.sourcePaths.contains(templateSpec.getLocation())) {
+            return null; // Only generate if declared in one of the target source files.
+        }
+
+        String code;
+        if (templateSpec instanceof RecordTemplateSpec) {
+            code = SchemaToPdscEncoder.schemaToPdsc((NamedDataSchema) templateSpec.getSchema());
+        } else if (templateSpec instanceof EnumTemplateSpec) {
+            code = SchemaToPdscEncoder.schemaToPdsc((NamedDataSchema) templateSpec.getSchema());
+        } else if (templateSpec instanceof UnionTemplateSpec) {
+            code = SchemaToPdscEncoder.schemaToPdsc(templateSpec.getOriginalTyperefSchema());
+        } else if (templateSpec instanceof TyperefTemplateSpec) {
+            code = SchemaToPdscEncoder.schemaToPdsc((NamedDataSchema) templateSpec.getSchema());
+        } else if (templateSpec instanceof FixedTemplateSpec) {
+            code = SchemaToPdscEncoder.schemaToPdsc((NamedDataSchema) templateSpec.getSchema());
+        } else {
+            return null; // Indicates that we are declining to generate code for the type (e.g. map or array)
+        }
+        PdscCompilationUnit compilationUnit = new PdscCompilationUnit(templateSpec.getFullName());
+        return new GeneratedCode(compilationUnit, code);
+    }
+
+    @Override
+    public Collection<GeneratedCode> generatePredef() {
+        return Collections.emptySet();
+    }
+
+    @Override
+    public Collection<DataSchema> definedSchemas() {
+        return Collections.emptySet();
+    }
+
+    @Override
+    public String buildLanguage() {
+        return "pegasus";
+    }
+
+    @Override
+    public String customTypeLanguage() {
+        return "pegasus";
+    }
 }
 

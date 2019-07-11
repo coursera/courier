@@ -29,30 +29,23 @@ public class SchemaToPdscEncoder {
 
     /**
      * Replicates structure of SchemaToPdscEncoder::schemaToJson method, but with
-     * a SchemaToPdscEncoder in place of the SchemaToJsonEncoder.
+     * a SchemaToPdscJsonEncoder in place of the SchemaToJsonEncoder.
      *
      * @param schema is the {@link DataSchema} to build a JSON encoded output for.
      * @param pretty is the pretty printing mode.
      * @return the JSON encoded string representing the {@link DataSchema} in pdsc format.
      */
-    public static String schemaToPdsc(NamedDataSchema schema, JsonBuilder.Pretty pretty)
-    {
+    public static String schemaToPdsc(NamedDataSchema schema, JsonBuilder.Pretty pretty) {
         JsonBuilder builder = null;
-        try
-        {
+        try {
             builder = new JsonBuilder(pretty);
             final SchemaToPdscJsonEncoder encoder = new SchemaToPdscJsonEncoder(builder, schema);
             encoder.encodeRoot(schema);
-            return  builder.result();
-        }
-        catch (IOException exc)
-        {
+            return builder.result();
+        } catch (IOException exc) {
             return exc.getMessage();
-        }
-        finally
-        {
-            if (builder != null)
-            {
+        } finally {
+            if (builder != null) {
                 builder.closeQuietly();
             }
         }
@@ -62,18 +55,20 @@ public class SchemaToPdscEncoder {
 
         NamedDataSchema rootSchema;
 
-        public SchemaToPdscJsonEncoder(JsonBuilder builder, NamedDataSchema rootSchema)
-        {
+        public SchemaToPdscJsonEncoder(JsonBuilder builder, NamedDataSchema rootSchema) {
             super(builder);
             this.rootSchema = rootSchema;
         }
 
+        /**
+         * Encode the root type in full using the base encoding definition.
+         */
         final protected void encodeRoot(DataSchema schema) throws IOException {
             super.encode(schema);
         }
 
         /**
-         * Override the base encode method to insert references rather than full schemas.
+         * Encode non-root types as references, rather than full definitions.
          */
         public void encode(DataSchema schema) throws IOException {
             if (schema instanceof ArrayDataSchema) {
