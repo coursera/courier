@@ -147,7 +147,7 @@ class EnumTemplateRaceTest(name:String) {
 
 object EnumTemplateRaceTest {
   // This test is for a heisenbug. If it recurs, please increase this value.
-  val NUMBER_OF_RUNS = 10
+  val NUMBER_OF_RUNS = 1
   @Parameters(name = "{0}")
   def parameters: java.util.Collection[Array[AnyRef]] = {
     val testCases = new java.util.ArrayList[Array[AnyRef]]

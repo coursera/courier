@@ -92,13 +92,13 @@ developers still on Java 7.
 
 First check the current courier version by running:
 ```
-scripts/courier-bump-version
+scripts/bump-version
 ```
 
 Then update the version by running:
 
 ```
-scripts/courier-bump-version <new-version>
+scripts/bump-version <new-version>
 ```
 
 #### Publish
@@ -107,13 +107,13 @@ To publish to maven central, configure your credentials as described by
 http://www.scala-sbt.org/0.13/docs/Using-Sonatype.html and then publish via SBT using:
 
 ```sh
-scripts/courier-publish-mavencentral
+scripts/publish-mavencentral
 ```
 
 To publish to an artifactory repo:
 
 ```sh
-scripts/courier-publich-artifactory <artifactory-base-url>
+scripts/publish-artifactory <artifactory-base-url>
 ```
 
 Where <artifactory-base-url> is something like `https://example.org/artifactory`
@@ -126,7 +126,7 @@ be done manually.
 To publish to "maven local" (`.m2` directory):
 
 ```sh
-scripts/courier-publish-local
+scripts/publish-local
 ```
 
 See the publish scripts for additional details.
