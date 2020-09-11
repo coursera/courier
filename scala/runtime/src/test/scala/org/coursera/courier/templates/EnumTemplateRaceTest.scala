@@ -158,6 +158,9 @@ object EnumTemplateRaceTest {
   }
 }
 
+/* The remaining test classes and objects resemble those created
+   by Courier.
+ */
 sealed abstract class EnumTypeA(name: String, properties: Option[DataMap])
   extends ScalaEnumTemplateSymbol(name, properties) {
 }
