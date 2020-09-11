@@ -33,7 +33,7 @@ Building from Source
 2) Publish a SNAPSHOT the local ivy cache:
 
 ```sh
-sbt fullpublish-local
+sbt publish-local
 ```
 
 Update any projects you would like to test to reference the SNAPSHOT that was published locally.
