@@ -140,7 +140,7 @@ class EnumTemplateRaceTest(name:String) {
     val testSetup = new TestSetup()
     testSetup.value(0)
     testSetup.withName(0)
-    assert(testSetup.race(testSetup.value(1), testSetup.withName(1)))
+    assert(testSetup.race(testSetup.withName(1), testSetup.withName(1)))
   }
 
 }
