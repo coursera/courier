@@ -13,33 +13,32 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-
 package org.coursera.courier.templates
 
 import org.junit.Test
 import java.net.URL
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.atomic.AtomicBoolean
 
 import java.io.IOException
 
-import com.linkedin.data.DataMap
-import com.linkedin.data.template.DataTemplateUtil
-import com.linkedin.data.schema.EnumDataSchema
-
 import sun.misc.URLClassPath
 
-class EnumTestBridge  {
-  def value = EnumTypeB.VALUE3.name
-  def withName = EnumTypeB.withName("VALUE4").name
+class TestBridge {
+  def value = TestB.VALUE.toString
+  def withName = TestB.withName("VALUE").toString
 }
 
-class EnumTemplateRaceTest() {
+/**
+ * This test shows that the deadlock tested for in [[EnumTemplateRaceTest]]
+ * can be reproduced with relatively simple scala only, with no dependence
+ * on courier or courscala libraries.
+ */
+class CompanionRaceTest() {
   import java.lang.ClassLoader.registerAsParallelCapable
+
   /**
-   * Make a separate class loader for a test, and load [[EnumTestBridge]].
+   * Make a separate class loader for a test, and load the [[TestBridge]] class.
    * The bug occurs while loading classes, hence the need for a class loader per test.
-   * @return The [[EnumTestBridge]] class in the new class loader.
+   * @return The TestBridge class in the new class loader.
    */
   def createForeignClazz():Class[_] = {
     val path = System.getProperty("java.class.path")
@@ -71,25 +70,21 @@ class EnumTemplateRaceTest() {
           case None => null
         }
       }
-      override def loadClass(name:String, resolve:Boolean):Class[_] = super.loadClass(name, true)
+      override def loadClass(name:String, resolve:Boolean) = super.loadClass(name, true)
     }
-    classLoader.loadClass(new EnumTestBridge().getClass.getName)
+    classLoader.loadClass(new TestBridge().getClass.getName)
   }
 
-  class TestSetup() {
+  class TestSetup(parallel:Boolean = true) {
 
-    private val startSignal = new CountDownLatch(1)
-    private val logging = new AtomicBoolean(false)
-    private val bridgeClazz  = createForeignClazz()
+    private val bridgeClazz = createForeignClazz()
     def method (name:String) = bridgeClazz.getMethod(name)
     private val foreignObject = bridgeClazz.getConstructor().newInstance()
-
 
     def value():String = s"""${method("value").invoke(foreignObject)}"""
     def withName():String = s"""${method("withName").invoke(foreignObject)}"""
 
-    def race( a : => Unit, b : => Unit):Boolean = {
-      logging.set(true)
+    def race( a : => Unit, b : => Unit, useStartSignal:(Int,Int)=(-1,-1)):Boolean = {
       val aThread = new Thread("A") {
         override def run() {
           a
@@ -102,6 +97,7 @@ class EnumTemplateRaceTest() {
       }
       aThread.start()
       bThread.start()
+      // check for deadlock.
       aThread.join(1000)
       bThread.join(1000)
       val aAlive = aThread.isAlive
@@ -112,61 +108,64 @@ class EnumTemplateRaceTest() {
     }
   }
   @Test
-  def raceValueValue():Unit = {
+  def valueBeforeRace():Unit = {
     val testSetup = new TestSetup()
-    assert(testSetup.race(testSetup.value(), testSetup.value()))
+    testSetup.value()
+    assert(testSetup.race(testSetup.value(), testSetup.withName()))
   }
   @Test
-  def raceValueWithName():Unit = {
+  def raceToDeadlock():Unit = {
     val testSetup = new TestSetup()
     assert(testSetup.race(testSetup.value(), testSetup.withName()))
   }
   @Test
-  def raceWithNameWithName():Unit = {
+  def withNameBeforeRace():Unit = {
     val testSetup = new TestSetup()
-    assert(testSetup.race(testSetup.withName(), testSetup.withName()))
+    testSetup.withName()
+    assert(testSetup.race(testSetup.value(), testSetup.withName()))
   }
 
 }
 
-/* The remaining test classes and objects resemble those created
-   by Courier.
- */
-sealed abstract class EnumTypeA(name: String, properties: Option[DataMap])
-  extends ScalaEnumTemplateSymbol(name, properties) {
+
+
+abstract class TestB( properties: Option[String]){
 }
 
-object EnumTypeA extends ScalaEnumTemplate[EnumTypeA] {
-  case object VALUE1 extends EnumTypeA("VALUE1", properties("VALUE1"))
-  case object VALUE2 extends EnumTypeA("VALUE2", properties("VALUE2"))
-  val SCHEMA = DataTemplateUtil.parseSchema(
-    """
-      { "type": "enum",
-        "name": "EnumTypeA",
-        "namespace": "org.coursera.courier.templates",
-        "symbols": ["VALUE1", "VALUE2"]
-      }""").asInstanceOf[EnumDataSchema]
-  override def withName(s: String): EnumTypeA = {
+object TestB  {
+  private val WORKAROUND = true
+  lazy val symbols: Set[TestB] = findSymbols
+  def findSymbols: Set[TestB] = Set(VALUE)
+  case object VALUE extends TestB( properties)
+  val SCHEMA = Set.empty[String]
+  def withName(s: String): TestB = {
     symbols.find(_.toString == s).get
   }
-}
 
-sealed abstract class EnumTypeB(name: String, properties: Option[DataMap])
-  extends ScalaEnumTemplateSymbol(name, properties) {
-}
+  def properties: Option[String] =
+  // Implementation note: using a lazy field can result in deadlock.
+    if (WORKAROUND) {
+      // compute lazy field without lock.
+      optionProperties match {
+        case Some(lazilyComputed) => lazilyComputed
+        case None =>
+          // This can be entered by multiple racing threads.
+          val lazilyComputed = SCHEMA.headOption
+          // The last thread wins, but the result is always the same.
+          optionProperties = Some(lazilyComputed)
+          lazilyComputed
+      }
+    } else
+      lazyProperties
 
-object EnumTypeB extends ScalaEnumTemplate[EnumTypeB] {
-  case object VALUE3 extends EnumTypeB("VALUE3", properties("VALUE3"))
-  case object VALUE4 extends EnumTypeB("VALUE4", properties("VALUE4"))
-  //case object $UNKNOWN extends EnumTypeB("$UNKNOWN", None)
-  val SCHEMA = DataTemplateUtil.parseSchema(
-    """
-      { "type": "enum",
-        "name": "EnumTypeB",
-        "namespace": "org.coursera.courier.templates",
-        "symbols": ["VALUE3","VALUE4"]
-      }""").asInstanceOf[EnumDataSchema]
-  override def withName(s: String): EnumTypeB = {
-    symbols.find(_.toString == s).get
+  lazy val lazyProperties = SCHEMA.headOption
+
+  /**
+   * The value of [[TestB.properties]]
+   */
+  private var optionProperties: Option[Option[String]] = None
+
+  protected def properties(symbolName: String): Option[String] = {
+    properties
   }
 }
