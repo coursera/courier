@@ -30,7 +30,7 @@ class TestBridge {
 /**
  * This test shows that the deadlock tested for in [[EnumTemplateRaceTest]]
  * can be reproduced with relatively simple scala only, with no dependence
- * on courier or courscala libraries.
+ * on courier or courscala libraries. This is described in this <a href="https://docs.scala-lang.org/sips/improved-lazy-val-initialization.html">SIP</a>.
  */
 class CompanionRaceTest() {
   import java.lang.ClassLoader.registerAsParallelCapable
