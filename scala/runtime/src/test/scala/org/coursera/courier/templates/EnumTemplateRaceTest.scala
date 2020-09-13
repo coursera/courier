@@ -30,8 +30,8 @@ import com.linkedin.data.schema.EnumDataSchema
 import sun.misc.URLClassPath
 
 class EnumTestBridge  {
-  def value = EnumTypeB.VALUE3.name
-  def withName = EnumTypeB.withName("VALUE4").name
+  def value = EnumTemplateTest.VALUE.name
+  def withName = EnumTemplateTest.withName("VALUE").name
 }
 
 class EnumTemplateRaceTest() {
@@ -132,41 +132,20 @@ class EnumTemplateRaceTest() {
 /* The remaining test classes and objects resemble those created
    by Courier.
  */
-sealed abstract class EnumTypeA(name: String, properties: Option[DataMap])
+sealed abstract class EnumTemplateTest(name: String, properties: Option[DataMap])
   extends ScalaEnumTemplateSymbol(name, properties) {
 }
 
-object EnumTypeA extends ScalaEnumTemplate[EnumTypeA] {
-  case object VALUE1 extends EnumTypeA("VALUE1", properties("VALUE1"))
-  case object VALUE2 extends EnumTypeA("VALUE2", properties("VALUE2"))
-  val SCHEMA = DataTemplateUtil.parseSchema(
-    """
-      { "type": "enum",
-        "name": "EnumTypeA",
-        "namespace": "org.coursera.courier.templates",
-        "symbols": ["VALUE1", "VALUE2"]
-      }""").asInstanceOf[EnumDataSchema]
-  override def withName(s: String): EnumTypeA = {
-    symbols.find(_.toString == s).get
-  }
-}
-
-sealed abstract class EnumTypeB(name: String, properties: Option[DataMap])
-  extends ScalaEnumTemplateSymbol(name, properties) {
-}
-
-object EnumTypeB extends ScalaEnumTemplate[EnumTypeB] {
-  case object VALUE3 extends EnumTypeB("VALUE3", properties("VALUE3"))
-  case object VALUE4 extends EnumTypeB("VALUE4", properties("VALUE4"))
-  //case object $UNKNOWN extends EnumTypeB("$UNKNOWN", None)
+object EnumTemplateTest extends ScalaEnumTemplate[EnumTemplateTest] {
+  case object VALUE extends EnumTemplateTest("VALUE", properties("VALUE"))
   val SCHEMA = DataTemplateUtil.parseSchema(
     """
       { "type": "enum",
         "name": "EnumTypeB",
         "namespace": "org.coursera.courier.templates",
-        "symbols": ["VALUE3","VALUE4"]
+        "symbols": ["VALUE"]
       }""").asInstanceOf[EnumDataSchema]
-  override def withName(s: String): EnumTypeB = {
+  override def withName(s: String): EnumTemplateTest = {
     symbols.find(_.toString == s).get
   }
 }

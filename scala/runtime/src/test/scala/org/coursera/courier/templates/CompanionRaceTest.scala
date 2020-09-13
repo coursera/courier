@@ -23,8 +23,8 @@ import java.io.IOException
 import sun.misc.URLClassPath
 
 class TestBridge {
-  def value = TestB.VALUE.toString
-  def withName = TestB.withName("VALUE").toString
+  def value = TestCompanion.VALUE.toString
+  def withName = TestCompanion.withName("VALUE").toString
 }
 
 /**
@@ -128,17 +128,17 @@ class CompanionRaceTest() {
 }
 
 
-
-abstract class TestB( properties: Option[String]){
+abstract class TestCompanion( properties: Option[String]){
 }
 
-object TestB  {
+object TestCompanion  {
+  // Set this to false to exhibit the deadlock.
   private val WORKAROUND = true
-  lazy val symbols: Set[TestB] = findSymbols
-  def findSymbols: Set[TestB] = Set(VALUE)
-  case object VALUE extends TestB( properties)
+  lazy val symbols: Set[TestCompanion] = findSymbols
+  def findSymbols: Set[TestCompanion] = Set(VALUE)
+  case object VALUE extends TestCompanion( properties)
   val SCHEMA = Set.empty[String]
-  def withName(s: String): TestB = {
+  def withName(s: String): TestCompanion = {
     symbols.find(_.toString == s).get
   }
 
@@ -161,7 +161,7 @@ object TestB  {
   lazy val lazyProperties = SCHEMA.headOption
 
   /**
-   * The value of [[TestB.properties]]
+   * The value of [[TestCompanion.properties]]
    */
   private var optionProperties: Option[Option[String]] = None
 
