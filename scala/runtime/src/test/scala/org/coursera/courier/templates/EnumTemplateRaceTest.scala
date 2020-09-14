@@ -18,8 +18,6 @@ package org.coursera.courier.templates
 
 import org.junit.Test
 import java.net.URL
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.atomic.AtomicBoolean
 
 import java.io.IOException
 
@@ -29,33 +27,34 @@ import com.linkedin.data.schema.EnumDataSchema
 
 import sun.misc.URLClassPath
 
-class EnumTestBridge  {
+class EnumTestBridge {
   def value = EnumTemplateTest.VALUE.name
   def withName = EnumTemplateTest.withName("VALUE").name
 }
 
 class EnumTemplateRaceTest() {
-  import java.lang.ClassLoader.registerAsParallelCapable
+
   /**
-   * Make a separate class loader for a test, and load [[EnumTestBridge]].
-   * The bug occurs while loading classes, hence the need for a class loader per test.
-   * @return The [[EnumTestBridge]] class in the new class loader.
-   */
-  def createForeignClazz():Class[_] = {
+    * Make a separate class loader for a test, and load [[EnumTestBridge]].
+    * The bug occurs while loading classes, hence the need for a class loader per test.
+    * @return The [[EnumTestBridge]] class in the new class loader.
+    */
+  def createForeignClazz(): Class[_] = {
     val path = System.getProperty("java.class.path")
-    val urls:Array[URL] = path.split(":").map{x:String => new java.io.File(x).toURI.toURL}.toArray
+    val urls: Array[URL] = path.split(":").map { x: String =>
+      new java.io.File(x).toURI.toURL
+    }
     val urlClassPath = new URLClassPath(urls)
     val systemClassLoader = ClassLoader.getSystemClassLoader
     val extensionClassLoader = systemClassLoader.getParent
 
-    val classLoader = new ClassLoader(extensionClassLoader){
-      registerAsParallelCapable()
-      override def   findClass(name:String):Class[_] = {
+    val classLoader = new ClassLoader(extensionClassLoader) {
+      override def findClass(name: String): Class[_] = {
 
         val path = name.replace('.', '/').concat(".class")
         val resOpt = urlClassPath.getResource(path)
         Option(resOpt) match {
-          case Some (res) =>
+          case Some(res) =>
             try {
               Option(res.getByteBuffer) match {
                 case Some(bb) => defineClass(name, bb, null)
@@ -63,33 +62,29 @@ class EnumTemplateRaceTest() {
                   val b = res.getBytes
                   defineClass(name, b, 0, b.length)
               }
-            }
-            catch {
-              case e:IOException => throw new ClassNotFoundException(name, e)
+            } catch {
+              case e: IOException => throw new ClassNotFoundException(name, e)
             }
 
           case None => null
         }
       }
-      override def loadClass(name:String, resolve:Boolean):Class[_] = super.loadClass(name, true)
+      override def loadClass(name: String, resolve: Boolean): Class[_] =
+        super.loadClass(name, true)
     }
     classLoader.loadClass(new EnumTestBridge().getClass.getName)
   }
 
   class TestSetup() {
 
-    private val startSignal = new CountDownLatch(1)
-    private val logging = new AtomicBoolean(false)
-    private val bridgeClazz  = createForeignClazz()
-    def method (name:String) = bridgeClazz.getMethod(name)
+    private val bridgeClazz = createForeignClazz()
+    def method(name: String) = bridgeClazz.getMethod(name)
     private val foreignObject = bridgeClazz.getConstructor().newInstance()
 
+    def value(): String = s"""${method("value").invoke(foreignObject)}"""
+    def withName(): String = s"""${method("withName").invoke(foreignObject)}"""
 
-    def value():String = s"""${method("value").invoke(foreignObject)}"""
-    def withName():String = s"""${method("withName").invoke(foreignObject)}"""
-
-    def race( a : => Unit, b : => Unit):Boolean = {
-      logging.set(true)
+    def race(a: => Unit, b: => Unit): Boolean = {
       val aThread = new Thread("A") {
         override def run() {
           a
@@ -108,21 +103,21 @@ class EnumTemplateRaceTest() {
       val bAlive = bThread.isAlive
       if (aAlive) aThread.interrupt()
       if (bAlive) bThread.interrupt()
-      ! (aAlive || bAlive)
+      !(aAlive || bAlive)
     }
   }
   @Test
-  def raceValueValue():Unit = {
+  def raceValueValue(): Unit = {
     val testSetup = new TestSetup()
     assert(testSetup.race(testSetup.value(), testSetup.value()))
   }
   @Test
-  def raceValueWithName():Unit = {
+  def raceValueWithName(): Unit = {
     val testSetup = new TestSetup()
     assert(testSetup.race(testSetup.value(), testSetup.withName()))
   }
   @Test
-  def raceWithNameWithName():Unit = {
+  def raceWithNameWithName(): Unit = {
     val testSetup = new TestSetup()
     assert(testSetup.race(testSetup.withName(), testSetup.withName()))
   }
@@ -132,14 +127,14 @@ class EnumTemplateRaceTest() {
 /* The remaining test classes and objects resemble those created
    by Courier.
  */
-sealed abstract class EnumTemplateTest(name: String, properties: Option[DataMap])
-  extends ScalaEnumTemplateSymbol(name, properties) {
-}
+sealed abstract class EnumTemplateTest(name: String,
+                                       properties: Option[DataMap])
+    extends ScalaEnumTemplateSymbol(name, properties) {}
 
 object EnumTemplateTest extends ScalaEnumTemplate[EnumTemplateTest] {
   case object VALUE extends EnumTemplateTest("VALUE", properties("VALUE"))
-  val SCHEMA = DataTemplateUtil.parseSchema(
-    """
+  val SCHEMA =
+    DataTemplateUtil.parseSchema("""
       { "type": "enum",
         "name": "EnumTypeB",
         "namespace": "org.coursera.courier.templates",

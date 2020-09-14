@@ -38,27 +38,15 @@ abstract class ScalaEnumTemplate[T <: ScalaEnumTemplateSymbol]
    */
   def withName(s: String): T
 
+  object deadLockWorkaround {
+    lazy val properties = Option(SCHEMA.getProperties.get(symbolProperties)).collect {
+      case enumProps: DataMap => enumProps
+    }
+  }
   /**
    * Schema properties defined on this enum, if any.
    */
-  def properties: Option[DataMap] =
-  // Implementation note: using a lazy field can result in deadlock.
-    optionProperties match {
-      case Some(lazilyComputed) => lazilyComputed
-      case None =>
-        // This can be entered by multiple racing threads.
-        val lazilyComputed = Option(SCHEMA.getProperties.get(symbolProperties)).collect {
-          case enumProps: DataMap => enumProps
-        }
-        // The last thread wins, but the result is always the same.
-        optionProperties = Some(lazilyComputed)
-        lazilyComputed
-    }
-
-  /**
-   * The value of [[ScalaEnumTemplate.properties]]
-   */
-  private var optionProperties: Option[Option[DataMap]] = None
+  def properties: Option[DataMap] = deadLockWorkaround.properties
 
   protected def properties(symbolName: String): Option[DataMap] = {
     properties.flatMap { enumProps =>

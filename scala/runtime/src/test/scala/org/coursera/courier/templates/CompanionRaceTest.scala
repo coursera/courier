@@ -28,33 +28,36 @@ class TestBridge {
 }
 
 /**
- * This test shows that the deadlock tested for in [[EnumTemplateRaceTest]]
- * can be reproduced with relatively simple scala only, with no dependence
- * on courier or courscala libraries. This is described in this <a href="https://docs.scala-lang.org/sips/improved-lazy-val-initialization.html">SIP</a>.
- */
+  * This test shows that the deadlock tested for in [[EnumTemplateRaceTest]]
+  * can be reproduced with relatively simple scala only, with no dependence
+  * on courier or courscala libraries. This deadlock uses two lazy values and
+  * a companion class initialization lock.
+  */
 class CompanionRaceTest() {
-  import java.lang.ClassLoader.registerAsParallelCapable
 
   /**
-   * Make a separate class loader for a test, and load the [[TestBridge]] class.
-   * The bug occurs while loading classes, hence the need for a class loader per test.
-   * @return The TestBridge class in the new class loader.
-   */
-  def createForeignClazz():Class[_] = {
+    * Make a separate class loader for a test, and load the [[TestBridge]] class.
+    * The bug occurs while loading classes, hence the need for a class loader per test.
+    * @return The TestBridge class in the new class loader.
+    */
+  def createForeignClazz(): Class[_] = {
     val path = System.getProperty("java.class.path")
-    val urls:Array[URL] = path.split(":").map{x:String => new java.io.File(x).toURI.toURL}.toArray
+    val urls: Array[URL] = path
+      .split(":")
+      .map { x: String =>
+        new java.io.File(x).toURI.toURL
+      }
     val urlClassPath = new URLClassPath(urls)
     val systemClassLoader = ClassLoader.getSystemClassLoader
     val extensionClassLoader = systemClassLoader.getParent
 
-    val classLoader = new ClassLoader(extensionClassLoader){
-      registerAsParallelCapable()
-      override def   findClass(name:String):Class[_] = {
+    val classLoader = new ClassLoader(extensionClassLoader) {
+      override def findClass(name: String): Class[_] = {
 
         val path = name.replace('.', '/').concat(".class")
         val resOpt = urlClassPath.getResource(path)
         Option(resOpt) match {
-          case Some (res) =>
+          case Some(res) =>
             try {
               Option(res.getByteBuffer) match {
                 case Some(bb) => defineClass(name, bb, null)
@@ -62,29 +65,33 @@ class CompanionRaceTest() {
                   val b = res.getBytes
                   defineClass(name, b, 0, b.length)
               }
-            }
-            catch {
-              case e:IOException => throw new ClassNotFoundException(name, e)
+            } catch {
+              case e: IOException => throw new ClassNotFoundException(name, e)
             }
 
           case None => null
         }
       }
-      override def loadClass(name:String, resolve:Boolean) = super.loadClass(name, true)
+      override def loadClass(name: String, resolve: Boolean) =
+        super.loadClass(name, true)
     }
     classLoader.loadClass(new TestBridge().getClass.getName)
   }
 
-  class TestSetup(parallel:Boolean = true) {
+  class TestSetup() {
 
     private val bridgeClazz = createForeignClazz()
-    def method (name:String) = bridgeClazz.getMethod(name)
-    private val foreignObject = bridgeClazz.getConstructor().newInstance()
+    def method(name: String) = bridgeClazz.getMethod(name)
+    private var foreignObject = bridgeClazz.getConstructor().newInstance()
 
-    def value():String = s"""${method("value").invoke(foreignObject)}"""
-    def withName():String = s"""${method("withName").invoke(foreignObject)}"""
+    def changeInstance(): Unit = {
+      foreignObject = bridgeClazz.getConstructor().newInstance()
+    }
 
-    def race( a : => Unit, b : => Unit, useStartSignal:(Int,Int)=(-1,-1)):Boolean = {
+    def value(): String = s"""${method("value").invoke(foreignObject)}"""
+    def withName(): String = s"""${method("withName").invoke(foreignObject)}"""
+
+    def race(a: => Unit, b: => Unit): Boolean = {
       val aThread = new Thread("A") {
         override def run() {
           a
@@ -104,51 +111,62 @@ class CompanionRaceTest() {
       val bAlive = bThread.isAlive
       if (aAlive) aThread.interrupt()
       if (bAlive) bThread.interrupt()
-      ! (aAlive || bAlive)
+      !(aAlive || bAlive)
     }
   }
   @Test
-  def valueBeforeRace():Unit = {
+  def valueBeforeRace(): Unit = {
     val testSetup = new TestSetup()
     testSetup.value()
+    testSetup.changeInstance()
     assert(testSetup.race(testSetup.value(), testSetup.withName()))
   }
   @Test
-  def raceToDeadlock():Unit = {
+  def raceToDeadlock(): Unit = {
     val testSetup = new TestSetup()
     assert(testSetup.race(testSetup.value(), testSetup.withName()))
   }
+
+  /**
+    * This is [[CompanionRaceTest.raceToDeadlock]] modified to avoid the race
+    * by running one of the halves first, which initializes all the classes,
+    * we then change the instance in `testSetup` and run the race, which does
+    * not deadlock - showing that the class initialization lock is involved in
+    * the deadlock.
+    */
   @Test
-  def withNameBeforeRace():Unit = {
+  def withNameBeforeRace(): Unit = {
     val testSetup = new TestSetup()
     testSetup.withName()
+    testSetup.changeInstance()
     assert(testSetup.race(testSetup.value(), testSetup.withName()))
   }
 
 }
 
+abstract class TestCompanion(properties: Option[String]) {}
 
-abstract class TestCompanion( properties: Option[String]){
-}
-
-object TestCompanion  {
+object TestCompanion {
   // Set this to false to exhibit the deadlock.
   private val WORKAROUND = true
-  lazy val symbols: Set[TestCompanion] = findSymbols
+  lazy val symbols: Set[TestCompanion] = {
+    Thread.sleep(10)
+    findSymbols
+  }
   def findSymbols: Set[TestCompanion] = Set(VALUE)
-  case object VALUE extends TestCompanion( properties)
+  case object VALUE extends TestCompanion(properties)
   val SCHEMA = Set.empty[String]
   def withName(s: String): TestCompanion = {
     symbols.find(_.toString == s).get
   }
 
   def properties: Option[String] =
-  // Implementation note: using a lazy field can result in deadlock.
+    // Implementation note: using a lazy field can result in deadlock.
     if (WORKAROUND) {
       // compute lazy field without lock.
       optionProperties match {
         case Some(lazilyComputed) => lazilyComputed
-        case None =>
+        case None                 =>
           // This can be entered by multiple racing threads.
           val lazilyComputed = SCHEMA.headOption
           // The last thread wins, but the result is always the same.
@@ -158,11 +176,14 @@ object TestCompanion  {
     } else
       lazyProperties
 
-  lazy val lazyProperties = SCHEMA.headOption
+  lazy val lazyProperties = {
+    Thread.sleep(10)
+    SCHEMA.headOption
+  }
 
   /**
-   * The value of [[TestCompanion.properties]]
-   */
+    * The value of [[TestCompanion.properties]]
+    */
   private var optionProperties: Option[Option[String]] = None
 
   protected def properties(symbolName: String): Option[String] = {
