@@ -78,7 +78,7 @@ class CompanionRaceTest() {
     classLoader.loadClass(new TestBridge().getClass.getName)
   }
 
-  class TestSetup() {
+  class TestSetup() extends Race {
 
     private val bridgeClazz = createForeignClazz()
     def method(name: String) = bridgeClazz.getMethod(name)
@@ -91,28 +91,6 @@ class CompanionRaceTest() {
     def value(): String = s"""${method("value").invoke(foreignObject)}"""
     def withName(): String = s"""${method("withName").invoke(foreignObject)}"""
 
-    def race(a: => Unit, b: => Unit): Boolean = {
-      val aThread = new Thread("A") {
-        override def run() {
-          a
-        }
-      }
-      val bThread = new Thread("B") {
-        override def run() {
-          b
-        }
-      }
-      aThread.start()
-      bThread.start()
-      // check for deadlock.
-      aThread.join(1000)
-      bThread.join(1000)
-      val aAlive = aThread.isAlive
-      val bAlive = bThread.isAlive
-      if (aAlive) aThread.interrupt()
-      if (bAlive) bThread.interrupt()
-      !(aAlive || bAlive)
-    }
   }
   @Test
   def valueBeforeRace(): Unit = {
