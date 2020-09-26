@@ -18,13 +18,12 @@ package org.coursera.courier.templates
 
 import org.junit.Test
 import java.net.URL
-
 import java.io.IOException
+import java.nio.ByteBuffer
 
 import com.linkedin.data.DataMap
 import com.linkedin.data.template.DataTemplateUtil
 import com.linkedin.data.schema.EnumDataSchema
-
 import sun.misc.URLClassPath
 
 class EnumTestBridge {
@@ -40,36 +39,24 @@ class EnumTemplateRaceTest() {
     * @return The [[EnumTestBridge]] class in the new class loader.
     */
   def createForeignClazz(): Class[_] = {
-    val path = System.getProperty("java.class.path")
-    val urls: Array[URL] = path.split(":").map { x: String =>
-      new java.io.File(x).toURI.toURL
-    }
-    val urlClassPath = new URLClassPath(urls)
-    val systemClassLoader = ClassLoader.getSystemClassLoader
-    val extensionClassLoader = systemClassLoader.getParent
+    val systemClassLoader = this.getClass.getClassLoader()
 
-    val classLoader = new ClassLoader(extensionClassLoader) {
+    val classLoader = new ClassLoader(systemClassLoader.getParent) {
       override def findClass(name: String): Class[_] = {
-
         val path = name.replace('.', '/').concat(".class")
-        val resOpt = urlClassPath.getResource(path)
+        val resOpt = systemClassLoader.getResourceAsStream(path)
         Option(resOpt) match {
           case Some(res) =>
             try {
-              Option(res.getByteBuffer) match {
-                case Some(bb) => defineClass(name, bb, null)
-                case None =>
-                  val b = res.getBytes
-                  defineClass(name, b, 0, b.length)
-              }
+              val bytes = Stream.continually(res.read).takeWhile(_ != -1).map(_.toByte).toArray
+              defineClass(name, ByteBuffer.wrap(bytes), null)
             } catch {
               case e: IOException => throw new ClassNotFoundException(name, e)
             }
-
-          case None => null
+          case None => throw new ClassNotFoundException(name)
         }
       }
-      override def loadClass(name: String, resolve: Boolean): Class[_] =
+      override def loadClass(name: String, resolve: Boolean) =
         super.loadClass(name, true)
     }
     classLoader.loadClass(new EnumTestBridge().getClass.getName)
