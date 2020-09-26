@@ -49,15 +49,15 @@ object Courier extends Build with OverridablePublishSettings {
   lazy val currentScalaVersion = "2.12.7" // The current scala version.
 
   // Our plugin runs as part of SBT so must use the same Scala version that SBT currently uses.
-  lazy val pluginVersionSettings = Seq(
-    scalaVersion in ThisBuild := sbtScalaVersion,
-    crossScalaVersions in ThisBuild := Seq(sbtScalaVersion))
+  //lazy val pluginVersionSettings = Seq(
+    //scalaVersion in ThisBuild := sbtScalaVersion,
+    //crossScalaVersions in ThisBuild := Seq(sbtScalaVersion))
 
   // We cross build our runtime to both versions.
   lazy val runtimeVersionSettings = Seq(
     scalaVersion in ThisBuild := currentScalaVersion,
     crossScalaVersions in ThisBuild := Seq(sbtScalaVersion,
-                                           "2.11.11",
+                                           //"2.11.11",
                                            currentScalaVersion))
 
   // Strictly speaking, our generator only needs to be built for the SBT plugin Scala version.
@@ -68,6 +68,7 @@ object Courier extends Build with OverridablePublishSettings {
   lazy val generatorVersionSettings = Seq(
     scalaVersion in ThisBuild := sbtScalaVersion,
     crossScalaVersions in ThisBuild := Seq(sbtScalaVersion,
+                                           //"2.11.11",
                                            currentScalaVersion))
 
   // Java project settings
@@ -234,8 +235,18 @@ object Courier extends Build with OverridablePublishSettings {
     Project(id = "sbt-plugin", base = file("sbt-plugin"))
       .dependsOn(scalaGenerator)
       .disablePlugins(xerial.sbt.Sonatype)
+      .disablePlugins(bintray.BintrayPlugin)
       .settings(
+        scalaVersion := "2.12.7",
+        sbtVersion in Global := "1.2.8",
         crossSbtVersions := Vector("0.13.17", "1.2.8"),
+        sbtVersion in pluginCrossBuild := {
+      scalaBinaryVersion.value match {
+        case "2.10" => "0.13.17"
+        //case "2.11" => "0.13.17"
+        case "2.12" => "1.2.8"
+      }
+        },
         scalaCompilerBridgeSource := {
           val sv = appConfiguration.value.provider.id.version
           ("org.scala-sbt" % "compiler-interface" % sv % "component").sources
