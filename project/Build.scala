@@ -57,7 +57,7 @@ object Courier extends Build with OverridablePublishSettings {
   lazy val runtimeVersionSettings = Seq(
     scalaVersion in ThisBuild := currentScalaVersion,
     crossScalaVersions in ThisBuild := Seq(sbtScalaVersion,
-                                           //"2.11.11",
+                                           "2.11.11",
                                            currentScalaVersion))
 
   // Strictly speaking, our generator only needs to be built for the SBT plugin Scala version.
@@ -68,7 +68,7 @@ object Courier extends Build with OverridablePublishSettings {
   lazy val generatorVersionSettings = Seq(
     scalaVersion in ThisBuild := sbtScalaVersion,
     crossScalaVersions in ThisBuild := Seq(sbtScalaVersion,
-                                           //"2.11.11",
+                                           "2.11.11",
                                            currentScalaVersion))
 
   // Java project settings
