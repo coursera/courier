@@ -14,6 +14,9 @@ the planned change and discuss it. Once all technical suggestions
 and concerns brought up in the discussion are addressed, code it up
 and submit a pull request.
 
+For Coursera employees, please also refer to this 
+[doc](https://docs.google.com/document/d/1Uns8vtmRt1YDwDEsKKhYls2jTn9bpgR4f2VRBRBRCHY/edit).
+
 Pull Request Workflow
 ---------------------
 
@@ -116,12 +119,11 @@ To publish to an artifactory repo:
 scripts/publish-artifactory <artifactory-base-url>
 ```
 
-Where <artifactory-base-url> is something like `https://example.org/artifactory`
-
-When published, the version number in `version.sbt` will automatically be incremented.
-It should always end with `-SNAPSHOT`. The `sbt-release` plugin is responsible for publishing
-the release versions and incrementing the version number, so this should not usually need to
-be done manually.
+Where <artifactory-base-url> is something like `https://example.org/artifactory`.
+Internal to Coursera please do
+```sh
+scripts/publish-artifactory <artifactory-base-url>
+```
 
 To publish to "maven local" (`.m2` directory):
 
