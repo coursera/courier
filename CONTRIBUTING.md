@@ -104,6 +104,20 @@ Then update the version by running:
 scripts/bump-version <new-version>
 ```
 
+#### Gradle Configuration
+
+You must specify some artifactory parameters for gradle, even if empty.
+In your `~/.gradle/gradle.properties`, please ensure at least the following:
+```
+artifactoryUrl=
+artifactoryPublishRepoKey=
+artifactoryResolverRepoKey=
+artifactoryUsername=
+artifactoryPassword=
+ossrhUsername=
+ossrhPassword=
+```
+
 #### Publish
 
 To publish to maven central, configure your credentials as described by

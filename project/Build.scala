@@ -235,7 +235,6 @@ object Courier extends Build with OverridablePublishSettings {
     Project(id = "sbt-plugin", base = file("sbt-plugin"))
       .dependsOn(scalaGenerator)
       .disablePlugins(xerial.sbt.Sonatype)
-      .disablePlugins(bintray.BintrayPlugin)
       .settings(
         scalaVersion := "2.12.7",
         sbtVersion in Global := "1.2.8",

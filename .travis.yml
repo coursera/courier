@@ -1,6 +1,7 @@
 language: scala
 scala: 2.10.5
-jdk: openjdk
+jdk: oraclejdk8
+dist: trusty
 
 node_js:
   - "4"

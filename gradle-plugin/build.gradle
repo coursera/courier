@@ -58,7 +58,9 @@ artifactoryPublish {
       repoKey = artifactoryPublishRepoKey
       username = artifactoryUsername
       password = artifactoryPassword
-      maven = true
+      ivy {
+          mavenCompatible = true
+      }
     }
   }
   resolve {
@@ -66,7 +68,9 @@ artifactoryPublish {
       repoKey = artifactoryResolverRepoKey
       username = artifactoryUsername
       password = artifactoryPassword
-      maven = true
+      ivy {
+          mavenCompatible = true
+      }
     }
   }
 }
