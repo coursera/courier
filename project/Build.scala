@@ -45,13 +45,14 @@ object Courier extends Build with OverridablePublishSettings {
   // In order to keep it under control we primarily concern ourselves with these two below Scala
   // version numbers:
 
-  lazy val sbtScalaVersion = "2.10.6" // the version of Scala used by the current sbt version.
+  lazy val sbtScalaVersion = "2.10.7" // the version of Scala used by the current sbt version.
   lazy val currentScalaVersion = "2.12.7" // The current scala version.
 
   // Our plugin runs as part of SBT so must use the same Scala version that SBT currently uses.
   lazy val pluginVersionSettings = Seq(
     scalaVersion in ThisBuild := sbtScalaVersion,
-    crossScalaVersions in ThisBuild := Seq(sbtScalaVersion))
+    crossScalaVersions in ThisBuild := Seq(sbtScalaVersion,
+      currentScalaVersion))
 
   // We cross build our runtime to both versions.
   lazy val runtimeVersionSettings = Seq(
@@ -236,7 +237,7 @@ object Courier extends Build with OverridablePublishSettings {
       .dependsOn(scalaGenerator)
       .disablePlugins(xerial.sbt.Sonatype)
       .settings(
-        scalaVersion := "2.12.7",
+        scalaVersion := sbtScalaVersion,
         sbtVersion in Global := "1.2.8",
         crossSbtVersions := Vector("0.13.17", "1.2.8"),
         sbtVersion in pluginCrossBuild := {
@@ -289,7 +290,8 @@ object Courier extends Build with OverridablePublishSettings {
       s";++$currentScalaVersion;project scala-fixture;$publishCommand"
     sbtPluginCommand
       .map { sbtPluginCommand =>
-        baseCommand + s";++$sbtScalaVersion;project sbt-plugin;$sbtPluginCommand"
+        baseCommand + s";++$sbtScalaVersion;project sbt-plugin;$sbtPluginCommand" +
+          s";++$currentScalaVersion;project sbt-plugin;$sbtPluginCommand"
       }
       .getOrElse {
         baseCommand
@@ -322,7 +324,8 @@ object Courier extends Build with OverridablePublishSettings {
       addCommandAlias(s"fulltest",
                       s";compile;test;fullpublish-ivylocal;" +
                         s"project courier;++$sbtScalaVersion;scripted"),
-      addCommandAlias("fullpublish", publishCommands("publish")),
+      addCommandAlias("fullpublish",
+                      publishCommands("publish", Some("publish"))),
       addCommandAlias("fullpublish-signed",
                       publishCommands("publish-signed", Some("publish"))),
       addCommandAlias("fullpublish-ivylocal",

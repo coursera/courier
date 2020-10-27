@@ -55,7 +55,7 @@ artifactoryPublish {
 
   publish {
     repository {
-      repoKey = artifactoryPublishRepoKey
+      repoKey = version.endsWith('SNAPSHOT') ? artifactoryPublishRepoKey + "-snapshots" : artifactoryPublishRepoKey
       username = artifactoryUsername
       password = artifactoryPassword
       ivy {

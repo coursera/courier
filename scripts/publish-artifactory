@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 if [ -z $1 ]
   then
@@ -16,6 +16,9 @@ sbt fullpublish-mavenlocal # publish courier to maven local so that the gradle b
 
 sbt -Dsbt.override.publish.repos.release=$ARTIFACTORY_URL/general \
     -Dsbt.override.publish.repos.snapshot=$ARTIFACTORY_URL/general-snapshots \
-    "set credentials in Global += Credentials(Path.userHome / \".artifactory_credentials\")" "fullpublish"
+    -Dsbt.sbtbintray=false \
+    "set credentials in Global += Credentials(Path.userHome / \".artifactory_credentials\")" \
+    "project courier" \
+    "fullpublish"
 
 (cd gradle-plugin; gradle artifactoryPublish)

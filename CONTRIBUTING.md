@@ -117,8 +117,34 @@ artifactoryPassword=
 ossrhUsername=
 ossrhPassword=
 ```
+### Publish 
 
-#### Publish
+These instructions are mainly intended for Coursera employees.
+
+#### Credentials
+
+To-do
+
+#### Publish Locally
+
+```shell script
+sbt +publishLocal
+```
+
+#### Publish Remotely to oss.sonatype.org
+
+The following does not work for the sbt-plugin
+for snapshot releases because of 
+[this issue](https://www.google.com/url?q=https://github.com/sbt/sbt/issues/3410&sa=D&ust=1603737726690000&usg=AOvVaw3pyWEpFZbRLmY8_m-bkvzf)
+A work-around is not to use snapshot releases, but to use more full releases.
+
+
+```shell script
+sbt fullPublish
+```
+
+
+### Publish (old documentation - needs maintenance)
 
 To publish to maven central, configure your credentials as described by
 http://www.scala-sbt.org/0.13/docs/Using-Sonatype.html and then publish via SBT using:
