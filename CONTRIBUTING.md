@@ -21,15 +21,6 @@ the planned change and discuss it.
 
 Courserians should join the internal __#courier__ slack channel.
 
-Pull Request Workflow
----------------------
-
-All pull requests need to be tested against Coursera specific
-integration tests and require a code review sign off. A Courier
-committer will help move each pull request through this workflow, and
-provide status updates and feedback along the way. Once complete, pull
-requests will be `squashed` into a single commit and committed (not
-merged) to master. 
 
 Building from Source
 --------------------
@@ -111,9 +102,73 @@ when it is approved, you should bump the version to the full release, and publis
 through [bintray](https://bintray.com/). Once publishing the release is complete, please bump the 
 version again to the next bug fix release -SNAPSHOT.
 
-## Get all the credentials needed
+## Prerequisites
 
-See below.
+### Sonatype
+
+Sign up for a [Sonatype account](https://issues.sonatype.org/secure/Signup!default.jspa)  using your Coursera email address.
+To be added to the open source Coursera organization, you need to file a ticket like [this one](https://issues.sonatype.org/browse/OSSRH-35833),
+and to get some current member of the organization to vouch for you, by commenting on the ticket.
+
+Having done that you then add the following to your `~/.sbt/0.13/plugins/gpg.sbt` file:
+```
+  addSbtPlugin("com.jsuereth" % "sbt-pgp" % "1.1.1")
+```
+Add your Sonatype credentials to SBT by adding the following to `~/.sbt/0.13/sonatype.sbt`
+```
+credentials += Credentials("Sonatype Nexus Repository Manager",
+        "oss.sonatype.org",
+        "<sonatype_username>",
+        "<sonatype_password>")
+```
+
+You can sign in with this account at nexus to see both the active releases,
+and the staged releases.
+
+### Bintray
+
+aaa
+
+### PGP
+
+HHH
+
+### Artifactory
+
+The scripts assume you have your `~/.artificatory` file correctly configured.
+
+### Gradle
+
+HHH
+
+
+Sign up for a using your Coursera email address
+File an issue on the Community Support - Open Source Project Repository Hosting [JIRA board](https://issues.sonatype.org/browse/OSSRH) to get added to the org.coursera organization ([example issue](https://issues.sonatype.org/browse/OSSRH-35833))
+add the following to your ~/.sbt/0.13/plugins/gpg.sbt file:
+  addSbtPlugin("com.jsuereth" % "sbt-pgp" % "1.1.1")
+Add your Sonatype credentials to SBT by adding the following to ~/.sbt/0.13/sonatype.sbt
+
+credentials += Credentials("Sonatype Nexus Repository Manager",
+        "oss.sonatype.org",
+        "<sonatype_username>",
+        "<sonatype_password>")
+Install gpg
+brew install gpg
+Generate and upload your PGP key by running SBT and running the following on the SBT prompt
+
+set pgpReadOnly := false
+pgp-cmd gen-key
+pgp-cmd list-keys
+pgp-cmd send-key <your_username_here@coursera.org> hkp://pool.sks-keyservers.net
+[Courier specific] Sign up for a bintray account using your coursera email address as well. Use some artificial organization id like my-name-coursera during the signup workflow. After you have an account, ask admin (current JeremyZhaojun, David G.Mate, Matt) to add you to the Coursera organization as an admin.
+[Courier specific] Create API key in the web console. Add it to ~/.bintray/.credentials 
+
+
+cat ~/.bintray/.credentials
+realm = Bintray API Realm
+host = api.bintray.com
+user =
+password = 
 
 ## Bump the courier version
 
@@ -204,6 +259,12 @@ scripts/publish-local
 ```
 
 See the publish scripts for additional details.
+
+
+Unpublishing
+------------
+While you should not remove a version that other people are using,
+it may be necessary to correct mistakes during the publishing process.
 
 Licensing
 ---------
