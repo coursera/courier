@@ -54,20 +54,28 @@ object Sonatype {
             <name>Joe Betz</name>
           </developer>
           <developer>
-            <id>Daniel Chia</id>
-            <name>danchia</name>
+            <id>danchia</id>
+            <name>Daniel Chia</name>
           </developer>
           <developer>
-            <id>Nick Dellamaggiore</id>
-            <name>nick</name>
+            <id>nick</id>
+            <name>Nick Dellamaggiore</name>
           </developer>
           <developer>
-            <id>Josh Newman</id>
-            <name>josh</name>
+            <id>josh</id>
+            <name>Josh Newman</name>
           </developer>
           <developer>
             <id>saeta</id>
             <name>Brennan Saeta</name>
+          </developer>
+          <developer>
+            <id>amory-coursera</id>
+            <name>Amory Schlender</name>
+          </developer>
+          <developer>
+            <id>dguo-coursera</id>
+            <name>David Guo</name>
           </developer>
         </developers>
     }
