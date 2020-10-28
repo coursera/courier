@@ -52,21 +52,24 @@ The [maven-plugin](../maven-plugin) and
 Building from Source
 --------------------
 
-1) Clone this repo.
+1. Set your JAVA_HOME to a Java 8 SDK. We test with __oraclejdk8__.
 
-2) Publish to the local ivy cache:
+1. Clone this repo.
 
-```sh
-sbt publish-local
-```
+1. Publish to the local ivy cache:
 
-3) Cross compilation also is supported:
+    ```sh
+    sbt publish-local
+    ```
 
-```sh
-sbt +publish-local
-```
+1. Cross compilation also is supported:
 
-Update any projects you would like to test to reference the SNAPSHOT that was published locally.
+    ```sh
+    sbt +publish-local
+    ```
+
+1. Update any projects you would like to test to reference the SNAPSHOT 
+   that was published locally.
 
 Tests
 -----
