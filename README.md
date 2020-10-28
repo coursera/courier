@@ -23,4 +23,4 @@ Courier is [Apache 2.0 Licensed](LICENSE.txt).
 #### Contributing
 
 For development and submitting pull requests, please see the
-[Contributing document](CONTRIBUTING.md).
+[Contributing document](docs/CONTRIBUTING.md).

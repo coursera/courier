@@ -1,95 +1,3 @@
-Contributing to Courier
-=======================
-
-Making Contributions
---------------------
-
-Contributions are welcome!
-
-In practice, all contributions have come from Coursera employees (Courserians),
-and this document is weighted towards new Courserians wishing to contribute.
-
-For others, the general workflow should be fine, but the final publication steps
-currently depend on Coursera internal actions, for example, checking that the change
-does not break our production system.
-
-For bug fixes submit a pull request.  Be sure to include how to
-reproduce the bug, ideally with a test case.
-
-For improvements and features, first open a github issue describing
-the planned change and discuss it.
-
-Courserians should join the internal __#courier__ slack channel.
-
-
-Building from Source
---------------------
-
-1) Clone this repo.
-
-2) Publish to the local ivy cache:
-
-```sh
-sbt publish-local
-```
-
-3) Cross compilation also is supported:
-
-```sh
-sbt +publish-local
-```
-
-Update any projects you would like to test to reference the SNAPSHOT that was published locally.
-
-Tests
------
-
-To run all tests:
-
-```sh
-sbt fulltest
-```
-or
-```sh
-sbt +fulltest
-```
-
-The bulk of the generator is tested by `generator-test`.
-It contains schemas in `generator-test/src/main/pegasus`
-and contains uni tests against those schemas in `generator-test/src/test/scala`.
-
-These are all run via:
-
-```sh
-sbt test
-```
-
-SBT Plugin specific tests are defined under in the `sbt-plugin` project at
-`sbt-plugin/src/sbt-test/courier-sbt-plugin`.
-
-Each test is an actual SBT project with a series of tasks that are run and assertions
-made after those tasks have run.
-
-These test can be run via:
-
-```sh
-sbt scripted
-```
-
-We use [travis](https://travis-ci.org/github/coursera/courier) to test pull requests.
-
-For details on these sbt plugin "scripted" tests, see: http://eed3si9n.com/testing-sbt-plugins
-
-Development Guidelines
-----------------------
-
-* `master` should be stable.
-* All code changes are reviewed by a committer.
-* All code is covered by unit tests.
-* Releases are published to Maven Central using semantic versioning.
-* All changes are committed to the head of master as a single
-  "squashed" commit, not merged. 
-* Full attribution to the pull request submitter is retained.
 
 Publishing
 ----------
@@ -103,39 +11,6 @@ through [bintray](https://bintray.com/). Once publishing the release is complete
 version again to the next bug fix release -SNAPSHOT.
 
 ## Prerequisites
-
-### Sonatype
-
-Sign up for a [Sonatype account](https://issues.sonatype.org/secure/Signup!default.jspa)  using your Coursera email address.
-To be added to the open source Coursera organization, you need to file a ticket like [this one](https://issues.sonatype.org/browse/OSSRH-35833),
-and to get some current member of the organization to vouch for you, by commenting on the ticket.
-
-Having done that you then add the following to your `~/.sbt/0.13/plugins/gpg.sbt` file:
-```
-  addSbtPlugin("com.jsuereth" % "sbt-pgp" % "1.1.1")
-```
-Add your Sonatype credentials to SBT by adding the following to `~/.sbt/0.13/sonatype.sbt`
-```
-credentials += Credentials("Sonatype Nexus Repository Manager",
-        "oss.sonatype.org",
-        "<sonatype_username>",
-        "<sonatype_password>")
-```
-
-You can sign in with this account at [Sonatype's Nexus Repository](https://oss.sonatype.org/#welcome) to see both the active releases,
-and the staged releases.
-
-### Bintray
-
-aaa
-
-### PGP
-
-HHH
-
-### Artifactory
-
-The scripts assume you have your `~/.artifactory_credentials` file correctly configured.
 
 ### Gradle
 
@@ -185,19 +60,6 @@ If this is not the case, or not what you want, then update the version by runnin
 scripts/bump-version <new-version>
 ```
 
-## Gradle Configuration
-
-You must specify some artifactory parameters for gradle, even if empty.
-In your `~/.gradle/gradle.properties`, please ensure at least the following:
-```
-artifactoryUrl=
-artifactoryPublishRepoKey=
-artifactoryResolverRepoKey=
-artifactoryUsername=
-artifactoryPassword=
-ossrhUsername=
-ossrhPassword=
-```
 ## Publish Snapshot to Artifactory
 
 This process should not be used for full releases, but only snapshot releases.
@@ -287,9 +149,3 @@ Unpublishing
 ------------
 While you should not remove a version that other people are using,
 it may be necessary to correct mistakes during the publishing process.
-
-Licensing
----------
-
-By contributing to Courier, you agree that your contributions will be
-licensed under Courier's [Apache 2.0 License](./LICENSE.txt).

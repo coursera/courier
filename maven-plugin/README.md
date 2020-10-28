@@ -2,6 +2,7 @@ Courier Maven Plugin
 ====================
 
 Experimental!
+This subproject is not maintained.
 
 Usage
 ------
