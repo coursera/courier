@@ -48,10 +48,23 @@ You must set up your [credentials](CREDENTIALS.md) before this step.
 The first step is:
 
 ```shell script
-sbt fullPublish-signed
+sbt fullpublish-signed
 ```
 
-It is not possible to use `fullPublish-signed` for SNAPSHOT releases.
+You can immediately see your new version of the sbt plugin in [bintray](https://bintray.com/coursera/sbt-plugins/courier-sbt-plugin).
+
+The rest of the release should be in a staging area at Sonatype.
+You navigate to [this](https://oss.sonatype.org/#stagingRepositories)  
+in your browser,
+and select the bundle you just created. First you close it:
+
+![image](https://user-images.githubusercontent.com/549519/97495651-1ca51f80-1925-11eb-9501-1ed23b7f166c.png)
+
+and then you release it:
+
+![image](https://user-images.githubusercontent.com/549519/97495681-275fb480-1925-11eb-8c80-ed5bc8d4027e.png)
+
+It is not possible to use `fullpublish-signed` for SNAPSHOT releases.
 
 Unpublishing/Republishing
 -------------------------

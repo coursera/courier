@@ -20,7 +20,9 @@ Here is a path, through it.
 1. [Select](https://oss.sonatype.org/#view-repositories;public~browsestorage) "Views/Repositories: Repositories", then "Public Repositories"
    ![image](https://user-images.githubusercontent.com/549519/97369336-fc645a80-1869-11eb-93fa-b4802419982b.png)
 1. Using the tree view, scroll down to "org" and expand, and then scroll to "coursera".
+
    ![image](https://user-images.githubusercontent.com/549519/97369365-0b4b0d00-186a-11eb-9786-582d24fa65e6.png)
+   
    ![image](https://user-images.githubusercontent.com/549519/97369380-11d98480-186a-11eb-9361-80019c297234.png)
 
 ### Staging Area

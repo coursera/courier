@@ -7,7 +7,7 @@ node_js:
   - "4"
 
 script:
-  - sbt "+ fulltest"
+  - sbt fulltest
 
 # whitelist
 branches:

@@ -67,6 +67,13 @@ Building from Source
     ```sh
     sbt +publish-local
     ```
+   
+1. This project also uses the convention of prefixing commands with `full` 
+   as a custom cross-version command, e.g.
+   ```
+   sbt fullpublish-ivylocal
+   ```
+   You should not prefix these commands with the `sbt` `+` or `^`.
 
 1. Update any projects you would like to test to reference the SNAPSHOT 
    that was published locally.
@@ -74,28 +81,26 @@ Building from Source
 Tests
 -----
 
-To run all tests:
+To run all tests, with all versions:
 
 ```sh
 sbt fulltest
 ```
-or
-```sh
-sbt +fulltest
-```
+
+### Detail
 
 The bulk of the generator is tested by `generator-test`.
 It contains schemas in `generator-test/src/main/pegasus`
 and contains uni tests against those schemas in `generator-test/src/test/scala`.
 
-These are all run via:
+These specific tests can be run via:
 
 ```sh
 sbt test
 ```
 
 SBT Plugin specific tests are defined under in the `sbt-plugin` project at
-`sbt-plugin/src/sbt-test/courier-sbt-plugin`.
+`sbt-plugin/src/sbt-test/courier-sbt-plugin`, using the scritped framework.
 
 Each test is an actual SBT project with a series of tasks that are run and assertions
 made after those tasks have run.
@@ -106,9 +111,11 @@ These test can be run via:
 sbt scripted
 ```
 
-We use [travis](https://travis-ci.org/github/coursera/courier) to test pull requests.
-
 For details on these sbt plugin "scripted" tests, see: http://eed3si9n.com/testing-sbt-plugins
+
+### Travis
+
+We use [travis](https://travis-ci.org/github/coursera/courier) to test pull requests.
 
 Development Guidelines
 ----------------------
