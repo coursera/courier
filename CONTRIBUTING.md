@@ -122,7 +122,7 @@ credentials += Credentials("Sonatype Nexus Repository Manager",
         "<sonatype_password>")
 ```
 
-You can sign in with this account at nexus to see both the active releases,
+You can sign in with this account at [Sonatype's Nexus Repository](https://oss.sonatype.org/#welcome) to see both the active releases,
 and the staged releases.
 
 ### Bintray
@@ -135,7 +135,7 @@ HHH
 
 ### Artifactory
 
-The scripts assume you have your `~/.artificatory` file correctly configured.
+The scripts assume you have your `~/.artifactory_credentials` file correctly configured.
 
 ### Gradle
 
@@ -198,9 +198,31 @@ artifactoryPassword=
 ossrhUsername=
 ossrhPassword=
 ```
-### Publish 
+## Publish Snapshot to Artifactory
 
-These instructions are mainly intended for Coursera employees.
+This process should not be used for full releases, but only snapshot releases.
+
+```sh
+scripts/publish-artifactory <artifactory-base-url>
+```
+
+Where <artifactory-base-url> is something like `https://example.org/artifactory`
+Courserians use
+```sh
+scripts/publish-artifactory https://artifactory.dkandu.me/artifactory
+```
+
+After logging into artifactory using Okta, you can then browse the [snapshots](https://artifactory.dkandu.me/artifactory/general-snapshots/org/coursera/courier/).
+
+You can repeat this as often as you want, notice that if you and a colleague are both trying to publish snapshots at the same time, at least one of you will be disappointed.
+
+## Publish Release to Sonatype and Bintray
+
+NNNN
+
+
+
+
 
 #### Credentials
 
