@@ -13,7 +13,7 @@ The sbt-plugin is published to [bintray](https://bintray.com/coursera/sbt-plugin
 The Sonatype UI is not easy to use, for example, search does not
 seem to work well.
 
-Here is a path, through it.
+Here is a path through it.
 
 1. Go to [https://oss.sonatype.org/](https://oss.sonatype.org/)
 1. Login using your [credentials](CREDENTIALS.md).
