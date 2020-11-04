@@ -81,6 +81,10 @@ bintrayUnpublish
 
 without this step, republishing the same release will fail.
 
-With sonatype, on the other hand, you can simply republish over a
+With Sonatype, on the other hand, you can simply try republishing over a
 previous release, to correct any mistakes. It is strongly discouraged
-to do this once a release has been used by others.
+to do this once a release has been used by others; and they may prohibit
+it, as in:
+
+![image](https://user-images.githubusercontent.com/549519/98142355-8caf2a80-1e7c-11eb-94a5-5c9c7270181b.png)
+
