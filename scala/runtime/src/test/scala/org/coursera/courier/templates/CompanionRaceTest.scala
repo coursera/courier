@@ -115,7 +115,6 @@ object TestCompanion {
   // Set this to false to exhibit the deadlock.
   private val WORKAROUND = true
   lazy val symbols: Set[TestCompanion] = {
-    Thread.sleep(10)
     findSymbols
   }
   def findSymbols: Set[TestCompanion] = Set(VALUE)
@@ -142,7 +141,6 @@ object TestCompanion {
       lazyProperties
 
   lazy val lazyProperties = {
-    Thread.sleep(10)
     SCHEMA.headOption
   }
 

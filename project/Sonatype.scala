@@ -77,6 +77,10 @@ object Sonatype {
             <id>dguo-coursera</id>
             <name>David Guo</name>
           </developer>
+          <developer>
+            <id>jeremycarroll</id>
+            <name>Jeremy Carroll</name>
+          </developer>
         </developers>
     }
   )
