@@ -35,7 +35,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <scalaMajorVersion>2.11</scalaMajorVersion>
     <scalaVersion>2.11.5</scalaVersion>
-    <courierVersion>2.1.8-SNAPSHOT</courierVersion>
+    <courierVersion>2.1.8</courierVersion>
     <javaVersion>1.7</javaVersion>
   </properties>
   <url>http://github.com/coursera/courier</url>
