@@ -1,11 +1,13 @@
 language: scala
 scala: 2.10.5
 jdk: oraclejdk8
+dist: trusty
+
 node_js:
   - "4"
 
 script:
-  - sbt "^ fulltest"
+  - sbt fulltest
 
 # whitelist
 branches:

@@ -41,11 +41,29 @@ abstract class ScalaEnumTemplate[T <: ScalaEnumTemplateSymbol]
   /**
    * Schema properties defined on this enum, if any.
    */
-  lazy val properties: Option[DataMap] = {
-    Option(SCHEMA.getProperties.get(symbolProperties)).collect {
-      case enumProps: DataMap => enumProps
+  def properties: Option[DataMap] =
+  /* Implementation note: using a lazy field can result in deadlock.
+     See: https://blog.codecentric.de/en/2016/02/lazy-vals-scala-look-hood/
+     See: test/scala/org/coursera/courier/templates/EnumTemplateRaceTest.scala
+     The test fails if you replace this def with a lazy field.
+     This can also be seen by setting WORKAROUND to false in CompanionRaceTest.
+   */
+    optionProperties match {
+      case Some(lazilyComputed) => lazilyComputed
+      case None =>
+        // This can be entered by multiple racing threads.
+        val lazilyComputed = Option(SCHEMA.getProperties.get(symbolProperties)).collect {
+          case enumProps: DataMap => enumProps
+        }
+        // The last thread wins, but the result is always the same.
+        optionProperties = Some(lazilyComputed)
+        lazilyComputed
     }
-  }
+
+  /**
+   * The value of [[ScalaEnumTemplate.properties]]
+   */
+  private var optionProperties: Option[Option[DataMap]] = None
 
   protected def properties(symbolName: String): Option[DataMap] = {
     properties.flatMap { enumProps =>

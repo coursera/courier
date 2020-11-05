@@ -8,6 +8,8 @@ This plugin can be used to generate Pegasus data bindings for multiple targets i
 * Scala
 * Java Android (GSON based)
 
+This subproject is no longer maintained.
+
 Scala Setup
 -----------
 
@@ -255,6 +257,36 @@ To publish to a maven repository:
 ```sh
 gradle uploadArchives
 
+```
+
+To publish to artifactory:
+```sh
+GRADLE_ARGS=$(sed \
+   -e 's/^user=/-PartifactoryUsername=/p' \
+   -e 's/^password=/-PartifactoryPassword=/p' \
+   -e d \
+   ~/.artifactory_credentials)
+
+gradle -PartifactoryUrl=$ARTIFACTORY_URL ${GRADLE_ARGS} artifactoryPublish
+```
+
+
+### Gradle Configuration
+
+The following properties are used when building and publishing
+with gradle. 
+They can be added to your `~/.gradle/gradle.properties`.
+```
+artifactoryUrl=
+artifactoryPublishRepoKey=
+artifactoryResolverRepoKey=
+artifactoryUsername=
+artifactoryPassword=
+ossrhUsername=
+ossrhPassword=
+signing.keyId=
+signing.password=
+signing.secretKeyRingFile=
 ```
 
 TODO

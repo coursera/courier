@@ -2,6 +2,8 @@ name := "courier-runtime"
 
 runtimeVersionSettings
 
+junitTestSettings
+
 libraryDependencies ++= Seq(
   ExternalDependencies.Pegasus.data,
   ExternalDependencies.Coursera.courscala,
