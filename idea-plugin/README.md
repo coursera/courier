@@ -15,6 +15,20 @@ Features:
   * Doc comment support
   * Optimize imports
 
+Hacker's Setup
+--------------
+
+   1. Import the `idea-plugin` directory using IntelliJ IDEA. Key ideas:
+      * You need need the IntelliJ IDEA SDK (not a Java SDK), and
+      * You need to **use the current idea-plugin.iml**
+   2. Go to each .bnf file using the project explorer, right-click, and "Generate Parser Code"
+      * src/org/coursera/courier/Courier.bnf
+      * src/org/coursera/courier/schemadoc/schemadoc.bnf
+   3. Go to the main .flex using the project explorer, right-click, and "Run JFlex Generator"
+      * src/org/coursera/courier/psi/Courier.flex
+   4. Build the project.
+   5. Test it by doing "Run > Run 'Courier Plugin' ".
+
 Making changes to the Schema language
 -------------------------------------
 

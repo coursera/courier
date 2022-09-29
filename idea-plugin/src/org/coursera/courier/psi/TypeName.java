@@ -1,8 +1,5 @@
 package org.coursera.courier.psi;
 
-import com.google.common.base.Strings;
-import com.intellij.openapi.util.text.StringUtil;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
