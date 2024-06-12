@@ -114,6 +114,7 @@ public class NewCourierTypeAction extends CreateTemplateInPackageAction<CourierT
     }
   }
 
+  @NotNull
   public static String getNamespace(@NotNull PsiDirectory directory) {
     PsiPackage ns = JavaDirectoryService.getInstance().getPackage(directory);
     return ns != null ? ns.getQualifiedName() : "UNKNOWN";
@@ -157,11 +158,5 @@ public class NewCourierTypeAction extends CreateTemplateInPackageAction<CourierT
     }
   }
 
-  private static ArrayFactory<CourierTopLevel> ARRAY_FACTORY = new ArrayFactory<CourierTopLevel>() {
-    @NotNull
-    @Override
-    public CourierTopLevel[] create(int count) {
-      return new CourierTopLevel[count];
-    }
-  };
+  private static ArrayFactory<CourierTopLevel> ARRAY_FACTORY = count -> new CourierTopLevel[count];
 }
