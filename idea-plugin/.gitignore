@@ -7,7 +7,10 @@
 *.iml
 *.ipr
 *.iws
+.intellijPlatform
 
+.gradle
+build
 out
 gen
 JFlex.jar

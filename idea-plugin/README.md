@@ -1,6 +1,7 @@
 IntelliJ IDEA Plugin
 --------------------
 
+<!-- Plugin description -->
 Features:
 
 * ".courier" language support
@@ -14,6 +15,7 @@ Features:
   * New file templates: "New" > "Courier Data Schema"
   * Doc comment support
   * Optimize imports
+<!-- Plugin description end -->
 
 Making changes to the Schema language
 -------------------------------------
