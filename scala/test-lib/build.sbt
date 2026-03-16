@@ -1,3 +1,5 @@
+import CourierBuild._
+
 name := "courier-test-lib"
 
 runtimeVersionSettings
@@ -7,20 +9,21 @@ packagedArtifacts := Map.empty // do not publish
 libraryDependencies ++= Seq(
   ExternalDependencies.JodaTime.jodaTime,
   ExternalDependencies.JUnit.junit,
-  ExternalDependencies.Scalatest.scalatest)
+  ExternalDependencies.Scalatest.scalatest,
+  ExternalDependencies.ScalatestPlusJunit.scalatestPlusJunit)
 
-fork in Test := true
+Test / fork := true
 
-javaOptions in Test +=
-  "-Dreferencesuite.srcdir=" + (sourceDirectory in referenceSuite).value.getAbsolutePath
+Test / javaOptions +=
+  "-Dreferencesuite.srcdir=" + (referenceSuite / sourceDirectory).value.getAbsolutePath
 
 // Test generator
 forkedVmCourierGeneratorSettings
 
 forkedVmCourierMainClass := "org.coursera.courier.generator.TestScalaDataTemplateGenerator"
 
-forkedVmCourierClasspath := (dependencyClasspath in Runtime in scalaGeneratorTestGenerator).value.files
+forkedVmCourierClasspath := (scalaGeneratorTestGenerator / Runtime / dependencyClasspath).value.files
 
-forkedVmSourceDirectory := (sourceDirectory in referenceSuite).value / "main" / "courier"
+forkedVmSourceDirectory := (referenceSuite / sourceDirectory).value / "main" / "courier"
 
 forkedVmCourierDest := target.value / s"scala-${scalaBinaryVersion.value}" / "courier"

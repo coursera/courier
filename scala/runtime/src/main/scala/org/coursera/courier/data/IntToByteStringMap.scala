@@ -14,7 +14,6 @@ import com.linkedin.data.template.DataTemplateUtil
 import org.coursera.courier.companions.MapCompanion
 import org.coursera.courier.templates.DataTemplates
 import org.coursera.courier.templates.DataTemplates.DataConversion
-import scala.collection.generic.CanBuildFrom
 import scala.collection.immutable
 import scala.collection.mutable
 import scala.collection.JavaConverters._
@@ -25,7 +24,6 @@ import org.coursera.courier.codecs.InlineStringCodec
 final class IntToByteStringMap(private val dataMap: DataMap)
   extends immutable.Iterable[(Int, ByteString)]
   with Map[Int, ByteString]
-  with immutable.MapLike[Int, ByteString, immutable.Map[Int, ByteString]]
   with DataTemplate[DataMap] {
   import IntToByteStringMap._
 
@@ -65,12 +63,15 @@ final class IntToByteStringMap(private val dataMap: DataMap)
     }
   }
 
-  override def -(key: Int): IntToByteStringMap = {
+
+        override def -(key: Int): IntToByteStringMap = {
     val copy = dataMap.copy()
     copy.remove(coerceKeyOutput(key))
     copy.makeReadOnly()
     new IntToByteStringMap(copy)
   }
+
+  override def removed(key: Int): IntToByteStringMap = -(key)
 
   override def schema(): DataSchema = IntToByteStringMap.SCHEMA
 
@@ -98,11 +99,6 @@ object IntToByteStringMap extends MapCompanion[IntToByteStringMap] {
   }
 
   def newBuilder = new DataBuilder()
-
-  implicit val canBuildFrom = new CanBuildFrom[IntToByteStringMap, (Int, ByteString), IntToByteStringMap] {
-    def apply(from: IntToByteStringMap) = new DataBuilder(from)
-    def apply() = newBuilder
-  }
 
   class DataBuilder(initial: IntToByteStringMap) extends mutable.Builder[(Int, ByteString), IntToByteStringMap] {
     def this() = this(new IntToByteStringMap(new DataMap()))

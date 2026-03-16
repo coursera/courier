@@ -53,7 +53,7 @@ case class EnumDefinition(override val spec: EnumTemplateSpec) extends Definitio
    * from symbol name to documentation string.
    */
   def symbolScalaDocs = {
-    enumSchema.getSymbolDocs.asScala.mapValues(ScaladocEscaping.stringToScaladoc)
+    enumSchema.getSymbolDocs.asScala.map { case (k, v) => k -> ScaladocEscaping.stringToScaladoc(v) }
   }
 
   /**

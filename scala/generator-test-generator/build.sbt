@@ -1,3 +1,5 @@
+import CourierBuild._
+
 // Minimal library to define generator with testable mixin behavior.
 
 name := "courier-generator-test-genertor"

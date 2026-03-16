@@ -1,3 +1,4 @@
+import CourierBuild._
 import com.simplytyped.Antlr4Plugin._
 
 name := "courier-grammar"
@@ -15,4 +16,4 @@ junitTestSettings
 // ANTLR
 antlr4Settings
 
-antlr4PackageName in Antlr4 := Some("org.coursera.courier.grammar")
+Antlr4 / antlr4PackageName := Some("org.coursera.courier.grammar")

@@ -14,7 +14,6 @@ import com.linkedin.data.template.DataTemplateUtil
 import org.coursera.courier.companions.MapCompanion
 import org.coursera.courier.templates.DataTemplates
 import org.coursera.courier.templates.DataTemplates.DataConversion
-import scala.collection.generic.CanBuildFrom
 import scala.collection.immutable
 import scala.collection.mutable
 import scala.collection.JavaConverters._
@@ -25,7 +24,6 @@ import org.coursera.courier.codecs.InlineStringCodec
 final class FloatMap(private val dataMap: DataMap)
   extends immutable.Iterable[(String, Float)]
   with Map[String, Float]
-  with immutable.MapLike[String, Float, immutable.Map[String, Float]]
   with DataTemplate[DataMap] {
   import FloatMap._
 
@@ -65,12 +63,15 @@ final class FloatMap(private val dataMap: DataMap)
     }
   }
 
-  override def -(key: String): FloatMap = {
+
+        override def -(key: String): FloatMap = {
     val copy = dataMap.copy()
     copy.remove(coerceKeyOutput(key))
     copy.makeReadOnly()
     new FloatMap(copy)
   }
+
+  override def removed(key: String): FloatMap = -(key)
 
   override def schema(): DataSchema = FloatMap.SCHEMA
 
@@ -98,11 +99,6 @@ object FloatMap extends MapCompanion[FloatMap] {
   }
 
   def newBuilder = new DataBuilder()
-
-  implicit val canBuildFrom = new CanBuildFrom[FloatMap, (String, Float), FloatMap] {
-    def apply(from: FloatMap) = new DataBuilder(from)
-    def apply() = newBuilder
-  }
 
   class DataBuilder(initial: FloatMap) extends mutable.Builder[(String, Float), FloatMap] {
     def this() = this(new FloatMap(new DataMap()))

@@ -14,7 +14,6 @@ import com.linkedin.data.template.DataTemplateUtil
 import org.coursera.courier.companions.MapCompanion
 import org.coursera.courier.templates.DataTemplates
 import org.coursera.courier.templates.DataTemplates.DataConversion
-import scala.collection.generic.CanBuildFrom
 import scala.collection.immutable
 import scala.collection.mutable
 import scala.collection.JavaConverters._
@@ -25,7 +24,6 @@ import org.coursera.courier.codecs.InlineStringCodec
 final class IntToDoubleMap(private val dataMap: DataMap)
   extends immutable.Iterable[(Int, Double)]
   with Map[Int, Double]
-  with immutable.MapLike[Int, Double, immutable.Map[Int, Double]]
   with DataTemplate[DataMap] {
   import IntToDoubleMap._
 
@@ -65,12 +63,15 @@ final class IntToDoubleMap(private val dataMap: DataMap)
     }
   }
 
-  override def -(key: Int): IntToDoubleMap = {
+
+        override def -(key: Int): IntToDoubleMap = {
     val copy = dataMap.copy()
     copy.remove(coerceKeyOutput(key))
     copy.makeReadOnly()
     new IntToDoubleMap(copy)
   }
+
+  override def removed(key: Int): IntToDoubleMap = -(key)
 
   override def schema(): DataSchema = IntToDoubleMap.SCHEMA
 
@@ -98,11 +99,6 @@ object IntToDoubleMap extends MapCompanion[IntToDoubleMap] {
   }
 
   def newBuilder = new DataBuilder()
-
-  implicit val canBuildFrom = new CanBuildFrom[IntToDoubleMap, (Int, Double), IntToDoubleMap] {
-    def apply(from: IntToDoubleMap) = new DataBuilder(from)
-    def apply() = newBuilder
-  }
 
   class DataBuilder(initial: IntToDoubleMap) extends mutable.Builder[(Int, Double), IntToDoubleMap] {
     def this() = this(new IntToDoubleMap(new DataMap()))

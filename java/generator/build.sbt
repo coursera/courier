@@ -1,3 +1,5 @@
+import CourierBuild._
+
 name := "courier-java-generator"
 
 plainJavaProjectSettings

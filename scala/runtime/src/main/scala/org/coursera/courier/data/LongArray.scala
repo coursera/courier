@@ -15,9 +15,7 @@ import org.coursera.courier.companions.ArrayCompanion
 import org.coursera.courier.templates.DataTemplates
 import org.coursera.courier.templates.DataTemplates.DataConversion
 import org.coursera.courier.templates.ScalaArrayTemplate
-import scala.collection.GenTraversable
 import scala.collection.JavaConverters._
-import scala.collection.generic.CanBuildFrom
 import scala.collection.mutable
 import com.linkedin.data.template.Custom
 
@@ -25,7 +23,6 @@ import com.linkedin.data.template.Custom
 final class LongArray(private val dataList: DataList)
   extends IndexedSeq[Long]
   with Product
-  with GenTraversable[Long]
   with DataTemplate[DataList]
   with ScalaArrayTemplate {
 
@@ -61,7 +58,7 @@ object LongArray extends ArrayCompanion[LongArray] {
     new LongArray(new DataList(elems.map(coerceOutput).toList.asJava))
   }
 
-  def apply(collection: Traversable[Long]): LongArray = {
+  def apply(collection: Iterable[Long]): LongArray = {
     new LongArray(new DataList(collection.map(coerceOutput).toList.asJava))
   }
 
@@ -70,11 +67,6 @@ object LongArray extends ArrayCompanion[LongArray] {
   }
 
   def newBuilder = new DataBuilder()
-
-  implicit val canBuildFrom = new CanBuildFrom[LongArray, Long, LongArray] {
-    def apply(from: LongArray) = new DataBuilder(from)
-    def apply() = newBuilder
-  }
 
   class DataBuilder(initial: LongArray) extends mutable.Builder[Long, LongArray] {
     def this() = this(new LongArray(new DataList()))
@@ -102,8 +94,8 @@ object LongArray extends ArrayCompanion[LongArray] {
 
   }
 
-  implicit def wrap(traversable: Traversable[Long]): LongArray = {
-    LongArray(traversable)
+  implicit def wrap(iterable: Iterable[Long]): LongArray = {
+    LongArray(iterable)
   }
 }
 

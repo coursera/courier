@@ -15,9 +15,7 @@ import org.coursera.courier.companions.ArrayCompanion
 import org.coursera.courier.templates.DataTemplates
 import org.coursera.courier.templates.DataTemplates.DataConversion
 import org.coursera.courier.templates.ScalaArrayTemplate
-import scala.collection.GenTraversable
 import scala.collection.JavaConverters._
-import scala.collection.generic.CanBuildFrom
 import scala.collection.mutable
 import com.linkedin.data.template.Custom
 
@@ -25,7 +23,6 @@ import com.linkedin.data.template.Custom
 final class FloatArray(private val dataList: DataList)
   extends IndexedSeq[Float]
   with Product
-  with GenTraversable[Float]
   with DataTemplate[DataList]
   with ScalaArrayTemplate {
 
@@ -61,7 +58,7 @@ object FloatArray extends ArrayCompanion[FloatArray] {
     new FloatArray(new DataList(elems.map(coerceOutput).toList.asJava))
   }
 
-  def apply(collection: Traversable[Float]): FloatArray = {
+  def apply(collection: Iterable[Float]): FloatArray = {
     new FloatArray(new DataList(collection.map(coerceOutput).toList.asJava))
   }
 
@@ -70,11 +67,6 @@ object FloatArray extends ArrayCompanion[FloatArray] {
   }
 
   def newBuilder = new DataBuilder()
-
-  implicit val canBuildFrom = new CanBuildFrom[FloatArray, Float, FloatArray] {
-    def apply(from: FloatArray) = new DataBuilder(from)
-    def apply() = newBuilder
-  }
 
   class DataBuilder(initial: FloatArray) extends mutable.Builder[Float, FloatArray] {
     def this() = this(new FloatArray(new DataList()))
@@ -102,8 +94,8 @@ object FloatArray extends ArrayCompanion[FloatArray] {
 
   }
 
-  implicit def wrap(traversable: Traversable[Float]): FloatArray = {
-    FloatArray(traversable)
+  implicit def wrap(iterable: Iterable[Float]): FloatArray = {
+    FloatArray(iterable)
   }
 }
 

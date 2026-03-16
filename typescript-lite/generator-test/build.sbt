@@ -1,4 +1,4 @@
-import sbt.inc.Analysis
+import CourierBuild._
 
 name := "courier-typescript-lite-generator-test"
 
@@ -16,24 +16,23 @@ forkedVmCourierGeneratorSettings
 
 forkedVmCourierMainClass := "org.coursera.courier.TypeScriptLiteGenerator"
 
-forkedVmCourierClasspath := (dependencyClasspath in Runtime in typescriptLiteGenerator).value.files
+forkedVmCourierClasspath := (typescriptLiteGenerator / Runtime / dependencyClasspath).value.files
 
-forkedVmSourceDirectory := (sourceDirectory in referenceSuite).value / "main" / "courier"
+forkedVmSourceDirectory := (referenceSuite / sourceDirectory).value / "main" / "courier"
 
 forkedVmCourierDest := file("typescript-lite") / "testsuite" / "src" / "tslite-bindings"
 
 forkedVmAdditionalArgs := Seq("STRICT")
 
-(compile in Compile) := {
-  (forkedVmCourierGenerator in Compile).value
-
-  Analysis.Empty
+Compile / compile := {
+  (Compile / forkedVmCourierGenerator).value
+  sbt.internal.inc.Analysis.empty
 }
 
 lazy val npmTest = taskKey[Unit]("Executes NPM test")
 
-npmTest in Test := {
-  (compile in Compile).value
+Test / npmTest := {
+  (Compile / compile).value
 
   val result = """./typescript-lite/testsuite/full-build.sh"""!
 
@@ -42,4 +41,4 @@ npmTest in Test := {
   }
 }
 
-test in Test := (npmTest in Test).value
+Test / test := (Test / npmTest).value

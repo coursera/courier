@@ -18,240 +18,59 @@ import java.io.File
 
 import sbt.Keys._
 import sbt.Tests
-import sbtrelease.ReleasePlugin.autoImport._
 import sbt.Keys.libraryDependencies
 import sbt._
 import Keys._
-import org.coursera.courier.sbt.Sonatype
-import play.twirl.sbt.SbtTwirl
-import play.twirl.sbt.Import.TwirlKeys
-import com.simplytyped.Antlr4Plugin._
-import sbtassembly.AssemblyKeys._
-import sbtassembly.AssemblyPlugin.defaultShellScript
 
 /**
-  * SBT project for Courier.
+  * SBT build helpers for Courier.
+  * Project definitions have moved to the root build.sbt.
   */
-object Courier extends Build with OverridablePublishSettings {
-
-  override lazy val settings = super.settings ++ overridePublishSettings ++
-    Seq(organization := "org.coursera.courier")
+object CourierBuild {
 
   //
   // Cross building
   //
 
-  // Our scala cross building story is, unfortunately, a bit hairy.
-  // In order to keep it under control we primarily concern ourselves with these two below Scala
-  // version numbers:
+  // SBT 1.x uses Scala 2.12; our cross-build target is 2.13.
+  lazy val sbtScalaVersion = "2.12.19"   // Scala version used by SBT 1.x
+  lazy val currentScalaVersion = "2.13.12" // Primary cross-build target
 
-  lazy val sbtScalaVersion = "2.10.7" // the version of Scala used by the current sbt version.
-  lazy val currentScalaVersion = "2.12.7" // The current scala version.
+  // Our plugin runs as part of SBT so must use the Scala version that SBT uses (2.12).
+  lazy val pluginVersionSettings: Seq[Setting[_]] = Seq(
+    scalaVersion := sbtScalaVersion,
+    crossScalaVersions := Seq(sbtScalaVersion)
+  )
 
-  // Our plugin runs as part of SBT so must use the same Scala version that SBT currently uses.
-  lazy val pluginVersionSettings = Seq(
-    scalaVersion in ThisBuild := sbtScalaVersion,
-    crossScalaVersions in ThisBuild := Seq(sbtScalaVersion,
-      currentScalaVersion))
+  // We cross build our runtime to 2.12 and 2.13.
+  lazy val runtimeVersionSettings: Seq[Setting[_]] = Seq(
+    scalaVersion := currentScalaVersion,
+    crossScalaVersions := Seq(sbtScalaVersion, currentScalaVersion)
+  )
 
-  // We cross build our runtime to both versions.
-  lazy val runtimeVersionSettings = Seq(
-    scalaVersion in ThisBuild := currentScalaVersion,
-    crossScalaVersions in ThisBuild := Seq(sbtScalaVersion,
-                                           "2.11.11",
-                                           currentScalaVersion))
-
-  // Strictly speaking, our generator only needs to be built for the SBT plugin Scala version.
-  // But we also cross built it to the current Scala version so that our generator-test
-  // project can depend on the generator and still run with the current Scala version, which
-  // is more convenient because it allow us to do all testing and development in the current
-  // Scala version.
-  lazy val generatorVersionSettings = Seq(
-    scalaVersion in ThisBuild := sbtScalaVersion,
-    crossScalaVersions in ThisBuild := Seq(sbtScalaVersion,
-                                           "2.11.11",
-                                           currentScalaVersion))
+  // Generator is cross-built to the SBT plugin Scala version and current Scala version.
+  lazy val generatorVersionSettings: Seq[Setting[_]] = Seq(
+    scalaVersion := sbtScalaVersion,
+    crossScalaVersions := Seq(sbtScalaVersion, currentScalaVersion)
+  )
 
   // Java project settings
-  lazy val plainJavaProjectSettings = Seq(
+  lazy val plainJavaProjectSettings: Seq[Setting[_]] = Seq(
     autoScalaLibrary := false,
     crossPaths := false
   )
 
-  // Test settings
-  lazy val junitTestSettings = Seq(
+  // Test settings (without the Tests.Setup which referenced a project — see sub-project build.sbt)
+  lazy val junitTestSettings: Seq[Setting[_]] = Seq(
     libraryDependencies ++= Seq(
       ExternalDependencies.JUnit.junit,
       ExternalDependencies.JUnitInterface.junitInterface),
-    // -q will hide output of successful tests
-    testOptions in Test += Tests.Argument(TestFrameworks.JUnit, "-v"),
-    testOptions in Test += Tests.Setup { () =>
-      System.setProperty("project.dir", baseDirectory.value.getAbsolutePath)
-      System.setProperty(
-        "referencesuite.srcdir",
-        (sourceDirectory in referenceSuite).value.getAbsolutePath)
-    }
+    Test / testOptions += Tests.Argument(TestFrameworks.JUnit, "-v")
   )
 
   //
   // Projects
   //
-  lazy val schemaLanguage =
-    Project(id = "schema-language", base = file("schema-language"))
-      .disablePlugins(bintray.BintrayPlugin)
-
-  lazy val generatorApi =
-    Project(id = "generator-api", base = file("generator-api"))
-      .dependsOn(schemaLanguage)
-      .disablePlugins(bintray.BintrayPlugin)
-
-  lazy val referenceSuite =
-    Project(id = "reference-suite", base = file("reference-suite"))
-      .disablePlugins(bintray.BintrayPlugin)
-
-  private[this] val scalaDir = file("scala")
-
-  lazy val scalaGenerator =
-    Project(id = "scala-generator", base = scalaDir / "generator")
-      .dependsOn(scalaRuntime, generatorApi, schemaLanguage)
-      .enablePlugins(SbtTwirl)
-      .disablePlugins(bintray.BintrayPlugin)
-
-  lazy val scalaRuntime =
-    Project(id = "scala-runtime", base = scalaDir / "runtime")
-      .disablePlugins(bintray.BintrayPlugin)
-
-  lazy val testLib =
-    Project(id = "scala-test-lib", base = scalaDir / "test-lib")
-      .dependsOn(scalaGenerator)
-      .disablePlugins(bintray.BintrayPlugin)
-
-  lazy val scalaGeneratorTestGenerator =
-    Project(id = "scala-generator-test-generator", base = scalaDir / "generator-test-generator")
-      .dependsOn(scalaGenerator)
-
-  lazy val scalaGeneratorTest =
-    Project(id = "scala-generator-test", base = scalaDir / "generator-test")
-      .dependsOn(scalaGenerator)
-      .dependsOn(testLib)
-      .dependsOn(scalaGeneratorTestGenerator)
-      .disablePlugins(bintray.BintrayPlugin)
-
-  lazy val scalaFixture =
-    Project(id = "scala-fixture", base = scalaDir / "fixture")
-      .dependsOn(scalaGenerator)
-      .disablePlugins(bintray.BintrayPlugin)
-
-  lazy val scalaFixtureTest =
-    Project(id = "scala-fixture-test", base = scalaDir / "fixture-test")
-      .dependsOn(scalaGenerator)
-      .dependsOn(scalaFixture)
-      .dependsOn(testLib)
-      .disablePlugins(bintray.BintrayPlugin)
-
-  private[this] val javaDir = file("java")
-
-  lazy val javaGenerator =
-    Project(id = "java-generator", base = javaDir / "generator")
-      .dependsOn(generatorApi)
-      .disablePlugins(bintray.BintrayPlugin)
-
-  lazy val javaGeneratorTest =
-    Project(id = "java-generator-test", base = javaDir / "generator-test")
-      .dependsOn(javaGenerator)
-      .disablePlugins(bintray.BintrayPlugin)
-
-  lazy val javaRuntime =
-    Project(id = "java-runtime", base = javaDir / "runtime")
-      .disablePlugins(bintray.BintrayPlugin)
-
-  private[this] val androidDir = file("android")
-
-  lazy val androidGenerator =
-    Project(id = "android-generator", base = androidDir / "generator")
-      .dependsOn(generatorApi)
-      .disablePlugins(bintray.BintrayPlugin)
-
-  lazy val androidGeneratorTest =
-    Project(id = "android-generator-test", base = androidDir / "generator-test")
-      .dependsOn(androidGenerator, androidRuntime)
-      .disablePlugins(bintray.BintrayPlugin)
-
-  lazy val androidRuntime =
-    Project(id = "android-runtime", base = androidDir / "runtime")
-      .disablePlugins(bintray.BintrayPlugin)
-
-  private[this] val swiftDir = file("swift")
-  lazy val swiftGenerator =
-    Project(id = "swift-generator", base = swiftDir / "generator")
-      .dependsOn(generatorApi)
-      .disablePlugins(bintray.BintrayPlugin)
-
-  private[this] val typescriptLiteDir = file("typescript-lite")
-  lazy val typescriptLiteGenerator =
-    Project(id = "typescript-lite-generator",
-            base = typescriptLiteDir / "generator")
-      .dependsOn(generatorApi)
-      .disablePlugins(bintray.BintrayPlugin)
-
-  lazy val cli = Project(id = "courier-cli", base = file("cli"))
-    .dependsOn(
-      javaGenerator,
-      androidGenerator,
-      scalaGenerator,
-      typescriptLiteGenerator,
-      swiftGenerator
-    )
-    .aggregate(
-      javaGenerator,
-      androidGenerator,
-      scalaGenerator,
-      typescriptLiteGenerator,
-      swiftGenerator
-    )
-    .settings(
-      executableFile := {
-        val exeFile = target.value / "courier"
-        print(s"Writing executable file '$exeFile'...")
-        IO.write(exeFile,
-                 """#!/bin/bash
-                            |exec java -jar $0 "$@"
-                            |
-                            |""".stripMargin)
-        IO.append(exeFile, IO.readBytes(assembly.value))
-        exeFile.setExecutable(true)
-        println("written.")
-        exeFile
-      }
-    )
-    .disablePlugins(bintray.BintrayPlugin)
-
-  lazy val typescriptLiteGeneratorTest =
-    Project(id = "typescript-lite-generator-test",
-            base = typescriptLiteDir / "generator-test")
-      .dependsOn(typescriptLiteGenerator)
-      .disablePlugins(bintray.BintrayPlugin)
-
-  lazy val courierSbtPlugin =
-    Project(id = "sbt-plugin", base = file("sbt-plugin"))
-      .dependsOn(scalaGenerator)
-      .disablePlugins(xerial.sbt.Sonatype)
-      .settings(
-        scalaVersion := sbtScalaVersion,
-        sbtVersion in Global := "1.2.8",
-        crossSbtVersions := Vector("0.13.17", "1.2.8"),
-        sbtVersion in pluginCrossBuild := {
-      scalaBinaryVersion.value match {
-        case "2.10" => "0.13.17"
-        //case "2.11" => "0.13.17"
-        case "2.12" => "1.2.8"
-      }
-        },
-        scalaCompilerBridgeSource := {
-          val sv = appConfiguration.value.provider.id.version
-          ("org.scala-sbt" % "compiler-interface" % sv % "component").sources
-        }
-      )
 
   //
   // Publishing
@@ -262,17 +81,9 @@ object Courier extends Build with OverridablePublishSettings {
   // For now, we can release using the `fullpublish*` aliases defined in the root project and
   // manually updating the version number before and after each release (removing -SNAPSHOT before),
   // adding it back afterward and bumping the version number.
-  // OverrideablePublishSetiings allows the artifacts to be published to alternate repos.
-  override def defaultPublishSettings: Seq[Def.Setting[_]] = Sonatype.Settings
 
-  // TODO(jbetz): Once SBT supports scala 2.11, we can enable .aggregate for all
-  // project dependencies that have .dependsOn in the above projects, and then we will only
-  // need to run `project courier-sbt-plugin;publish` here, which will dramatically simplify things.
-  // Until then we have to be very explicit about publishing exactly what we want, mainly
-  // to avoid build failures that would happen if we tried to publish the sbt plugin with scala
-  // 2.11.
   def publishCommands(publishCommand: String,
-                      sbtPluginCommand: Option[String] = None) = {
+                      sbtPluginCommand: Option[String] = None): String = {
     // We do not cross build java projects:
     val baseCommand = s";project schema-language;$publishCommand" +
       s";project generator-api;$publishCommand" +
@@ -298,41 +109,6 @@ object Courier extends Build with OverridablePublishSettings {
       }
   }
 
-  lazy val root = Project(id = "courier", base = file("."))
-    .aggregate(
-      scalaGenerator,
-      schemaLanguage,
-      scalaRuntime,
-      courierSbtPlugin,
-      testLib,
-      scalaGeneratorTest,
-      scalaFixture,
-      scalaFixtureTest,
-      androidGenerator,
-      androidGeneratorTest,
-      androidRuntime,
-      swiftGenerator,
-      typescriptLiteGenerator,
-      typescriptLiteGeneratorTest,
-      cli
-    )
-    .settings(runtimeVersionSettings)
-    .settings(packagedArtifacts := Map.empty) // disable publish for root aggregate module
-    .settings(
-      // scripted attempts to publish what it needs, but because of the above mentioned cross
-      // build issues, we have to manually publish what we need before we test here
-      addCommandAlias(s"fulltest",
-                      s";compile;+test;fullpublish-ivylocal;" +
-                        s"project courier;++$sbtScalaVersion;scripted"),
-      addCommandAlias("fullpublish",
-                      publishCommands("publish", Some("publish"))),
-      addCommandAlias("fullpublish-signed",
-                      publishCommands("publish-signed", Some("publish-signed"))),
-      addCommandAlias("fullpublish-ivylocal",
-                      publishCommands("publish-local", Some("publish-local"))),
-      addCommandAlias("fullpublish-mavenlocal", publishCommands("publishM2"))
-    )
-
   //
   // Dependencies
   //
@@ -344,15 +120,12 @@ object Courier extends Build with OverridablePublishSettings {
       val data = "com.linkedin.pegasus" % "data" % version
       val dataAvro = "com.linkedin.pegasus" % s"data-avro-$avroVersion" % version
       val generator = ("com.linkedin.pegasus" % "generator" % version)
-      // Only used by the java code generator, which we do not use.
         .exclude("com.linkedin.pegasus", "r2-core")
-      //.exclude("com.sun.codemodel", "codemodel")
     }
 
     object ScalaParserCombinators {
-      val version = "1.0.4"
+      val version = "1.1.2"
 
-      // this is part of scala-library in 2.10 and earlier
       def dependencies(scalaVersion: String) =
         CrossVersion.partialVersion(scalaVersion) match {
           case Some((2, scalaMajor)) if scalaMajor > 10 =>
@@ -369,13 +142,17 @@ object Courier extends Build with OverridablePublishSettings {
     }
 
     object JUnitInterface {
-      val version = "0.10"
-      val junitInterface = "com.novocode" % "junit-interface" % version % "test"
+      val version = "0.11"
+      val junitInterface = "com.github.sbt" % "junit-interface" % version % "test"
     }
 
     object Scalatest {
-      val version = "3.0.4"
+      val version = "3.2.19"
       val scalatest = "org.scalatest" %% "scalatest" % version % "test"
+    }
+
+    object ScalatestPlusJunit {
+      val scalatestPlusJunit = "org.scalatestplus" %% "junit-4-13" % "3.2.19.0" % "test"
     }
 
     object ApacheCommons {
@@ -387,7 +164,7 @@ object Courier extends Build with OverridablePublishSettings {
     }
 
     object Scalariform {
-      val version = "0.2.6"
+      val version = "0.2.10"
       val scalariform = "org.scalariform" %% "scalariform" % version
     }
 
@@ -425,8 +202,6 @@ object Courier extends Build with OverridablePublishSettings {
   // Test generator
   //
 
-  // In order to be able to quickly test our generator, we use
-  // this approach, which has has been taken directly from Sleipnir by Dmitriy Yefremov.
   lazy val forkedVmCourierGenerator =
     taskKey[Seq[File]]("Courier generator executed in a forked VM")
   lazy val forkedVmCourierDest = settingKey[File]("Generator target directory")
@@ -443,9 +218,8 @@ object Courier extends Build with OverridablePublishSettings {
   lazy val forkedVmAdditionalArgs =
     settingKey[Seq[String]]("Additional args to pass to the generator")
 
-  val forkedVmCourierGeneratorSettings = Seq(
-    // TODO: for android and swift, don't generate into a scala-x.xx dir
-    forkedVmCourierGenerator in Compile := {
+  val forkedVmCourierGeneratorSettings: Seq[Setting[_]] = Seq(
+    Compile / forkedVmCourierGenerator := {
       val mainClass = forkedVmCourierMainClass.value
       val src = forkedVmSourceDirectory.value
       val dst = forkedVmCourierDest.value
@@ -464,10 +238,10 @@ object Courier extends Build with OverridablePublishSettings {
       files
     },
     forkedVmAdditionalArgs := Seq(),
-    sourceGenerators in Compile <+= (forkedVmCourierGenerator in Compile),
-    unmanagedSourceDirectories in Compile +=
+    Compile / sourceGenerators += (Compile / forkedVmCourierGenerator).taskValue,
+    Compile / unmanagedSourceDirectories +=
       target.value / s"scala-${scalaBinaryVersion.value}" / "courier",
-    managedSourceDirectories in Compile +=
+    Compile / managedSourceDirectories +=
       target.value / s"scala-${scalaBinaryVersion.value}" / "courier",
     cleanFiles += target.value / s"scala-${scalaBinaryVersion.value}" / "courier"
   )
@@ -483,14 +257,14 @@ object Courier extends Build with OverridablePublishSettings {
       try {
         val args = Seq(dst.toString, src.toString, src.toString) ++ additionalArgs
         val exitValue =
-          Fork.java(None,
-                    "-cp" +: classpath
-                      .map(_.getAbsolutePath)
-                      .mkString(java.io.File.pathSeparator) +:
-                      mainClass +:
-                      args,
-                    None,
-                    CustomOutput(outStream))
+          Fork.java(
+            ForkOptions().withOutputStrategy(CustomOutput(outStream)),
+            "-cp" +:
+              classpath
+                .map(_.getAbsolutePath)
+                .mkString(java.io.File.pathSeparator) +:
+              mainClass +:
+              args)
         val outputLines = scala.io.Source.fromFile(tmpFile).getLines().toSeq
         if (exitValue != 0) {
           outputLines.foreach(println)

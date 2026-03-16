@@ -15,9 +15,7 @@ import org.coursera.courier.companions.ArrayCompanion
 import org.coursera.courier.templates.DataTemplates
 import org.coursera.courier.templates.DataTemplates.DataConversion
 import org.coursera.courier.templates.ScalaArrayTemplate
-import scala.collection.GenTraversable
 import scala.collection.JavaConverters._
-import scala.collection.generic.CanBuildFrom
 import scala.collection.mutable
 import com.linkedin.data.template.Custom
 
@@ -25,7 +23,6 @@ import com.linkedin.data.template.Custom
 final class BooleanArray(private val dataList: DataList)
   extends IndexedSeq[Boolean]
   with Product
-  with GenTraversable[Boolean]
   with DataTemplate[DataList]
   with ScalaArrayTemplate {
 
@@ -61,7 +58,7 @@ object BooleanArray extends ArrayCompanion[BooleanArray] {
     new BooleanArray(new DataList(elems.map(coerceOutput).toList.asJava))
   }
 
-  def apply(collection: Traversable[Boolean]): BooleanArray = {
+  def apply(collection: Iterable[Boolean]): BooleanArray = {
     new BooleanArray(new DataList(collection.map(coerceOutput).toList.asJava))
   }
 
@@ -70,11 +67,6 @@ object BooleanArray extends ArrayCompanion[BooleanArray] {
   }
 
   def newBuilder = new DataBuilder()
-
-  implicit val canBuildFrom = new CanBuildFrom[BooleanArray, Boolean, BooleanArray] {
-    def apply(from: BooleanArray) = new DataBuilder(from)
-    def apply() = newBuilder
-  }
 
   class DataBuilder(initial: BooleanArray) extends mutable.Builder[Boolean, BooleanArray] {
     def this() = this(new BooleanArray(new DataList()))
@@ -102,8 +94,8 @@ object BooleanArray extends ArrayCompanion[BooleanArray] {
 
   }
 
-  implicit def wrap(traversable: Traversable[Boolean]): BooleanArray = {
-    BooleanArray(traversable)
+  implicit def wrap(iterable: Iterable[Boolean]): BooleanArray = {
+    BooleanArray(iterable)
   }
 }
 

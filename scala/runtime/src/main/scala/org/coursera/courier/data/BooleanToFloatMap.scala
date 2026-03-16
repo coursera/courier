@@ -14,7 +14,6 @@ import com.linkedin.data.template.DataTemplateUtil
 import org.coursera.courier.companions.MapCompanion
 import org.coursera.courier.templates.DataTemplates
 import org.coursera.courier.templates.DataTemplates.DataConversion
-import scala.collection.generic.CanBuildFrom
 import scala.collection.immutable
 import scala.collection.mutable
 import scala.collection.JavaConverters._
@@ -25,7 +24,6 @@ import org.coursera.courier.codecs.InlineStringCodec
 final class BooleanToFloatMap(private val dataMap: DataMap)
   extends immutable.Iterable[(Boolean, Float)]
   with Map[Boolean, Float]
-  with immutable.MapLike[Boolean, Float, immutable.Map[Boolean, Float]]
   with DataTemplate[DataMap] {
   import BooleanToFloatMap._
 
@@ -65,12 +63,15 @@ final class BooleanToFloatMap(private val dataMap: DataMap)
     }
   }
 
-  override def -(key: Boolean): BooleanToFloatMap = {
+
+        override def -(key: Boolean): BooleanToFloatMap = {
     val copy = dataMap.copy()
     copy.remove(coerceKeyOutput(key))
     copy.makeReadOnly()
     new BooleanToFloatMap(copy)
   }
+
+  override def removed(key: Boolean): BooleanToFloatMap = -(key)
 
   override def schema(): DataSchema = BooleanToFloatMap.SCHEMA
 
@@ -98,11 +99,6 @@ object BooleanToFloatMap extends MapCompanion[BooleanToFloatMap] {
   }
 
   def newBuilder = new DataBuilder()
-
-  implicit val canBuildFrom = new CanBuildFrom[BooleanToFloatMap, (Boolean, Float), BooleanToFloatMap] {
-    def apply(from: BooleanToFloatMap) = new DataBuilder(from)
-    def apply() = newBuilder
-  }
 
   class DataBuilder(initial: BooleanToFloatMap) extends mutable.Builder[(Boolean, Float), BooleanToFloatMap] {
     def this() = this(new BooleanToFloatMap(new DataMap()))

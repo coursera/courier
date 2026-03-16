@@ -1,3 +1,5 @@
+import CourierBuild._
+
 name := "courier-swift-generator-test"
 
 plainJavaProjectSettings
@@ -14,9 +16,9 @@ forkedVmCourierGeneratorSettings
 
 forkedVmCourierMainClass := "org.coursera.courier.SwiftGenerator"
 
-forkedVmCourierClasspath := (dependencyClasspath in Runtime in swiftGenerator).value.files
+forkedVmCourierClasspath := (swiftGenerator / Runtime / dependencyClasspath).value.files
 
-forkedVmSourceDirectory := (sourceDirectory in referenceSuite).value / "main" / "courier"
+forkedVmSourceDirectory := (referenceSuite / sourceDirectory).value / "main" / "courier"
 
 forkedVmCourierDest := file("swift") / "testsuite" / "testsuiteTests" / "generated"
 

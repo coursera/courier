@@ -1,4 +1,4 @@
-import Courier.ExternalDependencies._
+import CourierBuild._
 
 name := "courier-generator-api"
 

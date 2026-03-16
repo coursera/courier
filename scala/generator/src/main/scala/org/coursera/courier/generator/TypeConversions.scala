@@ -49,10 +49,10 @@ object TypeConversions {
     PrimitiveMapping(NULL_DATA_SCHEMA, "Null", false, "null", classOf[Null]))
 
   private val primitivesBySchema = primitiveMappings.map(mapping => mapping.schema -> mapping).toMap
-  private val scalaTypeForPrimitiveType = primitivesBySchema.mapValues(_.scalaType)
-  private val javaClassForPrimitiveType = primitivesBySchema.mapValues(_.javaClass)
-  private val pegasusTypeForPrimitiveType = primitivesBySchema.mapValues(_.pegasusType)
-  private val isValueTypeForPrimitiveType = primitivesBySchema.mapValues(_.isValueType)
+  private val scalaTypeForPrimitiveType = primitivesBySchema.map { case (k, v) => k -> v.scalaType }
+  private val javaClassForPrimitiveType = primitivesBySchema.map { case (k, v) => k -> v.javaClass }
+  private val pegasusTypeForPrimitiveType = primitivesBySchema.map { case (k, v) => k -> v.pegasusType }
+  private val isValueTypeForPrimitiveType = primitivesBySchema.map { case (k, v) => k -> v.isValueType }
 
   val primitiveSchemas: Set[DataSchema] = primitiveMappings.map(_.schema).toSet
 

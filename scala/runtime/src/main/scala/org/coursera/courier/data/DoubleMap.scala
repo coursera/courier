@@ -14,7 +14,6 @@ import com.linkedin.data.template.DataTemplateUtil
 import org.coursera.courier.companions.MapCompanion
 import org.coursera.courier.templates.DataTemplates
 import org.coursera.courier.templates.DataTemplates.DataConversion
-import scala.collection.generic.CanBuildFrom
 import scala.collection.immutable
 import scala.collection.mutable
 import scala.collection.JavaConverters._
@@ -25,7 +24,6 @@ import org.coursera.courier.codecs.InlineStringCodec
 final class DoubleMap(private val dataMap: DataMap)
   extends immutable.Iterable[(String, Double)]
   with Map[String, Double]
-  with immutable.MapLike[String, Double, immutable.Map[String, Double]]
   with DataTemplate[DataMap] {
   import DoubleMap._
 
@@ -65,12 +63,15 @@ final class DoubleMap(private val dataMap: DataMap)
     }
   }
 
-  override def -(key: String): DoubleMap = {
+
+        override def -(key: String): DoubleMap = {
     val copy = dataMap.copy()
     copy.remove(coerceKeyOutput(key))
     copy.makeReadOnly()
     new DoubleMap(copy)
   }
+
+  override def removed(key: String): DoubleMap = -(key)
 
   override def schema(): DataSchema = DoubleMap.SCHEMA
 
@@ -98,11 +99,6 @@ object DoubleMap extends MapCompanion[DoubleMap] {
   }
 
   def newBuilder = new DataBuilder()
-
-  implicit val canBuildFrom = new CanBuildFrom[DoubleMap, (String, Double), DoubleMap] {
-    def apply(from: DoubleMap) = new DataBuilder(from)
-    def apply() = newBuilder
-  }
 
   class DataBuilder(initial: DoubleMap) extends mutable.Builder[(String, Double), DoubleMap] {
     def this() = this(new DoubleMap(new DataMap()))

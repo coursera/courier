@@ -18,7 +18,7 @@ import sbt._
 import Keys._
 
 /**
- * Extend a SBT Build to support publication to alternate repos. Example usage:
+ * Supports publication to alternate repos via system properties. Example usage:
  *
  * ```
  * sbt \
@@ -27,16 +27,14 @@ import Keys._
  *   "set credentials in Global += Credentials(\"<path-to-repo-credential-file>\")" "fullpublish"
  * ```
  */
-// TODO(jbetz): Look into using bintray to manage all publishing
-trait OverridablePublishSettings {
-  private[this] val releaseKey = "sbt.override.publish.repos.release"
-  private[this] val snapshotKey = "sbt.override.publish.repos.snapshot"
-  private[this] val overrideReleaseRepo = Option(System.getProperty(releaseKey))
-  private[this] val overrideSnapshotRepo = Option(System.getProperty(snapshotKey))
+object OverridablePublishSettings {
+  private val releaseKey = "sbt.override.publish.repos.release"
+  private val snapshotKey = "sbt.override.publish.repos.snapshot"
 
-  def defaultPublishSettings: Seq[Def.Setting[_]]
+  def settings(defaults: Seq[Def.Setting[_]]): Seq[Def.Setting[_]] = {
+    val overrideReleaseRepo = Option(System.getProperty(releaseKey))
+    val overrideSnapshotRepo = Option(System.getProperty(snapshotKey))
 
-  val overridePublishSettings = {
     assert(overrideReleaseRepo.isDefined == overrideSnapshotRepo.isDefined,
       s"If overriding publish repos, both $releaseKey and $snapshotKey must be provided")
 
@@ -49,7 +47,7 @@ trait OverridablePublishSettings {
             } else {
               "releases" at release
             }))
-      case _: Any => defaultPublishSettings
+      case _ => defaults
     }
   }
 }

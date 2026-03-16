@@ -1,3 +1,5 @@
+import CourierBuild._
+
 name := "courier-android-runtime"
 
 plainJavaProjectSettings

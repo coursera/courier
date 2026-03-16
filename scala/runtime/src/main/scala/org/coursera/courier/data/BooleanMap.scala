@@ -14,7 +14,6 @@ import com.linkedin.data.template.DataTemplateUtil
 import org.coursera.courier.companions.MapCompanion
 import org.coursera.courier.templates.DataTemplates
 import org.coursera.courier.templates.DataTemplates.DataConversion
-import scala.collection.generic.CanBuildFrom
 import scala.collection.immutable
 import scala.collection.mutable
 import scala.collection.JavaConverters._
@@ -25,7 +24,6 @@ import org.coursera.courier.codecs.InlineStringCodec
 final class BooleanMap(private val dataMap: DataMap)
   extends immutable.Iterable[(String, Boolean)]
   with Map[String, Boolean]
-  with immutable.MapLike[String, Boolean, immutable.Map[String, Boolean]]
   with DataTemplate[DataMap] {
   import BooleanMap._
 
@@ -65,12 +63,15 @@ final class BooleanMap(private val dataMap: DataMap)
     }
   }
 
-  override def -(key: String): BooleanMap = {
+
+        override def -(key: String): BooleanMap = {
     val copy = dataMap.copy()
     copy.remove(coerceKeyOutput(key))
     copy.makeReadOnly()
     new BooleanMap(copy)
   }
+
+  override def removed(key: String): BooleanMap = -(key)
 
   override def schema(): DataSchema = BooleanMap.SCHEMA
 
@@ -98,11 +99,6 @@ object BooleanMap extends MapCompanion[BooleanMap] {
   }
 
   def newBuilder = new DataBuilder()
-
-  implicit val canBuildFrom = new CanBuildFrom[BooleanMap, (String, Boolean), BooleanMap] {
-    def apply(from: BooleanMap) = new DataBuilder(from)
-    def apply() = newBuilder
-  }
 
   class DataBuilder(initial: BooleanMap) extends mutable.Builder[(String, Boolean), BooleanMap] {
     def this() = this(new BooleanMap(new DataMap()))

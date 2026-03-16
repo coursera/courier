@@ -15,9 +15,7 @@ import org.coursera.courier.companions.ArrayCompanion
 import org.coursera.courier.templates.DataTemplates
 import org.coursera.courier.templates.DataTemplates.DataConversion
 import org.coursera.courier.templates.ScalaArrayTemplate
-import scala.collection.GenTraversable
 import scala.collection.JavaConverters._
-import scala.collection.generic.CanBuildFrom
 import scala.collection.mutable
 import com.linkedin.data.template.Custom
 
@@ -25,7 +23,6 @@ import com.linkedin.data.template.Custom
 final class DoubleArray(private val dataList: DataList)
   extends IndexedSeq[Double]
   with Product
-  with GenTraversable[Double]
   with DataTemplate[DataList]
   with ScalaArrayTemplate {
 
@@ -61,7 +58,7 @@ object DoubleArray extends ArrayCompanion[DoubleArray] {
     new DoubleArray(new DataList(elems.map(coerceOutput).toList.asJava))
   }
 
-  def apply(collection: Traversable[Double]): DoubleArray = {
+  def apply(collection: Iterable[Double]): DoubleArray = {
     new DoubleArray(new DataList(collection.map(coerceOutput).toList.asJava))
   }
 
@@ -70,11 +67,6 @@ object DoubleArray extends ArrayCompanion[DoubleArray] {
   }
 
   def newBuilder = new DataBuilder()
-
-  implicit val canBuildFrom = new CanBuildFrom[DoubleArray, Double, DoubleArray] {
-    def apply(from: DoubleArray) = new DataBuilder(from)
-    def apply() = newBuilder
-  }
 
   class DataBuilder(initial: DoubleArray) extends mutable.Builder[Double, DoubleArray] {
     def this() = this(new DoubleArray(new DataList()))
@@ -102,8 +94,8 @@ object DoubleArray extends ArrayCompanion[DoubleArray] {
 
   }
 
-  implicit def wrap(traversable: Traversable[Double]): DoubleArray = {
-    DoubleArray(traversable)
+  implicit def wrap(iterable: Iterable[Double]): DoubleArray = {
+    DoubleArray(iterable)
   }
 }
 

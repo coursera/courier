@@ -1,4 +1,5 @@
-import sbtassembly.AssemblyPlugin.defaultShellScript
+import CourierBuild._
+import sbtassembly.AssemblyPlugin.autoImport._
 
 name := "courier-swift-generator"
 
@@ -9,8 +10,8 @@ libraryDependencies ++= Seq(
   ExternalDependencies.Slf4j.slf4jSimple)
 
 // Fat Jar
-mainClass in assembly := Some("org.coursera.courier.SwiftGenerator")
+assembly / mainClass := Some("org.coursera.courier.SwiftGenerator")
 
-assemblyOption in assembly := (assemblyOption in assembly).value.copy(prependShellScript = Some(defaultShellScript))
+assembly / assemblyPrependShellScript := Some(sbtassembly.AssemblyPlugin.defaultShellScript)
 
-assemblyJarName in assembly := s"${name.value}-${version.value}.jar"
+assembly / assemblyJarName := s"${name.value}-${version.value}.jar"

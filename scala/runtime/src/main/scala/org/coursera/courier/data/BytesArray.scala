@@ -15,9 +15,7 @@ import org.coursera.courier.companions.ArrayCompanion
 import org.coursera.courier.templates.DataTemplates
 import org.coursera.courier.templates.DataTemplates.DataConversion
 import org.coursera.courier.templates.ScalaArrayTemplate
-import scala.collection.GenTraversable
 import scala.collection.JavaConverters._
-import scala.collection.generic.CanBuildFrom
 import scala.collection.mutable
 import com.linkedin.data.template.Custom
 
@@ -25,7 +23,6 @@ import com.linkedin.data.template.Custom
 final class BytesArray(private val dataList: DataList)
   extends IndexedSeq[ByteString]
   with Product
-  with GenTraversable[ByteString]
   with DataTemplate[DataList]
   with ScalaArrayTemplate {
 
@@ -61,7 +58,7 @@ object BytesArray extends ArrayCompanion[BytesArray] {
     new BytesArray(new DataList(elems.map(coerceOutput).toList.asJava))
   }
 
-  def apply(collection: Traversable[ByteString]): BytesArray = {
+  def apply(collection: Iterable[ByteString]): BytesArray = {
     new BytesArray(new DataList(collection.map(coerceOutput).toList.asJava))
   }
 
@@ -70,11 +67,6 @@ object BytesArray extends ArrayCompanion[BytesArray] {
   }
 
   def newBuilder = new DataBuilder()
-
-  implicit val canBuildFrom = new CanBuildFrom[BytesArray, ByteString, BytesArray] {
-    def apply(from: BytesArray) = new DataBuilder(from)
-    def apply() = newBuilder
-  }
 
   class DataBuilder(initial: BytesArray) extends mutable.Builder[ByteString, BytesArray] {
     def this() = this(new BytesArray(new DataList()))
@@ -102,8 +94,8 @@ object BytesArray extends ArrayCompanion[BytesArray] {
 
   }
 
-  implicit def wrap(traversable: Traversable[ByteString]): BytesArray = {
-    BytesArray(traversable)
+  implicit def wrap(iterable: Iterable[ByteString]): BytesArray = {
+    BytesArray(iterable)
   }
 }
 

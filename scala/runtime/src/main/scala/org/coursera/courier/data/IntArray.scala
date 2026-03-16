@@ -15,9 +15,7 @@ import org.coursera.courier.companions.ArrayCompanion
 import org.coursera.courier.templates.DataTemplates
 import org.coursera.courier.templates.DataTemplates.DataConversion
 import org.coursera.courier.templates.ScalaArrayTemplate
-import scala.collection.GenTraversable
 import scala.collection.JavaConverters._
-import scala.collection.generic.CanBuildFrom
 import scala.collection.mutable
 import com.linkedin.data.template.Custom
 
@@ -25,7 +23,6 @@ import com.linkedin.data.template.Custom
 final class IntArray(private val dataList: DataList)
   extends IndexedSeq[Int]
   with Product
-  with GenTraversable[Int]
   with DataTemplate[DataList]
   with ScalaArrayTemplate {
 
@@ -61,7 +58,7 @@ object IntArray extends ArrayCompanion[IntArray] {
     new IntArray(new DataList(elems.map(coerceOutput).toList.asJava))
   }
 
-  def apply(collection: Traversable[Int]): IntArray = {
+  def apply(collection: Iterable[Int]): IntArray = {
     new IntArray(new DataList(collection.map(coerceOutput).toList.asJava))
   }
 
@@ -70,11 +67,6 @@ object IntArray extends ArrayCompanion[IntArray] {
   }
 
   def newBuilder = new DataBuilder()
-
-  implicit val canBuildFrom = new CanBuildFrom[IntArray, Int, IntArray] {
-    def apply(from: IntArray) = new DataBuilder(from)
-    def apply() = newBuilder
-  }
 
   class DataBuilder(initial: IntArray) extends mutable.Builder[Int, IntArray] {
     def this() = this(new IntArray(new DataList()))
@@ -102,8 +94,8 @@ object IntArray extends ArrayCompanion[IntArray] {
 
   }
 
-  implicit def wrap(traversable: Traversable[Int]): IntArray = {
-    IntArray(traversable)
+  implicit def wrap(iterable: Iterable[Int]): IntArray = {
+    IntArray(iterable)
   }
 }
 

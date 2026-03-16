@@ -14,7 +14,6 @@ import com.linkedin.data.template.DataTemplateUtil
 import org.coursera.courier.companions.MapCompanion
 import org.coursera.courier.templates.DataTemplates
 import org.coursera.courier.templates.DataTemplates.DataConversion
-import scala.collection.generic.CanBuildFrom
 import scala.collection.immutable
 import scala.collection.mutable
 import scala.collection.JavaConverters._
@@ -25,7 +24,6 @@ import org.coursera.courier.codecs.InlineStringCodec
 final class IntToStringMap(private val dataMap: DataMap)
   extends immutable.Iterable[(Int, String)]
   with Map[Int, String]
-  with immutable.MapLike[Int, String, immutable.Map[Int, String]]
   with DataTemplate[DataMap] {
   import IntToStringMap._
 
@@ -65,12 +63,15 @@ final class IntToStringMap(private val dataMap: DataMap)
     }
   }
 
-  override def -(key: Int): IntToStringMap = {
+
+        override def -(key: Int): IntToStringMap = {
     val copy = dataMap.copy()
     copy.remove(coerceKeyOutput(key))
     copy.makeReadOnly()
     new IntToStringMap(copy)
   }
+
+  override def removed(key: Int): IntToStringMap = -(key)
 
   override def schema(): DataSchema = IntToStringMap.SCHEMA
 
@@ -98,11 +99,6 @@ object IntToStringMap extends MapCompanion[IntToStringMap] {
   }
 
   def newBuilder = new DataBuilder()
-
-  implicit val canBuildFrom = new CanBuildFrom[IntToStringMap, (Int, String), IntToStringMap] {
-    def apply(from: IntToStringMap) = new DataBuilder(from)
-    def apply() = newBuilder
-  }
 
   class DataBuilder(initial: IntToStringMap) extends mutable.Builder[(Int, String), IntToStringMap] {
     def this() = this(new IntToStringMap(new DataMap()))

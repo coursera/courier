@@ -1,3 +1,5 @@
+import CourierBuild._
+
 name := "courier-android-generator-test"
 
 packagedArtifacts := Map.empty
@@ -11,8 +13,8 @@ forkedVmCourierGeneratorSettings
 
 forkedVmCourierMainClass := "org.coursera.courier.AndroidGenerator"
 
-forkedVmCourierClasspath := (dependencyClasspath in Runtime in androidGenerator).value.files
+forkedVmCourierClasspath := (androidGenerator / Runtime / dependencyClasspath).value.files
 
-forkedVmSourceDirectory := (sourceDirectory in referenceSuite).value / "main" / "courier"
+forkedVmSourceDirectory := (referenceSuite / sourceDirectory).value / "main" / "courier"
 
 forkedVmCourierDest := target.value / s"scala-${scalaBinaryVersion.value}" / "courier"

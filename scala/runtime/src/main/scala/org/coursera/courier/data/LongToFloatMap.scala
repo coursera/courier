@@ -14,7 +14,6 @@ import com.linkedin.data.template.DataTemplateUtil
 import org.coursera.courier.companions.MapCompanion
 import org.coursera.courier.templates.DataTemplates
 import org.coursera.courier.templates.DataTemplates.DataConversion
-import scala.collection.generic.CanBuildFrom
 import scala.collection.immutable
 import scala.collection.mutable
 import scala.collection.JavaConverters._
@@ -25,7 +24,6 @@ import org.coursera.courier.codecs.InlineStringCodec
 final class LongToFloatMap(private val dataMap: DataMap)
   extends immutable.Iterable[(Long, Float)]
   with Map[Long, Float]
-  with immutable.MapLike[Long, Float, immutable.Map[Long, Float]]
   with DataTemplate[DataMap] {
   import LongToFloatMap._
 
@@ -65,12 +63,15 @@ final class LongToFloatMap(private val dataMap: DataMap)
     }
   }
 
-  override def -(key: Long): LongToFloatMap = {
+
+        override def -(key: Long): LongToFloatMap = {
     val copy = dataMap.copy()
     copy.remove(coerceKeyOutput(key))
     copy.makeReadOnly()
     new LongToFloatMap(copy)
   }
+
+  override def removed(key: Long): LongToFloatMap = -(key)
 
   override def schema(): DataSchema = LongToFloatMap.SCHEMA
 
@@ -98,11 +99,6 @@ object LongToFloatMap extends MapCompanion[LongToFloatMap] {
   }
 
   def newBuilder = new DataBuilder()
-
-  implicit val canBuildFrom = new CanBuildFrom[LongToFloatMap, (Long, Float), LongToFloatMap] {
-    def apply(from: LongToFloatMap) = new DataBuilder(from)
-    def apply() = newBuilder
-  }
 
   class DataBuilder(initial: LongToFloatMap) extends mutable.Builder[(Long, Float), LongToFloatMap] {
     def this() = this(new LongToFloatMap(new DataMap()))

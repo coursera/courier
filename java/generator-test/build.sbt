@@ -1,3 +1,5 @@
+import CourierBuild._
+
 name := "courier-java-generator-test"
 
 plainJavaProjectSettings
@@ -11,8 +13,8 @@ forkedVmCourierGeneratorSettings
 
 forkedVmCourierMainClass := "org.coursera.courier.JavaGenerator"
 
-forkedVmCourierClasspath := (dependencyClasspath in Runtime in javaGenerator).value.files
+forkedVmCourierClasspath := (javaGenerator / Runtime / dependencyClasspath).value.files
 
-forkedVmSourceDirectory := (sourceDirectory in referenceSuite).value / "main" / "courier"
+forkedVmSourceDirectory := (referenceSuite / sourceDirectory).value / "main" / "courier"
 
 forkedVmCourierDest := target.value / s"scala-${scalaBinaryVersion.value}" / "courier"
