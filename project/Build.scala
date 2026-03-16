@@ -50,7 +50,7 @@ object CourierBuild {
 
   // Generator is cross-built to the SBT plugin Scala version and current Scala version.
   lazy val generatorVersionSettings: Seq[Setting[_]] = Seq(
-    scalaVersion := sbtScalaVersion,
+    scalaVersion := currentScalaVersion,
     crossScalaVersions := Seq(sbtScalaVersion, currentScalaVersion)
   )
 
@@ -143,7 +143,7 @@ object CourierBuild {
 
     object JUnitInterface {
       val version = "0.11"
-      val junitInterface = "com.github.sbt" % "junit-interface" % version % "test"
+      val junitInterface = "com.novocode" % "junit-interface" % version % "test"
     }
 
     object Scalatest {
@@ -189,7 +189,7 @@ object CourierBuild {
     }
 
     object Coursera {
-      val courscala = "org.coursera" %% "courscala" % "0.1.3"
+      val courscala = "org.coursera" %% "courscala" % "0.2.0"
     }
   }
 

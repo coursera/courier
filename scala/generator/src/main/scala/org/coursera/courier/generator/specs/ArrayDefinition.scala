@@ -28,7 +28,7 @@ case class ArrayDefinition(override val spec: ArrayTemplateSpec) extends Definit
   override def rawDataType = classOf[DataList].getSimpleName
 
   override def scalaGenericCollectionType: String = {
-    s"Traversable[${itemClass.scalaGenericCollectionType}]"
+    s"Iterable[${itemClass.scalaGenericCollectionType}]"
   }
 
   def itemClass: Definition = Definition(spec.getItemClass)

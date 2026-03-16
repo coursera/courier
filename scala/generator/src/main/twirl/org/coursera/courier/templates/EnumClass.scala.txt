@@ -8,7 +8,6 @@
 @if(enum.isTopLevel) {
   @enum.namespace.map { namespace => package @namespace }
 
-  import javax.annotation.Generated
   import com.linkedin.data.DataMap
   import com.linkedin.data.schema.EnumDataSchema
   import com.linkedin.data.template.DataTemplateUtil

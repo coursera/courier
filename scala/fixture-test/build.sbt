@@ -15,16 +15,15 @@ libraryDependencies ++= Seq(
 Test / fork := true
 
 Test / javaOptions +=
-  "-Dreferencesuite.srcdir=" + (referenceSuite / sourceDirectory).value.getAbsolutePath
+  "-Dreferencesuite.srcdir=" + (LocalProject("referenceSuite") / sourceDirectory).value.getAbsolutePath
 
 // Test generator
 forkedVmCourierGeneratorSettings
 
 forkedVmCourierMainClass := "org.coursera.courier.generator.ScalaDataTemplateGenerator"
 
-forkedVmCourierClasspath := (scalaGenerator / Runtime / dependencyClasspath).value.files
+forkedVmCourierClasspath := (LocalProject("scalaGenerator") / Runtime / dependencyClasspath).value.files
 
-forkedVmSourceDirectory := (testLib / sourceDirectory).value / "main" / "scala"
-forkedVmSourceDirectory := (scalaFixture / sourceDirectory).value / "main" / "scala"
+forkedVmSourceDirectory := (LocalProject("scalaFixture") / sourceDirectory).value / "main" / "scala"
 
 forkedVmCourierDest := target.value / s"scala-${scalaBinaryVersion.value}" / "courier"

@@ -1,46 +1,50 @@
 import CourierBuild._
-import org.coursera.courier.sbt.Sonatype
 import play.twirl.sbt.SbtTwirl
-import sbtassembly.AssemblyKeys._
 
 // --- Global settings ---
 ThisBuild / organization := "org.coursera.courier"
 ThisBuild / scalaVersion := CourierBuild.currentScalaVersion
 
 lazy val publishSettings: Seq[Setting[_]] =
-  OverridablePublishSettings.settings(Sonatype.Settings)
+  OverridablePublishSettings.settings(org.coursera.courier.sbt.Sonatype.Settings)
+
+// --- Directory aliases (plain val, not private — required by .sbt syntax) ---
+val scalaDir = file("scala")
+val javaDir = file("java")
+val androidDir = file("android")
+val swiftDir = file("swift")
+val typescriptLiteDir = file("typescript-lite")
 
 // --- Project definitions ---
 
 lazy val schemaLanguage =
   (project in file("schema-language"))
-    .disablePlugins(bintray.BintrayPlugin)
+    .enablePlugins(com.simplytyped.Antlr4Plugin)
+    .disablePlugins(BintrayPlugin)
 
 lazy val generatorApi =
   (project in file("generator-api"))
     .dependsOn(schemaLanguage)
-    .disablePlugins(bintray.BintrayPlugin)
+    .disablePlugins(BintrayPlugin)
 
 lazy val referenceSuite =
   (project in file("reference-suite"))
-    .disablePlugins(bintray.BintrayPlugin)
-
-private val scalaDir = file("scala")
+    .disablePlugins(BintrayPlugin)
 
 lazy val scalaGenerator =
   (project in scalaDir / "generator")
     .dependsOn(scalaRuntime, generatorApi, schemaLanguage)
     .enablePlugins(SbtTwirl)
-    .disablePlugins(bintray.BintrayPlugin)
+    .disablePlugins(BintrayPlugin)
 
 lazy val scalaRuntime =
   (project in scalaDir / "runtime")
-    .disablePlugins(bintray.BintrayPlugin)
+    .disablePlugins(BintrayPlugin)
 
 lazy val testLib =
   (project in scalaDir / "test-lib")
     .dependsOn(scalaGenerator)
-    .disablePlugins(bintray.BintrayPlugin)
+    .disablePlugins(BintrayPlugin)
 
 lazy val scalaGeneratorTestGenerator =
   (project in scalaDir / "generator-test-generator")
@@ -49,73 +53,65 @@ lazy val scalaGeneratorTestGenerator =
 lazy val scalaGeneratorTest =
   (project in scalaDir / "generator-test")
     .dependsOn(scalaGenerator, testLib, scalaGeneratorTestGenerator)
-    .disablePlugins(bintray.BintrayPlugin)
+    .disablePlugins(BintrayPlugin)
 
 lazy val scalaFixture =
   (project in scalaDir / "fixture")
     .dependsOn(scalaGenerator)
-    .disablePlugins(bintray.BintrayPlugin)
+    .disablePlugins(BintrayPlugin)
 
 lazy val scalaFixtureTest =
   (project in scalaDir / "fixture-test")
     .dependsOn(scalaGenerator, scalaFixture, testLib)
-    .disablePlugins(bintray.BintrayPlugin)
-
-private val javaDir = file("java")
+    .disablePlugins(BintrayPlugin)
 
 lazy val javaGenerator =
   (project in javaDir / "generator")
     .dependsOn(generatorApi)
-    .disablePlugins(bintray.BintrayPlugin)
+    .disablePlugins(BintrayPlugin)
 
 lazy val javaGeneratorTest =
   (project in javaDir / "generator-test")
     .dependsOn(javaGenerator)
-    .disablePlugins(bintray.BintrayPlugin)
+    .disablePlugins(BintrayPlugin)
 
 lazy val javaRuntime =
   (project in javaDir / "runtime")
-    .disablePlugins(bintray.BintrayPlugin)
-
-private val androidDir = file("android")
+    .disablePlugins(BintrayPlugin)
 
 lazy val androidGenerator =
   (project in androidDir / "generator")
     .dependsOn(generatorApi)
-    .disablePlugins(bintray.BintrayPlugin)
+    .disablePlugins(BintrayPlugin)
 
 lazy val androidGeneratorTest =
   (project in androidDir / "generator-test")
     .dependsOn(androidGenerator, androidRuntime)
-    .disablePlugins(bintray.BintrayPlugin)
+    .disablePlugins(BintrayPlugin)
 
 lazy val androidRuntime =
   (project in androidDir / "runtime")
-    .disablePlugins(bintray.BintrayPlugin)
-
-private val swiftDir = file("swift")
+    .disablePlugins(BintrayPlugin)
 
 lazy val swiftGenerator =
   (project in swiftDir / "generator")
     .dependsOn(generatorApi)
-    .disablePlugins(bintray.BintrayPlugin)
+    .disablePlugins(BintrayPlugin)
 
 lazy val swiftGeneratorTest =
   (project in swiftDir / "generator-test")
     .dependsOn(swiftGenerator)
-    .disablePlugins(bintray.BintrayPlugin)
-
-private val typescriptLiteDir = file("typescript-lite")
+    .disablePlugins(BintrayPlugin)
 
 lazy val typescriptLiteGenerator =
   (project in typescriptLiteDir / "generator")
     .dependsOn(generatorApi)
-    .disablePlugins(bintray.BintrayPlugin)
+    .disablePlugins(BintrayPlugin)
 
 lazy val typescriptLiteGeneratorTest =
   (project in typescriptLiteDir / "generator-test")
     .dependsOn(typescriptLiteGenerator)
-    .disablePlugins(bintray.BintrayPlugin)
+    .disablePlugins(BintrayPlugin)
 
 lazy val cli =
   (project in file("cli"))
@@ -136,14 +132,18 @@ lazy val cli =
         exeFile
       }
     )
-    .disablePlugins(bintray.BintrayPlugin)
+    .disablePlugins(BintrayPlugin)
 
 lazy val courierSbtPlugin =
   (project in file("sbt-plugin"))
     .dependsOn(scalaGenerator)
+    .enablePlugins(ScriptedPlugin)
     .disablePlugins(xerial.sbt.Sonatype)
     .settings(
-      scalaVersion := sbtScalaVersion
+      scalaVersion := sbtScalaVersion,
+      // SBT plugin is tested via scripted, not regular test.
+      // Skip during aggregate test until 2.12 cross-build is fully set up.
+      Test / test := {}
     )
 
 // --- Root project ---
@@ -167,10 +167,8 @@ lazy val root = (project in file("."))
     cli
   )
   .settings(runtimeVersionSettings)
-  .settings(packagedArtifacts := Map.empty) // disable publish for root aggregate module
+  .settings(packagedArtifacts := Map.empty)
   .settings(
-    // scripted attempts to publish what it needs, but because of the above mentioned cross
-    // build issues, we have to manually publish what we need before we test here
     addCommandAlias(s"fulltest",
                     s";compile;+test;fullpublish-ivylocal;" +
                       s"project courier;++$sbtScalaVersion;scripted"),

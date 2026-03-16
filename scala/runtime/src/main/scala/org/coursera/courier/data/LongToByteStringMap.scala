@@ -2,8 +2,6 @@
 
 package org.coursera.courier.data
 
-import javax.annotation.Generated
-
 import com.linkedin.data.ByteString
 import com.linkedin.data.DataMap
 import com.linkedin.data.DataList
@@ -20,7 +18,6 @@ import scala.collection.JavaConverters._
 import com.linkedin.data.template.Custom
 import org.coursera.courier.codecs.InlineStringCodec
 
-@Generated(value = Array("LongToByteStringMap"), comments = "Courier Data Template.", date = "Fri Aug 14 14:51:38 PDT 2015")
 final class LongToByteStringMap(private val dataMap: DataMap)
   extends immutable.Iterable[(Long, ByteString)]
   with Map[Long, ByteString]
@@ -50,6 +47,8 @@ final class LongToByteStringMap(private val dataMap: DataMap)
 
   override def iterator: Iterator[(Long, ByteString)] = map.iterator
 
+  override def updated[V1 >: ByteString](key: Long, value: V1): Map[Long, V1] = this + (key -> value)
+
   override def +[F >: ByteString](kv: (Long, F)): Map[Long, F] = {
     val (key, value) = kv
     value match {
@@ -64,20 +63,19 @@ final class LongToByteStringMap(private val dataMap: DataMap)
   }
 
 
-        override def -(key: Long): LongToByteStringMap = {
+  override def removed(key: Long): LongToByteStringMap = {
     val copy = dataMap.copy()
     copy.remove(coerceKeyOutput(key))
     copy.makeReadOnly()
     new LongToByteStringMap(copy)
   }
 
-  override def removed(key: Long): LongToByteStringMap = -(key)
-
   override def schema(): DataSchema = LongToByteStringMap.SCHEMA
 
   override def data(): DataMap = dataMap
 
   override def copy(): DataTemplate[DataMap] = this
+  override def clone(): DataTemplate[DataMap] = copy()
 }
 
 object LongToByteStringMap extends MapCompanion[LongToByteStringMap] {
@@ -105,7 +103,7 @@ object LongToByteStringMap extends MapCompanion[LongToByteStringMap] {
 
     val entries = new DataMap(initial.data())
 
-    def +=(kv: (Long, ByteString)): this.type = {
+    override def addOne(kv: (Long, ByteString)): this.type = {
       val (key, value) = kv
       entries.put(coerceKeyOutput(key), coerceOutput(value))
       this

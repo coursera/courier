@@ -2,8 +2,6 @@
 
 package org.coursera.courier.data
 
-import javax.annotation.Generated
-
 import com.linkedin.data.ByteString
 import com.linkedin.data.DataList
 import com.linkedin.data.DataMap
@@ -19,7 +17,6 @@ import scala.collection.JavaConverters._
 import scala.collection.mutable
 import com.linkedin.data.template.Custom
 
-@Generated(value = Array("BooleanArray"), comments = "Courier Data Template.", date = "Fri Aug 14 14:51:38 PDT 2015")
 final class BooleanArray(private val dataList: DataList)
   extends IndexedSeq[Boolean]
   with Product
@@ -45,6 +42,7 @@ final class BooleanArray(private val dataList: DataList)
 
   override def data(): DataList = dataList
   override def copy(): DataTemplate[DataList] = this
+  override def clone(): DataTemplate[DataList] = copy()
   override def copy(dataList: DataList, conversion: DataConversion): ScalaArrayTemplate =
     BooleanArray.build(dataList, conversion)
 }
@@ -73,7 +71,7 @@ object BooleanArray extends ArrayCompanion[BooleanArray] {
 
     val elems = new DataList(initial.data())
 
-    def +=(x: Boolean): this.type = {
+    override def addOne(x: Boolean): this.type = {
       elems.add(coerceOutput(x))
       this
     }

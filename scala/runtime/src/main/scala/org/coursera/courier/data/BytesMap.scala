@@ -2,8 +2,6 @@
 
 package org.coursera.courier.data
 
-import javax.annotation.Generated
-
 import com.linkedin.data.ByteString
 import com.linkedin.data.DataMap
 import com.linkedin.data.DataList
@@ -20,7 +18,6 @@ import scala.collection.JavaConverters._
 import com.linkedin.data.template.Custom
 import org.coursera.courier.codecs.InlineStringCodec
 
-@Generated(value = Array("BytesMap"), comments = "Courier Data Template.", date = "Fri Aug 14 14:51:37 PDT 2015")
 final class BytesMap(private val dataMap: DataMap)
   extends immutable.Iterable[(String, ByteString)]
   with Map[String, ByteString]
@@ -50,6 +47,8 @@ final class BytesMap(private val dataMap: DataMap)
 
   override def iterator: Iterator[(String, ByteString)] = map.iterator
 
+  override def updated[V1 >: ByteString](key: String, value: V1): Map[String, V1] = this + (key -> value)
+
   override def +[F >: ByteString](kv: (String, F)): Map[String, F] = {
     val (key, value) = kv
     value match {
@@ -64,20 +63,19 @@ final class BytesMap(private val dataMap: DataMap)
   }
 
 
-        override def -(key: String): BytesMap = {
+  override def removed(key: String): BytesMap = {
     val copy = dataMap.copy()
     copy.remove(coerceKeyOutput(key))
     copy.makeReadOnly()
     new BytesMap(copy)
   }
 
-  override def removed(key: String): BytesMap = -(key)
-
   override def schema(): DataSchema = BytesMap.SCHEMA
 
   override def data(): DataMap = dataMap
 
   override def copy(): DataTemplate[DataMap] = this
+  override def clone(): DataTemplate[DataMap] = copy()
 }
 
 object BytesMap extends MapCompanion[BytesMap] {
@@ -105,7 +103,7 @@ object BytesMap extends MapCompanion[BytesMap] {
 
     val entries = new DataMap(initial.data())
 
-    def +=(kv: (String, ByteString)): this.type = {
+    override def addOne(kv: (String, ByteString)): this.type = {
       val (key, value) = kv
       entries.put(coerceKeyOutput(key), coerceOutput(value))
       this

@@ -2,8 +2,6 @@
 
 package org.coursera.courier.data
 
-import javax.annotation.Generated
-
 import com.linkedin.data.ByteString
 import com.linkedin.data.DataMap
 import com.linkedin.data.DataList
@@ -20,7 +18,6 @@ import scala.collection.JavaConverters._
 import com.linkedin.data.template.Custom
 import org.coursera.courier.codecs.InlineStringCodec
 
-@Generated(value = Array("DoubleMap"), comments = "Courier Data Template.", date = "Fri Aug 14 14:51:38 PDT 2015")
 final class DoubleMap(private val dataMap: DataMap)
   extends immutable.Iterable[(String, Double)]
   with Map[String, Double]
@@ -50,6 +47,8 @@ final class DoubleMap(private val dataMap: DataMap)
 
   override def iterator: Iterator[(String, Double)] = map.iterator
 
+  override def updated[V1 >: Double](key: String, value: V1): Map[String, V1] = this + (key -> value)
+
   override def +[F >: Double](kv: (String, F)): Map[String, F] = {
     val (key, value) = kv
     value match {
@@ -64,20 +63,19 @@ final class DoubleMap(private val dataMap: DataMap)
   }
 
 
-        override def -(key: String): DoubleMap = {
+  override def removed(key: String): DoubleMap = {
     val copy = dataMap.copy()
     copy.remove(coerceKeyOutput(key))
     copy.makeReadOnly()
     new DoubleMap(copy)
   }
 
-  override def removed(key: String): DoubleMap = -(key)
-
   override def schema(): DataSchema = DoubleMap.SCHEMA
 
   override def data(): DataMap = dataMap
 
   override def copy(): DataTemplate[DataMap] = this
+  override def clone(): DataTemplate[DataMap] = copy()
 }
 
 object DoubleMap extends MapCompanion[DoubleMap] {
@@ -105,7 +103,7 @@ object DoubleMap extends MapCompanion[DoubleMap] {
 
     val entries = new DataMap(initial.data())
 
-    def +=(kv: (String, Double)): this.type = {
+    override def addOne(kv: (String, Double)): this.type = {
       val (key, value) = kv
       entries.put(coerceKeyOutput(key), coerceOutput(value))
       this

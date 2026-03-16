@@ -8,8 +8,6 @@
 @if(union.isTopLevel) {
   @union.namespace.map { namespace => package @namespace }
 
-  import javax.annotation.Generated
-
   import com.linkedin.data.DataMap
   import com.linkedin.data.schema.DataSchemaConstants
   import com.linkedin.data.ByteString

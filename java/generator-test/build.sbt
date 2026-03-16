@@ -13,8 +13,8 @@ forkedVmCourierGeneratorSettings
 
 forkedVmCourierMainClass := "org.coursera.courier.JavaGenerator"
 
-forkedVmCourierClasspath := (javaGenerator / Runtime / dependencyClasspath).value.files
+forkedVmCourierClasspath := (LocalProject("javaGenerator") / Runtime / dependencyClasspath).value.files
 
-forkedVmSourceDirectory := (referenceSuite / sourceDirectory).value / "main" / "courier"
+forkedVmSourceDirectory := (LocalProject("referenceSuite") / sourceDirectory).value / "main" / "courier"
 
 forkedVmCourierDest := target.value / s"scala-${scalaBinaryVersion.value}" / "courier"

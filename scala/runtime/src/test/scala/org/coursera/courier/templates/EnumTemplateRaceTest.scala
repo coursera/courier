@@ -24,7 +24,6 @@ import java.nio.ByteBuffer
 import com.linkedin.data.DataMap
 import com.linkedin.data.template.DataTemplateUtil
 import com.linkedin.data.schema.EnumDataSchema
-
 class EnumTestBridge {
   def value = EnumTemplateTest.VALUE.name
   def withName = EnumTemplateTest.withName("VALUE").name

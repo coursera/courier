@@ -8,8 +8,6 @@
 @if(array.isTopLevel) {
   @array.namespace.map { namespace => package @namespace }
 
-  import javax.annotation.Generated
-
   import com.linkedin.data.ByteString
   import com.linkedin.data.DataList
   import com.linkedin.data.DataMap
@@ -21,10 +19,8 @@
   import org.coursera.courier.templates.DataTemplates.DataConversion
   import org.coursera.courier.templates.ScalaArrayTemplate
   import org.coursera.courier.companions.ArrayCompanion
-  import scala.collection.GenTraversable
   import scala.collection.JavaConverters._
-  import scala.collection.generic.CanBuildFrom
-  import scala.collection.mutable.Builder
+  import scala.collection.mutable
   import com.linkedin.data.template.Custom
   import org.coursera.courier.coercers.SingleElementCaseClassCoercer
   import scala.language.implicitConversions
@@ -33,7 +29,7 @@
 @ClassAnnotations(array) final class @(array.scalaType)(private val dataList: DataList)
   extends IndexedSeq[@(array.itemClass.scalaTypeFullname)]
   with Product
-  with GenTraversable[@(array.itemClass.scalaTypeFullname)]
+  with DataTemplate[DataList]
   with ScalaArrayTemplate {
 
   @(array.scalaType) // force static initialization
@@ -102,7 +98,7 @@ object @(array.scalaType) extends ArrayCompanion[@(array.scalaType)] {
     new @(array.scalaType)(new DataList(elems.map(coerceOutput).toList.asJava))
   }
 
-  def apply(collection: Traversable[@(array.itemClass.scalaTypeFullname)]): @(array.scalaType) = {
+  def apply(collection: Iterable[@(array.itemClass.scalaTypeFullname)]): @(array.scalaType) = {
     new @(array.scalaType)(new DataList(collection.map(coerceOutput).toList.asJava))
   }
 
@@ -112,17 +108,12 @@ object @(array.scalaType) extends ArrayCompanion[@(array.scalaType)] {
 
   def newBuilder = new DataBuilder()
 
-  implicit val canBuildFrom = new CanBuildFrom[@(array.scalaType), @(array.itemClass.scalaTypeFullname), @(array.scalaType)] {
-    def apply(from: @(array.scalaType)) = new DataBuilder(from)
-    def apply() = newBuilder
-  }
-
-  class DataBuilder(initial: @(array.scalaType)) extends Builder[@(array.itemClass.scalaTypeFullname), @(array.scalaType)] {
+  class DataBuilder(initial: @(array.scalaType)) extends mutable.Builder[@(array.itemClass.scalaTypeFullname), @(array.scalaType)] {
     def this() = this(new @(array.scalaType)(new DataList()))
 
     val elems = new DataList(initial.data())
 
-    def +=(x: @(array.itemClass.scalaTypeFullname)): this.type = {
+    override def addOne(x: @(array.itemClass.scalaTypeFullname)): this.type = {
       elems.add(coerceOutput(x))
       this
     }
@@ -162,13 +153,13 @@ object @(array.scalaType) extends ArrayCompanion[@(array.scalaType)] {
 
   @array.itemClass match {
     case _: ArrayDefinition | _: MapDefinition => {
-      implicit def wrap(traversable: @(array.scalaGenericCollectionType)): @(array.scalaType) = {
-        @(array.scalaType)(traversable.map(@(array.itemClass.scalaTypeFullname).wrap))
+      implicit def wrap(iterable: @(array.scalaGenericCollectionType)): @(array.scalaType) = {
+        @(array.scalaType)(iterable.map(@(array.itemClass.scalaTypeFullname).wrap))
       }
     }
     case _ => {
-      implicit def wrap(traversable:@(array.scalaGenericCollectionType)): @(array.scalaType) = {
-        @(array.scalaType)(traversable)
+      implicit def wrap(iterable:@(array.scalaGenericCollectionType)): @(array.scalaType) = {
+        @(array.scalaType)(iterable)
       }
     }
   }

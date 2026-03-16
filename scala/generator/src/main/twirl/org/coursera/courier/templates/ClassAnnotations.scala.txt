@@ -5,4 +5,3 @@
 
 @definition.scalaDoc.map { doc => @doc } @if(definition.isDeprecated) {
 @@deprecated(message = "@(definition.deprecationMessage.getOrElse(""))", since = "")}
-@@Generated(value = Array("@(definition.scalaType)"), comments = "Courier Data Template.")

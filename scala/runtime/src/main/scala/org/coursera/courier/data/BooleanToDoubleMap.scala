@@ -2,8 +2,6 @@
 
 package org.coursera.courier.data
 
-import javax.annotation.Generated
-
 import com.linkedin.data.ByteString
 import com.linkedin.data.DataMap
 import com.linkedin.data.DataList
@@ -20,7 +18,6 @@ import scala.collection.JavaConverters._
 import com.linkedin.data.template.Custom
 import org.coursera.courier.codecs.InlineStringCodec
 
-@Generated(value = Array("BooleanToDoubleMap"), comments = "Courier Data Template.", date = "Fri Aug 14 14:51:38 PDT 2015")
 final class BooleanToDoubleMap(private val dataMap: DataMap)
   extends immutable.Iterable[(Boolean, Double)]
   with Map[Boolean, Double]
@@ -50,6 +47,8 @@ final class BooleanToDoubleMap(private val dataMap: DataMap)
 
   override def iterator: Iterator[(Boolean, Double)] = map.iterator
 
+  override def updated[V1 >: Double](key: Boolean, value: V1): Map[Boolean, V1] = this + (key -> value)
+
   override def +[F >: Double](kv: (Boolean, F)): Map[Boolean, F] = {
     val (key, value) = kv
     value match {
@@ -64,20 +63,19 @@ final class BooleanToDoubleMap(private val dataMap: DataMap)
   }
 
 
-        override def -(key: Boolean): BooleanToDoubleMap = {
+  override def removed(key: Boolean): BooleanToDoubleMap = {
     val copy = dataMap.copy()
     copy.remove(coerceKeyOutput(key))
     copy.makeReadOnly()
     new BooleanToDoubleMap(copy)
   }
 
-  override def removed(key: Boolean): BooleanToDoubleMap = -(key)
-
   override def schema(): DataSchema = BooleanToDoubleMap.SCHEMA
 
   override def data(): DataMap = dataMap
 
   override def copy(): DataTemplate[DataMap] = this
+  override def clone(): DataTemplate[DataMap] = copy()
 }
 
 object BooleanToDoubleMap extends MapCompanion[BooleanToDoubleMap] {
@@ -105,7 +103,7 @@ object BooleanToDoubleMap extends MapCompanion[BooleanToDoubleMap] {
 
     val entries = new DataMap(initial.data())
 
-    def +=(kv: (Boolean, Double)): this.type = {
+    override def addOne(kv: (Boolean, Double)): this.type = {
       val (key, value) = kv
       entries.put(coerceKeyOutput(key), coerceOutput(value))
       this

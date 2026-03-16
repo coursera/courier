@@ -53,7 +53,7 @@ case class UnionDefinition(override val spec: UnionTemplateSpec) extends Definit
   /**
    * The union member types.
    */
-  def members: Seq[UnionMemberDefinition] = spec.getMembers.asScala.map(UnionMemberDefinition)
+  def members: Seq[UnionMemberDefinition] = spec.getMembers.asScala.map(UnionMemberDefinition).toSeq
 
   def directReferencedTypes: Set[Definition] = members.map(_.memberType).toSet
 }

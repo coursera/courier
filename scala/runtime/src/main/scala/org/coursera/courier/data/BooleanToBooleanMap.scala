@@ -2,8 +2,6 @@
 
 package org.coursera.courier.data
 
-import javax.annotation.Generated
-
 import com.linkedin.data.ByteString
 import com.linkedin.data.DataMap
 import com.linkedin.data.DataList
@@ -20,7 +18,6 @@ import scala.collection.JavaConverters._
 import com.linkedin.data.template.Custom
 import org.coursera.courier.codecs.InlineStringCodec
 
-@Generated(value = Array("BooleanToBooleanMap"), comments = "Courier Data Template.", date = "Fri Aug 14 14:51:38 PDT 2015")
 final class BooleanToBooleanMap(private val dataMap: DataMap)
   extends immutable.Iterable[(Boolean, Boolean)]
   with Map[Boolean, Boolean]
@@ -50,6 +47,8 @@ final class BooleanToBooleanMap(private val dataMap: DataMap)
 
   override def iterator: Iterator[(Boolean, Boolean)] = map.iterator
 
+  override def updated[V1 >: Boolean](key: Boolean, value: V1): Map[Boolean, V1] = this + (key -> value)
+
   override def +[F >: Boolean](kv: (Boolean, F)): Map[Boolean, F] = {
     val (key, value) = kv
     value match {
@@ -64,20 +63,19 @@ final class BooleanToBooleanMap(private val dataMap: DataMap)
   }
 
 
-        override def -(key: Boolean): BooleanToBooleanMap = {
+  override def removed(key: Boolean): BooleanToBooleanMap = {
     val copy = dataMap.copy()
     copy.remove(coerceKeyOutput(key))
     copy.makeReadOnly()
     new BooleanToBooleanMap(copy)
   }
 
-  override def removed(key: Boolean): BooleanToBooleanMap = -(key)
-
   override def schema(): DataSchema = BooleanToBooleanMap.SCHEMA
 
   override def data(): DataMap = dataMap
 
   override def copy(): DataTemplate[DataMap] = this
+  override def clone(): DataTemplate[DataMap] = copy()
 }
 
 object BooleanToBooleanMap extends MapCompanion[BooleanToBooleanMap] {
@@ -105,7 +103,7 @@ object BooleanToBooleanMap extends MapCompanion[BooleanToBooleanMap] {
 
     val entries = new DataMap(initial.data())
 
-    def +=(kv: (Boolean, Boolean)): this.type = {
+    override def addOne(kv: (Boolean, Boolean)): this.type = {
       val (key, value) = kv
       entries.put(coerceKeyOutput(key), coerceOutput(value))
       this

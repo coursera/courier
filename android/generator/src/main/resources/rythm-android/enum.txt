@@ -4,8 +4,6 @@
 
 @if (enumeration.getNamespace() != null && enumeration.getNamespace().length() > 0) {package @enumeration.getNamespace();}
 
-import javax.annotation.Generated;
-
 @{ String className = JavaSyntax.escapeKeyword(enumeration.getClassName()) }
 
 @** TODO: need an UNKNOWN symbol.

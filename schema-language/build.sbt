@@ -1,5 +1,4 @@
 import CourierBuild._
-import com.simplytyped.Antlr4Plugin._
 
 name := "courier-grammar"
 
@@ -13,7 +12,9 @@ dependencyOverrides += ExternalDependencies.ApacheCommons.io
 
 junitTestSettings
 
-// ANTLR
-antlr4Settings
+Test / fork := true
 
+Test / javaOptions += "-Dreferencesuite.srcdir=" + (LocalProject("referenceSuite") / sourceDirectory).value.getAbsolutePath
+
+// ANTLR
 Antlr4 / antlr4PackageName := Some("org.coursera.courier.grammar")

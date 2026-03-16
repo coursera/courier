@@ -2,8 +2,6 @@
 
 package org.coursera.courier.data
 
-import javax.annotation.Generated
-
 import com.linkedin.data.ByteString
 import com.linkedin.data.DataMap
 import com.linkedin.data.DataList
@@ -20,7 +18,6 @@ import scala.collection.JavaConverters._
 import com.linkedin.data.template.Custom
 import org.coursera.courier.codecs.InlineStringCodec
 
-@Generated(value = Array("BooleanMap"), comments = "Courier Data Template.", date = "Fri Aug 14 14:51:38 PDT 2015")
 final class BooleanMap(private val dataMap: DataMap)
   extends immutable.Iterable[(String, Boolean)]
   with Map[String, Boolean]
@@ -50,6 +47,8 @@ final class BooleanMap(private val dataMap: DataMap)
 
   override def iterator: Iterator[(String, Boolean)] = map.iterator
 
+  override def updated[V1 >: Boolean](key: String, value: V1): Map[String, V1] = this + (key -> value)
+
   override def +[F >: Boolean](kv: (String, F)): Map[String, F] = {
     val (key, value) = kv
     value match {
@@ -64,20 +63,19 @@ final class BooleanMap(private val dataMap: DataMap)
   }
 
 
-        override def -(key: String): BooleanMap = {
+  override def removed(key: String): BooleanMap = {
     val copy = dataMap.copy()
     copy.remove(coerceKeyOutput(key))
     copy.makeReadOnly()
     new BooleanMap(copy)
   }
 
-  override def removed(key: String): BooleanMap = -(key)
-
   override def schema(): DataSchema = BooleanMap.SCHEMA
 
   override def data(): DataMap = dataMap
 
   override def copy(): DataTemplate[DataMap] = this
+  override def clone(): DataTemplate[DataMap] = copy()
 }
 
 object BooleanMap extends MapCompanion[BooleanMap] {
@@ -105,7 +103,7 @@ object BooleanMap extends MapCompanion[BooleanMap] {
 
     val entries = new DataMap(initial.data())
 
-    def +=(kv: (String, Boolean)): this.type = {
+    override def addOne(kv: (String, Boolean)): this.type = {
       val (key, value) = kv
       entries.put(coerceKeyOutput(key), coerceOutput(value))
       this

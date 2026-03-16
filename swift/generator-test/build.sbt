@@ -16,9 +16,9 @@ forkedVmCourierGeneratorSettings
 
 forkedVmCourierMainClass := "org.coursera.courier.SwiftGenerator"
 
-forkedVmCourierClasspath := (swiftGenerator / Runtime / dependencyClasspath).value.files
+forkedVmCourierClasspath := (LocalProject("swiftGenerator") / Runtime / dependencyClasspath).value.files
 
-forkedVmSourceDirectory := (referenceSuite / sourceDirectory).value / "main" / "courier"
+forkedVmSourceDirectory := (LocalProject("referenceSuite") / sourceDirectory).value / "main" / "courier"
 
 forkedVmCourierDest := file("swift") / "testsuite" / "testsuiteTests" / "generated"
 

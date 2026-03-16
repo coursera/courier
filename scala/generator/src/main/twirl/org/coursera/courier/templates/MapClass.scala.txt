@@ -58,8 +58,6 @@
 @if(map.isTopLevel) {
   @map.namespace.map { namespace => package @namespace }
 
-  import javax.annotation.Generated
-
   import com.linkedin.data.ByteString
   import com.linkedin.data.DataMap
   import com.linkedin.data.DataList
@@ -70,10 +68,8 @@
   import com.linkedin.data.template.DataTemplateUtil
   import org.coursera.courier.templates.DataTemplates
   import org.coursera.courier.templates.DataTemplates.DataConversion
-  import scala.collection.generic.CanBuildFrom
-  import scala.collection.immutable.Iterable
-  import scala.collection.immutable.MapLike
-  import scala.collection.mutable.Builder
+  import scala.collection.immutable
+  import scala.collection.mutable
   import scala.collection.JavaConverters._
   import com.linkedin.data.template.Custom
   import org.coursera.courier.codecs.InlineStringCodec
@@ -82,9 +78,8 @@
 }
 
 @ClassAnnotations(map) final class @(map.scalaType)(private val dataMap: DataMap)
-  extends Iterable[(@(map.keyClass.scalaTypeFullname), @(map.valueClass.scalaTypeFullname))]
+  extends immutable.Iterable[(@(map.keyClass.scalaTypeFullname), @(map.valueClass.scalaTypeFullname))]
   with Map[@(map.keyClass.scalaTypeFullname), @(map.valueClass.scalaTypeFullname)]
-  with MapLike[@(map.keyClass.scalaTypeFullname), @(map.valueClass.scalaTypeFullname), scala.collection.immutable.Map[@(map.keyClass.scalaTypeFullname), @(map.valueClass.scalaTypeFullname)]]
   with DataTemplate[DataMap] {
 
   @(map.scalaType) // force static initialization
@@ -105,6 +100,8 @@
 
   override def iterator: Iterator[(@(map.keyClass.scalaTypeFullname), @(map.valueClass.scalaTypeFullname))] = map.iterator
 
+  override def updated[V1 >: @(map.valueClass.scalaTypeFullname)](key: @(map.keyClass.scalaTypeFullname), value: V1): Map[@(map.keyClass.scalaTypeFullname), V1] = this + (key -> value)
+
   override def +[F >: @(map.valueClass.scalaTypeFullname)](kv: (@(map.keyClass.scalaTypeFullname), F)): Map[@(map.keyClass.scalaTypeFullname), F] = {
     val (key, value) = kv
     value match {
@@ -118,7 +115,7 @@
     }
   }
 
-  override def -(key: @(map.keyClass.scalaTypeFullname)): @(map.scalaType) = {
+  override def removed(key: @(map.keyClass.scalaTypeFullname)): @(map.scalaType) = {
     val copy = dataMap.copy()
     copy.remove(coerceKeyOutput(key))
     copy.makeReadOnly()
@@ -169,17 +166,12 @@ object @(map.scalaType) extends MapCompanion[@(map.scalaType)]{
 
   def newBuilder = new DataBuilder()
 
-  implicit val canBuildFrom = new CanBuildFrom[@(map.scalaType), (@(map.keyClass.scalaTypeFullname), @(map.valueClass.scalaTypeFullname)), @(map.scalaType)] {
-    def apply(from: @(map.scalaType)) = new DataBuilder(from)
-    def apply() = newBuilder
-  }
-
-  class DataBuilder(initial: @(map.scalaType)) extends Builder[(@(map.keyClass.scalaTypeFullname), @(map.valueClass.scalaTypeFullname)), @(map.scalaType)] {
+  class DataBuilder(initial: @(map.scalaType)) extends mutable.Builder[(@(map.keyClass.scalaTypeFullname), @(map.valueClass.scalaTypeFullname)), @(map.scalaType)] {
     def this() = this(new @(map.scalaType)(new DataMap()))
 
     val entries = new DataMap(initial.data())
 
-    def +=(kv: (@(map.keyClass.scalaTypeFullname), @(map.valueClass.scalaTypeFullname))): this.type = {
+    override def addOne(kv: (@(map.keyClass.scalaTypeFullname), @(map.valueClass.scalaTypeFullname))): this.type = {
       val (key, value) = kv
       entries.put(coerceKeyOutput(key), coerceOutput(value))
       this
@@ -206,7 +198,7 @@ object @(map.scalaType) extends MapCompanion[@(map.scalaType)]{
   @map.valueClass match {
     case _: ArrayDefinition | _: MapDefinition => {
       implicit def wrap(map: @(map.scalaGenericCollectionType)): @(map.scalaType) = {
-        @(map.scalaType)(map.mapValues(@(map.valueClass.scalaTypeFullname).wrap))
+        @(map.scalaType)(map.view.mapValues(@(map.valueClass.scalaTypeFullname).wrap).toMap)
       }
     }
     case _ => {

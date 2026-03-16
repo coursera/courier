@@ -22,4 +22,5 @@ import org.coursera.courier.templates.DataTemplates.DataConversion
 
 trait ScalaArrayTemplate extends DataTemplate[DataList] with ScalaTemplate {
   def copy(dataList: DataList, conversion: DataConversion): ScalaArrayTemplate
+  override def clone(): DataTemplate[DataList] = copy()
 }

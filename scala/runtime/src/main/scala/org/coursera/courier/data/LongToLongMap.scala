@@ -2,8 +2,6 @@
 
 package org.coursera.courier.data
 
-import javax.annotation.Generated
-
 import com.linkedin.data.ByteString
 import com.linkedin.data.DataMap
 import com.linkedin.data.DataList
@@ -20,7 +18,6 @@ import scala.collection.JavaConverters._
 import com.linkedin.data.template.Custom
 import org.coursera.courier.codecs.InlineStringCodec
 
-@Generated(value = Array("LongToLongMap"), comments = "Courier Data Template.", date = "Fri Aug 14 14:51:38 PDT 2015")
 final class LongToLongMap(private val dataMap: DataMap)
   extends immutable.Iterable[(Long, Long)]
   with Map[Long, Long]
@@ -50,6 +47,8 @@ final class LongToLongMap(private val dataMap: DataMap)
 
   override def iterator: Iterator[(Long, Long)] = map.iterator
 
+  override def updated[V1 >: Long](key: Long, value: V1): Map[Long, V1] = this + (key -> value)
+
   override def +[F >: Long](kv: (Long, F)): Map[Long, F] = {
     val (key, value) = kv
     value match {
@@ -64,20 +63,19 @@ final class LongToLongMap(private val dataMap: DataMap)
   }
 
 
-        override def -(key: Long): LongToLongMap = {
+  override def removed(key: Long): LongToLongMap = {
     val copy = dataMap.copy()
     copy.remove(coerceKeyOutput(key))
     copy.makeReadOnly()
     new LongToLongMap(copy)
   }
 
-  override def removed(key: Long): LongToLongMap = -(key)
-
   override def schema(): DataSchema = LongToLongMap.SCHEMA
 
   override def data(): DataMap = dataMap
 
   override def copy(): DataTemplate[DataMap] = this
+  override def clone(): DataTemplate[DataMap] = copy()
 }
 
 object LongToLongMap extends MapCompanion[LongToLongMap] {
@@ -105,7 +103,7 @@ object LongToLongMap extends MapCompanion[LongToLongMap] {
 
     val entries = new DataMap(initial.data())
 
-    def +=(kv: (Long, Long)): this.type = {
+    override def addOne(kv: (Long, Long)): this.type = {
       val (key, value) = kv
       entries.put(coerceKeyOutput(key), coerceOutput(value))
       this
