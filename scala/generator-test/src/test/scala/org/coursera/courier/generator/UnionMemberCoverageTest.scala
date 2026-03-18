@@ -64,7 +64,7 @@ class UnionMemberCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testWithComplexTypesMapUnion_build_intMember(): Unit = {
     val dataMap = new DataMap()
-    dataMap.put("int", 7)
+    dataMap.put("int", 7: java.lang.Integer)
     dataMap.makeReadOnly()
     val built = WithComplexTypesMapUnion.build(dataMap, DataConversion.SetReadOnly)
     assert(built.isInstanceOf[WithComplexTypesMapUnion.IntMember])

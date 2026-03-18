@@ -712,7 +712,7 @@ class ComplexTypesGeneratorTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testUnionTyperef_build_intMember(): Unit = {
     val dataMap = new DataMap()
-    dataMap.put("int", 99)
+    dataMap.put("int", 99: java.lang.Integer)
     dataMap.makeReadOnly()
     val built = UnionTyperef.build(dataMap, DataConversion.SetReadOnly)
     assert(built.isInstanceOf[UnionTyperef.IntMember])
