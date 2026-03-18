@@ -627,7 +627,7 @@ class AnonymousUnionGeneratorTest extends GeneratorTest with SchemaFixtures {
     val m = UnionsMapMap("a" -> UnionsMap.IntMember(1))
     val copied = m.copy()
     assert(copied eq m)  // copy() returns this
-    val cloned = m.copy()
+    val cloned = m.clone()
     assert(cloned eq m)  // clone() returns this
   }
 
