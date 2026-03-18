@@ -113,6 +113,7 @@ object @(array.scalaType) extends ArrayCompanion[@(array.scalaType)] {
 
     val elems = new DataList(initial.data())
 
+    // Scala 2.13+ Builder API (replaces `+=` from 2.12). Generated code requires Scala 2.13.
     override def addOne(x: @(array.itemClass.scalaTypeFullname)): this.type = {
       elems.add(coerceOutput(x))
       this

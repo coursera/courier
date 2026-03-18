@@ -115,6 +115,7 @@
     }
   }
 
+  // Scala 2.13+ Map API (replaces `-` from 2.12). Generated code requires Scala 2.13.
   override def removed(key: @(map.keyClass.scalaTypeFullname)): @(map.scalaType) = {
     val copy = dataMap.copy()
     copy.remove(coerceKeyOutput(key))
@@ -171,6 +172,7 @@ object @(map.scalaType) extends MapCompanion[@(map.scalaType)]{
 
     val entries = new DataMap(initial.data())
 
+    // Scala 2.13+ Builder API (replaces `+=` from 2.12). Generated code requires Scala 2.13.
     override def addOne(kv: (@(map.keyClass.scalaTypeFullname), @(map.valueClass.scalaTypeFullname))): this.type = {
       val (key, value) = kv
       entries.put(coerceKeyOutput(key), coerceOutput(value))
