@@ -53,8 +53,8 @@ class NumericArrayTypesTest extends AssertionsForJUnit {
 
   @Test def doubleArray_builder_addOne(): Unit = {
     val builder = DoubleArray.newBuilder
-    builder += (1.1)
-    builder += (2.2)
+    builder.addOne(1.1)
+    builder.addOne(2.2)
     val arr = builder.result()
     assertResult(2)(arr.length)
     assertResult(1.1)(arr(0))
@@ -63,9 +63,9 @@ class NumericArrayTypesTest extends AssertionsForJUnit {
 
   @Test def doubleArray_builder_clear(): Unit = {
     val builder = DoubleArray.newBuilder
-    builder += (9.9)
+    builder.addOne(9.9)
     builder.clear()
-    builder += (3.3)
+    builder.addOne(3.3)
     val arr = builder.result()
     assertResult(1)(arr.length)
     assertResult(3.3)(arr(0))
@@ -92,8 +92,8 @@ class NumericArrayTypesTest extends AssertionsForJUnit {
 
   @Test def floatArray_builder_addOne(): Unit = {
     val builder = FloatArray.newBuilder
-    builder += (1.1f)
-    builder += (2.2f)
+    builder.addOne(1.1f)
+    builder.addOne(2.2f)
     val arr = builder.result()
     assertResult(2)(arr.length)
     assertResult(1.1f)(arr(0))
@@ -101,9 +101,9 @@ class NumericArrayTypesTest extends AssertionsForJUnit {
 
   @Test def floatArray_builder_clear(): Unit = {
     val builder = FloatArray.newBuilder
-    builder += (9.9f)
+    builder.addOne(9.9f)
     builder.clear()
-    builder += (3.3f)
+    builder.addOne(3.3f)
     val arr = builder.result()
     assertResult(1)(arr.length)
     assertResult(3.3f)(arr(0))
@@ -131,8 +131,8 @@ class NumericArrayTypesTest extends AssertionsForJUnit {
 
   @Test def longArray_builder_addOne(): Unit = {
     val builder = LongArray.newBuilder
-    builder += (111L)
-    builder += (222L)
+    builder.addOne(111L)
+    builder.addOne(222L)
     val arr = builder.result()
     assertResult(2)(arr.length)
     assertResult(111L)(arr(0))
@@ -141,9 +141,9 @@ class NumericArrayTypesTest extends AssertionsForJUnit {
 
   @Test def longArray_builder_clear(): Unit = {
     val builder = LongArray.newBuilder
-    builder += (999L)
+    builder.addOne(999L)
     builder.clear()
-    builder += (333L)
+    builder.addOne(333L)
     val arr = builder.result()
     assertResult(1)(arr.length)
     assertResult(333L)(arr(0))
@@ -170,8 +170,8 @@ class NumericArrayTypesTest extends AssertionsForJUnit {
 
   @Test def bytesArray_builder_addOne(): Unit = {
     val builder = BytesArray.newBuilder
-    builder += (bs1)
-    builder += (bs2)
+    builder.addOne(bs1)
+    builder.addOne(bs2)
     val arr = builder.result()
     assertResult(2)(arr.length)
     assertResult(bs1)(arr(0))
@@ -180,9 +180,9 @@ class NumericArrayTypesTest extends AssertionsForJUnit {
 
   @Test def bytesArray_builder_clear(): Unit = {
     val builder = BytesArray.newBuilder
-    builder += (bs1)
+    builder.addOne(bs1)
     builder.clear()
-    builder += (bs2)
+    builder.addOne(bs2)
     val arr = builder.result()
     assertResult(1)(arr.length)
     assertResult(bs2)(arr(0))
@@ -207,7 +207,7 @@ class NumericArrayTypesTest extends AssertionsForJUnit {
 
   @Test def bytesArray_clone(): Unit = {
     val arr = BytesArray(bs1)
-    val cloned = arr.copy().asInstanceOf[BytesArray]
+    val cloned = arr.clone().asInstanceOf[BytesArray]
     assertResult(1)(cloned.length)
   }
 
@@ -255,7 +255,7 @@ class NumericArrayTypesTest extends AssertionsForJUnit {
 
   @Test def doubleArray_clone(): Unit = {
     val arr = DoubleArray(1.0, 2.0)
-    val cloned = arr.copy().asInstanceOf[DoubleArray]
+    val cloned = arr.clone().asInstanceOf[DoubleArray]
     assertResult(2)(cloned.length)
   }
 

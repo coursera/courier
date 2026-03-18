@@ -166,8 +166,8 @@ class MiscRecordGeneratorTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testToggleToStringMap_dataBuilder(): Unit = {
     val builder = ToggleToStringMap.newBuilder
-    builder += (Toggle.UP -> "up")
-    builder += (Toggle.DOWN -> "dn")
+    builder.addOne(Toggle.UP -> "up")
+    builder.addOne(Toggle.DOWN -> "dn")
     val result = builder.result()
     assert(result.size === 2)
     assert(result.get(Toggle.UP) === Some("up"))
@@ -176,7 +176,7 @@ class MiscRecordGeneratorTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testToggleToStringMap_dataBuilder_clear(): Unit = {
     val builder = ToggleToStringMap.newBuilder
-    builder += (Toggle.UP -> "up")
+    builder.addOne(Toggle.UP -> "up")
     builder.clear()
     val result = builder.result()
     assert(result.isEmpty)

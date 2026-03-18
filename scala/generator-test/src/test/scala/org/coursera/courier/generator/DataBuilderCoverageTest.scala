@@ -68,8 +68,8 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testSimpleArray_dataBuilder(): Unit = {
     val builder = SimpleArray.newBuilder
-    builder += (Simple(Some("a")))
-    builder += (Simple(Some("b")))
+    builder.addOne(Simple(Some("a")))
+    builder.addOne(Simple(Some("b")))
     val result = builder.result()
     assert(result.length === 2)
     assert(result(0).message === Some("a"))
@@ -79,7 +79,7 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testSimpleArray_dataBuilder_clear(): Unit = {
     val builder = SimpleArray.newBuilder
-    builder += (Simple(Some("x")))
+    builder.addOne(Simple(Some("x")))
     builder.clear()
     val result = builder.result()
     assert(result.length === 0)
@@ -92,7 +92,7 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testSimpleArrayArray_dataBuilder(): Unit = {
     val builder = SimpleArrayArray.newBuilder
-    builder += (SimpleArray(Simple(Some("a"))))
+    builder.addOne(SimpleArray(Simple(Some("a"))))
     val result = builder.result()
     assert(result.length === 1)
   }
@@ -100,7 +100,7 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testSimpleArrayArray_dataBuilder_clear(): Unit = {
     val builder = SimpleArrayArray.newBuilder
-    builder += (SimpleArray(Simple(Some("x"))))
+    builder.addOne(SimpleArray(Simple(Some("x"))))
     builder.clear()
     assert(builder.result().length === 0)
   }
@@ -112,8 +112,8 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testSimpleMap_dataBuilder(): Unit = {
     val builder = SimpleMap.newBuilder
-    builder += ("k1" -> Simple(Some("v1")))
-    builder += ("k2" -> Simple(Some("v2")))
+    builder.addOne("k1" -> Simple(Some("v1")))
+    builder.addOne("k2" -> Simple(Some("v2")))
     val result = builder.result()
     assert(result.size === 2)
     assert(result.get("k1").flatMap(_.message) === Some("v1"))
@@ -122,7 +122,7 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testSimpleMap_dataBuilder_clear(): Unit = {
     val builder = SimpleMap.newBuilder
-    builder += ("k" -> Simple(Some("v")))
+    builder.addOne("k" -> Simple(Some("v")))
     builder.clear()
     assert(builder.result().size === 0)
   }
@@ -134,7 +134,7 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testSimpleMapArray_dataBuilder(): Unit = {
     val builder = SimpleMapArray.newBuilder
-    builder += (SimpleMap("k" -> Simple(Some("v"))))
+    builder.addOne(SimpleMap("k" -> Simple(Some("v"))))
     val result = builder.result()
     assert(result.length === 1)
   }
@@ -142,7 +142,7 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testSimpleMapArray_dataBuilder_clear(): Unit = {
     val builder = SimpleMapArray.newBuilder
-    builder += (SimpleMap("k" -> Simple(Some("v"))))
+    builder.addOne(SimpleMap("k" -> Simple(Some("v"))))
     builder.clear()
     assert(builder.result().length === 0)
   }
@@ -154,7 +154,7 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testSimpleMapMap_dataBuilder(): Unit = {
     val builder = SimpleMapMap.newBuilder
-    builder += ("outer" -> SimpleMap("inner" -> Simple(Some("v"))))
+    builder.addOne("outer" -> SimpleMap("inner" -> Simple(Some("v"))))
     val result = builder.result()
     assert(result.size === 1)
   }
@@ -162,7 +162,7 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testSimpleMapMap_dataBuilder_clear(): Unit = {
     val builder = SimpleMapMap.newBuilder
-    builder += ("k" -> SimpleMap("kk" -> Simple(Some("v"))))
+    builder.addOne("k" -> SimpleMap("kk" -> Simple(Some("v"))))
     builder.clear()
     assert(builder.result().size === 0)
   }
@@ -174,7 +174,7 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testSimpleArrayMap_dataBuilder(): Unit = {
     val builder = SimpleArrayMap.newBuilder
-    builder += ("key" -> SimpleArray(Simple(Some("v"))))
+    builder.addOne("key" -> SimpleArray(Simple(Some("v"))))
     val result = builder.result()
     assert(result.size === 1)
   }
@@ -186,7 +186,7 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testSimpleToStringMap_dataBuilder(): Unit = {
     val builder = SimpleToStringMap.newBuilder
-    builder += (Simple(Some("k")) -> "value")
+    builder.addOne(Simple(Some("k")) -> "value")
     val result = builder.result()
     assert(result.size === 1)
   }
@@ -194,7 +194,7 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testSimpleToStringMap_dataBuilder_clear(): Unit = {
     val builder = SimpleToStringMap.newBuilder
-    builder += (Simple(Some("k")) -> "v")
+    builder.addOne(Simple(Some("k")) -> "v")
     builder.clear()
     assert(builder.result().size === 0)
   }
@@ -206,8 +206,8 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testEmptyArray_dataBuilder(): Unit = {
     val builder = EmptyArray.newBuilder
-    builder += (Empty())
-    builder += (Empty())
+    builder.addOne(Empty())
+    builder.addOne(Empty())
     val result = builder.result()
     assert(result.length === 2)
   }
@@ -215,7 +215,7 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testEmptyArray_dataBuilder_clear(): Unit = {
     val builder = EmptyArray.newBuilder
-    builder += (Empty())
+    builder.addOne(Empty())
     builder.clear()
     assert(builder.result().length === 0)
   }
@@ -227,8 +227,8 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testEmptyMap_dataBuilder(): Unit = {
     val builder = EmptyMap.newBuilder
-    builder += ("k1" -> Empty())
-    builder += ("k2" -> Empty())
+    builder.addOne("k1" -> Empty())
+    builder.addOne("k2" -> Empty())
     val result = builder.result()
     assert(result.size === 2)
   }
@@ -236,7 +236,7 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testEmptyMap_dataBuilder_clear(): Unit = {
     val builder = EmptyMap.newBuilder
-    builder += ("k" -> Empty())
+    builder.addOne("k" -> Empty())
     builder.clear()
     assert(builder.result().size === 0)
   }
@@ -248,8 +248,8 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testFruitsArray_dataBuilder(): Unit = {
     val builder = FruitsArray.newBuilder
-    builder += (Fruits.APPLE)
-    builder += (Fruits.BANANA)
+    builder.addOne(Fruits.APPLE)
+    builder.addOne(Fruits.BANANA)
     val result = builder.result()
     assert(result.length === 2)
     assert(result(0) === Fruits.APPLE)
@@ -259,7 +259,7 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testFruitsArray_dataBuilder_clear(): Unit = {
     val builder = FruitsArray.newBuilder
-    builder += (Fruits.APPLE)
+    builder.addOne(Fruits.APPLE)
     builder.clear()
     assert(builder.result().length === 0)
   }
@@ -271,8 +271,8 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testFruitsMap_dataBuilder(): Unit = {
     val builder = FruitsMap.newBuilder
-    builder += ("a" -> Fruits.APPLE)
-    builder += ("b" -> Fruits.BANANA)
+    builder.addOne("a" -> Fruits.APPLE)
+    builder.addOne("b" -> Fruits.BANANA)
     val result = builder.result()
     assert(result.size === 2)
     assert(result.get("a") === Some(Fruits.APPLE))
@@ -281,7 +281,7 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testFruitsMap_dataBuilder_clear(): Unit = {
     val builder = FruitsMap.newBuilder
-    builder += ("k" -> Fruits.APPLE)
+    builder.addOne("k" -> Fruits.APPLE)
     builder.clear()
     assert(builder.result().size === 0)
   }
@@ -293,8 +293,8 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testFruitsToStringMap_dataBuilder(): Unit = {
     val builder = FruitsToStringMap.newBuilder
-    builder += (Fruits.APPLE -> "apple")
-    builder += (Fruits.BANANA -> "banana")
+    builder.addOne(Fruits.APPLE -> "apple")
+    builder.addOne(Fruits.BANANA -> "banana")
     val result = builder.result()
     assert(result.size === 2)
     assert(result.get(Fruits.APPLE) === Some("apple"))
@@ -303,7 +303,7 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testFruitsToStringMap_dataBuilder_clear(): Unit = {
     val builder = FruitsToStringMap.newBuilder
-    builder += (Fruits.APPLE -> "apple")
+    builder.addOne(Fruits.APPLE -> "apple")
     builder.clear()
     assert(builder.result().size === 0)
   }
@@ -315,7 +315,7 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testFixed8Array_dataBuilder(): Unit = {
     val builder = Fixed8Array.newBuilder
-    builder += (Fixed8(bytesFixed8))
+    builder.addOne(Fixed8(bytesFixed8))
     val result = builder.result()
     assert(result.length === 1)
   }
@@ -323,7 +323,7 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testFixed8Array_dataBuilder_clear(): Unit = {
     val builder = Fixed8Array.newBuilder
-    builder += (Fixed8(bytesFixed8))
+    builder.addOne(Fixed8(bytesFixed8))
     builder.clear()
     assert(builder.result().length === 0)
   }
@@ -335,7 +335,7 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testFixed8Map_dataBuilder(): Unit = {
     val builder = Fixed8Map.newBuilder
-    builder += ("k" -> Fixed8(bytesFixed8))
+    builder.addOne("k" -> Fixed8(bytesFixed8))
     val result = builder.result()
     assert(result.size === 1)
   }
@@ -343,7 +343,7 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testFixed8Map_dataBuilder_clear(): Unit = {
     val builder = Fixed8Map.newBuilder
-    builder += ("k" -> Fixed8(bytesFixed8))
+    builder.addOne("k" -> Fixed8(bytesFixed8))
     builder.clear()
     assert(builder.result().size === 0)
   }
@@ -355,7 +355,7 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testFixed8ToStringMap_dataBuilder(): Unit = {
     val builder = Fixed8ToStringMap.newBuilder
-    builder += (Fixed8(bytesFixed8) -> "fixed")
+    builder.addOne(Fixed8(bytesFixed8) -> "fixed")
     val result = builder.result()
     assert(result.size === 1)
   }
@@ -363,7 +363,7 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testFixed8ToStringMap_dataBuilder_clear(): Unit = {
     val builder = Fixed8ToStringMap.newBuilder
-    builder += (Fixed8(bytesFixed8) -> "fixed")
+    builder.addOne(Fixed8(bytesFixed8) -> "fixed")
     builder.clear()
     assert(builder.result().size === 0)
   }
@@ -375,8 +375,8 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testCustomIntArray_dataBuilder(): Unit = {
     val builder = CustomIntArray.newBuilder
-    builder += (CustomInt(1))
-    builder += (CustomInt(2))
+    builder.addOne(CustomInt(1))
+    builder.addOne(CustomInt(2))
     val result = builder.result()
     assert(result.length === 2)
     assert(result(0) === CustomInt(1))
@@ -385,7 +385,7 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testCustomIntArray_dataBuilder_clear(): Unit = {
     val builder = CustomIntArray.newBuilder
-    builder += (CustomInt(1))
+    builder.addOne(CustomInt(1))
     builder.clear()
     assert(builder.result().length === 0)
   }
@@ -397,8 +397,8 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testCustomIntMap_dataBuilder(): Unit = {
     val builder = CustomIntMap.newBuilder
-    builder += ("a" -> CustomInt(10))
-    builder += ("b" -> CustomInt(20))
+    builder.addOne("a" -> CustomInt(10))
+    builder.addOne("b" -> CustomInt(20))
     val result = builder.result()
     assert(result.size === 2)
     assert(result.get("a") === Some(CustomInt(10)))
@@ -407,7 +407,7 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testCustomIntMap_dataBuilder_clear(): Unit = {
     val builder = CustomIntMap.newBuilder
-    builder += ("k" -> CustomInt(1))
+    builder.addOne("k" -> CustomInt(1))
     builder.clear()
     assert(builder.result().size === 0)
   }
@@ -419,7 +419,7 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testCustomIntToStringMap_dataBuilder(): Unit = {
     val builder = CustomIntToStringMap.newBuilder
-    builder += (CustomInt(1) -> "one")
+    builder.addOne(CustomInt(1) -> "one")
     val result = builder.result()
     assert(result.size === 1)
     assert(result.get(CustomInt(1)) === Some("one"))
@@ -428,7 +428,7 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testCustomIntToStringMap_dataBuilder_clear(): Unit = {
     val builder = CustomIntToStringMap.newBuilder
-    builder += (CustomInt(1) -> "one")
+    builder.addOne(CustomInt(1) -> "one")
     builder.clear()
     assert(builder.result().size === 0)
   }
@@ -440,8 +440,8 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testCustomRecordArray_dataBuilder(): Unit = {
     val builder = CustomRecordArray.newBuilder
-    builder += (CustomRecord("t1", "b1"))
-    builder += (CustomRecord("t2", "b2"))
+    builder.addOne(CustomRecord("t1", "b1"))
+    builder.addOne(CustomRecord("t2", "b2"))
     val result = builder.result()
     assert(result.length === 2)
     assert(result(0).title === "t1")
@@ -450,7 +450,7 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testCustomRecordArray_dataBuilder_clear(): Unit = {
     val builder = CustomRecordArray.newBuilder
-    builder += (CustomRecord("t", "b"))
+    builder.addOne(CustomRecord("t", "b"))
     builder.clear()
     assert(builder.result().length === 0)
   }
@@ -462,7 +462,7 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testCustomRecordToCustomRecordMap_dataBuilder(): Unit = {
     val builder = CustomRecordToCustomRecordMap.newBuilder
-    builder += (CustomRecord("kt", "kb") -> CustomRecord("vt", "vb"))
+    builder.addOne(CustomRecord("kt", "kb") -> CustomRecord("vt", "vb"))
     val result = builder.result()
     assert(result.size === 1)
   }
@@ -470,7 +470,7 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testCustomRecordToCustomRecordMap_dataBuilder_clear(): Unit = {
     val builder = CustomRecordToCustomRecordMap.newBuilder
-    builder += (CustomRecord("k", "k") -> CustomRecord("v", "v"))
+    builder.addOne(CustomRecord("k", "k") -> CustomRecord("v", "v"))
     builder.clear()
     assert(builder.result().size === 0)
   }
@@ -482,8 +482,8 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testCustomArrayTestIdArray_dataBuilder(): Unit = {
     val builder = CustomArrayTestIdArray.newBuilder
-    builder += (CustomArrayTestId(1))
-    builder += (CustomArrayTestId(2))
+    builder.addOne(CustomArrayTestId(1))
+    builder.addOne(CustomArrayTestId(2))
     val result = builder.result()
     assert(result.length === 2)
   }
@@ -491,7 +491,7 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testCustomArrayTestIdArray_dataBuilder_clear(): Unit = {
     val builder = CustomArrayTestIdArray.newBuilder
-    builder += (CustomArrayTestId(1))
+    builder.addOne(CustomArrayTestId(1))
     builder.clear()
     assert(builder.result().length === 0)
   }
@@ -503,7 +503,7 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testCustomMapTestKeyIdMap_dataBuilder(): Unit = {
     val builder = CustomMapTestKeyIdToCustomMapTestValueIdMap.newBuilder
-    builder += (CustomMapTestKeyId(1) -> CustomMapTestValueId(100))
+    builder.addOne(CustomMapTestKeyId(1) -> CustomMapTestValueId(100))
     val result = builder.result()
     assert(result.size === 1)
     assert(result.get(CustomMapTestKeyId(1)) === Some(CustomMapTestValueId(100)))
@@ -512,7 +512,7 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testCustomMapTestKeyIdMap_dataBuilder_clear(): Unit = {
     val builder = CustomMapTestKeyIdToCustomMapTestValueIdMap.newBuilder
-    builder += (CustomMapTestKeyId(1) -> CustomMapTestValueId(10))
+    builder.addOne(CustomMapTestKeyId(1) -> CustomMapTestValueId(10))
     builder.clear()
     assert(builder.result().size === 0)
   }
@@ -524,8 +524,8 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testIntIdArray_dataBuilder(): Unit = {
     val builder = IntIdArray.newBuilder
-    builder += (IntId(1))
-    builder += (IntId(2))
+    builder.addOne(IntId(1))
+    builder.addOne(IntId(2))
     val result = builder.result()
     assert(result.length === 2)
   }
@@ -533,7 +533,7 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testIntIdArray_dataBuilder_clear(): Unit = {
     val builder = IntIdArray.newBuilder
-    builder += (IntId(1))
+    builder.addOne(IntId(1))
     builder.clear()
     assert(builder.result().length === 0)
   }
@@ -545,7 +545,7 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testIntIdMap_dataBuilder(): Unit = {
     val builder = IntIdMap.newBuilder
-    builder += ("k" -> IntId(10))
+    builder.addOne("k" -> IntId(10))
     val result = builder.result()
     assert(result.size === 1)
   }
@@ -553,7 +553,7 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testIntIdMap_dataBuilder_clear(): Unit = {
     val builder = IntIdMap.newBuilder
-    builder += ("k" -> IntId(1))
+    builder.addOne("k" -> IntId(1))
     builder.clear()
     assert(builder.result().size === 0)
   }
@@ -565,7 +565,7 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testIntIdToStringMap_dataBuilder(): Unit = {
     val builder = IntIdToStringMap.newBuilder
-    builder += (IntId(1) -> "one")
+    builder.addOne(IntId(1) -> "one")
     val result = builder.result()
     assert(result.size === 1)
   }
@@ -573,7 +573,7 @@ class DataBuilderCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testIntIdToStringMap_dataBuilder_clear(): Unit = {
     val builder = IntIdToStringMap.newBuilder
-    builder += (IntId(1) -> "one")
+    builder.addOne(IntId(1) -> "one")
     builder.clear()
     assert(builder.result().size === 0)
   }

@@ -60,7 +60,7 @@ trait CourierPluginCompat {
    */
   protected def restliArtifactSettings(packagingTaskKey: TaskKey[File])(
       ivyConfig: String): Seq[Def.Setting[_]] = {
-    val ivyConfigObject = Configurations.config(ivyConfig)
+    val ivyConfigObject = Configuration.of(ivyConfig.capitalize, ivyConfig, "", isPublic = true, extendsConfigs = Vector.empty, transitive = true)
 
     Seq(
       (artifact in packagingTaskKey) := {

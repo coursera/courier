@@ -138,8 +138,8 @@ class AnonymousUnionGeneratorTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testUnionsArrayArray_dataBuilder(): Unit = {
     val builder = UnionsArrayArray.newBuilder
-    builder += (UnionsArray.IntMember(3))
-    builder += (UnionsArray.StringMember("t"))
+    builder.addOne(UnionsArray.IntMember(3))
+    builder.addOne(UnionsArray.StringMember("t"))
     val result = builder.result()
     assert(result.length === 2)
     assert(result(0).asInstanceOf[UnionsArray.IntMember].value === 3)
@@ -148,7 +148,7 @@ class AnonymousUnionGeneratorTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testUnionsArrayArray_dataBuilder_clear(): Unit = {
     val builder = UnionsArrayArray.newBuilder
-    builder += (UnionsArray.IntMember(1))
+    builder.addOne(UnionsArray.IntMember(1))
     builder.clear()
     val result = builder.result()
     assert(result.length === 0)
@@ -255,7 +255,7 @@ class AnonymousUnionGeneratorTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testUnionsMapMap_removed(): Unit = {
     val m = UnionsMapMap("a" -> UnionsMap.IntMember(1), "b" -> UnionsMap.IntMember(2))
-    val afterRemove = m - "a"
+    val afterRemove = m.removed("a")
     assert(afterRemove.size === 1)
     assert(afterRemove.get("a") === None)
     assert(afterRemove.get("b").isDefined)
@@ -295,8 +295,8 @@ class AnonymousUnionGeneratorTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testUnionsMapMap_dataBuilder(): Unit = {
     val builder = UnionsMapMap.newBuilder
-    builder += ("k1" -> UnionsMap.IntMember(10))
-    builder += ("k2" -> UnionsMap.StringMember("v"))
+    builder.addOne("k1" -> UnionsMap.IntMember(10))
+    builder.addOne("k2" -> UnionsMap.StringMember("v"))
     val result = builder.result()
     assert(result.size === 2)
   }
@@ -304,7 +304,7 @@ class AnonymousUnionGeneratorTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testUnionsMapMap_dataBuilder_clear(): Unit = {
     val builder = UnionsMapMap.newBuilder
-    builder += ("k" -> UnionsMap.IntMember(1))
+    builder.addOne("k" -> UnionsMap.IntMember(1))
     builder.clear()
     val result = builder.result()
     assert(result.size === 0)
@@ -627,7 +627,7 @@ class AnonymousUnionGeneratorTest extends GeneratorTest with SchemaFixtures {
     val m = UnionsMapMap("a" -> UnionsMap.IntMember(1))
     val copied = m.copy()
     assert(copied eq m)  // copy() returns this
-    val cloned = m.clone()
+    val cloned = m.copy()
     assert(cloned eq m)  // clone() returns this
   }
 

@@ -112,8 +112,8 @@ class UnionMemberCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testWithComplexTypesMapUnionMap_dataBuilder(): Unit = {
     val builder = WithComplexTypesMapUnionMap.newBuilder
-    builder += ("k1" -> WithComplexTypesMapUnion.IntMember(1))
-    builder += ("k2" -> WithComplexTypesMapUnion.StringMember("v2"))
+    builder.addOne("k1" -> WithComplexTypesMapUnion.IntMember(1))
+    builder.addOne("k2" -> WithComplexTypesMapUnion.StringMember("v2"))
     val result = builder.result()
     assert(result.size === 2)
     assert(result.get("k1").exists(_.isInstanceOf[WithComplexTypesMapUnion.IntMember]))
@@ -122,7 +122,7 @@ class UnionMemberCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testWithComplexTypesMapUnionMap_dataBuilder_clear(): Unit = {
     val builder = WithComplexTypesMapUnionMap.newBuilder
-    builder += ("k1" -> WithComplexTypesMapUnion.IntMember(1))
+    builder.addOne("k1" -> WithComplexTypesMapUnion.IntMember(1))
     builder.clear()
     assert(builder.result().size === 0)
   }
@@ -203,8 +203,8 @@ class UnionMemberCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testWithCustomTypesArrayUnionArray_dataBuilder(): Unit = {
     val builder = WithCustomTypesArrayUnionArray.newBuilder
-    builder += (WithCustomTypesArrayUnion.IntMember(1))
-    builder += (WithCustomTypesArrayUnion.StringMember("s"))
+    builder.addOne(WithCustomTypesArrayUnion.IntMember(1))
+    builder.addOne(WithCustomTypesArrayUnion.StringMember("s"))
     val result = builder.result()
     assert(result.length === 2)
   }
@@ -212,7 +212,7 @@ class UnionMemberCoverageTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testWithCustomTypesArrayUnionArray_dataBuilder_clear(): Unit = {
     val builder = WithCustomTypesArrayUnionArray.newBuilder
-    builder += (WithCustomTypesArrayUnion.IntMember(1))
+    builder.addOne(WithCustomTypesArrayUnion.IntMember(1))
     builder.clear()
     assert(builder.result().length === 0)
   }

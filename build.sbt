@@ -4,6 +4,7 @@ import play.twirl.sbt.SbtTwirl
 // --- Global settings ---
 ThisBuild / organization := "org.coursera.courier"
 ThisBuild / scalaVersion := CourierBuild.currentScalaVersion
+ThisBuild / libraryDependencySchemes += "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
 
 lazy val publishSettings: Seq[Setting[_]] =
   OverridablePublishSettings.settings(org.coursera.courier.sbt.Sonatype.Settings)
@@ -40,6 +41,18 @@ lazy val scalaGenerator =
 lazy val scalaRuntime =
   (project in scalaDir / "runtime")
     .disablePlugins(BintrayPlugin)
+    .settings(
+      // The generated Map/Array data types in the `data` package use Scala 2.13-only
+      // Builder/Map APIs (addOne, removed, updated[V1>:V]). Exclude them for 2.12 builds.
+      // The SBT plugin only needs the coercers/templates/companions from the runtime at 2.12.
+      Compile / unmanagedSources / excludeFilter := {
+        if (scalaBinaryVersion.value == "2.12") {
+          new SimpleFileFilter(f => f.getCanonicalPath.contains("/courier/data/"))
+        } else {
+          NothingFilter
+        }
+      }
+    )
 
 lazy val testLib =
   (project in scalaDir / "test-lib")

@@ -243,8 +243,7 @@ object CourierPlugin extends AutoPlugin with CourierPluginCompat {
     // The resulting settings create the two packaging tasks, put their artifacts in specific
     // Ivy configs, and add their artifacts to the project.
 
-    val defaultConfig = config("default").extend(Runtime).describedAs(
-      "Configuration for default artifacts.")
+    val defaultConfig = Configuration.of("Default", "default", "Configuration for default artifacts.", isPublic = true, extendsConfigs = Vector(Runtime), transitive = true)
 
     val dataTemplateConfig = createCourierConfiguration
     val dataTemplateArtifactConfig = createCourierArtifactConfiguration

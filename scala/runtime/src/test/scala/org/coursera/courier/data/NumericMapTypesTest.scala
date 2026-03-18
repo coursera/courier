@@ -40,7 +40,7 @@ class NumericMapTypesTest extends AssertionsForJUnit {
 
   @Test def doubleMap_removed(): Unit = {
     val m = DoubleMap("a" -> 1.0, "b" -> 2.0)
-    val m2 = m - ("a")
+    val m2 = m.removed("a")
     assertResult(None)(m2.get("a"))
     assertResult(Some(1.0))(m.get("a")) // original unchanged
   }
@@ -79,7 +79,7 @@ class NumericMapTypesTest extends AssertionsForJUnit {
 
   @Test def floatMap_removed(): Unit = {
     val m = FloatMap("a" -> 1.0f, "b" -> 2.0f)
-    val m2 = m - ("a")
+    val m2 = m.removed("a")
     assertResult(None)(m2.get("a"))
     assertResult(Some(1.0f))(m.get("a"))
   }
@@ -117,7 +117,7 @@ class NumericMapTypesTest extends AssertionsForJUnit {
 
   @Test def longMap_removed(): Unit = {
     val m = LongMap("a" -> 100L, "b" -> 200L)
-    val m2 = m - ("a")
+    val m2 = m.removed("a")
     assertResult(None)(m2.get("a"))
     assertResult(Some(100L))(m.get("a"))
   }
@@ -155,7 +155,7 @@ class NumericMapTypesTest extends AssertionsForJUnit {
 
   @Test def bytesMap_removed(): Unit = {
     val m = BytesMap("a" -> bs1, "b" -> bs2)
-    val m2 = m - ("a")
+    val m2 = m.removed("a")
     assertResult(None)(m2.get("a"))
     assertResult(Some(bs1))(m.get("a"))
   }
@@ -214,8 +214,8 @@ class NumericMapTypesTest extends AssertionsForJUnit {
 
   @Test def doubleMap_builder_addOne(): Unit = {
     val builder = DoubleMap.newBuilder
-    builder += ("a" -> 1.1)
-    builder += ("b" -> 2.2)
+    builder.addOne("a" -> 1.1)
+    builder.addOne("b" -> 2.2)
     val m = builder.result()
     assertResult(Some(1.1))(m.get("a"))
     assertResult(Some(2.2))(m.get("b"))
@@ -223,9 +223,9 @@ class NumericMapTypesTest extends AssertionsForJUnit {
 
   @Test def doubleMap_builder_clear(): Unit = {
     val builder = DoubleMap.newBuilder
-    builder += ("a" -> 9.9)
+    builder.addOne("a" -> 9.9)
     builder.clear()
-    builder += ("b" -> 3.3)
+    builder.addOne("b" -> 3.3)
     val m = builder.result()
     assertResult(None)(m.get("a"))
     assertResult(Some(3.3))(m.get("b"))
@@ -233,16 +233,16 @@ class NumericMapTypesTest extends AssertionsForJUnit {
 
   @Test def floatMap_builder_addOne(): Unit = {
     val builder = FloatMap.newBuilder
-    builder += ("a" -> 1.1f)
+    builder.addOne("a" -> 1.1f)
     val m = builder.result()
     assertResult(Some(1.1f))(m.get("a"))
   }
 
   @Test def floatMap_builder_clear(): Unit = {
     val builder = FloatMap.newBuilder
-    builder += ("a" -> 9.9f)
+    builder.addOne("a" -> 9.9f)
     builder.clear()
-    builder += ("b" -> 3.3f)
+    builder.addOne("b" -> 3.3f)
     val m = builder.result()
     assertResult(None)(m.get("a"))
     assertResult(Some(3.3f))(m.get("b"))
@@ -250,16 +250,16 @@ class NumericMapTypesTest extends AssertionsForJUnit {
 
   @Test def longMap_builder_addOne(): Unit = {
     val builder = LongMap.newBuilder
-    builder += ("a" -> 100L)
+    builder.addOne("a" -> 100L)
     val m = builder.result()
     assertResult(Some(100L))(m.get("a"))
   }
 
   @Test def longMap_builder_clear(): Unit = {
     val builder = LongMap.newBuilder
-    builder += ("a" -> 999L)
+    builder.addOne("a" -> 999L)
     builder.clear()
-    builder += ("b" -> 42L)
+    builder.addOne("b" -> 42L)
     val m = builder.result()
     assertResult(None)(m.get("a"))
     assertResult(Some(42L))(m.get("b"))
@@ -267,8 +267,8 @@ class NumericMapTypesTest extends AssertionsForJUnit {
 
   @Test def bytesMap_builder_addOne(): Unit = {
     val builder = BytesMap.newBuilder
-    builder += ("x" -> bs1)
-    builder += ("y" -> bs2)
+    builder.addOne("x" -> bs1)
+    builder.addOne("y" -> bs2)
     val m = builder.result()
     assertResult(Some(bs1))(m.get("x"))
     assertResult(Some(bs2))(m.get("y"))
@@ -276,9 +276,9 @@ class NumericMapTypesTest extends AssertionsForJUnit {
 
   @Test def bytesMap_builder_clear(): Unit = {
     val builder = BytesMap.newBuilder
-    builder += ("x" -> bs1)
+    builder.addOne("x" -> bs1)
     builder.clear()
-    builder += ("y" -> bs2)
+    builder.addOne("y" -> bs2)
     val m = builder.result()
     assertResult(None)(m.get("x"))
     assertResult(Some(bs2))(m.get("y"))

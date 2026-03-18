@@ -59,8 +59,8 @@ class PrimitiveDataTypesTest extends AssertionsForJUnit {
   def booleanArray_builder_addOne(): Unit = {
     // addOne replaced += in Scala 2.13 Builder API
     val builder = BooleanArray.newBuilder
-    builder += (true)
-    builder += (false)
+    builder.addOne(true)
+    builder.addOne(false)
     val arr = builder.result()
     assertResult(2)(arr.length)
     assertResult(true)(arr(0))
@@ -70,9 +70,9 @@ class PrimitiveDataTypesTest extends AssertionsForJUnit {
   @Test
   def booleanArray_builder_clear(): Unit = {
     val builder = BooleanArray.newBuilder
-    builder += (true)
+    builder.addOne(true)
     builder.clear()
-    builder += (false)
+    builder.addOne(false)
     val arr = builder.result()
     assertResult(1)(arr.length)
     assertResult(false)(arr(0))
@@ -120,7 +120,7 @@ class PrimitiveDataTypesTest extends AssertionsForJUnit {
   def booleanMap_removed(): Unit = {
     // removed replaces - in Scala 2.13 Map trait
     val m = BooleanMap("a" -> true, "b" -> false)
-    val m2 = m - ("a")
+    val m2 = m.removed("a")
     assertResult(None)(m2.get("a"))
     assertResult(Some(false))(m2.get("b"))
     assertResult(Some(true))(m.get("a"))  // original unchanged
@@ -129,7 +129,7 @@ class PrimitiveDataTypesTest extends AssertionsForJUnit {
   @Test
   def booleanMap_removed_missingKey(): Unit = {
     val m = BooleanMap("a" -> true)
-    val m2 = m - ("nonexistent")
+    val m2 = m.removed("nonexistent")
     assertResult(1)(m2.size)
   }
 
@@ -145,8 +145,8 @@ class PrimitiveDataTypesTest extends AssertionsForJUnit {
   @Test
   def booleanMap_builder_addOne(): Unit = {
     val builder = BooleanMap.newBuilder
-    builder += ("k1" -> true)
-    builder += ("k2" -> false)
+    builder.addOne("k1" -> true)
+    builder.addOne("k2" -> false)
     val m = builder.result()
     assertResult(Some(true))(m.get("k1"))
     assertResult(Some(false))(m.get("k2"))
@@ -155,9 +155,9 @@ class PrimitiveDataTypesTest extends AssertionsForJUnit {
   @Test
   def booleanMap_builder_clear(): Unit = {
     val builder = BooleanMap.newBuilder
-    builder += ("k1" -> true)
+    builder.addOne("k1" -> true)
     builder.clear()
-    builder += ("k2" -> false)
+    builder.addOne("k2" -> false)
     val m = builder.result()
     assertResult(None)(m.get("k1"))
     assertResult(Some(false))(m.get("k2"))
@@ -189,8 +189,8 @@ class PrimitiveDataTypesTest extends AssertionsForJUnit {
   @Test
   def intArray_builder_addOne(): Unit = {
     val builder = IntArray.newBuilder
-    builder += (10)
-    builder += (20)
+    builder.addOne(10)
+    builder.addOne(20)
     val arr = builder.result()
     assertResult(2)(arr.length)
     assertResult(10)(arr(0))
@@ -225,7 +225,7 @@ class PrimitiveDataTypesTest extends AssertionsForJUnit {
   @Test
   def intMap_removed(): Unit = {
     val m = IntMap("a" -> 1, "b" -> 2)
-    val m2 = m - ("a")
+    val m2 = m.removed("a")
     assertResult(None)(m2.get("a"))
     assertResult(Some(2))(m2.get("b"))
   }
@@ -241,7 +241,7 @@ class PrimitiveDataTypesTest extends AssertionsForJUnit {
   @Test
   def intMap_builder_addOne(): Unit = {
     val builder = IntMap.newBuilder
-    builder += ("x" -> 42)
+    builder.addOne("x" -> 42)
     val m = builder.result()
     assertResult(Some(42))(m.get("x"))
   }
@@ -264,8 +264,8 @@ class PrimitiveDataTypesTest extends AssertionsForJUnit {
   @Test
   def stringArray_builder_addOne(): Unit = {
     val builder = StringArray.newBuilder
-    builder += ("foo")
-    builder += ("bar")
+    builder.addOne("foo")
+    builder.addOne("bar")
     val arr = builder.result()
     assertResult(2)(arr.length)
     assertResult("foo")(arr(0))
@@ -292,7 +292,7 @@ class PrimitiveDataTypesTest extends AssertionsForJUnit {
   @Test
   def stringMap_removed(): Unit = {
     val m = StringMap("a" -> "alpha", "b" -> "beta")
-    val m2 = m - ("a")
+    val m2 = m.removed("a")
     assertResult(None)(m2.get("a"))
     assertResult(Some("beta"))(m2.get("b"))
     // original unchanged
@@ -310,8 +310,8 @@ class PrimitiveDataTypesTest extends AssertionsForJUnit {
   @Test
   def stringMap_builder_addOne(): Unit = {
     val builder = StringMap.newBuilder
-    builder += ("greeting" -> "hello")
-    builder += ("farewell" -> "bye")
+    builder.addOne("greeting" -> "hello")
+    builder.addOne("farewell" -> "bye")
     val m = builder.result()
     assertResult(Some("hello"))(m.get("greeting"))
     assertResult(Some("bye"))(m.get("farewell"))
@@ -320,9 +320,9 @@ class PrimitiveDataTypesTest extends AssertionsForJUnit {
   @Test
   def stringMap_builder_clear(): Unit = {
     val builder = StringMap.newBuilder
-    builder += ("k1" -> "v1")
+    builder.addOne("k1" -> "v1")
     builder.clear()
-    builder += ("k2" -> "v2")
+    builder.addOne("k2" -> "v2")
     val m = builder.result()
     assertResult(None)(m.get("k1"))
     assertResult(Some("v2"))(m.get("k2"))
@@ -371,9 +371,9 @@ class PrimitiveDataTypesTest extends AssertionsForJUnit {
   @Test
   def stringArray_builder_clear(): Unit = {
     val builder = StringArray.newBuilder
-    builder += ("foo")
+    builder.addOne("foo")
     builder.clear()
-    builder += ("bar")
+    builder.addOne("bar")
     val arr = builder.result()
     assertResult(1)(arr.length)
     assertResult("bar")(arr(0))
@@ -384,9 +384,9 @@ class PrimitiveDataTypesTest extends AssertionsForJUnit {
   @Test
   def intArray_builder_clear(): Unit = {
     val builder = IntArray.newBuilder
-    builder += (99)
+    builder.addOne(99)
     builder.clear()
-    builder += (1)
+    builder.addOne(1)
     val arr = builder.result()
     assertResult(1)(arr.length)
     assertResult(1)(arr(0))

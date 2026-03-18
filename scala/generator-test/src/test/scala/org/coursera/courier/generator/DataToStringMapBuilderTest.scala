@@ -40,8 +40,8 @@ class DataToStringMapBuilderTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testDoubleToStringMap_dataBuilder(): Unit = {
     val builder = DoubleToStringMap.newBuilder
-    builder += (1.0d -> "one")
-    builder += (2.0d -> "two")
+    builder.addOne(1.0d -> "one")
+    builder.addOne(2.0d -> "two")
     val result = builder.result()
     assert(result.size === 2)
     assert(result.get(1.0d) === Some("one"))
@@ -50,7 +50,7 @@ class DataToStringMapBuilderTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testDoubleToStringMap_dataBuilder_clear(): Unit = {
     val builder = DoubleToStringMap.newBuilder
-    builder += (1.0d -> "one")
+    builder.addOne(1.0d -> "one")
     builder.clear()
     assert(builder.result().size === 0)
   }
@@ -89,8 +89,8 @@ class DataToStringMapBuilderTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testFloatToStringMap_dataBuilder(): Unit = {
     val builder = FloatToStringMap.newBuilder
-    builder += (1.0f -> "one")
-    builder += (2.0f -> "two")
+    builder.addOne(1.0f -> "one")
+    builder.addOne(2.0f -> "two")
     val result = builder.result()
     assert(result.size === 2)
     assert(result.get(1.0f) === Some("one"))
@@ -99,7 +99,7 @@ class DataToStringMapBuilderTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testFloatToStringMap_dataBuilder_clear(): Unit = {
     val builder = FloatToStringMap.newBuilder
-    builder += (1.0f -> "one")
+    builder.addOne(1.0f -> "one")
     builder.clear()
     assert(builder.result().size === 0)
   }
@@ -133,8 +133,8 @@ class DataToStringMapBuilderTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testByteStringToStringMap_dataBuilder(): Unit = {
     val builder = ByteStringToStringMap.newBuilder
-    builder += (bytes1 -> "b1")
-    builder += (bytes2 -> "b2")
+    builder.addOne(bytes1 -> "b1")
+    builder.addOne(bytes2 -> "b2")
     val result = builder.result()
     assert(result.size === 2)
     assert(result.get(bytes1) === Some("b1"))
@@ -143,7 +143,7 @@ class DataToStringMapBuilderTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testByteStringToStringMap_dataBuilder_clear(): Unit = {
     val builder = ByteStringToStringMap.newBuilder
-    builder += (bytes1 -> "b1")
+    builder.addOne(bytes1 -> "b1")
     builder.clear()
     assert(builder.result().size === 0)
   }
@@ -178,8 +178,8 @@ class DataToStringMapBuilderTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testIntArrayToStringMap_dataBuilder(): Unit = {
     val builder = IntArrayToStringMap.newBuilder
-    builder += (IntArray(1, 2) -> "arr1")
-    builder += (IntArray(3, 4) -> "arr2")
+    builder.addOne(IntArray(1, 2) -> "arr1")
+    builder.addOne(IntArray(3, 4) -> "arr2")
     val result = builder.result()
     assert(result.size === 2)
   }
@@ -187,7 +187,7 @@ class DataToStringMapBuilderTest extends GeneratorTest with SchemaFixtures {
   @Test
   def testIntArrayToStringMap_dataBuilder_clear(): Unit = {
     val builder = IntArrayToStringMap.newBuilder
-    builder += (IntArray(1) -> "arr")
+    builder.addOne(IntArray(1) -> "arr")
     builder.clear()
     assert(builder.result().size === 0)
   }
