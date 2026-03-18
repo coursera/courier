@@ -11,5 +11,4 @@ libraryDependencies ++= Seq(
   "javax.annotation" % "javax.annotation-api" % "1.3.2"
 )
 
-// Target Java 8 bytecode for compatibility with infra-services (Java 8)
-javacOptions ++= Seq("--release", "8")
+

@@ -27,8 +27,5 @@ Test / javaOptions += "-Dreferencesuite.srcdir=" + (LocalProject("referenceSuite
 // regardless of --release); exclude the generated record.java from compilation
 Compile / sources ~= { _.filterNot(_.getName == "record.java") }
 
-// Force Java 11 bytecode so JaCoCo's ASM can instrument the classes
-javacOptions ++= Seq("--release", "11")
-
 // Exclude courier-generated data model classes from JaCoCo — generated artifacts only.
 jacocoExcludes := Seq("org.example.**", "org.coursera.**", "data.**", "WithoutNamespace*")
