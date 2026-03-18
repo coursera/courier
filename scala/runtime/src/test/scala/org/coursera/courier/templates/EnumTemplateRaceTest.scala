@@ -24,7 +24,6 @@ import java.nio.ByteBuffer
 import com.linkedin.data.DataMap
 import com.linkedin.data.template.DataTemplateUtil
 import com.linkedin.data.schema.EnumDataSchema
-import sun.misc.URLClassPath
 
 class EnumTestBridge {
   def value = EnumTemplateTest.VALUE.name
@@ -48,7 +47,7 @@ class EnumTemplateRaceTest() {
         Option(resOpt) match {
           case Some(res) =>
             try {
-              val bytes = Stream.continually(res.read).takeWhile(_ != -1).map(_.toByte).toArray
+              val bytes = Iterator.continually(res.read).takeWhile(_ != -1).map(_.toByte).toArray
               defineClass(name, ByteBuffer.wrap(bytes), null)
             } catch {
               case e: IOException => throw new ClassNotFoundException(name, e)

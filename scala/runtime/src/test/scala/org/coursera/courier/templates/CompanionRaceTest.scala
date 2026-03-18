@@ -20,9 +20,6 @@ import java.net.URL
 import java.io.IOException
 import java.nio.ByteBuffer
 
-import scala.io.Source
-import sun.misc.URLClassPath
-
 class TestBridge {
   def value = TestCompanion.VALUE.toString
   def withName = TestCompanion.withName("VALUE").toString
@@ -51,7 +48,7 @@ class CompanionRaceTest() {
         Option(resOpt) match {
           case Some(res) =>
             try {
-              val bytes = Stream.continually(res.read).takeWhile(_ != -1).map(_.toByte).toArray
+              val bytes = Iterator.continually(res.read).takeWhile(_ != -1).map(_.toByte).toArray
               defineClass(name, ByteBuffer.wrap(bytes), null)
             } catch {
               case e: IOException => throw new ClassNotFoundException(name, e)
