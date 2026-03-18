@@ -33,7 +33,7 @@ import com.linkedin.data.template.DataTemplateUtil
 import org.coursera.courier.templates.DataTemplates
 import org.coursera.courier.templates.DataValidationException
 import org.junit.Test
-import org.scalatest.junit.AssertionsForJUnit
+import org.scalatestplus.junit.AssertionsForJUnit
 
 class InlineStringCodecTest extends AssertionsForJUnit {
 

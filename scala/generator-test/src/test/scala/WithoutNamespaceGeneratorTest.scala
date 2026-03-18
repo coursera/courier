@@ -19,8 +19,8 @@ import com.linkedin.data.codec.JacksonDataCodec
 import com.linkedin.data.template.PrettyPrinterJacksonDataTemplateCodec
 import org.coursera.courier.templates.DataTemplates.DataConversion
 import org.junit.Test
-import org.scalatest.junit.AssertionsForJUnit
-import org.scalatest.junit.JUnitSuite
+import org.scalatestplus.junit.AssertionsForJUnit
+import org.scalatestplus.junit.JUnitSuite
 
 /**
  * Tests for WithoutNamespace — a generated record with no package declaration.

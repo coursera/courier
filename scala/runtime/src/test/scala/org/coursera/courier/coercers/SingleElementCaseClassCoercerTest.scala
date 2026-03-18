@@ -19,7 +19,7 @@ package org.coursera.courier.coercers
 import com.linkedin.data.ByteString
 import com.linkedin.data.template.DataTemplateUtil
 import org.junit.Test
-import org.scalatest.junit.AssertionsForJUnit
+import org.scalatestplus.junit.AssertionsForJUnit
 
 /**
  * Tests for [[SingleElementCaseClassCoercer]] and [[CaseClassReflect]].

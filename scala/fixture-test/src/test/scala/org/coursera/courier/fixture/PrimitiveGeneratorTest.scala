@@ -6,8 +6,8 @@ import org.coursera.courier.fixture.generator.IntegerRangeFixedBytesGenerator
 import org.coursera.courier.fixture.generator.SpanningDoubleValueGenerator
 import org.coursera.fixed.Fixed8
 import org.junit.Test
-import org.scalatest.junit.AssertionsForJUnit
-import org.scalatest.junit.JUnitSuite
+import org.scalatestplus.junit.AssertionsForJUnit
+import org.scalatestplus.junit.JUnitSuite
 
 class PrimitiveGeneratorTest extends JUnitSuite with AssertionsForJUnit {
 

@@ -7,8 +7,8 @@ import org.coursera.courier.generator.customtypes.DateTimeCoercer
 import org.example.Fortune
 import org.joda.time.DateTime
 import org.junit.Test
-import org.scalatest.junit.AssertionsForJUnit
-import org.scalatest.junit.JUnitSuite
+import org.scalatestplus.junit.AssertionsForJUnit
+import org.scalatestplus.junit.JUnitSuite
 
 import FixtureSugar._
 

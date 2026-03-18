@@ -3,8 +3,8 @@ package org.coursera.courier.fixture
 import org.coursera.courier.fixture.generator.CyclicEnumSymbolGenerator
 import org.coursera.maps.Toggle
 import org.junit.Test
-import org.scalatest.junit.AssertionsForJUnit
-import org.scalatest.junit.JUnitSuite
+import org.scalatestplus.junit.AssertionsForJUnit
+import org.scalatestplus.junit.JUnitSuite
 
 class EnumGeneratorTest extends JUnitSuite with AssertionsForJUnit {
 

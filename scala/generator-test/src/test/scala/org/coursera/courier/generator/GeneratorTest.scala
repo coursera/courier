@@ -26,8 +26,8 @@ import com.linkedin.data.template.DataTemplate
 import com.linkedin.data.template.JacksonDataTemplateCodec
 import com.linkedin.data.template.PrettyPrinterJacksonDataTemplateCodec
 import org.apache.commons.io.FileUtils
-import org.scalatest.junit.AssertionsForJUnit
-import org.scalatest.junit.JUnitSuite
+import org.scalatestplus.junit.AssertionsForJUnit
+import org.scalatestplus.junit.JUnitSuite
 
 abstract class GeneratorTest extends JUnitSuite with AssertionsForJUnit {
 

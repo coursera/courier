@@ -8,8 +8,8 @@ import org.coursera.courier.fixture.generator.ListValueGenerator
 import org.coursera.courier.fixture.generator.MapValueGenerator
 import org.coursera.courier.fixture.generator.PrefixedStringGenerator
 import org.junit.Test
-import org.scalatest.junit.AssertionsForJUnit
-import org.scalatest.junit.JUnitSuite
+import org.scalatestplus.junit.AssertionsForJUnit
+import org.scalatestplus.junit.JUnitSuite
 
 import scala.collection.JavaConverters._
 

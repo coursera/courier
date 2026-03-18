@@ -8,8 +8,8 @@ import org.example.FortuneTelling.FortuneCookieMember
 import org.example.MagicEightBall
 import org.example.MagicEightBallAnswer
 import org.junit.Test
-import org.scalatest.junit.AssertionsForJUnit
-import org.scalatest.junit.JUnitSuite
+import org.scalatestplus.junit.AssertionsForJUnit
+import org.scalatestplus.junit.JUnitSuite
 
 import FixtureSugar._
 

@@ -17,8 +17,8 @@ import org.coursera.maps.WithCustomTypesMap
 import org.coursera.maps.WithTypedKeyMap
 import org.coursera.records.test.Simple
 import org.junit.Test
-import org.scalatest.junit.AssertionsForJUnit
-import org.scalatest.junit.JUnitSuite
+import org.scalatestplus.junit.AssertionsForJUnit
+import org.scalatestplus.junit.JUnitSuite
 
 import org.coursera.courier.fixture.FixtureSugar._
 

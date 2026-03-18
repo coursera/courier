@@ -17,7 +17,7 @@
 package org.coursera.courier.data
 
 import org.junit.Test
-import org.scalatest.junit.AssertionsForJUnit
+import org.scalatestplus.junit.AssertionsForJUnit
 
 /**
  * Tests for generated primitive data type classes (Array/Map templates).

@@ -18,7 +18,7 @@ package org.coursera.courier.data
 
 import com.linkedin.data.ByteString
 import org.junit.Test
-import org.scalatest.junit.AssertionsForJUnit
+import org.scalatestplus.junit.AssertionsForJUnit
 
 /**
  * Tests for generated numeric and bytes map types.
