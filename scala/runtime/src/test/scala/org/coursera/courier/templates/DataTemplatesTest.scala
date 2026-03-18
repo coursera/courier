@@ -24,7 +24,7 @@ import com.linkedin.data.template.DataTemplateUtil
 import com.linkedin.data.template.RecordTemplate
 import com.linkedin.data.template.UnionTemplate
 import org.coursera.courier.templates.DataTemplates.DataConversion
-import org.scalatest.junit.AssertionsForJUnit
+import org.scalatestplus.junit.AssertionsForJUnit
 import org.junit.Test
 
 class DataTemplatesTest extends AssertionsForJUnit {
